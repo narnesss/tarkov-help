@@ -1,0 +1,7 @@
+/var/
+/node_modules/
+/.wrangler/
+/.env
+/.env.*
+!/deployment/environment.example
+/tests/php/coverage.json

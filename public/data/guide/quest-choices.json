@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-14",
+  "groups": [
+    {
+      "id": "chemicals",
+      "options": [
+        [
+          "597a0f5686f774273b74f676"
+        ],
+        [
+          "597a160786f77477531d39d2"
+        ],
+        [
+          "597a171586f77405ba6887d3"
+        ]
+      ],
+      "sources": [
+        "https://escapefromtarkov.fandom.com/wiki/Chemical_-_Part_4",
+        "https://escapefromtarkov.fandom.com/wiki/Big_Customer",
+        "https://escapefromtarkov.fandom.com/wiki/Out_of_Curiosity"
+      ]
+    },
+    {
+      "id": "supply-folder",
+      "options": [
+        [
+          "596a0e1686f7741ddf17dbee"
+        ],
+        [
+          "596a101f86f7741ddb481582"
+        ]
+      ],
+      "sources": [
+        "https://escapefromtarkov.fandom.com/wiki/Supply_Plans",
+        "https://escapefromtarkov.fandom.com/wiki/Kind_of_Sabotage"
+      ]
+    },
+    {
+      "id": "sanitar",
+      "options": [
+        [
+          "5edab4b1218d181e29451435"
+        ],
+        [
+          "5edac34d0bb72a50635c2bfa"
+        ]
+      ],
+      "sources": [
+        "https://escapefromtarkov.fandom.com/wiki/The_Huntsman_Path_-_Sadist",
+        "https://escapefromtarkov.fandom.com/wiki/Colleagues_-_Part_3"
+      ],
+      "identityNote": "The same Therapist quest ID is now named Сложный выбор / A Difficult Choice in the current snapshot."
+    },
+    {
+      "id": "lab-journal",
+      "options": [
+        [
+          "669fa38fad7f1eac2607ed46"
+        ],
+        [
+          "669fa3910c828825de06d69f"
+        ]
+      ],
+      "sources": [
+        "https://escapefromtarkov.fandom.com/wiki/One_Less_Loose_End",
+        "https://escapefromtarkov.fandom.com/wiki/A_Healthy_Alternative"
+      ]
+    },
+    {
+      "id": "ref-compromat-pvp",
+      "modes": [
+        "regular"
+      ],
+      "options": [
+        [
+          "66058ccf06ef1d50a60c1f48"
+        ],
+        [
+          "66058cd19f59e625462acc90"
+        ],
+        [
+          "67e993b1ac26bf29380a320b"
+        ]
+      ],
+      "sources": [
+        "https://escapefromtarkov.fandom.com/wiki/Between_Two_Fires",
+        "https://escapefromtarkov.fandom.com/wiki/Decisions%2C_Decisions",
+        "https://escapefromtarkov.fandom.com/wiki/Surprise_Gift"
+      ]
+    },
+    {
+      "id": "ref-compromat-pve",
+      "modes": [
+        "pve"
+      ],
+      "options": [
+        [
+          "6834254f2f0e2a7eb90b62ef"
+        ],
+        [
+          "683425dd8f5b18d29a05d9d1"
+        ],
+        [
+          "683427418f5b18d29a05d9e3"
+        ]
+      ],
+      "sources": [
+        "https://escapefromtarkov.fandom.com/wiki/Between_Two_Fires",
+        "https://escapefromtarkov.fandom.com/wiki/Decisions%2C_Decisions",
+        "https://escapefromtarkov.fandom.com/wiki/Surprise_Gift"
+      ]
+    },
+    {
+      "id": "btr-independence",
+      "options": [
+        [
+          "6744af0969a58fceba101fed",
+          "6745cbee909d2013670a4a55"
+        ],
+        [
+          "67460662d0fbbc74ca0f7229"
+        ]
+      ],
+      "sources": [
+        "https://escapefromtarkov.fandom.com/wiki/The_Price_of_Independence",
+        "https://escapefromtarkov.fandom.com/wiki/Choose_Your_Friends_Wisely"
+      ],
+      "identityNote": "Two Price of Independence IDs are variants of one option, not alternatives to each other."
+    },
+    {
+      "id": "patch115-lighthouse-finale",
+      "options": [
+        [
+          "patch-1150-cut-down-to-the-root"
+        ],
+        [
+          "patch-1150-preserve-a-valuable-piece"
+        ]
+      ],
+      "sources": [
+        "https://wikiwiki.jp/eft/Jaeger/Cut%20Down%20to%20the%20Root",
+        "https://wikiwiki.jp/eft/Lightkeeper/Preserve%20a%20Valuable%20Piece"
+      ]
+    }
+  ],
+  "branchNotices": [
+    {
+      "questIds": [
+        "673f4e956f1b89c7bc0f56ef"
+      ],
+      "text": "У этого задания два варианта: отметить колёса БТР на Резерве и продолжить через Прапора либо отметить колёса грузовиков на Таможне, провалить задание и продолжить через Барахольщика. Оба пути позднее ведут к тем же вариантам окончания цепочки.",
+      "sourceUrl": "https://escapefromtarkov.fandom.com/wiki/Hot_Wheels"
+    }
+  ],
+  "notes": [
+    {
+      "questIds": [
+        "5edac34d0bb72a50635c2bfa"
+      ],
+      "text": "Убийство Санитара проваливает это задание."
+    },
+    {
+      "questIds": [
+        "67460662d0fbbc74ca0f7229"
+      ],
+      "text": "Этот выбор закрывает путь к концовке «Спаситель» в задании ",
+      "questId": "68da33fe00868edcb6025ac4",
+      "sourceUrl": "https://escapefromtarkov.fandom.com/wiki/Choose_Your_Friends_Wisely"
+    }
+  ]
+}

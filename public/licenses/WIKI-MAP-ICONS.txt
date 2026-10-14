@@ -1,0 +1,14 @@
+Map marker artwork attribution
+
+Creators: The Official Escape From Tarkov Wiki contributors.
+Downloaded unchanged from the tarkov.dev distribution:
+https://github.com/the-hideout/tarkov-dev/tree/97ff6e7a43d03c10f3f7a3165c8dbcdf2193d6b9/public/maps/interactive
+Source mapping:
+https://github.com/the-hideout/tarkov-dev/blob/97ff6e7a43d03c10f3f7a3165c8dbcdf2193d6b9/src/pages/map/map-images.mjs
+Attribution published by tarkov.dev: https://tarkov.dev/maps/
+Wiki reference: https://escapefromtarkov.fandom.com/ru/wiki/Карта:Таможня
+Retrieved 2026-10-11. File names are retained unchanged.
+
+The tarkov.dev software license does not replace the original artwork rights.
+Game content belongs to Battlestate Games and its licensors. Original Wiki/map
+attribution and applicable asset notices are preserved in this noncommercial fan atlas.

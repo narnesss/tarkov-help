@@ -1,0 +1,81 @@
+# Asset license and provenance ledger
+
+The Apache-2.0 license at the repository root covers Raid Signal's original
+source code and documentation only. Bundled map artwork and data remain under
+the terms named below. The repository is therefore accurately described as
+**open-source code with separately licensed, noncommercial assets**.
+
+The hashes in `public/maps/asset-checksums.json` are the authoritative identity
+of the distributed snapshot. The upstream revisions below were observed when
+the snapshot was refreshed on 2026-08-28; moving `main` URLs mean those
+observations do not replace the per-file checksum ledger.
+
+| Material                               | Distributed paths                                                                       | Source and snapshot information                                                                                                                                                                                                                                 | Terms and attribution                                                                                                                                                                                               | Local changes                                                                                                                                                          |
+| -------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tarkov SVG maps                        | `public/maps/svg/*.svg`                                                                 | [the-hideout/tarkov-dev-svg-maps](https://github.com/the-hideout/tarkov-dev-svg-maps), downloaded 2026-08-28; upstream `main` observed at `5a8b6115d1c0cf56f2ebaac1a96fa5ae3074d178` on 2026-08-28                                                              | CC BY-NC-SA 4.0; credit the repository contributors. The upstream project also publishes usage guidance restricting cheats and other unfair gameplay uses; downstream users must review the current upstream terms. | Self-hosted and selected by floor/layer; no authorship claimed.                                                                                                        |
+| Icebreaker and Labyrinth maps          | `public/maps/image/**`                                                                  | [RE3MR](https://reemr.se/), source URLs recorded in `public/maps/data-manifest.json`, refreshed 2026-08-28                                                                                                                                                      | CC BY-NC-SA 4.0; credit RE3MR. RE3MR asks application and website users to contact the creator; downstream users are responsible for satisfying that request and current terms.                                     | Icebreaker was split into floor images and transparently padded. Labyrinth was cropped and calibrated to Tarkov.dev bounds. Originals are retained beside derivatives. |
+| Map metadata and coordinate transforms | `src/data/maps.generated.json`, `public/maps/upstream-maps.json`                        | [the-hideout/tarkov-dev](https://github.com/the-hideout/tarkov-dev), generated 2026-08-28; upstream `main` observed at `d3dc9b8401c9a4312dc5cd6b4e52e0a4e398a5cb` on 2026-08-28                                                                                 | MIT; credit tarkov.dev contributors.                                                                                                                                                                                | Normalized into Raid Signal map definitions and local asset paths.                                                                                                     |
+| POI and quest snapshots                | `public/maps/poi/*.json`, `public/maps/quests/*.json`                                   | [Tarkov.dev JSON API](https://tarkov.dev/api/), endpoints recorded in `public/maps/data-manifest.json`, generated 2026-08-28                                                                                                                                    | Review the current Tarkov.dev API/data terms before redistributing refreshed snapshots.                                                                                                                             | Translated, normalized, and reduced to fields used by the application.                                                                                                 |
+| IBM Plex fonts                         | Installed through `@fontsource/ibm-plex-sans-condensed` and `@fontsource/ibm-plex-mono` | Fontsource packages pinned by `package-lock.json`                                                                                                                                                                                                               | SIL Open Font License 1.1; package license files are included in installed distributions.                                                                                                                           | Subsets are bundled by Vite.                                                                                                                                           |
+| Raid Signal open-source social card    | `public/images/raid-signal-open-source.png`                                             | Generated for Mouchsiadis Solutions with OpenAI image generation on 2026-08-14 using the first-party Raid Signal interface only as a visual-language reference; resized to 1280x640; SHA-256 `df3915f51900439e3a6b22a3ba812a420aab0a8c92afb9338b82716c3378c03e` | First-party promotional artwork; no upstream map artwork or game assets are reproduced.                                                                                                                             | Original abstract tactical-interface composition with the Raid Signal name and release positioning.                                                                    |
+| Raid Signal v1.1 quest-marker capture  | `public/images/raid-signal-v1-1-quest-markers.webp`                                     | Captured headlessly from the Raid Signal browser preview on 2026-08-20 at release commit `dfd1f578e58c7d252bc0e93388aa32312fc73da6`; SHA-256 `f5cbcb5889b973909206725194cd6d95c43f5ae8236acf17bf428be10832cbed`                                                 | First-party product capture. The visible Customs map remains subject to the separately documented CC BY-NC-SA 4.0 map terms above.                                                                                  | Three quests were marked active, the Utility drawer was opened, and quest markers were enabled before lossless PNG capture and 1440x900 WebP encoding.                 |
+| Raid Signal v1.2 loot-filter capture   | `public/images/raid-signal-v1-2-loot-filters.webp`                                      | Captured headlessly from the Raid Signal browser preview on 2026-08-21 at merged feature commit `77944da48e4935f577e33290814c2337466db97f`; SHA-256 `2fe2d8bfb9530641a7bf4ac23beff72f1438f66b98765dfe5f6fb1cbf1e6fb53`                                          | First-party product capture. The visible Customs map remains subject to the separately documented CC BY-NC-SA 4.0 map terms above.                                                                                  | Drawers, Medical, and Hidden caches were enabled before lossless PNG capture and 1440x900 WebP encoding.                                                               |
+
+## Redistribution boundary
+
+### Quest location previews and Wiki links (2026-09-24)
+
+Objective location previews crop and annotate the already bundled artwork at
+runtime. They retain its existing authorship, license, and usage restrictions;
+the separately sourced generic quest artwork below does not change those map terms.
+
+`public/maps/quests/wiki-links.json` contains only quest identifiers, modes, and
+direct Wiki URLs matched against the existing quest snapshot. Sources are
+`https://json.tarkov.dev/{regular,pve,pvp-season}/tasks`, retrieved 2026-09-24;
+credit Tarkov.dev contributors and the corresponding Tarkov Wiki editors. The
+SHA-256 is `49b2dd28a2bfffe1c07780b50d6e2ff7c0fc5a23d21894b34fd45796fb7e0ff2`,
+also recorded in the checksum ledger. This is URL reference metadata, not a
+redistribution of Wiki text, HTML, or images. Linked content retains its own
+terms. `scripts/sync-quest-links.mjs` updates only this metadata and its ledger
+entry; it does not refresh existing quest data or artwork.
+
+### Generic quest artwork (2026-09-24)
+
+The user confirmed permission to include quest images with source attribution.
+This integration relies on that confirmation; it does not assert an independently
+verified blanket image license or apply the API software license to the images.
+Escape from Tarkov game artwork remains © Battlestate Games. Credit Tarkov.dev
+as the image provider, not as the claimed author of the game artwork.
+
+- Scope: 236 unmodified WebP images for existing quests with mapped objectives,
+  shared across 684 mode/quest pairs; 14,045,678 bytes in total.
+- Files: `public/maps/quests/images/*.webp`. No other quest text or map artwork
+  was refreshed. The images are generic quest illustrations, not confirmed
+  objective/location photographs.
+- Source: the `taskImageLink` field of the
+  [Tarkov.dev API](https://tarkov.dev/api/), fetched from
+  `https://json.tarkov.dev/{regular,pve,pvp-season}/tasks` on 2026-09-24.
+  Original images are served by `https://assets.tarkov.dev/<quest-id>.webp`.
+- Per-image original URL, quest/mode, byte count, and SHA-256 are recorded in
+  `public/maps/quests/images.json`; every image is also included in
+  `public/maps/asset-checksums.json`. The metadata SHA-256 is
+  `6b04da96d33f3ae6b80f161496feb5eca831bf8556c4787b465c877457c583b0`.
+- Importer: `scripts/sync-quest-images.mjs`, limited to existing mapped quests,
+  a single HTTPS source host, bounded WebP files, and exact quest IDs.
+- Display: unchanged artwork, scaled with preserved aspect ratio. Captions
+  identify generic artwork, Tarkov.dev/assets.tarkov.dev, and Battlestate Games.
+  Runtime loads use bundled local files, not third-party image requests.
+
+These images are excluded from the project's Apache-2.0 code license and the
+map artwork's CC BY-NC-SA license. Preserve their provenance and source credit;
+this permission confirmation does not grant downstream parties new rights.
+
+### General redistribution requirements
+
+- Do not assume Apache-2.0 applies to anything under `public/maps/`.
+- Preserve this ledger, `THIRD_PARTY_NOTICES.md`, `NOTICE`, the in-app
+  attribution, and `public/maps/LICENSE.md` when redistributing bundled assets.
+- Commercial distributors should replace or remove noncommercial map artwork.
+- Run `npm run assets:verify` after modifying any bundled map file.
+- This ledger records provenance; it is not legal advice or a warranty that an
+  upstream party owns every right implicated by game-derived artwork or data.

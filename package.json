@@ -1,0 +1,10 @@
+{
+  "name": "tarkov-help",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-pages.mjs",
+    "test": "node scripts/check-pages.mjs",
+    "test:php": "php tests/php/run.php"
+  }
+}

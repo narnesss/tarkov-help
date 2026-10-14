@@ -1,0 +1,8 @@
+{
+  "name": "eft-wiki/application",
+  "description": "Escape from Tarkov Wiki: maps, quests and private progress",
+  "type": "project",
+  "require": {"php": "~8.4.0", "ext-pdo": "*", "ext-pdo_sqlite": "*", "ext-json": "*", "ext-mbstring": "*", "ext-curl": "*"},
+  "autoload": {"psr-4": {"EftWiki\\": "src/"}},
+  "scripts": {"test": "php tests/php/run.php", "export": "php bin/console export:static"}
+}

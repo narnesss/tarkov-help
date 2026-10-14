@@ -1,0 +1,24 @@
+name: Check PHP and Pages export
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_sqlite, mbstring, curl
+          coverage: none
+      - name: PHP syntax
+        run: find src templates config tests/php public -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: PHP behavior
+        run: php tests/php/run.php
+      - name: Export templates with PHP
+        run: php bin/console export:static
+      - name: Build and verify Pages
+        run: npm run build && npm test
+      - name: Ensure committed output matches source
+        run: git diff --exit-code -- public dist

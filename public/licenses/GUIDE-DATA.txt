@@ -1,0 +1,104 @@
+KORD ATLAS — sources for quests, reference tools and refreshed raid data
+Retrieved 2026-10-11 / 2026-10-12. Noncommercial community reference.
+
+Quest conditions, task dependencies and states, objectives, coordinates, experience,
+reward items, trader standing, unlocks, item properties and market snapshots:
+https://tarkov.dev/api/
+https://json.tarkov.dev/regular/tasks and /pve/tasks, with tasks_ru
+https://json.tarkov.dev/regular/items and /pve/items, with items_ru
+Related public endpoints: maps, traders, hideout, barters, crafts and Russian locales.
+These are public community API endpoints, not an official Battlestate Games player API.
+Raw source response dates and hashes are recorded in data/guide/provenance.json.
+Game names, descriptions and imagery belong to Battlestate Games and their authors.
+No tarkov.dev application code was copied for these reference tools.
+
+VOctavian / tarkov-quest-map
+https://github.com/VOctavian/tarkov-quest-map
+Commit: 5b8f1d50d21b61d46a3682024d6bb2c0cac058bb
+Used to map quest identifiers to their source guide URLs. Original guide prose,
+walkthrough images and site styling are not bundled. The newer API task snapshot
+takes priority over the older repository cache.
+
+QTtrash / tarkov-map
+https://github.com/QTtrash/tarkov-map
+Commit: 176a1da9dc2bc42662da6927cdcf31982d6dc997
+Original map geometry, layer definitions and stable identifiers. Included Apache-2.0
+and asset notices remain applicable. Current regular/PvE objects are refreshed from
+the public API. Legacy unconfirmed objects retain identifiers for saved progress.
+
+NepPure / tarkov-offline-map
+https://github.com/NepPure/tarkov-offline-map
+Commit: ef4ab4e9a86188dd13ed3ba8a1a51e797880ed28
+Reserve SVG floor additions; reference BTR route data from the 2026-09-14 PvE snapshot.
+BTR routes are not live tracking. Eight Lighthouse stops are unconfirmed by the current
+API. Timing uncertainty in the source is ±60 seconds. Source code is MIT, while
+third-party artwork and data retain their separate terms. No guide prose/screenshots
+from third-party sites were republished.
+
+Tarkov.help is a functional reference and an external walkthrough destination:
+https://tarkov.help/ru
+No wholesale automated scrape, premium material, branding or site code was imported.
+
+Map drawings: Escape from Tarkov Wiki, Shebuka / tarkov-dev-svg-maps, RE3MR and other
+credited authors. CC BY-NC-SA 4.0 continues to apply to map art; see other notices.
+Local image map registration is approximate where the source diagrams differ.
+
+Pako 1.0.11 inflate browser fallback: https://github.com/nodeca/pako
+MIT and zlib notices are retained in vendor/pako-inflate.mjs and PAKO-MIT.txt.
+The gzip datasets can also be unpacked with any standard gzip implementation.
+
+
+Обновление 12.10.2026 — галереи, сюжет и точность карт.
+Индекс оригинальных изображений: VOctavian/tarkov-quest-map, guides.json, 6cf01b97cca25b657dd31b23eece46f65e1bf189.
+Архивные копии: тот же репозиторий, 5b8f1d50d21b61d46a3682024d6bb2c0cac058bb.
+Каждый кадр содержит ссылку на страницу задания, исходный файл и лицензионные сведения.
+Изображения игры принадлежат Battlestate Games; материалы участников русской Вики распространяются по CC BY-NC-SA 3.0 там, где участники вправе их лицензировать. Условия конкретного файла имеют приоритет.
+Сюжетные факты: https://www.eftarkov.com/storyline и указанные в главах страницы Fandom. Краткие русские описания составлены самостоятельно. Полные статьи не копировались. Скриншоты efTarkov показаны по исходным ссылкам, лицензия на свободное переиздание не заявляется.
+Наблюдения условий: https://github.com/szepiz/tarkov-quest-data , revision 26e334a29f68743eedce4bd175a6e608354afb59, только first-party observed CC0-1.0, режим против ИИ/USEC/версия 1.1.0. Координатные уточнения — ручная разметка автора, CC0-1.0, 16.08.2026.
+Цены барахолки и их обновление отключены. Предложения торговцев показаны из снимка справочника tarkov.dev; это справочные значения.
+
+12.10.2026 — Русские иллюстрации и подписи
+Два кадра efTarkov (Борей: ремонт набором инструментов; Лабиринт: следы БЕАР) имеют русские версии аннотаций. Водяной знак и ссылка на исходник сохранены. Для 78 кадров этих двух глав добавлен перевод подписи. Игровые изображения — Battlestate Games; источники доступны в просмотре.
+
+Иконки предметов вне контейнеров: 350 исходных WebP из assets.tarkov.dev сохранены локально без изменений. Игровые изображения — Battlestate Games, каталог предметов — tarkov.dev. Список оригинальных URL и SHA-256: data/raid/loose-items.json.
+
+NORVINSK.SYS (14 October 2026): https://norvinsk-sys.ru/quests
+Imported factual task names, Kappa flags, levels, objectives, prerequisite identities and reward data. No application code, trader dialogue or editorial walkthrough prose was imported. Original authors retain their rights; source links are included on task pages.
+
+14.10.2026 — Inline quest location maps
+NORVINSK.SYS factual map percentages and location labels supplement existing raid
+coordinates. Percentage pins remain on their exact source drawings. Ten source
+images are stored as WebP with unchanged geometry and embedded author credits;
+original URLs, dimensions and SHA-256 are recorded in
+research/quest-card-map-update/map-assets-audit.json. The Customs map retains
+MONKIMONKI / GLORY4LYFE attribution. Original map authors and Battlestate Games
+retain their rights; no new license or authorship is claimed. Existing map notices
+continue to apply. Unconfirmed legacy positions are excluded from inline cards.
+
+14.10.2026 — Quest choice notices
+Factual alternative quest relationships were checked against indexed English/Russian
+Escape from Tarkov Wiki pages and the bundled mode-specific tarkov.dev task snapshots.
+Identifiers, relationships and source URLs are in data/guide/quest-choices.json;
+review scope and audit are in research/quest-choices-update/. Short notice text is
+written locally. No trader dialogue, full article or third-party application code
+is imported. Game content and original sources retain their existing rights.
+
+14.10.2026 — Quest content refresh
+Source: NORVINSK.SYS, https://norvinsk-sys.ru/quests
+Current main asset: https://norvinsk-sys.ru/assets/index-BG2Wxc8d.js
+Image/point metadata: https://norvinsk-sys.ru/assets/QuestDetail-BfX303R4.js
+Source legal notice: https://norvinsk-sys.ru/legal
+Russian/English trader briefings link to Escape from Tarkov Wiki in the source
+records. Wiki-derived material, including the source's texts using Wiki information,
+is reused under its stated CC BY-NC-SA 3.0 license. Attribution: Escape from Tarkov
+Wiki contributors and NORVINSK.SYS; game dialogue and imagery: Battlestate Games.
+License: https://creativecommons.org/licenses/by-nc-sa/3.0/
+Noncommercial reference. Reused licensed briefing text and derivatives remain under
+CC BY-NC-SA 3.0. Only paragraph layout was adapted; no application code was imported.
+The 19 records flagged as original translations and 10 story introductions have
+independently written summaries, clearly marked in the UI; full reserved translations
+are not republished. Source links and IDs are retained in quest-content.json.
+Downloaded Wiki illustrations are encoded as WebP (quality 90) with unchanged dimensions,
+geometry and embedded author credits. Compression is the only image modification. Original and delivered SHA-256 hashes are recorded. Additional Ground Zero and Labyrinth map drawings retain exact geometry
+and all embedded credits. Exact source image URLs/hashes and match coverage are
+in research/quest-content-update/audit.json and the map index.

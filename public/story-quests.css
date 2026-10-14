@@ -1,0 +1,59 @@
+/* Story chapters: numbered goals, visible stages and a top-down Ticket map. */
+body[data-page="quests"] .story-reading-main>.story-briefing { border-left: 3px solid #9affbc; }
+.story-briefing>p { margin: 0 0 18px; }
+.story-briefing .story-guide-group { padding: 0; margin: 12px 0; background: #0d1912; border: 1px solid #3b5644; border-radius: 5px; }
+.story-briefing .story-guide-group>summary { padding: 14px 16px; color: #cbe5d4; min-height: 44px; box-sizing: border-box; cursor: pointer; font-size: 14px; }
+.story-briefing .story-guide-group>p,.story-briefing .story-guide-group>.guide-link { margin: 12px 16px; }
+.story-objectives .objective-active-list { display: grid; gap: 20px; margin-top: 20px; }
+.story-objectives .story-objective-stage { padding: 18px 20px 6px; border: 1px solid #385542; border-top: 2px solid #b6d1a5; background: #0e1b13; border-radius: 5px; }
+.story-objectives .objective-stage-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 14px; margin: 0; }
+.story-stage-number { font: 600 11px/1.5 ui-monospace, monospace; letter-spacing: .08em; color: #e6c785; }
+.story-stage-title { font-size: 14px; line-height: 1.6; color: #d4e8dc; }
+.story-stage-progress { margin-left: auto; font: 12px/1.5 ui-monospace, monospace; color: #a7c4b1; white-space: nowrap; }
+body[data-page="quests"] .story-objectives .objective-row { background: transparent !important; border: 0; border-bottom: 1px solid #2d4936; border-radius: 0; padding: 16px 0; margin: 0; grid-template-columns: 26px minmax(0,1fr); gap: 12px; }
+.story-objectives .objective-row:last-child { border-bottom: 0; }
+body[data-page="quests"] .story-objectives .objective-row>input { width: 22px; height: 22px; margin: 4px 0; }
+.story-objective-title { display: flex; align-items: flex-start; gap: 12px; }
+.story-goal-number { min-width: 26px; height: 26px; display: grid; place-items: center; border: 1px solid #4d705a; border-radius: 3px; color: #a9d0b7; font: 11px/1 ui-monospace,monospace; flex-shrink: 0; margin-top: 2px; }
+.story-objective-title .objective-title { font-size: 15px !important; line-height: 1.65 !important; min-height: 0 !important; }
+.story-objectives .objective-row.is-done .objective-title { color: #b7c8bd; text-decoration: line-through; text-decoration-color: #6b8c76; }
+.story-objectives .objective-row.is-current .story-goal-number { border-color: #9affbc; color: #bff8d2; background: #203a28; }
+.story-objectives .story-objective-stage.is-complete { border-top-color: #82c99b; }
+.story-objectives .objective-disclosure { margin-top: 8px; }
+.story-objectives .objective-details { margin-top: 10px; }
+body[data-page="quests"] .story-objectives .objective-branch { font-size: 12px; border-left-width: 2px; }
+.ticket-map-panel { border: 1px solid #3b5946; border-radius: 7px; background: #101e16; padding: 24px; margin: 0; }
+.ticket-map-panel>h3 { margin: 0 0 14px; font-size: 21px; letter-spacing: .06em; text-transform: uppercase; color: #d6efe0; }
+.ticket-map-panel .roadmap-settings { margin: 18px 0; }
+.ticket-map-panel .roadmap-settings select { flex: 1; max-width: 480px; }
+.ticket-roadmap { border-radius: 4px; background: #09110c; border-color: #3b5c45; margin-bottom: 0; }
+.ticket-roadmap .roadmap-toolbar { background: #142219; border-color: #35513f; }
+.ticket-roadmap .roadmap-viewport { height: min(72vh,760px); min-height: 480px; background: #09110c; }
+.ticket-roadmap .roadmap-edges>path { stroke: var(--route-color,#789a84); stroke-width: 1.4; opacity: .9; }
+.ticket-roadmap .roadmap-node { border: 1px solid #3b5645; border-top: 2px solid var(--route-color,#789a84); border-radius: 3px; background: #142219; padding: 14px 11px 10px; gap: 6px; box-shadow: none; align-items: center; text-align: center; }
+.ticket-roadmap .roadmap-node strong { font: 500 12px/1.4 ui-monospace,monospace; color: #e1f0e6; }
+.ticket-roadmap .roadmap-node small { font: 10px/1.4 ui-monospace,monospace; color: #aec5b7; }
+.ticket-node-number { position: absolute; top: 4px; left: 7px; color: #94b2a0; font: 9px/1 ui-monospace,monospace; }
+.ticket-roadmap .roadmap-node:hover { border-color: var(--route-color); background: #1c3123; filter: none; box-shadow: 0 0 14px #77c9961a; }
+.ticket-roadmap .roadmap-node.choice { background: #1d2e21; }
+.ticket-roadmap .roadmap-node.choice strong { color: #b6eac8; }
+.ticket-roadmap .roadmap-node.optional { border-top-style: dashed; }
+.ticket-roadmap .roadmap-node.ending { border: 2px solid var(--route-color); background: #19281d; }
+.ticket-roadmap .roadmap-node.ending strong { color: var(--route-color); font-weight: 700; }
+.ticket-roadmap .roadmap-node.start { border-top-width: 3px; background: #203528; }
+.ticket-roadmap .roadmap-node.start strong { color: #9affbc; font-size: 14px; }
+.ticket-roadmap .roadmap-node.is-done { border-color: #6cbd87; background: #1a3022; }
+.ticket-roadmap .roadmap-key::before { border-color: var(--route-color,#789a84); background: var(--route-color,#789a84); border-radius: 1px; width: 9px; height: 9px; }
+.ticket-roadmap .roadmap-footer,.ticket-roadmap .roadmap-legend { background: #101c14; color: #b5cabd; font-size: 12px; }
+.ticket-roadmap .roadmap-legend { gap: 12px 18px; padding: 14px; }
+@media(max-width:700px) {
+  .story-objectives .story-objective-stage { padding: 16px 12px 4px; }
+  .story-objective-title { gap: 9px; }
+  body[data-page="quests"] .story-objectives .objective-row { padding: 16px 0 !important; }
+  .story-objective-title .objective-title { font-size: 15px !important; }
+  .story-stage-title { max-width: 100%; }
+  .ticket-map-panel { padding: 18px 12px; }
+  .ticket-map-panel .roadmap-settings { align-items: stretch; }
+  .ticket-map-panel .roadmap-settings select { width: 100%; max-width: none; }
+  .ticket-roadmap .roadmap-viewport { height: 65vh; min-height: 420px; }
+}

@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+declare(strict_types=1);
+require dirname(__DIR__) . '/bootstrap.php';
+
+$root = dirname(__DIR__);
+$command = $argv[1] ?? 'help';
+switch ($command) {
+    case 'export:static':
+        $renderer = new EftWiki\View\PageRenderer($root);
+        foreach (array_keys(require $root . '/config/pages.php') as $page) {
+            file_put_contents("$root/public/$page.html", $renderer->render($page, 'static'));
+        }
+        echo "Страницы экспортированы.\n";
+        break;
+    case 'prices:refresh':
+        // Compatibility with previously installed cron jobs: no network or writes.
+        echo "Обновление цен отключено. Удалите прежнее задание prices:refresh из cron.\n";
+        exit(0);
+    case 'install':
+        EftWiki\Factory::services($root);
+        echo "Хранилище и ключ приложения готовы. Корень веб-сервера: public/.\n";
+        break;
+    default:
+        echo "Команды: export:static, install\n";
+        exit($command === 'help' ? 0 : 1);
+}

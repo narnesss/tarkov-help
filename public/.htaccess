@@ -1,0 +1,16 @@
+Options -Indexes
+DirectoryIndex index.php
+RewriteEngine On
+RewriteRule ^index\.php$ - [L]
+# Route exported page aliases through PHP, even when an HTML file exists.
+RewriteRule ^(?:index|documents|raid|quest|quests|reference|boss|quest-map-source|quest-map)(?:/.*|\.html|\.php)?/?$ index.php [QSA,L]
+RewriteRule ^api(?:/.*)?$ index.php [QSA,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  <FilesMatch "\.(?:mjs|css|svg|webp|png|jpg|json|gz)$">
+    Header set Cache-Control "public, max-age=3600, stale-while-revalidate=86400"
+  </FilesMatch>
+</IfModule>
