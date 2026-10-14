@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101412">
+  <meta name="wiki-runtime" content="static">
+  <meta name="description" content="Предметы, патроны, бартеры, крафты, убежище, боссы и предметы для квестов Таркова.">
+  <base href="/">
+  <title>Коллиматорный прицел Aimpoint &quot;Micro H-2&quot; — Escape from Tarkov Wiki</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="guide.css">
+  <link rel="stylesheet" href="readability.css">
+  <link rel="stylesheet" href="quest-ui.css">
+  <link rel="stylesheet" href="site-ui.css">
+  <link rel="stylesheet" href="reference-ui.css">
+  <link rel="stylesheet" href="controls.css">
+  <link rel="modulepreload" href="profile-store.mjs">
+  <meta name="wiki-routing" content="pages">
+<script type="application/json" id="wiki-page-params">{"tab": "items", "item": "61657230d92c473c770213d7"}</script>
+</head>
+<body class="guide-page" data-page="reference">
+<header class="topbar">
+  <a class="brand" href="index.html" aria-label="Escape from Tarkov Wiki — главная">
+    <img class="site-logo" src="assets/site-logo.svg" width="40" height="40" alt="">
+    <span class="brand-wordmark">ESCAPE FROM TARKOV<span class="brand-light">WIKI</span><small>КАРТЫ · ЗАДАНИЯ · СПРАВОЧНИК</small></span>
+  </a>
+  <nav class="atlas-modes" aria-label="Раздел сайта">
+    <a href="index.html">Главная</a>
+    <a href="raid.html">Карты</a>
+    <a href="quests.html">Квесты</a>
+    <a href="reference.html" aria-current="page">Справочник</a>
+    <a href="documents.html">Документы</a>
+  </nav>
+  <div class="header-right">
+    <button class="button profile-trigger" id="profile-button" aria-haspopup="dialog">Мой профиль</button>
+  </div>
+</header>
+<main class="reference-layout">
+<header class="reference-toolbar">
+  <span class="eyebrow">ПОЛЕВОЙ СПРАВОЧНИК</span><div class="reference-toolbar-title"><h1>Справочник</h1><p>Снаряжение, рецепты и ориентиры для следующего рейда.</p></div>
+  <div class="reference-filters">
+    <label class="reference-search-label">Поиск<input type="search" id="reference-search" placeholder="Найти предмет, босса или рецепт…" aria-label="Поиск в справочнике"></label>
+    <label class="reference-mode">Режим<select id="reference-mode"><option value="pve" selected>PVE</option><option value="regular">PVP</option></select></label>
+    <label id="reference-filter-label">Категория<select id="reference-filter" aria-label="Категория"></select></label>
+    <label id="reference-sort-label">Сортировка<select id="reference-sort" aria-label="Сортировка"></select></label>
+  </div>
+</header>
+<aside class="reference-nav-panel" aria-label="Навигация справочника"><h2>Разделы</h2><nav class="reference-tabs" id="reference-tabs" aria-label="Раздел справочника"></nav></aside>
+<section class="reference-main" aria-label="Выбранный раздел">
+  <header class="reference-heading"><div><nav class="reference-breadcrumbs" aria-label="Путь к разделу"><span>Справочник</span><span>›</span><span id="reference-crumb"></span></nav><h2 id="reference-title">Загрузка…</h2><p id="reference-description"></p></div><span id="reference-count" class="quest-tag" aria-label="Количество результатов"></span></header>
+  <p id="reference-data-date" class="reference-help" role="status"></p><div id="reference-content"></div><div class="reference-pager"><button class="button" id="reference-prev">← Назад</button><span id="reference-page"></span><button class="button" id="reference-next">Далее →</button></div>
+</section></main>
+<dialog class="dialog item-dialog" id="item-dialog"><div class="dialog-heading"><h2 id="item-title"></h2><button class="icon-button" id="item-close" aria-label="Закрыть предмет">×</button></div><div id="item-body" class="item-dialog-body"></div></dialog><div class="toast" id="guide-toast" role="status" hidden></div>
+  <script type="module" src="bootstrap.mjs"></script>
+</body>
+</html>

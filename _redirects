@@ -1,0 +1,24 @@
+# Legacy PHP entry points; query strings remain available to the page router.
+/index.php / 301
+/documents.php /documents 301
+/documents/ /documents 301
+/raid.php /raid 301
+/raid/ /raid 301
+/quest.php /quest 301
+/quest/ /quest 301
+/quests.php /quests 301
+/quests/ /quests 301
+/reference.php /reference 301
+/reference/ /reference 301
+/boss.php /boss 301
+/boss/ /boss 301
+/quest-map-source.php /quest-map-source 301
+/quest-map-source/ /quest-map-source 301
+/quests/trader/:trader/ /quests/trader/:trader 301
+/quests/:quest/ /quests/:quest 301
+/raid/:map/ /raid/:map 301
+/documents/:map/ /documents/:map 301
+/boss/:boss/ /boss/:boss 301
+/quest-map/:map/ /quest-map/:map 301
+/reference/items/:item/ /reference/items/:item 301
+/reference/:tab/ /reference/:tab 301

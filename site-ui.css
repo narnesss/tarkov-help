@@ -1,0 +1,30 @@
+@charset "UTF-8";
+/* Shared brand and personal controls: one component across every section. */
+.topbar,.raid-page .topbar{height:auto;min-height:76px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
+.topbar .atlas-modes{position:static;margin-left:0}
+.app-layout,.raid-layout,.quest-layout,.reference-layout{height:calc(100dvh - var(--header-height,96px));min-height:0}
+.sidebar-backdrop,.raid-backdrop{top:var(--header-height,96px)}
+@media(max-width:1000px){.sidebar,.raid-sidebar{top:var(--header-height,96px)}}
+.topbar .brand{flex:none;gap:11px;min-width:0}
+.topbar .site-logo{width:40px;height:40px;flex:0 0 40px;display:block}
+.topbar .brand-wordmark{font-size:16px;line-height:1.12;letter-spacing:.045em;display:block}
+.topbar .brand-light{display:block;font-size:13px;letter-spacing:.24em;color:#a8bda5;margin-top:4px}
+.topbar .brand-wordmark small{display:block;font-size:11px;letter-spacing:.06em;margin-top:5px;color:#a9b5a9}
+.topbar .atlas-modes{min-width:0;gap:4px;flex-wrap:wrap}
+.topbar .atlas-modes a{font-size:14px;white-space:normal;line-height:1.25}
+.topbar .header-right{gap:8px;flex-shrink:0}
+.topbar .header-game-mode{display:block;margin:0}.topbar .header-game-mode select{min-width:84px;min-height:44px;padding:10px 32px 10px 12px;font-size:12px;line-height:1.4;color:#c5dfca}
+.profile-trigger{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.profile-trigger::before{content:'\0025C9';color:#adcb97;margin-right:7px}
+.profile-trigger[data-unsynced]::before{color:#ddc58b}
+.profile-dialog{max-width:580px;line-height:1.6;color:#e3e9df}
+.profile-field{display:grid;gap:6px;margin:15px 0;color:#bac7b8;font-size:15px}
+.profile-form{display:flex;gap:8px;margin-top:15px}.profile-form input{flex:1;min-width:0}
+.profile-form input,.profile-field input,.profile-field select{padding:12px;border:1px solid #445044;background:#151b16;color:#edf2ea;border-radius:7px;font:inherit}
+.profile-actions{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0 15px;padding-top:18px;border-top:1px solid #394238}
+.profile-help{font-size:14px;color:#b4bfb1}.profile-status{color:#d4c196;min-height:1.5em;overflow-wrap:anywhere}
+.profile-offline{margin:0;padding:8px 20px;background:#493d25;color:#f2dfaf;font-size:14px}
+.raid-page .leaflet-tooltip.raid-tooltip{min-width:min(300px,calc(100vw - 48px));width:max-content;max-width:min(540px,calc(100vw - 48px));padding:15px 19px;font-size:17px;line-height:1.55;overflow-wrap:anywhere;white-space:normal}
+.raid-page .raid-tooltip strong{font-size:18px;line-height:1.35}
+@media(max-width:1200px){.topbar .brand-wordmark small{display:none}.topbar .data-status{display:none}.topbar .brand-wordmark{font-size:13px}.topbar .brand-light{font-size:11px}.topbar .site-logo{width:34px;height:34px;flex-basis:34px}.topbar .atlas-modes a{font-size:13px}}
+@media(max-width:760px){.topbar{gap:9px;flex-wrap:wrap;height:auto;min-height:68px;padding:10px 12px}.topbar .brand{margin-right:auto}.topbar .atlas-modes{order:3;flex-basis:100%;display:flex}.topbar .atlas-modes a{flex:1;text-align:center;padding:9px 5px}.topbar .header-right{margin-left:0}.topbar .header-right .quiet{display:none}.profile-trigger{max-width:120px;padding:8px;font-size:13px}.raid-page .leaflet-tooltip.raid-tooltip{min-width:min(260px,calc(100vw - 40px));max-width:calc(100vw - 40px);font-size:16px}.profile-form{flex-direction:column}.profile-dialog{padding:18px}.brand-wordmark small{display:none}}

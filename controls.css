@@ -1,0 +1,49 @@
+/* Shared action controls; keep card,marker and diagram buttons in their layouts. */
+body :is(button, .button, select, input, summary) {
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+body :is(.button, .icon-button, .roadmap-control, .gunsmith-tabs button, .qmap-tools button, .quest-filter-more > summary) {
+  border-radius: 7px;
+  border: 1px solid #53735d;
+  background-color: #192b20;
+  color: #e3f1e6;
+  min-height: 44px;
+  padding: 10px 16px;
+  box-sizing: border-box;
+  font-weight: 550;
+  line-height: 1.4;
+  cursor: pointer;
+}
+body :is(.button, .icon-button, .roadmap-control, .gunsmith-tabs button, .qmap-tools button, .quest-filter-more > summary):hover {
+  background-color: #294533;
+  border-color: #8dbe9f;
+}
+body .icon-button { padding: 8px; min-width: 44px; }
+body .text-button { border-radius: 5px; }
+body :is(.button, .icon-button, .roadmap-control):active { background-color: #34553f; }
+body :is(button, .button):disabled { opacity: .5; cursor: default; }
+body select:not([multiple]):not([size]) {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-inline: 14px 44px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%23bfd8c8' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-position: right 16px center !important;
+  background-repeat: no-repeat !important;
+  background-size: 16px 16px !important;
+  border-radius: 7px;
+  min-height: 44px;
+  box-sizing: border-box;
+  cursor: pointer;
+  line-height: 1.4;
+}
+body select:disabled { opacity: .55; cursor: default; }
+body :is(button, .button, select, input, summary, a):focus-visible {
+  outline: 3px solid #9affbc;
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  body :is(button, .button, select, input, summary) { transition: none; }
+}
+@media (forced-colors: active) {
+  body select:not([multiple]):not([size]) { appearance: auto; background-image: none !important; padding-inline: 10px !important; }
+}
