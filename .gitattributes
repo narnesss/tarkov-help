@@ -9,3 +9,4 @@ public/data/site-render-routes.json linguist-generated=true
 public/data/view-export.json linguist-generated=true
 public/vendor/** linguist-vendored=true
 resources/views/**/*.blade.php linguist-language=PHP
+*.sh text eol=lf
