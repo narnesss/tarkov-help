@@ -1,4 +1,4 @@
-name: Check PHP and Pages export
+name: Check Laravel and Cloudflare export
 on: [push, pull_request]
 permissions:
   contents: read
@@ -12,17 +12,26 @@ jobs:
           php-version: '8.4'
           extensions: pdo_sqlite, mbstring, curl
           coverage: none
+          tools: composer
+      - name: Install locked Laravel dependencies
+        run: composer install --no-interaction --prefer-dist
       - name: PHP syntax
-        run: find src templates config tests/php public -name '*.php' -print0 | xargs -0 -n1 php -l
-      - name: PHP behavior
+        run: find app src config bootstrap routes database tests public -name '*.php' -not -path '*/cache/*' -print0 | xargs -0 -n1 php -l
+      - name: Laravel HTTP, cache and storage tests
+        run: php artisan test
+      - name: Domain regressions
         run: php tests/php/run.php
-      - name: Export templates with PHP
-        run: php bin/console export:static
-      - name: Build and verify Pages
+      - name: Export Blade pages
+        run: php artisan site:export
+      - name: Build and verify Cloudflare export
         run: npm run build && npm test
+      - name: Reject stale Blade export
+        run: node scripts/check-export-freshness.mjs
       - name: Validate Workers deployment configuration
         env:
           WRANGLER_SEND_METRICS: 'false'
         run: npx --yes wrangler@4.151.0 deploy --dry-run
+      - name: Production optimization
+        run: php artisan optimize && php artisan optimize:clear
       - name: Ensure committed output matches source
         run: git diff --exit-code -- public dist

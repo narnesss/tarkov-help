@@ -1,14 +1,17 @@
-# Project workflow
+# Tarkov Wiki: правила проекта
 
-This repository is the working source for the Tarkov site. Keep PHP 8.4
-source and the Cloudflare Pages export together in each change.
+Активный план: `specs/001-laravel-13/plan.md`.
+Перед изменениями сборки/CI/Wrangler и любым деплоем читать `specs/cloudflare-deployment.md`.
 
-- PHP code: `src`, `bootstrap.php`, `config`, `templates`, `bin`, `public/index.php`.
-- Browser code, assets and data: `public`.
-- Workers publishes `dist` using `wrangler.jsonc` with static assets. Optional Pages deployment uses `wrangler.pages.jsonc`.
-- After source changes run `php bin/console export:static`, `npm run build`,
-  `npm test`, `php tests/php/run.php` and `git diff --check`.
-- Commit the refreshed `dist` output together with PHP/template changes.
-- Pages has browser-local profiles; server accounts require PHP hosting.
-- Keep runtime databases, sessions, keys and environment secrets out of Git.
-- Preserve existing user changes and use normal, non-forced pushes.
+- Основа — Laravel 13; PHP production/CI — 8.4, минимальная версия — 8.3.
+- Страницы: resources/views/*.blade.php, конфигурация config/pages.php; HTML — экспорт.
+- Laravel управляет HTTP/DI, Blade, Cache, DB migrations и Artisan.
+- API-доменные сервисы src сохраняют существующие opaque cookie/HMAC CSRF/CAS-контракты.
+- Общий кэш содержит только публичные данные; API и личный прогресс — private, no-store.
+- Cloudflare Workers публикует dist и не запускает PHP. Полный API требует PHP-хостинга.
+- Composer vendor, .env, storage и БД не коммитить; composer.lock коммитить.
+- После изменений: composer install, php artisan site:export, npm run build, npm test,
+  php artisan test, php tests/php/run.php, npx wrangler@4.151.0 deploy --dry-run, git diff --check.
+- Blade/public/dist обновлять вместе; проверять отказ сборки при устаревшем экспорте.
+- Коммиты, документация и новые PHPDoc — по-русски. Обычные push без force.
+- При изменении архитектуры обновлять docs/architecture/class-map.md и database-map.md.

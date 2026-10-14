@@ -1,7 +1,12 @@
+/vendor/
 /var/
 /node_modules/
 /.wrangler/
 /.env
 /.env.*
+!/.env.example
 !/deployment/environment.example
+/database/*.sqlite*
 /tests/php/coverage.json
+/.phpunit.cache/
+/storage/*.key

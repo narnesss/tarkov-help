@@ -1,5 +1,7 @@
 <?php
 declare(strict_types=1);
+
+// Метаданные публичных Blade-страниц.
 return json_decode(<<<'JSON'
 {
   "index": {
@@ -10,7 +12,8 @@ return json_decode(<<<'JSON'
       "site-ui.css",
       "controls.css",
       "home.css"
-    ]
+    ],
+    "body_attributes": "class=\"home-page\" data-page=\"index\""
   },
   "documents": {
     "title": "Документы — Escape from Tarkov Wiki",
@@ -20,7 +23,8 @@ return json_decode(<<<'JSON'
       "readability.css",
       "site-ui.css",
       "controls.css"
-    ]
+    ],
+    "body_attributes": "class=\"\" data-page=\"documents\""
   },
   "raid": {
     "title": "Интерактивные карты — Escape from Tarkov Wiki",
@@ -34,7 +38,8 @@ return json_decode(<<<'JSON'
       "quest-ui.css",
       "site-ui.css",
       "controls.css"
-    ]
+    ],
+    "body_attributes": "class=\"raid-page\" data-page=\"raid\""
   },
   "quests": {
     "title": "Квесты и цепочки — Escape from Tarkov Wiki",
@@ -53,7 +58,8 @@ return json_decode(<<<'JSON'
       "story-quests.css",
       "ticket-quest-map.css",
       "controls.css"
-    ]
+    ],
+    "body_attributes": "class=\"guide-page\" data-page=\"quests\""
   },
   "quest": {
     "title": "Прохождение квеста — Escape from Tarkov Wiki",
@@ -72,7 +78,8 @@ return json_decode(<<<'JSON'
       "story-quests.css",
       "ticket-quest-map.css",
       "controls.css"
-    ]
+    ],
+    "body_attributes": "class=\"guide-page\" data-page=\"quests\""
   },
   "reference": {
     "title": "Справочник — Escape from Tarkov Wiki",
@@ -85,7 +92,8 @@ return json_decode(<<<'JSON'
       "site-ui.css",
       "reference-ui.css",
       "controls.css"
-    ]
+    ],
+    "body_attributes": "class=\"guide-page\" data-page=\"reference\""
   },
   "boss": {
     "title": "Боссы — Escape from Tarkov Wiki",
@@ -98,7 +106,8 @@ return json_decode(<<<'JSON'
       "boss.css",
       "site-ui.css",
       "controls.css"
-    ]
+    ],
+    "body_attributes": "class=\"guide-page\" data-page=\"boss\""
   },
   "quest-map-source": {
     "title": "Карта мест выполнения квеста",
@@ -107,7 +116,19 @@ return json_decode(<<<'JSON'
       "vendor/leaflet.css",
       "quest-map-source.css",
       "controls.css"
-    ]
+    ],
+    "body_attributes": ""
+  },
+  "not-found": {
+    "title": "Страница не найдена — Escape from Tarkov Wiki",
+    "description": "Запрошенная страница не найдена.",
+    "styles": [
+      "style.css",
+      "guide.css",
+      "site-ui.css",
+      "controls.css"
+    ],
+    "body_attributes": "class=\"guide-page\""
   }
 }
 JSON, true, 32, JSON_THROW_ON_ERROR);

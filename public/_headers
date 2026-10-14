@@ -1,7 +1,17 @@
 /*
   X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
+  Cache-Control: public, max-age=0, must-revalidate
 /*.mjs
   Content-Type: text/javascript; charset=utf-8
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 /*.css
   Content-Type: text/css; charset=utf-8
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/assets/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+/data/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=600
+/api/*
+  Cache-Control: private, no-store

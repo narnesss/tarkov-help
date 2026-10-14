@@ -1,3 +1,11 @@
 # Preserve the upstream font license verbatim, including its existing spacing.
 public/assets/fonts/OFL.txt whitespace=-blank-at-eol
 dist/assets/fonts/OFL.txt whitespace=-blank-at-eol
+
+# HTML-экспорт и внешние библиотеки не являются исходным кодом проекта.
+dist/** linguist-generated=true
+public/**/*.html linguist-generated=true
+public/data/site-render-routes.json linguist-generated=true
+public/data/view-export.json linguist-generated=true
+public/vendor/** linguist-vendored=true
+resources/views/**/*.blade.php linguist-language=PHP

@@ -1,9 +1,11 @@
 <?php
 declare(strict_types=1);
-require dirname(__DIR__) . '/bootstrap.php';
-try {
-    EftWiki\Factory::services(dirname(__DIR__))['app']->handle(EftWiki\Http\Request::globals())->send();
-} catch (Throwable $error) {
-    error_log('[EftWiki bootstrap] ' . $error::class . ': ' . $error->getMessage());
-    EftWiki\Http\Response::json(['error' => 'Не удалось открыть хранилище сайта. Сохранённые данные не удалены.'], 503)->send();
+
+use Illuminate\Http\Request;
+
+define('LARAVEL_START', microtime(true));
+if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
+    require $maintenance;
 }
+require __DIR__.'/../vendor/autoload.php';
+(require_once __DIR__.'/../bootstrap/app.php')->handleRequest(Request::capture());

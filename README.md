@@ -1,68 +1,76 @@
-# Escape from Tarkov Wiki
+# Escape from Tarkov Wiki — Laravel 13
 
-PHP 8.4 application and its ready-to-publish Cloudflare Pages export.
+Источник сайта — PHP/Laravel 13 и Blade. Карты, фильтры, галереи и личный прогресс
+в браузере продолжают использовать существующие JavaScript-модули.
 
-## Layout
+## Структура
 
-- `src`, `bootstrap.php`, `config`, `templates`, `bin` — PHP source.
-- `public` — PHP web root, browser modules, maps, images and data.
-- `dist` — static Pages export, without PHP or private runtime data.
-- `tests/php` — session, account, state and request tests.
-- `scripts` — Pages build and validation.
+- app, bootstrap, routes, config — Laravel HTTP, DI, Cache и Artisan.
+- resources/views — Blade/PHP, общий layout и страницы.
+- src — проверенные доменные сервисы аккаунтов, CSRF и сохранения прогресса.
+- database/migrations — совместимая SQLite-схема; composer.lock фиксирует зависимости.
+- public — web root, исходные браузерные модули/ассеты и экспорт оболочек.
+- dist — сгенерированная статическая публикация Cloudflare.
+- specs/cloudflare-deployment.md — обязательные правила публикации для будущих изменений.
 
-The current full-page PHP templates match the interface previously uploaded
-to GitHub. The builder exports these templates and generates physical quest,
-trader, map, boss and item pages from `public/data/page-routes.json`.
+## PHP-хостинг
+
+Laravel 13 поддерживает PHP >= 8.3; production/CI — PHP 8.4 с PDO SQLite, mbstring,
+curl, XML и стандартными расширениями Laravel. Корень веб-сервера — public.
+
+```sh
+composer install
+cp .env.example .env
+php artisan key:generate
+touch database/database.sqlite
+php artisan migrate --force
+php artisan serve
+```
+
+Существующая БД: DB_DATABASE=/absolute/path/var/wiki.sqlite перед migrate.
+Сделайте резервную копию; миграция принимает существующие таблицы и не удаляет записи.
+APP_STORAGE совместим с прежним размещением БД. APP_KEY обязателен; храните его
+и .env вне Git, используйте APP_URL с настоящим HTTPS origin.
+
+Production: APP_DEBUG=false, composer install --no-dev --optimize-autoloader,
+php artisan migrate --force, php artisan optimize. При обновлении сначала
+php artisan optimize:clear, затем optimize. Нужны права записи только в storage
+и bootstrap/cache. Подробности: specs/001-laravel-13/quickstart.md.
+
+## Кэширование
+
+Laravel Cache по умолчанию файловый. SITE_CACHE_TTL=600 задаёт TTL публичного
+каталога и Blade-оболочек. Ключ включает содержимое данных/шаблонов и параметры
+страницы, поэтому новые исходники не используют старый HTML. Redis можно включить
+через CACHE_STORE=redis при наличии соответствующего сервера/драйвера.
+Публичные PHP-страницы используют ETag и условные GET/HEAD; HTTP-кэш перепроверяет
+свежесть. Общий кэш не содержит cookie, пользователя, CSRF или личного прогресса.
+Ответы API — private, no-store. Cloudflare кэширует статические assets; _headers
+задаёт TTL 1 час для CSS/JS, сутки для изображений и 5 минут для общих JSON-данных.
 
 ## Cloudflare Workers
 
-Для проекта с командой публикации `npx wrangler deploy`:
+Workers публикует статический dist; он не запускает PHP или Laravel API.
+На Cloudflare прогресс хранится в браузере; серверные аккаунты и синхронизация
+работают на PHP-хостинге. Настройки: main, корень репозитория,
+Build command: npm run build, Deploy command: npx wrangler deploy.
+wrangler.jsonc использует assets.directory=./dist. Правила и проверка публикации:
+specs/cloudflare-deployment.md. Для отдельного Pages-проекта есть wrangler.pages.jsonc.
 
-- Ветка: `main`.
-- Команда сборки: `npm run build`.
-- Команда публикации: `npx wrangler deploy`.
-- Корневая папка: корень репозитория.
-
-`wrangler.jsonc` указывает на `dist` через `assets.directory`. Workers публикует
-готовые HTML, JavaScript, карты и изображения. Чистые URL обслуживаются без
-завершающего слеша; неизвестные страницы возвращают `404.html` со статусом 404.
-Файлы `_headers` и `_redirects` сохраняют заголовки и старые адреса.
-
-`dist` включён в Git, поэтому публикация использует готовую сборку даже без
-PHP в окружении Cloudflare. PHP-исходники остаются в репозитории; серверный API
-аккаунтов запускается только на PHP-хостинге. На Cloudflare профили сохраняются
-в браузере. Для переноса прогресса используйте экспорт и импорт профиля.
-
-## Cloudflare Pages (альтернативная публикация)
-
-Для отдельного проекта Pages: ветка `main`, Framework: None, команда сборки
-`npm run build`, папка публикации `dist`. Через CLI используйте:
+## Проверки и экспорт
 
 ```sh
-npx wrangler pages deploy dist --config wrangler.pages.jsonc --project-name tarkov-help
-```
-
-Конфигурация Pages хранится отдельно в `wrangler.pages.jsonc`, чтобы обычная
-команда Workers `wrangler deploy` не принимала её за конфигурацию Worker.
-
-## Updating source
-
-```sh
-php bin/console export:static
+php artisan site:export
 npm run build
 npm test
+php artisan test
 php tests/php/run.php
+npx wrangler@4.151.0 deploy --dry-run
+git diff --check
 ```
 
-Commit source and the refreshed `public`/`dist` output together. GitHub Actions
-checks PHP 8.4 behavior and verifies the committed export against the source.
-The Node builder supports the current full-page templates' runtime marker;
-additional PHP expressions must first be exported using the PHP CLI.
-
-## PHP hosting
-
-Requires PHP 8.4 with PDO SQLite, mbstring, curl and JSON. Set the web server's
-document root to `public` and enable the supplied Apache rewrite rules.
-Set `APP_URL` to the origin and keep `APP_STORAGE`/`APP_KEY` outside `public`.
-Run `php bin/console install` to initialize storage.
-Runtime databases, sessions and application keys are ignored by Git.
+Сохраняйте свежий public/dist экспорт вместе с исходниками. Cloudflare без PHP
+использует committed экспорт; Node останавливается, если отпечаток Blade не совпал.
+HTML нельзя править вручную. .gitattributes помечает экспорт linguist-generated,
+поэтому он не искажает статистику исходных языков GitHub. JavaScript остаётся
+исходным кодом интерактивных карт; Laravel не заменяет браузерный JavaScript.
