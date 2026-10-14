@@ -19,7 +19,7 @@ final readonly class ApiController
         $stream = $request->getContent(true);
         $body = is_resource($stream) ? stream_get_contents($stream, 524289) : substr((string) $stream, 0, 524289);
         $result = $this->application->handle(new DomainRequest($request->method(), '/'.$request->path(), $headers,
-            $request->cookies->all(), $body ?: '', $request->query->all(), $request->ip() ?? '127.0.0.1'));
+            $request->cookies->all(), $body ?: '', $request->query->all(), $request->attributes->get('wiki_client_ip') ?? $request->ip() ?? '127.0.0.1'));
         return response($result->body, $result->status, $result->headers)->header('Cache-Control', 'private, no-store');
     }
 }

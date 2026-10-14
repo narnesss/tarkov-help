@@ -15,3 +15,5 @@
   Cache-Control: public, max-age=300, stale-while-revalidate=600
 /api/*
   Cache-Control: private, no-store
+/profile-runtime.mjs
+  Cache-Control: private, no-store

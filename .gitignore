@@ -6,6 +6,8 @@
 /.env.*
 !/.env.example
 !/deployment/environment.example
+!/deployment/alwaysdata/environment.example
+/build/
 /database/*.sqlite*
 /tests/php/coverage.json
 /.phpunit.cache/

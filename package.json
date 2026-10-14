@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-pages.mjs",
-    "test": "node scripts/check-pages.mjs",
+    "test": "node scripts/check-pages.mjs && node --test tests/cloudflare/*.test.mjs",
+    "package:alwaysdata": "node scripts/package-alwaysdata.mjs",
     "test:php": "php tests/php/run.php"
   }
 }

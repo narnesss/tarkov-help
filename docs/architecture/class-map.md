@@ -5,6 +5,13 @@
 - AppServiceProvider: DB/Clock/AccountService/StateRepository/Application DI.
 - ApiController: Laravel Request/Response ↔ доменный API. Application проверяет
   HMAC CSRF, origin, cookie owner, JSON и формирует private/no-store ответы.
+- VerifyApiProxy: проверяет секрет Worker до API и передаёт подтверждённый IP клиента.
+- config/api.php: API_ONLY и обязательная защита PHP origin для alwaysdata.
+- cloudflare/worker.mjs: ASSETS для сайта, same-origin API proxy, динамический
+  profile-runtime.mjs (только boolean, без секретов), private/no-store и JSON 503.
+- bootstrap.mjs: включает серверные профили по runtime-модулю, сохраняет статический роутинг.
+- package-alwaysdata.mjs: минимальный архив API; deployment/alwaysdata: production env,
+  проверка платформы, сохранение APP_KEY/SQLite, миграции и кэш.
 - PageController: публичный PageCatalog → PageViews, ETag/HEAD/304/404, без сессии.
 - PageCatalog: JSON-данные → полный маршрутный план, Laravel Cache по hash JSON.
 - PageViews: Blade + Laravel Cache по hash исходников/runtime/title/params.

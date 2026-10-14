@@ -1,11 +1,12 @@
 import {profileStore} from './profile-store.mjs';
+import {serverProfiles} from './profile-runtime.mjs';
 import {mountProfile} from './profile-ui.mjs';
 import {observeHeader} from './layout.mjs';
 import {initializeSiteRoutes,siteHref} from './site-routes.mjs';
 
 await initializeSiteRoutes();
 
-const runtime = document.querySelector('meta[name="wiki-runtime"]')?.content || 'static';
+const runtime = serverProfiles ? 'php' : document.querySelector('meta[name="wiki-runtime"]')?.content || 'static';
 try { await profileStore.initialize(runtime); }
 catch (error) {
   if (profileStore.meta.serverProfile) { profileStore.profile = profileStore.meta.serverProfile; profileStore.memory.clear(); }

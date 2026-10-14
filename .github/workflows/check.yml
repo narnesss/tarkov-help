@@ -33,5 +33,19 @@ jobs:
         run: npx --yes wrangler@4.151.0 deploy --dry-run
       - name: Production optimization
         run: php artisan optimize && php artisan optimize:clear
+      - name: Package alwaysdata API without assets or private data
+        run: npm run package:alwaysdata
+      - name: API-only deployment routes
+        env:
+          API_ONLY: 'true'
+        run: |
+          php artisan route:list --json | php -r '$routes = json_decode(stream_get_contents(STDIN), true, flags: JSON_THROW_ON_ERROR); foreach ($routes as $route) { if (!in_array($route["uri"], ["up", "api/{path?}"])) { throw new RuntimeException("Unexpected public route: ".$route["uri"]); } }'
+      - name: Repeat production deploy without losing APP_KEY or SQLite
+        run: php scripts/check-alwaysdata-deployment.php
+      - uses: actions/upload-artifact@v4
+        with:
+          name: alwaysdata-api
+          path: build/alwaysdata-api.tar.gz
+          retention-days: 7
       - name: Ensure committed output matches source
         run: git diff --exit-code -- public dist

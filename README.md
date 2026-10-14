@@ -50,12 +50,24 @@ Laravel Cache по умолчанию файловый. SITE_CACHE_TTL=600 за�
 
 ## Cloudflare Workers
 
-Workers публикует статический dist; он не запускает PHP или Laravel API.
-На Cloudflare прогресс хранится в браузере; серверные аккаунты и синхронизация
-работают на PHP-хостинге. Настройки: main, корень репозитория,
+Workers публикует статический dist и проксирует /api/* в Laravel на alwaysdata.
+Основной сайт: https://tarkov-compass.narnesss.workers.dev; PHP origin: https://narnes.alwaysdata.net.
+Серверные аккаунты включаются переменной API_ENABLED=true в панели Cloudflare только
+после настройки общего API_PROXY_TOKEN и готовности origin. Без настройки доступны
+локальные профили. Настройки сборки: main, корень репозитория,
 Build command: npm run build, Deploy command: npx wrangler deploy.
 wrangler.jsonc использует assets.directory=./dist. Правила и проверка публикации:
 specs/cloudflare-deployment.md. Для отдельного Pages-проекта есть wrangler.pages.jsonc.
+
+## alwaysdata: загрузка Laravel API
+
+Полная инструкция с вашими адресами: [specs/alwaysdata-deployment.md](specs/alwaysdata-deployment.md).
+В панели выбрать PHP 8.4, включить SSH, web root /home/narnes/tarkov-api/public.
+`npm run package:alwaysdata` создаёт build/alwaysdata-api.tar.gz без vendor, dist,
+карт и личных данных. После загрузки на сервер скопировать production environment.example
+в .env, задать секрет, выполнить `sh deployment/alwaysdata/deploy.sh`.
+SQLite хранится в /home/narnes/tarkov-data/wiki.sqlite; MySQL в панели не нужен.
+При обновлении .env, APP_KEY и БД сохраняются; существующая БД копируется VACUUM INTO.
 
 ## Проверки и экспорт
 
