@@ -5,7 +5,7 @@ source and the Cloudflare Pages export together in each change.
 
 - PHP code: `src`, `bootstrap.php`, `config`, `templates`, `bin`, `public/index.php`.
 - Browser code, assets and data: `public`.
-- Pages publishes `dist` using the tracked `wrangler.jsonc`.
+- Workers publishes `dist` using `wrangler.jsonc` with static assets. Optional Pages deployment uses `wrangler.pages.jsonc`.
 - After source changes run `php bin/console export:static`, `npm run build`,
   `npm test`, `php tests/php/run.php` and `git diff --check`.
 - Commit the refreshed `dist` output together with PHP/template changes.

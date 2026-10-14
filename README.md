@@ -14,19 +14,36 @@ The current full-page PHP templates match the interface previously uploaded
 to GitHub. The builder exports these templates and generates physical quest,
 trader, map, boss and item pages from `public/data/page-routes.json`.
 
-## Cloudflare Pages
+## Cloudflare Workers
 
-Production branch: `main`. Framework: None. Build command: `npm run build`.
-Output directory: `dist`. `wrangler.jsonc` also declares `dist` as the output.
-No Wrangler installation or token is required on a visitor's computer.
+Для проекта с командой публикации `npx wrangler deploy`:
 
-`dist` is committed so the first deployment can serve the complete site even
-if the current dashboard still uses `exit 0` as its build command. For future
-updates, set the dashboard build command to `npm run build`.
+- Ветка: `main`.
+- Команда сборки: `npm run build`.
+- Команда публикации: `npx wrangler deploy`.
+- Корневая папка: корень репозитория.
 
-Pages uses browser-local profiles. The PHP account/session API runs only on
-a PHP host; it is not part of the static deployment. Export/import a profile
-to move progress between domains or devices.
+`wrangler.jsonc` указывает на `dist` через `assets.directory`. Workers публикует
+готовые HTML, JavaScript, карты и изображения. Чистые URL обслуживаются без
+завершающего слеша; неизвестные страницы возвращают `404.html` со статусом 404.
+Файлы `_headers` и `_redirects` сохраняют заголовки и старые адреса.
+
+`dist` включён в Git, поэтому публикация использует готовую сборку даже без
+PHP в окружении Cloudflare. PHP-исходники остаются в репозитории; серверный API
+аккаунтов запускается только на PHP-хостинге. На Cloudflare профили сохраняются
+в браузере. Для переноса прогресса используйте экспорт и импорт профиля.
+
+## Cloudflare Pages (альтернативная публикация)
+
+Для отдельного проекта Pages: ветка `main`, Framework: None, команда сборки
+`npm run build`, папка публикации `dist`. Через CLI используйте:
+
+```sh
+npx wrangler pages deploy dist --config wrangler.pages.jsonc --project-name tarkov-help
+```
+
+Конфигурация Pages хранится отдельно в `wrangler.pages.jsonc`, чтобы обычная
+команда Workers `wrangler deploy` не принимала её за конфигурацию Worker.
 
 ## Updating source
 

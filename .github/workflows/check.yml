@@ -20,5 +20,9 @@ jobs:
         run: php bin/console export:static
       - name: Build and verify Pages
         run: npm run build && npm test
+      - name: Validate Workers deployment configuration
+        env:
+          WRANGLER_SEND_METRICS: 'false'
+        run: npx --yes wrangler@4.151.0 deploy --dry-run
       - name: Ensure committed output matches source
         run: git diff --exit-code -- public dist
