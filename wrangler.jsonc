@@ -1,9 +1,16 @@
 {
-  "name": "tarkov-help",
+  "name": "tarkov-compass",
+  "main": "cloudflare/worker.mjs",
+  "keep_vars": true,
   "compatibility_date": "2026-10-14",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api", "/api/*", "/profile-runtime.mjs"],
     "html_handling": "drop-trailing-slash",
     "not_found_handling": "404-page"
+  },
+  "vars": {
+    "API_ORIGIN": "https://narnes.alwaysdata.net"
   }
 }
