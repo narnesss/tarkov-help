@@ -83,9 +83,10 @@ try {
     }
     // Очистка не должна проходить через storage/.env симлинки в удаляемом релизе.
     $old = $base.'/tarkov-releases/'.str_repeat('b', 40).'-1-1';
-    mkdir($old); touch($old, 1);
+    mkdir($old);
     symlink($base.'/tarkov-shared/storage', $old.'/storage');
     symlink($base.'/tarkov-shared/.env', $old.'/.env');
+    touch($old, 1);
     $run([PHP_BINARY, $root.'/deployment/alwaysdata/prune-releases.php', $base.'/tarkov-releases', $previous, $previous]);
     if (is_dir($old) || file_get_contents($base.'/tarkov-shared/.env') !== $before ||
         file_get_contents($base.'/tarkov-shared/storage/logs/preserve.txt') !== 'keep-storage') {
