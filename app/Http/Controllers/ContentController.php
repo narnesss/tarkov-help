@@ -10,9 +10,14 @@ final class ContentController
     public function __invoke(string $path)
     {
         abort_unless(preg_match('~^[a-z0-9][a-z0-9/._-]*\.json$~', $path) && !str_contains($path, '..'), 404);
+        if(str_starts_with($path,'wiki/')){return response()->json(app(\App\Services\WikiGraph::class)->read($path))->header('Cache-Control','private, no-store');}
         $dataset = ContentDataset::where('path', $path)->firstOrFail();
         if ($path === 'home.json') { return $this->home($dataset); }
         if (!preg_match('~^guide/quests-(pve|regular)\.json$~', $path, $match)) {
+            $data=$dataset->content();$changed=false;
+            foreach(['pois','items','maps','traders'] as $field){if(is_array($data[$field]??null)){$filtered=array_filter($data[$field],fn($row)=>!is_array($row)||empty($row['cmsArchived']));if(count($filtered)!==count($data[$field])){$data[$field]=array_values($filtered);$changed=true;}}}
+            if(array_is_list($data)){$filtered=array_filter($data,fn($row)=>!is_array($row)||empty($row['cmsArchived']));if(count($filtered)!==count($data)){$data=array_values($filtered);$changed=true;}}
+            if($changed){return response()->json($data)->header('Cache-Control','private, no-store');}
             return response($dataset->json(), 200, ['Content-Type' => 'application/json; charset=utf-8', 'Cache-Control' => 'private, no-store']);
         }
         $data = $dataset->content();
@@ -20,8 +25,11 @@ final class ContentController
         // Не держим одновременно Eloquent-модели, распакованные цели и весь JSON каталога.
         // Ответ собирается до освобождения GuardDatabaseRestore, без отложенных DB-запросов.
         foreach (Quest::where('mode', $match[1])->where('published', true)->orderBy('id')->cursor() as $quest) {
-            $raw = $quest->json(); $tasks[] = $raw;
-            $trader = json_decode($raw, true, 128, JSON_THROW_ON_ERROR)['trader'] ?? null;
+            $raw = $quest->json();$task=json_decode($raw,true,128,JSON_THROW_ON_ERROR);
+            $goals=array_values(array_filter($task['objectives']??[],fn($goal)=>empty($goal['cmsArchived'])));
+            if(count($goals)!==count($task['objectives']??[])){$task['objectives']=$goals;$raw=json_encode($task,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);}
+            $tasks[] = $raw;
+            $trader = $task['trader'] ?? null;
             if (is_array($trader) && isset($trader['id']) && !isset($seen[$trader['id']])) {
                 $traders->put($trader['id'], [...($traders->get($trader['id']) ?? []), ...$trader]);
                 $seen[$trader['id']] = true;

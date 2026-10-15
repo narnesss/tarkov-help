@@ -43,6 +43,8 @@ final class QuestEditScreen extends Screen
         }
         $sections = [];
         if ($this->record->exists) {
+            $domain=\Illuminate\Support\Facades\DB::table('wiki_quests')->where('legacy_quest_id',$this->record->id)->value('id');
+            if($domain){$sections[]=Link::make('Предметные связи: цели, точки, ключи и награды')->route('platform.wiki.edit',['type'=>'quests','record'=>$domain]);}
             foreach (['/objectives' => 'Подробные условия целей', '/finishRewards' => 'Награды', '/questContent' => 'Прохождение и материалы', '' => 'Остальные поля задания'] as $section => $title) {
                 $sections[] = Link::make($title)->route('platform.quests.fields', ['quest' => $this->record->id, 'section' => $section]);
             }

@@ -1,5 +1,4 @@
--- Проект типизированных проекций; проверять в отдельной SQLite, не запускать на production.
--- В этом релизе применена только Laravel migration content_references.
+-- Предметная схема SQLite; применяется только одноимённой Laravel migration.
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE wiki_versions (
@@ -41,9 +40,10 @@ CREATE TABLE wiki_keys (
 );
 CREATE TABLE wiki_point_categories (code TEXT PRIMARY KEY, name TEXT NOT NULL);
 CREATE TABLE wiki_map_points (
-    id INTEGER PRIMARY KEY, external_id TEXT NOT NULL UNIQUE, location_id INTEGER NOT NULL REFERENCES wiki_locations(id),
+    id INTEGER PRIMARY KEY, external_id TEXT NOT NULL, mode TEXT NOT NULL DEFAULT 'all' CHECK (mode IN ('all','pve','regular')),
+    location_id INTEGER NOT NULL REFERENCES wiki_locations(id),
     title TEXT NOT NULL, description TEXT NOT NULL DEFAULT '', search_text TEXT NOT NULL,
-    active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0,1)), UNIQUE (id,location_id)
+    active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0,1)), UNIQUE (id,location_id), UNIQUE (external_id,mode)
 );
 CREATE TABLE wiki_point_category_links (
     point_id INTEGER NOT NULL REFERENCES wiki_map_points(id) ON DELETE CASCADE,

@@ -38,6 +38,7 @@ final class DatasetEditScreen extends ContentFieldsScreen
                 throw ValidationException::withMessages(['revision' => 'Данные уже изменились. Обновите страницу и повторите правку.']);
             }
             $this->record->refresh(); app(\App\Services\ReferenceIndexer::class)->dataset($this->record);
+            app(\App\Services\WikiSync::class)->dataset($this->record);
         });
     }
 }

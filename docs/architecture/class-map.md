@@ -1,5 +1,22 @@
 # Карта классов Tarkov Wiki
 
+- WikiSchema / WikiStore: белый список предметных таблиц, типизированные поля/FK,
+  имена для Unicode-поиска, стабильный upsert и происхождение исходных файлов.
+- Models/Wiki: Eloquent Item, Key, Location, Map, MapLayer, MapPoint, Document,
+  Quest, Objective, ObjectiveGroup, PrerequisiteGroup, Trader, RewardSet, Version;
+  Record поддерживает также таблицы-связки с составным ключом, Options — поиск Orchid.
+- WikiHomeScreen / WikiListScreen / WikiEditScreen: каталоги, поиск, создание,
+  связанные списки от выбранного владельца; все FK выбираются по названию.
+- WikiEditor: валидация FK, координат, этажей, режимов, дерева и DAG квестов;
+  CAS revision, архив вместо удаления, транзакция SQLite вместе с файловыми ссылками.
+- WikiImporter / ImportWikiDomain: wiki:import-domain, backfill 5634 предметов,
+  1226 квестов и 19980 точек исходного каталога; повтор по SHA, прежние ID и файлы
+  сохраняются, неизвестные ссылки регистрируются текстом.
+- WikiSync: защищает dual-write от рекурсии; прежние формы синхронизируют предметные
+  строки, WikiPublisher публикует изменённые разделы в совместимые файлы.
+- WikiGraph: SQL-каталоги и детали точек/квестов на /api/content/data/wiki/*.json,
+  фильтры локации/режима/категории, деревья условий и награды; private/no-store.
+
 - Orchid PlatformProvider / routes/platform.php: админка PHP `/admin`, права `wiki.content`.
 - User / UserPresenter / AdminSession: отдельные редакторы `admin_users`, DB-сессии
   `admin_sessions`; стандартные Laravel cookie/CSRF, private/no-store для экранов и ошибок.

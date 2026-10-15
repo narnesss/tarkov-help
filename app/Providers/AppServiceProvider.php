@@ -16,6 +16,8 @@ final class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->singleton(\App\Services\WikiSchema::class);
+        $this->app->singleton(\App\Services\WikiSync::class);
         $this->app->singleton(Clock::class, SystemClock::class);
         $this->app->singleton(AccountService::class, fn ($app) => new AccountService(DB::connection()->getPdo(), $app->make(Clock::class)));
         $this->app->singleton(StateRepository::class, fn ($app) => new StateRepository(DB::connection()->getPdo(), $app->make(Clock::class)));

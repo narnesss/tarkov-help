@@ -13,7 +13,10 @@ final class Quest extends Model
     protected $guarded = ['id'];
     protected $casts = ['published' => 'boolean'];
     protected static function booted(): void
-    { static::saved(fn (self $quest) => app(\App\Services\ReferenceIndexer::class)->quest($quest)); }
+    { static::saved(function (self $quest): void {
+        app(\App\Services\ReferenceIndexer::class)->quest($quest);
+        app(\App\Services\WikiSync::class)->quest($quest);
+    }); }
 
     public function getPayloadAttribute(?string $value): array
     { return $value === null ? [] : json_decode($this->contentJson($value), true, 128, JSON_THROW_ON_ERROR); }

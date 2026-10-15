@@ -26,6 +26,7 @@ final class ContentFields
         $entries = [];
         $section = $this->section($document, $path);
         foreach ($section as $key => $value) {
+            if(is_string($key)&&str_starts_with($key,'cms')){continue;}
             $child = $path.'/'.str_replace(['~', '/'], ['~0', '~1'], (string) $key);
             $label = is_int($key) ? 'Запись '.($key + 1) : $this->label((string) $key);
             if (preg_match('/^[a-f0-9]{24,64}$/', (string) $key)) { $label = 'Запись'; }

@@ -73,12 +73,22 @@ final class QuestEditor
             throw ValidationException::withMessages(['revision' => 'Данные уже изменились. Обновите страницу и повторите правку.']);
         }
         $original = $quest->getRawOriginal('payload');
+        if(isset($attributes['payload'])){
+            $previous=$quest->payload;$payload=$attributes['payload'];
+            $payload['objectives']??=[];foreach($payload['objectives'] as &$goal){$before=collect($previous['objectives']??[])->firstWhere('id',$goal['id']);
+                if(!$before||($before['cmsConditionGroups']??null)!==($goal['cmsConditionGroups']??null)){continue;}
+                foreach(['items','item','questItem','usingWeapon','usingWeaponMods','wearing','notWearing'] as $field){if(($before[$field]??null)!==($goal[$field]??null)){unset($goal['cmsConditionGroups']);break;}}
+            }unset($goal);
+            if(($previous['taskRequirements']??null)!==($payload['taskRequirements']??null)&&($previous['cmsPrerequisites']??null)===($payload['cmsPrerequisites']??null)){unset($payload['cmsPrerequisites']);}
+            $attributes['payload']=$payload;
+        }
         $quest->fill($attributes); $changes = $quest->getDirty(); $changes['updated_at'] = now();
         DB::transaction(function () use ($quest, $original, $changes): void {
             if (Quest::whereKey($quest->id)->where('payload', $original)->update($changes) !== 1) {
                 throw ValidationException::withMessages(['revision' => 'Данные уже изменились. Обновите страницу и повторите правку.']);
             }
             $quest->refresh(); app(ReferenceIndexer::class)->quest($quest);
+            app(WikiSync::class)->quest($quest);
         });
     }
 }
