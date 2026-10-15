@@ -15,6 +15,11 @@
 - release.sh: GitHub Actions SSH-публикация проверенного API-артефакта, общие .env/storage,
   переключение релизов после подготовки и HTTP-проверка с возвратом предыдущего кода.
 - prune-releases.php: ограниченная очистка старого кода без следования по симлинкам.
+- BackupSqlite / SqliteBackups: Artisan wiki:backup, VACUUM INTO/quick_check, приватные
+  daily/deploy снимки, общий lock и лимиты числа/объёма. prepare.php использует этот же сервис.
+- deployment/alwaysdata/backup.sh: ежедневное задание alwaysdata через стабильный tarkov-api.
+- backup-alwaysdata.yml: ежедневный запуск 03:30 Europe/Moscow через SSH, общая с deploy
+  concurrency; БД остаётся на alwaysdata, ручной Run workflow только для main.
 - PageController: публичный PageCatalog → PageViews, ETag/HEAD/304/404, без сессии.
 - PageCatalog: JSON-данные → полный маршрутный план, Laravel Cache по hash JSON.
 - PageViews: Blade + Laravel Cache по hash исходников/runtime/title/params.

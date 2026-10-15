@@ -92,7 +92,12 @@ try {
         file_get_contents($base.'/tarkov-shared/storage/logs/preserve.txt') !== 'keep-storage') {
         throw new RuntimeException('Очистка старого кода затронула общие данные.');
     }
-    echo "PASS: автоматические релизы, сохранение .env/storage/SQLite, HTTP-откат и безопасная очистка кода.\n";
+    // Команда ежедневного бэкапа доступна и без dev-пакетов в опубликованном API.
+    $run([PHP_BINARY, $base.'/tarkov-api/artisan', 'wiki:backup', '--no-interaction']);
+    $run([PHP_BINARY, $base.'/tarkov-api/artisan', 'wiki:backup', '--no-interaction']);
+    if (count(glob($database.'.backup-daily-*')) !== 1) { throw new RuntimeException('Повтор daily создал лишнюю копию.'); }
+    if (count(glob($database.'.backup-????????-??????-??????')) !== 3) { throw new RuntimeException('Не ограничены копии перед деплоем.'); }
+    echo "PASS: автоматические релизы, сохранение .env/storage/SQLite, HTTP-откат, очистка кода и daily/deploy retention.\n";
 } finally {
     proc_terminate($server); proc_close($server);
 }

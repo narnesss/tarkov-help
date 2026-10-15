@@ -33,12 +33,11 @@ if ($releaseBase !== false) {
 if (!is_dir(dirname($database)) && !mkdir(dirname($database), 0700, true)) { throw new RuntimeException('Не удалось создать каталог SQLite.'); }
 if (!is_file($database) && !touch($database)) { throw new RuntimeException('Не удалось создать SQLite.'); }
 chmod($database, 0600);
-// VACUUM INTO согласованно копирует активную WAL-БД; обычный cp может потерять записи.
+// Перед миграциями используем тот же lock/retention, что и ежедневное задание.
 $pdo = new PDO('sqlite:'.$database);
 $tables = (int) $pdo->query("SELECT count(*) FROM sqlite_master WHERE type='table'")->fetchColumn();
 if ($tables > 0) {
-    $destination = $database.'.backup-'.gmdate('Ymd-His').'-'.bin2hex(random_bytes(3));
-    $pdo->exec('VACUUM INTO '.$pdo->quote($destination));
-    chmod($destination, 0600);
-    echo "Создана резервная копия SQLite: $destination\n";
+    $status = $app->make(\Illuminate\Contracts\Console\Kernel::class)->call('wiki:backup', ['--kind' => 'deploy']);
+    echo $app->make(\Illuminate\Contracts\Console\Kernel::class)->output();
+    if ($status !== 0) { throw new RuntimeException('Бэкап перед миграциями завершился ошибкой.'); }
 }

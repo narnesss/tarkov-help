@@ -8,6 +8,9 @@ alwaysdata: /home/narnes/tarkov-data/wiki.sqlite вне /home/narnes/tarkov-api/
 Actions main публикует код через tarkov-releases; .env/storage находятся в tarkov-shared.
 Автоматический деплой требует существующую SQLite вне всех каталогов кода;
 ошибка HTTP-проверки возвращает предыдущий код, не откатывая БД и записи пользователей.
+wiki:backup / config/backup.php: до 7 daily и 3 deploy снимков, суммарно до 100 МиБ.
+Общий файловый lock, VACUUM INTO + quick_check, 0600; старые копии удаляются только после
+исправного нового снимка, ссылки/живая SQLite/WAL/SHM/секреты не затрагиваются.
 users: string id PK, username nullable UNIQUE, password_hash nullable, created_at.
 sessions: token_hash PK (SHA-256), user_id FK users.id, expires_at INDEX.
 user_state: PK(user_id,state_key), user_id FK users.id, JSON value, version, updated_at.

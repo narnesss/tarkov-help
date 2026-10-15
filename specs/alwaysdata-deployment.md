@@ -69,8 +69,8 @@ sh deployment/alwaysdata/deploy.sh
 создаст закрытый каталог БД, сделает согласованную VACUUM INTO копию существующей БД,
 выполнит migrate --force и optimize. Никогда не использовать migrate:fresh, reset или
 touch с перезаписью БД. DB_DATABASE находится вне каталога релиза; замена кода не удаляет прогресс.
-Резервные копии wiki.sqlite.backup-* хранятся рядом с БД; скачивайте важные копии и следите
-за квотой диска. Обычный cp работающей WAL-БД не заменяет согласованную копию.
+Резервные копии wiki.sqlite.backup-* хранятся рядом с БД. Единая политика ниже ограничивает
+копии перед деплоем и ежедневные снимки. Обычный cp работающей WAL-БД не заменяет VACUUM INTO.
 
 Проверки origin после настройки web root:
 
@@ -130,7 +130,8 @@ Host `ssh-narnes.alwaysdata.net` и user `narnes` заданы в github-deploy.
 быть обратно совместимыми; запрещены migrate:fresh/reset и удаление пользовательских данных.
 
 Сохраняются три последних каталога кода и предыдущий активный релиз; очистка не следует
-по ссылкам .env/storage. Первоначальный каталог и backup SQLite не удаляются автоматически.
+по ссылкам .env/storage. Первоначальный каталог не удаляется автоматически; backup SQLite
+очищаются общей политикой хранения после создания исправного снимка.
 Следите за квотой alwaysdata и скачивайте важные копии. После подтверждения первого
 автоматического деплоя старый before-releases можно удалить вручную, убедившись, что БД
 и секреты находятся в постоянных каталогах. Не удаляйте shared или tarkov-data.
@@ -140,7 +141,70 @@ Host `ssh-narnes.alwaysdata.net` и user `narnes` заданы в github-deploy.
 Повторный запуск failed jobs получает новый attempt и может повторить деплой. Если нет
 секретов или SSH недоступен, job явно падает; старый API продолжает работать.
 
-## 4. Подключение Cloudflare
+## 4. Ежедневный бэкап SQLite и ограничение копий
+
+Команда `php artisan wiki:backup --kind=daily` создаёт согласованный VACUUM INTO снимок
+даже при активном WAL, проверяет `PRAGMA quick_check` и только затем публикует файл.
+Файлы приватные (0600), находятся рядом с SQLite вне web root и не содержат .env.
+Обычный shell cp работающей БД использовать нельзя.
+
+Расписание настроено в `.github/workflows/backup-alwaysdata.yml`: каждый день в 03:30
+Europe/Moscow (00:30 UTC) GitHub подключается по SSH и запускает бэкап на alwaysdata.
+Используются существующие Secrets ALWAYSDATA_SSH_KEY/ALWAYSDATA_KNOWN_HOSTS; БД не
+скачивается на runner и не публикуется как GitHub artifact. Новые ключи не нужны.
+Общая concurrency group с деплоем исключает их одновременный запуск, файловый lock
+защищает также ручные запуски. Работает только main, не pull_request/произвольные ветки.
+
+После первого деплоя запустите Actions → Daily SQLite backup on alwaysdata → Run workflow
+→ main. В логе видны путь снимка, число/объём копий и удалённое количество. Повторный
+Run workflow за UTC-день проверит существующий снимок и не создаст лишний файл.
+Расписание не зависит от компьютера пользователя. GitHub может задержать запуск;
+у публичного репозитория оно отключается после 60 дней без активности — проверяйте
+Actions и при необходимости Enable workflow. Сам бэкап занимает секунды и не собирает сайт.
+
+Если позднее переходите на серверное расписание alwaysdata, сначала отключите GitHub
+Daily SQLite backup workflow, затем Advanced → Scheduled tasks → Command:
+
+- команда: `sh /home/narnes/tarkov-api/deployment/alwaysdata/backup.sh`;
+- SSH user: narnes; Environment PHP: 8.4;
+- ежедневно, сверяйте timezone в панели: UTC-расписание GitHub нельзя переносить как местное время сервера;
+- не добавляйте второе задание с той же командой; ошибки доступны в Logs задания.
+
+Путь через tarkov-api переживает смену релиза. Скрипт сам переходит в корень активного
+приложения; shell PATH/CLI PHP берутся из Environment аккаунта. Копирование и очистка
+в любом варианте исполняются на alwaysdata. Проверить вручную по SSH:
+
+```sh
+sh /home/narnes/tarkov-api/deployment/alwaysdata/backup.sh
+du -sh /home/narnes/tarkov-data
+```
+
+Настройки в config/backup.php имеют безопасные defaults, поэтому существующий .env не
+нужно менять. Для переопределения добавьте в shared .env и обновите Laravel config cache:
+
+- `SQLITE_BACKUP_DAILY_KEEP=7` — до семи последних ежедневных копий, одна на UTC-день;
+- `SQLITE_BACKUP_DEPLOY_KEEP=3` — до трёх снимков перед миграциями;
+- `SQLITE_BACKUP_MAX_MIB=100` — общий предел объёма обеих групп (100 МиБ).
+
+При достижении бюджета остаётся меньше копий: приоритет у свежих, последний проверенный
+снимок сохраняется всегда. Повтор ежедневной команды за UTC-день использует уже исправную
+копию и не создаёт дубликат. Deploy-снимки создаются каждый раз перед migrate: prepare.php
+использует тот же сервис и файловый lock, что daily. Параллельный бэкап ждёт lock до минуты.
+
+Очистка касается только обычных файлов с точным именем
+`wiki.sqlite.backup-[daily-]YYYYMMDD-HHMMSS-xxxxxx` (xxxxxx — 6 hex). Старые deploy-копии
+прежнего формата тоже входят в лимит. Ссылки, .env, живая БД, WAL/SHM, другой DB basename
+и произвольные пользовательские файлы не удаляются. Наши .partial старше суток удаляются
+только после исправного снимка. При ошибке создания/проверки старые копии сохраняются;
+превышение бюджета самой БД блокирует новый бэкап и деплой с понятной ошибкой.
+
+100 МиБ ограничивают копии этого SQLite, а не всю квоту аккаунта; на время VACUUM требуется
+место ещё на один снимок. Важные копии скачивайте перед автоматической очисткой: эти
+снимки находятся на том же сервере, поэтому для восстановления после потери аккаунта
+нужна отдельная скачанная копия. Для восстановления остановите запись и выберите снимок,
+прошедший quick_check; не заменяйте открытую WAL-БД простым cp.
+
+## 5. Подключение Cloudflare
 
 После push дождитесь публикации Worker из main. Сборка npm run build,
 Deploy command npx wrangler deploy. В Cloudflare → Workers & Pages → tarkov-compass →
@@ -164,7 +228,7 @@ Origin fetch использует cache: 'no-store'; cf.cacheTtl=0 недопу�
 run_worker_first включает только API и runtime-модуль, поэтому карты и страницы
 продолжают обслуживаться статикой. Pages-конфигурация остаётся автономной статикой.
 
-## 5. Проверка после включения
+## 6. Проверка после включения
 
 Обновите браузер без кэша (Ctrl+F5: bootstrap.mjs может оставаться в кэше час).
 Откройте основной сайт: в Network /api/session и /api/state должны вернуть JSON;
@@ -190,7 +254,10 @@ Free alwaysdata предназначен для некоммерческого �
 - https://help.alwaysdata.com/en/docs/web-hosting/sites/add-a-site/
 - https://help.alwaysdata.com/en/docs/web-hosting/languages/php/configuration/
 - https://help.alwaysdata.com/en/docs/web-hosting/remote-access/ssh/
+- https://help.alwaysdata.com/en/docs/web-hosting/tasks/
+- https://www.sqlite.org/lang_vacuum.html
 - https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets
+- https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule
 - https://help.alwaysdata.com/en/docs/admin-billing/profile/suspension/
 - https://developers.cloudflare.com/workers/static-assets/routing/worker-script/
 - https://developers.cloudflare.com/workers/wrangler/configuration/
