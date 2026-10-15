@@ -13,7 +13,7 @@ final class ImportWikiDomain extends Command
     protected $description='Перенести предметные сущности и связи в SQLite без перезаписи файлов';
     public function handle(WikiImporter $importer): int
     {
-        $importer->rebuild();
+        $importer->rebuild(fn(string $message)=>$this->line($message));
         $this->info('Предметная схема: '.DB::table('wiki_items')->count().' предметов, '.DB::table('wiki_quests')->count().' квестов, '.DB::table('wiki_map_points')->count().' точек.');
         $this->info('Неизвестных исходных ссылок: '.DB::table('wiki_import_issues')->count().'. Исходные значения сохранены в файлах.');
         return self::SUCCESS;

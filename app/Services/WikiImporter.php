@@ -10,17 +10,21 @@ final class WikiImporter
 {
     private array $ids=[];
     private ?int $versionId=null;
+    private ?\Closure $progress=null;
+    private int $pointsImported=0;
     public function __construct(private WikiStore $store,private WikiSchema $schema,private WikiSync $sync) {}
-    public function rebuild(): void
+    public function rebuild(?callable $progress=null): void
     {
+        $this->progress=$progress===null?null:\Closure::fromCallable($progress);$this->pointsImported=0;
         $this->sync->run(fn()=>DB::transaction(function (): void {
             $force=!DB::table('wiki_projection_states')->where(['owner_type'=>'full','content_ref'=>'domain-v2'])->exists();
             $datasets=ContentDataset::orderByRaw("CASE WHEN path='maps.json' THEN 0 WHEN path='raid/maps.json' THEN 1 WHEN path LIKE 'raid/%' THEN 3 ELSE 2 END")->orderBy('path')->get();
-            foreach($datasets as $dataset){if(!$this->isPoints($dataset->path)){$this->dataset($dataset,$force);}}
+            foreach($datasets as $dataset){if(!$this->isPoints($dataset->path)){($this->progress)?->__invoke('Справочник: '.$dataset->path);$this->dataset($dataset,$force);}}
+            ($this->progress)?->__invoke('Определения квестов');
             foreach(Quest::orderBy('id')->cursor() as $quest){$this->questDefinition($quest);}
             $this->ids=[];
-            foreach(Quest::orderBy('id')->cursor() as $quest){$this->quest($quest,$force);}
-            foreach($datasets as $dataset){if($this->isPoints($dataset->path)){$this->dataset($dataset,$force);}}
+            $count=0;foreach(Quest::orderBy('id')->cursor() as $quest){$this->quest($quest,$force);if(++$count%100===0){($this->progress)?->__invoke('Квестов обработано: '.$count);}}
+            foreach($datasets as $dataset){if($this->isPoints($dataset->path)){($this->progress)?->__invoke('Точки: '.$dataset->path);$this->dataset($dataset,$force);}}
             DB::table('wiki_projection_states')->updateOrInsert(['owner_type'=>'full','owner_id'=>0],['content_ref'=>'domain-v2']);
         }));
     }
@@ -267,6 +271,7 @@ final class WikiImporter
             $this->store->put('extractions',['point_id'=>$id],['type'=>$type,'requirements'=>$point['description']??'']);
         }
         $this->store->put('map_points',['id'=>$id],[]);
+        if(++$this->pointsImported%1000===0){($this->progress)?->__invoke('Точек обработано: '.$this->pointsImported);}
     }
     public function objectiveName(string $type): string
     { return ['visit'=>'Посетить место','findItem'=>'Найти предмет','giveItem'=>'Передать предмет','findQuestItem'=>'Найти квестовый предмет','giveQuestItem'=>'Передать квестовый предмет','shoot'=>'Уничтожить цель','extract'=>'Выйти с локации','mark'=>'Установить маяк','plantItem'=>'Разместить предмет','buildWeapon'=>'Собрать оружие','skill'=>'Развить навык','custom'=>'Другая цель'][$type]??$type; }
