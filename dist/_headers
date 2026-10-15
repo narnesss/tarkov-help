@@ -17,3 +17,9 @@
   Cache-Control: private, no-store
 /profile-runtime.mjs
   Cache-Control: private, no-store
+/account
+  Cache-Control: private, no-store
+  Referrer-Policy: no-referrer
+/account.html
+  Cache-Control: private, no-store
+  Referrer-Policy: no-referrer

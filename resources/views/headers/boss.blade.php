@@ -9,6 +9,6 @@
   </nav>
   <div class="header-right">
     <a class="button quiet" id="boss-guide" href="reference.html?tab=bosses">Справочник</a>
-    <button class="button profile-trigger" id="profile-button" aria-haspopup="dialog">Мой профиль</button>
+    @include('components.player-navigation')
   </div>
 </header>

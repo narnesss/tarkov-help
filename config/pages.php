@@ -4,6 +4,12 @@ declare(strict_types=1);
 // Метаданные публичных Blade-страниц.
 return json_decode(<<<'JSON'
 {
+  "account": {
+    "title": "Личный кабинет — Escape from Tarkov Wiki",
+    "description": "Твой прогресс квестов, убежища и достижений в PVE и PVP. Вход и регистрация.",
+    "styles": ["style.css", "site-ui.css", "controls.css", "account.css"],
+    "body_attributes": "class=\"account-page\" data-page=\"account\""
+  },
   "index": {
     "title": "Escape from Tarkov Wiki — карты, квесты и справочник",
     "description": "Подготовьтесь к следующему рейду: интерактивные карты, квесты торговцев, основной сюжет, предметы и личный прогресс в PVE и PVP.",

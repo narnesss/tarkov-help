@@ -54,6 +54,7 @@ final readonly class PageCatalog
         if (str_contains($path, '..') || str_contains($path, "\0") || str_contains($path, '\\')) { return null; }
         $plain = preg_replace('/\.(?:html|php)$/', '', rtrim($path, '/')) ?: '/';
         $aliases = ['/' => 'index', '/index' => 'index', '/documents' => 'documents', '/raid' => 'raid', '/quest' => 'quest', '/quests' => 'quests', '/reference' => 'reference', '/boss' => 'boss', '/quest-map-source' => 'quest-map-source'];
+        $aliases['/account'] = 'account';
         if (isset($aliases[$plain])) {
             $template = $aliases[$plain];
             return ['template' => $template, 'title' => config('pages.'.$template.'.title'), 'params' => []];

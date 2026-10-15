@@ -1,5 +1,14 @@
 # Карта классов Tarkov Wiki
 
+- PlayerAuthController / PlayerOAuth: Google/Discord через защищённые JSON POST, одноразовый
+  state с привязкой к opaque-сессии, identity provider/subject и явное подключение к игроку.
+  Токены провайдеров не сохраняются; AccountService::issueFor выдаёт прежний cookie-контракт.
+- PlayerOAuthSettings / oauth-transfer.sh / player-oauth.yml: ограниченная установка
+  OAuth-реквизитов через RSA-шифротекст; атомарная правка только четырёх переменных .env.
+- account.blade.php / account.mjs / account-model.mjs: отдельный кабинет, формы входа/регистрации,
+  сводка PVE/PVP по актуальным ID каталога; чтение личных данных через ProfileStore.
+  player-navigation — общие заметные ссылки входа/регистрации во всех шапках.
+
 - MysqlMigration / MigrateMysql: пробный и финальный перенос всех таблиц SQLite в MariaDB,
   сохранение PK/rowid/sequence, сверка SHA-256 каждой строки, FK и файлов контента;
   закрытие старого источника, сохранение .env/APP_KEY и атомарное переключение config cache.

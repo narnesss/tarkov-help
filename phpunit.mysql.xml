@@ -3,6 +3,7 @@
   <testsuites><testsuite name="MariaDB">
     <file>tests/Feature/WikiDomainTest.php</file>
     <file>tests/Feature/ApiTest.php</file>
+    <file>tests/Feature/PlayerOAuthTest.php</file>
     <file>tests/Feature/ApiProxyTest.php</file>
     <file>tests/Feature/ContentManagementTest.php</file>
     <file>tests/Feature/ContentReferencesTest.php</file>

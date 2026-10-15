@@ -12,7 +12,7 @@ final class SiteTest extends TestCase
     public function test_laravel_resolves_public_routes_without_exported_route_files(): void
     {
         $this->assertStringStartsWith('13.', $this->app->version());
-        foreach (['/', '/documents', '/raid/interchange', '/quests/the-ticket', '/quests/trader/prapor',
+        foreach (['/', '/account', '/documents', '/raid/interchange', '/quests/the-ticket', '/quests/trader/prapor',
                   '/quests/story', '/reference/items/5447a9cd4bdc2dbd208b4567', '/boss/reshala', '/quest-map/customs'] as $url) {
             $response = $this->get($url);
             $response->assertOk()->assertSee('name="wiki-runtime" content="php"', false);

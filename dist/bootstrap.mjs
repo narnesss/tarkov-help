@@ -27,7 +27,7 @@ const entry = document.body.dataset.page;
 if (entry === 'index' && ['map','point'].some(key=>new URLSearchParams(location.search).has(key))) {
   location.replace(siteHref('documents.html'+location.search+location.hash));
 } else {
-const modules = {index: './home.mjs', documents: './app.mjs', raid: './raid.mjs', quests: './quests.mjs', reference: './reference.mjs', boss: './boss.mjs'};
+const modules = {index: './home.mjs', documents: './app.mjs', raid: './raid.mjs', quests: './quests.mjs', reference: './reference.mjs', boss: './boss.mjs', account: './account.mjs'};
 if (modules[entry]) await import(modules[entry]);
 
 }

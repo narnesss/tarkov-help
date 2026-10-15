@@ -12,6 +12,6 @@
     <span class="data-status"><i></i><span id="dataset-count">Загрузка данных</span></span>
     <button class="button quiet progress-open" id="progress-button"><svg><use href="#i-progress"/></svg><span>Прогресс</span><b id="total-found">0</b></button>
     <button class="icon-button" id="about-button" aria-label="О карте и источниках" title="О карте и источниках"><svg><use href="#i-info"/></svg></button>
-    <button class="button profile-trigger" id="profile-button" aria-haspopup="dialog">Мой профиль</button>
+    @include('components.player-navigation')
   </div>
 </header>

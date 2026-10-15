@@ -17,6 +17,7 @@
 .profile-trigger{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
 .profile-trigger::before{content:'\0025C9';color:#adcb97;margin-right:7px}
 .profile-trigger[data-unsynced]::before{color:#ddc58b}
+.topbar .player-login,.topbar .player-register{font-size:13px;white-space:nowrap}.topbar .player-register{padding-inline:12px}
 .profile-dialog{max-width:580px;line-height:1.6;color:#e3e9df}
 .profile-field{display:grid;gap:6px;margin:15px 0;color:#bac7b8;font-size:15px}
 .profile-form{display:flex;gap:8px;margin-top:15px}.profile-form input{flex:1;min-width:0}

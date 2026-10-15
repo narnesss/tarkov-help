@@ -1,5 +1,13 @@
 # Карта БД Tarkov Wiki
 
+Миграция `2026_10_15_000006_add_player_oauth.php` добавляет только обычные колонки:
+
+- `player_identities`: PK(provider, subject), unique(user_id, provider), FK user_id → users.id,
+  display_name, created_at. Прежние аккаунты/ID/пароли и user_state не изменяются.
+- `player_oauth_states`: token_hash PK, session_hash, provider, link_user_id, expires_at.
+  Одноразовая привязка OAuth к текущей opaque-сессии; срок 10 минут, истёкшие записи
+  очищаются при новом входе. Code, access token, client secret и JSON здесь не хранятся.
+
 Production: MariaDB 11.8 на alwaysdata, `mysql-narnes.alwaysdata.net`, база `narnes_tarkov`.
 Подключение Laravel `mysql`, InnoDB/utf8mb4_nopad_bin, TLS с проверкой CA.
 Локальные и автономные тесты сохраняют SQLite. Доменный DDL MariaDB:

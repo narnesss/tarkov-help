@@ -10,6 +10,6 @@
   <div class="header-right">
     <label class="header-game-mode"><span class="sr-only">Игровой режим</span><select id="header-quest-mode" aria-label="Игровой режим"><option value="pve">PVE</option><option value="regular">PVP</option></select></label>
     <button id="guide-sources" class="button quiet">Источники</button>
-    <button class="button profile-trigger" id="profile-button" aria-haspopup="dialog">Мой профиль</button>
+    @include('components.player-navigation')
   </div>
 </header>

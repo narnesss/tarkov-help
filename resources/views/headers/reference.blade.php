@@ -8,6 +8,6 @@
     <a href="documents.html">Документы</a>
   </nav>
   <div class="header-right">
-    <button class="button profile-trigger" id="profile-button" aria-haspopup="dialog">Мой профиль</button>
+    @include('components.player-navigation')
   </div>
 </header>

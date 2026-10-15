@@ -1,0 +1,35 @@
+name: Настройка Google и Discord на alwaysdata
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Этап настройки
+        type: choice
+        required: true
+        options: [prepare, apply, cleanup]
+      ciphertext:
+        description: Только RSA-OAEP-SHA256 base64 реквизитов, без открытых секретов
+        type: string
+        required: false
+permissions:
+  contents: read
+concurrency:
+  group: alwaysdata-production
+  cancel-in-progress: false
+jobs:
+  configure:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: alwaysdata-production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Настроить выбранный этап OAuth на origin
+        env:
+          ALWAYSDATA_SSH_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
+          ALWAYSDATA_KNOWN_HOSTS: ${{ secrets.ALWAYSDATA_KNOWN_HOSTS }}
+          OAUTH_ACTION: ${{ inputs.action }}
+          OAUTH_CIPHERTEXT: ${{ inputs.ciphertext }}
+        run: bash deployment/alwaysdata/github-deploy.sh oauth-transfer

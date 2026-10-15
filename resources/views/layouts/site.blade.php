@@ -6,6 +6,10 @@
   <meta name="theme-color" content="#101412">
   <meta name="wiki-runtime" content="{{ $runtime }}">
   <meta name="description" content="{{ $meta['description'] }}">
+@if ($page === 'account')
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+@endif
   <base href="/">
   <title>{{ $title }}</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">

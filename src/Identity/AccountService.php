@@ -38,6 +38,15 @@ final readonly class AccountService
         return new Session($token, $id, $name, $expiry);
     }
 
+    /** Выдаёт прежнюю opaque-сессию игроку после проверки внешнего способа входа. */
+    public function issueFor(string $owner): Session
+    {
+        $q=$this->db->prepare('SELECT username FROM users WHERE id=?'); $q->execute([$owner]);
+        $row=$q->fetch(\PDO::FETCH_ASSOC);
+        if(!$row || $row['username']===null){throw new HttpError(401,'Аккаунт не найден.');}
+        return $this->issue($owner,$row['username']);
+    }
+
     public function rateLimit(string $ip, string $action): void
     {
         $window = $action === 'register' ? 86400 : 900;
@@ -73,7 +82,7 @@ final readonly class AccountService
         $q->execute([mb_strtolower(trim($name))]); $user = $q->fetch(\PDO::FETCH_ASSOC);
         // A fixed valid hash keeps missing-user work comparable to a wrong password.
         $hash = $user['password_hash'] ?? '$2y$12$0SVHOdslyUrSFAVdnTZH2.Ovmh0qaOBHP50laGRQZtsNpPJqpPBf.';
-        if (strlen($password) > 72 || !password_verify($password, $hash) || !$user) { throw new HttpError(401, 'Неверный логин или пароль.'); }
+        if (strlen($password) > 72 || !password_verify($password, $hash) || !is_string($user['password_hash'] ?? null)) { throw new HttpError(401, 'Неверный логин или пароль.'); }
         if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
             $this->db->prepare('UPDATE users SET password_hash=? WHERE id=?')->execute([password_hash($password, PASSWORD_DEFAULT), $user['id']]);
         }

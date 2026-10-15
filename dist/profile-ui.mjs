@@ -14,7 +14,8 @@ export function mountProfile() {
   const reload = () => location.reload();
   async function run(fn) { status.textContent = ''; try { await fn(); } catch (error) { notify(error.message); } }
   function render() {
-    content.replaceChildren(); trigger.textContent = profileStore.profile.name; trigger.setAttribute('aria-label', 'Личный профиль: ' + profileStore.profile.name);
+    content.replaceChildren(); trigger.textContent = profileStore.profile.authenticated ? 'Личный кабинет' : 'Мой прогресс'; trigger.setAttribute('aria-label', 'Личный кабинет: ' + profileStore.profile.name);
+    for (const link of document.querySelectorAll('[data-player-guest]')) link.hidden = !!profileStore.profile.authenticated;
     content.append(node('p', profileStore.server ? profileStore.profile.authenticated ? 'Отметки, свёрнутые цели, заметки и фильтры сохраняются в вашем аккаунте и синхронизируются между устройствами.' : 'Отметки, свёрнутые цели, заметки и фильтры принадлежат только этому профилю. Войдите в аккаунт для синхронизации между устройствами.' : 'Отметки, свёрнутые цели, заметки и фильтры сохраняются отдельно для каждого профиля в этом браузере. На другом устройстве можно загрузить файл профиля.'));
     if (!profileStore.server) {
       const label = node('label', 'Активный профиль', 'profile-field'), select = node('select');
@@ -39,5 +40,5 @@ export function mountProfile() {
     content.append(actions);
     if (profileStore.server) content.append(button('Синхронизировать сейчас', () => run(async () => {const saved=await profileStore.flush();if(saved){delete trigger.dataset.unsynced;trigger.removeAttribute('title');}notify(saved ? 'Изменения сохранены на сервере.' : 'Есть несинхронизированные изменения.');})));
   }
-  trigger.onclick = () => { render(); dialog.showModal(); }; render();
+  globalThis.addEventListener('wiki:open-profile', () => { render(); if(!dialog.open)dialog.showModal(); }); render();
 }

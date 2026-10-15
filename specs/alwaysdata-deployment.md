@@ -4,6 +4,8 @@
 
 ## Адреса и границы
 
+Личный кабинет `/account`, Google/Discord и настройки OAuth описаны в [player-account.md](player-account.md).
+
 - Публичный сайт: https://tarkov-compass.narnesss.workers.dev.
 - PHP origin: https://narnes.alwaysdata.net; карточка https://admin.alwaysdata.com/site/1086865/.
 - Worker `tarkov-compass` обслуживает dist через ASSETS и пересылает только /api и /api/*.

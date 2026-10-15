@@ -10,6 +10,6 @@
   </nav>
   <div class="header-right">
     <span class="data-status" id="raid-total">13 локаций</span><button class="button quiet" id="raid-about">Источники</button>
-    <button class="button profile-trigger" id="profile-button" aria-haspopup="dialog">Мой профиль</button>
+    @include('components.player-navigation')
   </div>
 </header>

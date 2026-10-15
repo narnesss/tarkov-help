@@ -115,7 +115,7 @@ export class ProfileStore {
     try {
       const response = await this.request(path, {credentials: 'same-origin', signal: controller.signal, ...options, headers: {'Content-Type': 'application/json', 'X-CSRF-Token': this.csrf, ...options.headers}});
       const data = await response.json();
-      if (!response.ok) { const error = new Error(data.error || 'Сервер недоступен.'); error.status = response.status; error.data = data; throw error; }
+      if (!response.ok) { const error = new Error(data.error || data.message || 'Сервер недоступен.'); error.status = response.status; error.data = data; throw error; }
       return data;
     } finally { clearTimeout(timeout); }
   }
