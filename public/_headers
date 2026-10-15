@@ -2,7 +2,6 @@
   X-Content-Type-Options: nosniff
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
-  Cache-Control: public, max-age=0, must-revalidate
 /*.mjs
   Content-Type: text/javascript; charset=utf-8
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
