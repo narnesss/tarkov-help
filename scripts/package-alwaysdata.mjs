@@ -16,8 +16,10 @@ for (const name of ['app', 'config', 'routes', 'src', 'resources/views', 'databa
   'bootstrap/app.php', 'bootstrap/providers.php', 'public/index.php', 'public/.htaccess',
   'artisan', 'composer.json', 'composer.lock', 'deployment/alwaysdata']) copy(name);
 // Архив собирают и на Windows; Linux sh не принимает CRLF.
-const shell = path.join(output, 'deployment/alwaysdata/deploy.sh');
-fs.writeFileSync(shell, fs.readFileSync(shell, 'utf8').replaceAll('\r\n', '\n'));
+for (const name of fs.readdirSync(path.join(output, 'deployment/alwaysdata')).filter(name => name.endsWith('.sh'))) {
+  const shell = path.join(output, 'deployment/alwaysdata', name);
+  fs.writeFileSync(shell, fs.readFileSync(shell, 'utf8').replaceAll('\r\n', '\n'));
+}
 for (const name of ['bootstrap/cache', 'storage/app/private', 'storage/framework/cache/data',
   'storage/framework/cache/locks', 'storage/framework/sessions', 'storage/framework/views', 'storage/logs']) {
   fs.mkdirSync(path.join(output, name), {recursive: true});

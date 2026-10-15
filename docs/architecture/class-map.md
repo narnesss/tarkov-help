@@ -12,6 +12,9 @@
 - bootstrap.mjs: включает серверные профили по runtime-модулю, сохраняет статический роутинг.
 - package-alwaysdata.mjs: минимальный архив API; deployment/alwaysdata: production env,
   проверка платформы, сохранение APP_KEY/SQLite, миграции и кэш.
+- release.sh: GitHub Actions SSH-публикация проверенного API-артефакта, общие .env/storage,
+  переключение релизов после подготовки и HTTP-проверка с возвратом предыдущего кода.
+- prune-releases.php: ограниченная очистка старого кода без следования по симлинкам.
 - PageController: публичный PageCatalog → PageViews, ETag/HEAD/304/404, без сессии.
 - PageCatalog: JSON-данные → полный маршрутный план, Laravel Cache по hash JSON.
 - PageViews: Blade + Laravel Cache по hash исходников/runtime/title/params.

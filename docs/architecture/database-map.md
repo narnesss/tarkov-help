@@ -5,6 +5,9 @@ Laravel connection: config/database.php, SQLite DB_DATABASE либо APP_STORAGE
 alwaysdata: /home/narnes/tarkov-data/wiki.sqlite вне /home/narnes/tarkov-api/public
 и каталога релиза; SQLite >= 3.35, WAL/busy_timeout. deploy создаёт VACUUM INTO backup
 существующей БД перед migrate; APP_KEY и файл БД сохраняются при повторной загрузке.
+Actions main публикует код через tarkov-releases; .env/storage находятся в tarkov-shared.
+Автоматический деплой требует существующую SQLite вне всех каталогов кода;
+ошибка HTTP-проверки возвращает предыдущий код, не откатывая БД и записи пользователей.
 users: string id PK, username nullable UNIQUE, password_hash nullable, created_at.
 sessions: token_hash PK (SHA-256), user_id FK users.id, expires_at INDEX.
 user_state: PK(user_id,state_key), user_id FK users.id, JSON value, version, updated_at.

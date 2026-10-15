@@ -19,6 +19,17 @@ $database = (string) config('database.connections.sqlite.database');
 if (!str_starts_with($database, '/') || str_starts_with($database, realpath(__DIR__.'/../..').'/')) {
     throw new RuntimeException('DB_DATABASE должен указывать на постоянный абсолютный путь вне каталога релиза.');
 }
+$releaseBase = getenv('ALWAYSDATA_RELEASE_BASE');
+if ($releaseBase !== false) {
+    $parent = realpath(dirname($database));
+    if ($parent === false) { throw new RuntimeException('Для обновления каталог существующей SQLite должен быть доступен.'); }
+    $resolved = $parent.'/'.basename($database);
+    foreach (['tarkov-api', 'tarkov-releases', 'tarkov-api-before-releases'] as $directory) {
+        $code = realpath($releaseBase.'/'.$directory) ?: $releaseBase.'/'.$directory;
+        if (str_starts_with($resolved, $code.'/')) { throw new RuntimeException('SQLite должна быть вне всех каталогов кода, включая первоначальный API.'); }
+    }
+    if (!is_file($database)) { throw new RuntimeException('Автоматическое обновление не создаёт отсутствующую production-БД. Проверьте DB_DATABASE.'); }
+}
 if (!is_dir(dirname($database)) && !mkdir(dirname($database), 0700, true)) { throw new RuntimeException('Не удалось создать каталог SQLite.'); }
 if (!is_file($database) && !touch($database)) { throw new RuntimeException('Не удалось создать SQLite.'); }
 chmod($database, 0600);

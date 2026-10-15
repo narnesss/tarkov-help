@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# Релиз из проверенного CI-архива; .env, storage и SQLite не заменяются.
+set -Eeuo pipefail
+umask 077
+release_id=${1:?Нужен SHA-run-attempt}
+base=${2:-$HOME}
+health_url=${3:-https://narnes.alwaysdata.net/up}
+[[ $release_id =~ ^[a-f0-9]{40}-[0-9]+-[0-9]+$ ]] || { echo 'Некорректный ID релиза' >&2; exit 1; }
+[[ $base = /* && -d $base ]] || { echo 'Нужен существующий абсолютный каталог' >&2; exit 1; }
+base=$(cd "$base" && pwd -P)
+current=$base/tarkov-api
+shared=$base/tarkov-shared
+releases=$base/tarkov-releases
+archive=$base/tarkov-incoming/$release_id.tar.gz
+release=$releases/$release_id
+exec 9>"$base/tarkov-deploy.lock"
+flock -w 600 9
+test -f "$archive"
+test -f "$current/.env" || { echo 'Сначала настройте существующий API и .env' >&2; exit 1; }
+test ! -e "$release" || { echo 'Этот ID уже использован; запустите новый attempt' >&2; exit 1; }
+
+# Даже ошибочно упакованный .env или симлинк не должен заменить приватные файлы.
+listing=$(tar -tzf "$archive")
+if printf '%s\n' "$listing" | grep -Eq '(^/|(^|/)\.\.(/|$)|(^|/)\.env($|\.)|^(\./)?vendor(/|$))'; then
+  echo 'Архив содержит запрещённые пути' >&2; exit 1
+fi
+if tar -tvzf "$archive" | awk 'substr($0,1,1)!="-" && substr($0,1,1)!="d" {bad=1} END {exit !bad}'; then
+  echo 'Архив содержит ссылки или специальные файлы' >&2; exit 1
+fi
+
+mkdir -p "$shared" "$releases"
+# Первый запуск переносит данные в общий каталог копированием, сохраняя исходный API.
+if test ! -f "$shared/.env"; then
+  cp "$current/.env" "$shared/.env.tmp"
+  chmod 600 "$shared/.env.tmp"
+  mv "$shared/.env.tmp" "$shared/.env"
+fi
+if test ! -d "$shared/storage"; then
+  initial_storage=$(mktemp -d "$shared/storage.init.XXXXXX")
+  if test -d "$current/storage"; then cp -a "$current/storage/." "$initial_storage/"; fi
+  mv "$initial_storage" "$shared/storage"
+fi
+mkdir "$release"
+tar -xzf "$archive" --no-same-owner --no-same-permissions -C "$release"
+test -f "$release/public/index.php"
+test -f "$release/deployment/alwaysdata/deploy.sh"
+test ! -e "$release/.env"
+# В пакете storage содержит только пустые каталоги; никаких rm для общих данных.
+if test -n "$(find "$release/storage" -type f -print -quit)"; then
+  echo 'В архиве найдены приватные storage-файлы' >&2; exit 1
+fi
+mv "$release/storage" "$release/storage.empty"
+ln -s "$shared/storage" "$release/storage"
+ln -s "$shared/.env" "$release/.env"
+ALWAYSDATA_RELEASE_BASE="$base" sh "$release/deployment/alwaysdata/deploy.sh"
+printf '%s\n' "$release_id" > "$release/REVISION"
+
+previous=$(readlink -f "$current")
+legacy=$base/tarkov-api-before-releases
+switched=false
+restore() {
+  status=$?
+  trap - EXIT
+  if (( status != 0 )) && $switched; then
+    ln -s "$previous" "$base/tarkov-api.rollback.$release_id"
+    mv -Tf "$base/tarkov-api.rollback.$release_id" "$current"
+    echo 'Проверка не прошла: возвращён предыдущий код. SQLite не откатывается.' >&2
+  fi
+  exit "$status"
+}
+trap restore EXIT
+next=$base/tarkov-api.next.$release_id
+ln -s "$release" "$next"
+if test ! -L "$current"; then
+  test ! -e "$legacy" || { echo 'Каталог сохранённого первоначального API уже существует' >&2; exit 1; }
+  mv "$current" "$legacy"
+  previous=$legacy
+  # При ошибке первого переключения восстанавливаем каталог немедленно.
+  if ! mv -T "$next" "$current"; then mv "$legacy" "$current"; exit 1; fi
+else
+  mv -Tf "$next" "$current"
+fi
+switched=true
+curl --fail --silent --show-error --retry 3 --retry-delay 2 --max-time 15 \
+  "$health_url?release=$release_id" > /dev/null
+echo "Опубликован API: $release_id"
+# Очистка кода не влияет на общие данные и согласованные копии SQLite.
+rm -- "$archive"
+php "$release/deployment/alwaysdata/prune-releases.php" "$releases" "$release" "$previous" || \
+  echo 'Релиз работает, но не удалось очистить старые каталоги кода' >&2

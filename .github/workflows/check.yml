@@ -49,3 +49,28 @@ jobs:
           retention-days: 7
       - name: Ensure committed output matches source
         run: git diff --exit-code -- public dist
+  deploy-alwaysdata:
+    name: Deploy Laravel API to alwaysdata
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      group: alwaysdata-production
+      cancel-in-progress: false
+    environment:
+      name: alwaysdata-production
+      url: https://narnes.alwaysdata.net/up
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: alwaysdata-api
+          path: build
+      - name: Upload and activate the verified API release
+        env:
+          ALWAYSDATA_SSH_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
+          ALWAYSDATA_KNOWN_HOSTS: ${{ secrets.ALWAYSDATA_KNOWN_HOSTS }}
+        run: bash deployment/alwaysdata/github-deploy.sh
