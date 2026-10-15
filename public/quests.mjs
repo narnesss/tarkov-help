@@ -189,6 +189,7 @@ function renderRequirements(root,t){
   root.append(s);
 }
 function renderObjectives(root,t){
+  if(t.description&&!t.story){const description=section('Описание');for(const paragraph of t.description.split(/\n\s*\n/))description.append(el('p',paragraph));root.append(description);}
   const briefing=questBriefing(t);if(briefing)root.append(briefing);
   if(t.story){root.classList.add('story-reading-main');renderStory(root,t);}
   const overview=el('details','','quest-overview-disclosure');overview.append(el('summary','Обзор, условия получения и варианты прохождения'));const preparation=el('div','','quest-preparation');overview.append(preparation);root.append(overview);const detailRoot=root;root=preparation;
@@ -291,6 +292,7 @@ function renderRewardGroup(root,rewards,title,experience,taskId){
  if(!s.querySelector('.quest-reward-type'))s.append(el('p','Отдельные награды не указаны.'));root.append(s);
 }
 function renderRewards(root,t){
+ if(t.cmsRewards){renderRewardGroup(root,t.finishRewards,'За выполнение',t.experience,t.id);return;}
  if(t.questContent?.rewards?.policy==='completion'){
   const panel=el('div','','quest-source-rewards');renderRewardLines(panel,t.questContent.rewards.lines,{icons:true});
   if(!t.questContent.rewards.lines.length)panel.append(el('p','Награды не указаны в источнике.'));
@@ -325,8 +327,8 @@ function renderRewards(root,t){
  root.append(el('p','Бонусы убежища, издания и временных событий могут изменить итоговую награду.','guide-footer-note'));
 }
 function setData(bundle){
- bundle=enrichQuests(bundle,extras);
-  if(!Array.isArray(bundle.tasks)||!bundle.tasks.length||!bundle.tasks.every(t=>t.id&&typeof t.name==='string'&&Array.isArray(t.objectives)))throw new Error('API вернул неполный список заданий');
+ if(!bundle.cms)bundle=enrichQuests(bundle,extras);
+  if(!Array.isArray(bundle.tasks)||(!bundle.cms&&!bundle.tasks.length)||!bundle.tasks.every(t=>t.id&&typeof t.name==='string'&&Array.isArray(t.objectives)))throw new Error('API вернул неполный список заданий');
   data=bundle;tasks=bundle.tasks;choices=questChoiceIndex(tasks,extras.choices,mode);byId=new Map(tasks.map(t=>[t.id,t]));traders=new Map(list(bundle.traders).map(t=>[t.id,t]));maps=new Map(list(bundle.maps).map(m=>[m.id,m]));progress=sanitizeQuestProgress({...readStorage(progressKey()),mode},tasks);
   if(route.kind==='catalog'&&!['hub','all','story','archive'].includes(route.section)&&!traders.has(route.section))route.section='all';
   $('quest-mode').value=mode;$('header-quest-mode').value=mode;$('player-level').value=progress.level;$('player-faction').value=progress.faction;
@@ -334,9 +336,10 @@ function setData(bundle){
   $('quest-data-date').textContent=`Данные: ${new Date(bundle.meta.fetchedAt).toLocaleString('ru-RU')}. ${sectionTasks(tasks,'all').length} квестов · ${mode==='pve'?'PVE':'PVP'}.`;if(bundle.wikiCoverage){$('quest-data-date').textContent+=` Wiki: ${bundle.wikiCoverage.exactMatches} из ${bundle.wikiCoverage.attempted} страниц.`;}
   restoreView();renderTraders();renderRoute();
 }
-async function loadMode(){questMap?.destroy();questMap=null;const token=++request;for(const n of [...$('quest-layout').querySelectorAll('input,select,button'),...$('quest-filters-dialog').querySelectorAll('input,select,button')])n.disabled=true;$('quest-detail').replaceChildren(empty('Загружаем задания…'));selected=null;filterTrader='all';const [bundle,more]=await Promise.all([cached('quests-'+mode).then(x=>x||json('data/guide/quests-'+mode+'.json')),questExtras()]);extras=more;if(token!==request)return;setData(bundle);for(const n of [...$('quest-layout').querySelectorAll('input,select,button'),...$('quest-filters-dialog').querySelectorAll('input,select,button')])n.disabled=false;}
+async function loadMode(){questMap?.destroy();questMap=null;const token=++request;for(const n of [...$('quest-layout').querySelectorAll('input,select,button'),...$('quest-filters-dialog').querySelectorAll('input,select,button')])n.disabled=true;$('quest-detail').replaceChildren(empty('Загружаем задания…'));selected=null;filterTrader='all';const [bundle,more]=await Promise.all([json('data/guide/quests-'+mode+'.json').catch(async error=>{const offline=await cached('quests-'+mode);if(offline)return offline;throw error;}),questExtras()]);extras=more;if(token!==request)return;setData(bundle);for(const n of [...$('quest-layout').querySelectorAll('input,select,button'),...$('quest-filters-dialog').querySelectorAll('input,select,button')])n.disabled=false;}
 async function refresh(){const target=mode,token=request,baseline=data;const b=$('quest-refresh');b.disabled=true;b.textContent='Обновление…';const abort=new AbortController();const timeout=setTimeout(()=>abort.abort(),25000);
-  try{const [fresh,rawTraders]=await Promise.all([apiDataset('tasks',target,abort.signal),apiDataset('traders',target,abort.signal)]);const bundle={...baseline,tasks:list(fresh.tasks),questItems:fresh.questItems,achievements:fresh.achievements,traders:list(rawTraders.traders||rawTraders),meta:{...baseline.meta,fetchedAt:new Date().toISOString(),source:'https://json.tarkov.dev/'+target+'/tasks'}};if(!bundle.tasks.length)throw new Error('Empty');await cached('quests-'+target,bundle);if(token===request)setData(bundle);toast('Квесты обновлены из API');}catch{toast('API сейчас недоступен. Сохранённые задания и прогресс продолжают работать.');}finally{clearTimeout(timeout);b.disabled=false;b.textContent='Обновить из API ↻';}}
+  if(data?.cms){try{const bundle=await json('data/guide/quests-'+target+'.json',abort.signal);if(!bundle.cms)throw new Error('CMS unavailable');if(token===request)setData(bundle);toast('Квесты обновлены');}catch{toast('Не удалось обновить квесты. Повторите позже.');}finally{clearTimeout(timeout);b.disabled=false;b.textContent='Обновить квесты ↻';}return;}
+  try{const [fresh,rawTraders]=await Promise.all([apiDataset('tasks',target,abort.signal),apiDataset('traders',target,abort.signal)]);const bundle={...baseline,tasks:list(fresh.tasks),questItems:fresh.questItems,achievements:fresh.achievements,traders:list(rawTraders.traders||rawTraders),meta:{...baseline.meta,fetchedAt:new Date().toISOString(),source:'https://json.tarkov.dev/'+target+'/tasks'}};if(!bundle.tasks.length)throw new Error('Empty');await cached('quests-'+target,bundle);if(token===request)setData(bundle);toast('Квесты обновлены из API');}catch{toast('API сейчас недоступен. Сохранённые задания и прогресс продолжают работать.');}finally{clearTimeout(timeout);b.disabled=false;b.textContent='Обновить квесты ↻';}}
 function wire(){
   $('quest-mode').onchange=()=>{feedback.clearUndo();mode=$('quest-mode').value;writeStorage('kord-atlas-game-mode',mode);const url=new URL(location.href);url.searchParams.set('mode',mode);history.replaceState(null,'',canonicalURL(url));updateParams();return loadMode().catch(fail);};
   $('header-quest-mode').onchange=()=>{$('quest-mode').value=$('header-quest-mode').value;return $('quest-mode').onchange();};

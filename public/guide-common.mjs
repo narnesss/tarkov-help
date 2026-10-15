@@ -1,6 +1,7 @@
 import {readPersonal,writePersonal} from './profile-store.mjs';
 import {ruText,localizeDisplay} from './ru-data.mjs';
 import {publicLinkURL,PUBLIC_HELP,PUBLIC_WIKI} from './public-links.mjs';
+import {contentResponse} from './content-client.mjs';
 export const $=id=>document.getElementById(id);
 export const el=(tag,text='',className='')=>{const n=document.createElement(tag);n.textContent=ruText(text);n.className=className;return n;};
 export const num=value=>Number(value||0).toLocaleString('ru-RU',{maximumFractionDigits:2});
@@ -10,6 +11,7 @@ export function external(label,url){const href=publicLinkURL(url);if(!href)retur
 export function image(url,alt='',className=''){const i=el('img','',className);i.src=safeURL(url);i.alt=alt;i.loading='lazy';i.onerror=()=>{i.hidden=true;};return i;}
 let compressionManifest;
 export async function json(url,signal){
+  const content=await contentResponse(url,signal);if(content)return content.json();
   let target=url;
   if(url.startsWith('data/')){compressionManifest ||= fetch('data/compressed.json').then(r=>r.ok?r.json():{}).catch(()=>({}));target=(await compressionManifest)[url]||url;}
   const r=await fetch(target,{signal});if(!r.ok)throw new Error(`Не удалось загрузить данные (${r.status})`);
@@ -46,6 +48,7 @@ export function translateApi(raw,dictionary){
 export async function apiDataset(kind,mode='pve',signal){const base=`https://json.tarkov.dev/${mode==='pve'?'pve':'regular'}/`;const [raw,locale]=await Promise.all([json(base+kind,signal),json(base+kind+'_ru',signal).catch(()=>({data:{}}))]);if(!raw?.data||raw.errors||(raw.translations?.length&&!Object.keys(locale.data||{}).length))throw new Error('API вернул неполный ответ');return localizeDisplay(translateApi(raw,locale.data||{}));}
 function openCache(){return new Promise((resolve,reject)=>{if(!globalThis.indexedDB)return reject(new Error('Cache unavailable'));const r=indexedDB.open('kord-atlas-api',1);r.onupgradeneeded=()=>r.result.createObjectStore('data');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
 export async function cached(key,value){let db;try{db=await openCache();return await new Promise((resolve,reject)=>{const tx=db.transaction('data',value===undefined?'readonly':'readwrite');const req=value===undefined?tx.objectStore('data').get(key):tx.objectStore('data').put(value,key);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}catch{return undefined;}finally{db?.close();}}
+export async function freshDataset(key,url,signal){try{return await json(url,signal);}catch(error){const offline=await cached(key);if(offline)return offline;throw error;}}
 export function section(title){const s=el('section','','guide-section');s.append(el('h3',title));return s;}
 export function action(label,callback,className='button'){const b=el('button',label,className);b.type='button';b.onclick=callback;return b;}
 export function empty(message){return el('p',message,'guide-empty');}

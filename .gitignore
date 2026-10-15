@@ -1,4 +1,5 @@
 /vendor/
+/public/vendor/orchid/
 /var/
 /node_modules/
 /.wrangler/

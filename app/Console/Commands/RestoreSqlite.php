@@ -38,6 +38,10 @@ final class RestoreSqlite extends Command
             }
             // Старый снимок не должен вновь разрешить ранее отозванные cookie-сессии.
             DB::table('sessions')->delete();
+            if (\Illuminate\Support\Facades\Schema::hasTable('admin_sessions')) {
+                DB::table('admin_sessions')->delete();
+                DB::table('admin_users')->update(['remember_token' => null]);
+            }
             DB::disconnect();
         });
         $this->info('Восстановлена копия: '.$result['source']);

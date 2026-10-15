@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {root} from './build-pages.mjs';
+import {prepareContentSeed} from './prepare-content-seed.mjs';
 
 // В API-пакет попадают только явно разрешённые исходники, без карт, dist, БД и .env.
 const output = path.resolve(root, 'build/alwaysdata-api');
@@ -15,6 +16,7 @@ const copy = name => {
 for (const name of ['app', 'config', 'routes', 'src', 'resources/views', 'database/migrations',
   'bootstrap/app.php', 'bootstrap/providers.php', 'public/index.php', 'public/.htaccess',
   'artisan', 'composer.json', 'composer.lock', 'deployment/alwaysdata']) copy(name);
+fs.cpSync(prepareContentSeed(), path.join(output, 'database/content-seed'), {recursive: true});
 // Архив собирают и на Windows; Linux sh не принимает CRLF.
 for (const name of fs.readdirSync(path.join(output, 'deployment/alwaysdata')).filter(name => name.endsWith('.sh'))) {
   const shell = path.join(output, 'deployment/alwaysdata', name);

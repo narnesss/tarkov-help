@@ -12,6 +12,7 @@
 - Workers не исполняет Laravel/PHP: он обслуживает готовый статический экспорт.
   Laravel API запускается на alwaysdata PHP 8.4 с корнем `public`; детали обязательны
   в specs/alwaysdata-deployment.md. /api/* и /profile-runtime.mjs идут через Worker;
+  `/quests/*` проверяет отсутствующие в экспорте квесты/торговцев и выдаёт общую оболочку;
   остальные маршруты обслуживаются ASSETS. Не включать run_worker_first для всех ассетов.
 - API_ORIGIN=https://narnes.alwaysdata.net; API_PROXY_TOKEN — Secret, не Git.
   API_ENABLED=true задаётся в панели после готовности origin; по умолчанию локальные профили.

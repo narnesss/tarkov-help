@@ -174,8 +174,11 @@ test('Retired price endpoints never fetch or overwrite the last snapshot',functi
  eq($calls,0);eq(file_get_contents($directory.'/pve.json'),$snapshot);eq(glob($directory.'/*.lock'),[]);
 });
 test('Factory boot is repeatable without exposing secret material in templates',function(){
- $path=temporary();putenv('APP_STORAGE='.$path);putenv('APP_URL=https://test.example');
- $a=EftWiki\Factory::services(dirname(__DIR__,2));$secret=file_get_contents($path.'/app.key');$b=EftWiki\Factory::services(dirname(__DIR__,2));eq(file_get_contents($path.'/app.key'),$secret);ok(strlen($secret)>=32);ok(!str_contains($a['app']->handle(new Request('GET','/'))->body,$secret));putenv('APP_STORAGE');putenv('APP_URL');
+ $original=[];foreach(['APP_STORAGE','APP_URL','APP_KEY']as $name)$original[$name]=getenv($name);
+ $path=temporary();putenv('APP_STORAGE='.$path);putenv('APP_URL=https://test.example');putenv('APP_KEY=');
+ try{
+  $a=EftWiki\Factory::services(dirname(__DIR__,2));$secret=file_get_contents($path.'/app.key');$b=EftWiki\Factory::services(dirname(__DIR__,2));eq(file_get_contents($path.'/app.key'),$secret);ok(strlen($secret)>=32);ok(!str_contains($a['app']->handle(new Request('GET','/'))->body,$secret));
+ }finally{foreach($original as $name=>$value)putenv($value===false?$name:$name.'='.$value);}
 });
 
 $failed=0;$start=microtime(true);

@@ -1,5 +1,21 @@
 # Карта БД Tarkov Wiki
 
+Миграция `2026_10_15_000002_create_content_management.php` добавляет:
+
+- `admin_users`: integer id, name, unique email, password, permissions JSON,
+  email_verified_at, remember_token, timestamps; изолирована от `users` игроков.
+- `roles` / `role_users`: Orchid permissions, FK исключительно к `admin_users`/`roles`.
+- `admin_sessions`: штатная структура Laravel database sessions; cookie только `/admin`.
+- `content_datasets`: unique path, gzip/base64 payload, timestamps. Только публичный контент.
+- `quests`: integer id, quest_id, mode (pve/regular), name, trader_id, published,
+  полный JSON payload и timestamps; UNIQUE(quest_id,mode), индекс(mode,published).
+
+ID квестов/целей импортируются без замены; создание редакторской схемы не меняет
+аккаунты/сессии/прогресс игроков. Импорт firstOrCreate сохраняет правки и черновики.
+Снятые с публикации задания остаются в БД, публичный API их не выдаёт.
+Rollback запрещён, резервные копии охватывают контент вместе с аккаунтами.
+Restore очищает также admin_sessions и remember_token редакторов.
+
 Владелец схемы: database/migrations/2026_10_15_000001_preserve_wiki_storage.php.
 Laravel connection: config/database.php, SQLite DB_DATABASE либо APP_STORAGE/wiki.sqlite.
 alwaysdata: /home/narnes/tarkov-data/wiki.sqlite вне /home/narnes/tarkov-api/public

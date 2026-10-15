@@ -28,6 +28,7 @@ export function build(){
  };
  function copy(dir){for(const item of fs.readdirSync(dir,{withFileTypes:true})){
   if(item.name.startsWith('.')||item.name.endsWith('.php'))continue;
+  if(dir===path.join(publicDir,'vendor')&&item.name==='orchid')continue;
   const source=path.join(dir,item.name),target=path.join(dist,path.relative(publicDir,source));
   if(item.isDirectory())copy(source);else write(target,fs.readFileSync(source));
  }}

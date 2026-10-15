@@ -7,6 +7,9 @@
 - Публичный сайт: https://tarkov-compass.narnesss.workers.dev.
 - PHP origin: https://narnes.alwaysdata.net; карточка https://admin.alwaysdata.com/site/1086865/.
 - Worker `tarkov-compass` обслуживает dist через ASSETS и пересылает только /api и /api/*.
+- Orchid доступен на PHP origin `/admin` с отдельным входом редакторов. Динамические данные
+  выдаются в `/api/content/*`; новые URL квестов получают оболочку через Worker.
+  Заполнение и первый вход: [docs/orchid-content.md](../docs/orchid-content.md).
 - Laravel 13 исполняется на alwaysdata PHP 8.4; SQLite >= 3.35 (SQL RETURNING).
 - Web root: /home/narnes/tarkov-api/public. SQLite: /home/narnes/tarkov-data/wiki.sqlite.
 - API_ONLY=true отключает публичные Laravel-страницы. /up проверяет Laravel без сессии.
@@ -320,7 +323,7 @@ API_ONLY/API_PROXY_TOKEN/APP_KEY/DB никогда не попадают туд�
 JSON ошибки 401/403/409/422/429 и CAS версии проходят без общего кэша.
 Origin fetch использует cache: 'no-store'; cf.cacheTtl=0 недопустим: он принудительно
 кэширует даже private-ответ и может убрать сессионный Set-Cookie. Проверять сквозной вход.
-run_worker_first включает только API и runtime-модуль, поэтому карты и страницы
+run_worker_first включает API, runtime-модуль и `/quests/*` для новых динамических заданий; карты и остальные страницы
 продолжают обслуживаться статикой. Pages-конфигурация остаётся автономной статикой.
 
 ## 8. Проверка после включения

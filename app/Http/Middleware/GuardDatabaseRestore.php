@@ -12,7 +12,7 @@ final class GuardDatabaseRestore
     public function handle(Request $request, Closure $next)
     {
         $database = (string) config('database.connections.sqlite.database');
-        if (!$request->is('api', 'api/*', 'up') || config('database.default') !== 'sqlite' || !str_starts_with($database, '/')) {
+        if (!$request->is('api', 'api/*', 'admin', 'admin/*', 'up') || config('database.default') !== 'sqlite' || !str_starts_with($database, '/')) {
             return $next($request);
         }
         $lock = (new DatabaseAccess($database))->acquire();

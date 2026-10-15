@@ -6,6 +6,7 @@
     "build": "node scripts/build-pages.mjs",
     "test": "node scripts/check-pages.mjs && node --test tests/cloudflare/*.test.mjs",
     "package:alwaysdata": "node scripts/package-alwaysdata.mjs",
+    "content:seed": "node scripts/prepare-content-seed.mjs",
     "test:php": "php tests/php/run.php"
   }
 }

@@ -11,5 +11,7 @@ composer check-platform-reqs --no-dev
 php artisan config:clear
 php deployment/alwaysdata/prepare.php
 php artisan migrate --force
+php artisan wiki:import-content
+php artisan vendor:publish --tag=orchid-assets --force
 php artisan optimize
 echo 'API подготовлен. Проверьте HTTPS /up и настройте секрет Worker перед включением API_ENABLED.'

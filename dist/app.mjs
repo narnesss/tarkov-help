@@ -34,6 +34,8 @@ function safeRead(key) {
   return readPersonal(key);
 }
 async function fetchData(path) {
+  const {contentResponse}=await import('./content-client.mjs');
+  const content=await contentResponse(path);if(content)return content.json();
   const response = await fetch(path);
   if (!response.ok) throw new Error('Не удалось загрузить ' + path);
   return response.json();

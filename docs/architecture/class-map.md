@@ -1,5 +1,23 @@
 # Карта классов Tarkov Wiki
 
+- Orchid PlatformProvider / routes/platform.php: админка PHP `/admin`, права `wiki.content`.
+- User / UserPresenter / AdminSession: отдельные редакторы `admin_users`, DB-сессии
+  `admin_sessions`; стандартные Laravel cookie/CSRF, private/no-store для экранов и ошибок.
+- QuestListScreen / QuestEditScreen / QuestEditor: формы PVE/PVP, публикация, цели,
+  сложные условия/медиа/награды; защита ID квестов и целей личного прогресса.
+- DatasetListScreen / DatasetEditScreen / ContentDataset: JSON-редактор публичных справочников,
+  gzip/base64 в SQLite для ограничения объёма; HTTP-выдача крупных JSON без декодирования массива.
+- prepare-content-seed.mjs / ImportContent: первичный перенос 63 наборов и 1226 записей
+  режимов, обогащение прежними клиентскими правилами; повтор не перезаписывает редакторов.
+- ContentController / ContentQuestController: публичный контент из SQLite и проверка
+  существования квеста/торговца, защищённые VerifyApiProxy, без сессии и общего кэша.
+- content-client.mjs / guide-common.mjs / app.mjs: свежие JSON CMS перед статическими снимками;
+  quests.mjs использует окончательные задания CMS без повторного статического наложения.
+- Worker: новые URL квестов/торговцев проверяются в Laravel, затем получают статическую
+  оболочку; run_worker_first дополнен `/quests/*`, остальные ассеты идут напрямую ASSETS.
+- Composer публикует Orchid assets на PHP origin; build-pages исключает их из dist.
+  Документация заполнения и первоначального запуска: docs/orchid-content.md.
+
 - bootstrap/app.php, public/index.php: Laravel 13 HTTP kernel; artisan: CLI.
 - routes/api.php: известные API и публичные GET/HEAD маршруты.
 - AppServiceProvider: DB/Clock/AccountService/StateRepository/Application DI.

@@ -1,7 +1,7 @@
 import {siteHref,pageParams,canonicalURL} from './site-routes.mjs';
 import {resolveGameMode} from './game-mode.mjs';
 import {publicAttribution} from './public-links.mjs';
-import {$,action,el,empty,external,image,json,cached,num,readStorage,writeStorage,section} from './guide-common.mjs';
+import {$,action,el,empty,external,image,json,freshDataset,num,readStorage,writeStorage,section} from './guide-common.mjs';
 import {localizeDisplay} from './ru-data.mjs';
 import {mapAlias} from './quest-model.mjs';
 import {normalize} from './model.mjs';
@@ -57,7 +57,7 @@ function listing(){
 }
 async function load(){
  const current=++request;$('boss-mode').value=mode;$('boss-content').replaceChildren(empty('Загрузка боссов…'));
- try{const [data,api]=await Promise.all([json('data/guide/bosses.json'),cached('reference-'+mode).then(x=>x||json(`data/guide/reference-${mode}.json`))]);if(current!==request)return;catalog=data;reference=localizeDisplay(api);
+ try{const [data,api]=await Promise.all([json('data/guide/bosses.json'),freshDataset('reference-'+mode,`data/guide/reference-${mode}.json`)]);if(current!==request)return;catalog=data;reference=localizeDisplay(api);
   $('boss-back').href=siteHref(`reference.html?tab=bosses&mode=${mode}`);const top=$('boss-guide');if(top)top.href=$('boss-back').href;
   $('boss-search').value=readStorage(prefsKey())?.bossPage?.query||'';
   const id=pageParams().get('boss');if(id){const profile=findBoss(id,catalog.profiles);if(profile)detail(profile);else{$('boss-content').replaceChildren(empty('Босс не найден. Откройте общий каталог.'));$('boss-catalog-controls').hidden=false;}}else listing();

@@ -14,6 +14,13 @@ final readonly class PageController
     public function __invoke(Request $request): Response
     {
         $entry = $this->catalog->resolve('/'.$request->path());
+        if (!$entry && preg_match('~^quests/(trader/)?([a-zA-Z0-9_-]+)$~', trim($request->path(), '/'), $match)
+            && \Illuminate\Support\Facades\Schema::hasTable('quests')) {
+            $trader = !empty($match[1]);
+            $quest = \App\Models\Quest::where($trader ? 'trader_id' : 'quest_id', $match[2])->where('published', true)->first();
+            if ($quest) { $entry = ['template' => $trader ? 'quests' : 'quest', 'title' => $trader ? 'Квесты торговца' : $quest->name,
+                'params' => [$trader ? 'trader' : 'quest' => $match[2]]]; }
+        }
         if (!$entry) {
             return response($this->views->render('not-found'), 404, ['Content-Type' => 'text/html; charset=utf-8', 'Cache-Control' => 'no-cache']);
         }

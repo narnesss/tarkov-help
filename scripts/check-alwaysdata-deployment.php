@@ -40,7 +40,8 @@ $backup = new PDO('sqlite:'.$backups[0]);
 if ((int) $backup->query("SELECT count(*) FROM users WHERE id='keep-this-user'")->fetchColumn() !== 1) { throw new RuntimeException('Резервная копия потеряла данные.'); }
 $routes = json_decode($run([PHP_BINARY, 'artisan', 'route:list', '--json']), true, flags: JSON_THROW_ON_ERROR);
 foreach ($routes as $route) {
-    if (!in_array($route['uri'], ['up', 'api/{path?}'], true)) { throw new RuntimeException('API-пакет публикует лишний маршрут: '.$route['uri']); }
+    if (!in_array($route['uri'], ['up', 'api/{path?}', 'api/content/data/{path}', 'api/content/quest/{quest}'], true)
+        && !str_starts_with($route['uri'], 'admin')) { throw new RuntimeException('API-пакет публикует лишний маршрут: '.$route['uri']); }
 }
 echo "PASS: production API-пакет, повторный deploy, APP_KEY, SQLite backup и API_ONLY маршруты.\n";
 

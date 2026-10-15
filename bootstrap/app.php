@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->respond(function (\Symfony\Component\HttpFoundation\Response $response) {
-            if (request()->is('api', 'api/*')) { $response->headers->set('Cache-Control', 'private, no-store'); }
+            if (request()->is('api', 'api/*', 'admin', 'admin/*')) { $response->headers->set('Cache-Control', 'private, no-store'); }
             return $response;
         });
         $exceptions->shouldRenderJsonWhen(fn (Request $request) => $request->is('api', 'api/*') || $request->expectsJson());
