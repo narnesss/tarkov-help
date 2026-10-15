@@ -10,6 +10,7 @@ final class AdminSession
 {
     public function handle(Request $request, Closure $next)
     {
+        if (!$request->is('admin', 'admin/*')) { return $next($request); }
         config(['session.driver' => 'database', 'session.table' => 'admin_sessions',
             'session.cookie' => 'wiki_admin_session', 'session.path' => '/admin',
             'session.secure' => $request->isSecure()]);

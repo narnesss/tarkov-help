@@ -3,6 +3,8 @@
 - Orchid PlatformProvider / routes/platform.php: админка PHP `/admin`, права `wiki.content`.
 - User / UserPresenter / AdminSession: отдельные редакторы `admin_users`, DB-сессии
   `admin_sessions`; стандартные Laravel cookie/CSRF, private/no-store для экранов и ошибок.
+  AdminSession выполняется глобально только для `/admin/*` до конструирования контроллеров,
+  чтобы guard Orchid и StartSession использовали одно хранилище, включая вход без remember.
 - QuestListScreen / QuestEditScreen / QuestEditor: формы PVE/PVP, публикация, цели,
   сложные условия/медиа/награды; защита ID квестов и целей личного прогресса.
 - DatasetListScreen / DatasetEditScreen / ContentDataset: JSON-редактор публичных справочников,

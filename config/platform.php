@@ -10,7 +10,7 @@ return [
     'notifications' => ['enabled' => false],
     'fallback' => false,
     'middleware' => [
-        'public' => [App\Http\Middleware\AdminSession::class, 'web', App\Http\Middleware\PrivateAdminResponse::class],
-        'private' => [App\Http\Middleware\AdminSession::class, 'web', App\Http\Middleware\PrivateAdminResponse::class, 'platform'],
+        'public' => ['web', App\Http\Middleware\PrivateAdminResponse::class],
+        'private' => ['web', App\Http\Middleware\PrivateAdminResponse::class, 'platform'],
     ],
 ];

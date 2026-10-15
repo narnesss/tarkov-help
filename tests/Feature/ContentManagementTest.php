@@ -40,6 +40,21 @@ final class ContentManagementTest extends TestCase
         $this->assertSame(0, DB::table('sessions')->count());
     }
 
+    public function test_admin_login_persists_without_remember_cookie(): void
+    {
+        $editor = $this->editor();
+        $login = $this->post('/admin/login', ['email' => $editor->email, 'password' => 'test-password', 'remember' => false])
+            ->assertRedirect('/admin/quests');
+        $sessionId = $login->getCookie('wiki_admin_session')->getValue();
+        $session = DB::table('admin_sessions')->where('id', $sessionId)->first();
+        $this->assertNotNull($session);
+        $payload = json_decode(base64_decode($session->payload), true, flags: JSON_THROW_ON_ERROR);
+        $this->assertSame($editor->id, $payload[auth()->guard()->getName()] ?? null);
+        $this->app['auth']->forgetGuards();
+        $this->withCookie('wiki_admin_session', $sessionId)->get('/admin/quests')->assertOk()->assertSee('Квесты');
+        $this->assertSame(0, DB::table('sessions')->count());
+    }
+
     public function test_orchid_forms_create_and_edit_quests_and_public_api_reflects_edits(): void
     {
         $this->dataset('guide/quests-pve.json', ['meta' => ['mode' => 'pve']]);

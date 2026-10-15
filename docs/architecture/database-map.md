@@ -6,6 +6,8 @@
   email_verified_at, remember_token, timestamps; изолирована от `users` игроков.
 - `roles` / `role_users`: Orchid permissions, FK исключительно к `admin_users`/`roles`.
 - `admin_sessions`: штатная структура Laravel database sessions; cookie только `/admin`.
+  Драйвер и таблица выбираются до создания контроллера, чтобы обычный вход сохранялся
+  в том же хранилище, которое читает следующий запрос.
 - `content_datasets`: unique path, gzip/base64 payload, timestamps. Только публичный контент.
 - `quests`: integer id, quest_id, mode (pve/regular), name, trader_id, published,
   полный JSON payload и timestamps; UNIQUE(quest_id,mode), индекс(mode,published).
