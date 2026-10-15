@@ -153,5 +153,6 @@ final class WikiDomainTest extends TestCase
         $quest=$this->fixtures();$set=(int)DB::table('wiki_reward_sets')->where('timing','finish')->value('id');
         $this->save('reward_sets',$set,['archived'=>1]);$this->assertSame([],$quest->fresh()->payload['finishRewards']);
         $this->save('reward_sets',$set,['archived'=>0]);$this->assertSame('watch',$quest->fresh()->payload['finishRewards']['items'][0]['item']);
+        $this->assertSame('сохранить',$quest->fresh()->payload['finishRewards']['items'][0]['attributes']['custom']);
     }
 }

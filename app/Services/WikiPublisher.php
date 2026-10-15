@@ -269,7 +269,8 @@ final class WikiPublisher
     private function reward(array &$payload,int $setId,string $area): void
     {
         $set=$this->row('reward_sets',$setId);$field=$set['timing']==='finish'?'finishRewards':'startRewards';$payload[$field]??=[];
-        if($set['archived']){$payload[$field]=[];if($set['timing']==='finish'){$payload['experience']=0;$payload['cmsRewards']=true;}return;}
+        if($set['archived']){$payload['cmsArchivedRewardSets'][$set['timing']]??=$payload[$field];$payload[$field]=[];if($set['timing']==='finish'){$payload['experience']=0;$payload['cmsRewards']=true;}return;}
+        if(isset($payload['cmsArchivedRewardSets'][$set['timing']])){$payload[$field]=$payload['cmsArchivedRewardSets'][$set['timing']];unset($payload['cmsArchivedRewardSets'][$set['timing']]);}
         if($area==='reward_sets'){foreach(['reward_items','reward_standing','reward_skills','reward_unlocks'] as $part){$this->reward($payload,$setId,$part);}}
         if($set['timing']==='finish'){$payload['experience']=$set['experience'];$payload['cmsRewards']=true;}
         if($area==='reward_items'){$old=$payload[$field]['items']??[];$payload[$field]['items']=array_map(function($row)use($old){$previous=$old[$row['order_index']]??[];return [...$previous,'item'=>$this->reference('items',$row['item_id'],$previous['item']??null),'count'=>$row['amount'],'attributes'=>[...($previous['attributes']??[]),'foundInRaid'=>(bool)$row['found_in_raid']]];},$this->rows('reward_items',['reward_set_id'=>$setId]));
