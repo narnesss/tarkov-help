@@ -21,7 +21,7 @@ test ! -e "$release" || { echo 'Этот ID уже использован; за�
 
 # Даже ошибочно упакованный .env или симлинк не должен заменить приватные файлы.
 listing=$(tar -tzf "$archive")
-if printf '%s\n' "$listing" | grep -Eq '(^/|(^|/)\.\.(/|$)|(^|/)\.env($|\.)|^(\./)?vendor(/|$))'; then
+if printf '%s\n' "$listing" | grep -E '(^/|(^|/)\.\.(/|$)|(^|/)\.env($|\.)|^(\./)?vendor(/|$))' > /dev/null; then
   echo 'Архив содержит запрещённые пути' >&2; exit 1
 fi
 if tar -tvzf "$archive" | awk 'substr($0,1,1)!="-" && substr($0,1,1)!="d" {bad=1} END {exit !bad}'; then
@@ -81,8 +81,9 @@ else
   mv -Tf "$next" "$current"
 fi
 switched=true
-curl --fail --silent --show-error --retry 3 --retry-delay 2 --max-time 15 \
-  "$health_url?release=$release_id" > /dev/null
+health_status=$(curl --fail --silent --show-error --retry 3 --retry-delay 2 --max-time 15 \
+  --output /dev/null --write-out '%{http_code}' "$health_url?release=$release_id")
+test "$health_status" = 200 || { echo "Проверка /up вернула HTTP $health_status вместо 200" >&2; exit 1; }
 echo "Опубликован API: $release_id"
 # Очистка кода не влияет на общие данные и согласованные копии SQLite.
 rm -- "$archive"
