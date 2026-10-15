@@ -23,6 +23,9 @@
   маркер незавершённой операции сохраняет private JSON 503 до безопасного восстановления.
 - restore-alwaysdata.yml / restore.sh: только workflow_dispatch main, list/check/restore,
   явное подтверждение замены данных; общая с деплоем и daily concurrency.
+- check-restore.php / test-restore.sh: реальные BackupSqlite/RestoreSqlite и миграция в отдельном
+  Laravel-контейнере с собственной SQLite; production bootstrap/.env/config cache не читаются.
+  CI проверяет цикл локально и после deploy на alwaysdata; test-restore-alwaysdata.yml повторяет его вручную.
 - deployment/alwaysdata/backup.sh: ежедневное задание alwaysdata через стабильный tarkov-api.
 - backup-alwaysdata.yml: ежедневный запуск 03:30 Europe/Moscow через SSH, общая с deploy
   concurrency; БД остаётся на alwaysdata, ручной Run workflow только для main.

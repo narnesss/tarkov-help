@@ -16,6 +16,11 @@ wiki:backup / config/backup.php: до 7 daily и 3 deploy снимков, сум
 API-запросы удерживают shared access.lock; restore ждёт exclusive, затем создаёт .restoring.
 При успешном восстановлении sessions очищаются (повторный вход); users/user_state из снимка.
 При ошибке проверки safety-снимок возвращает исходные данные; при обрыве маркер закрывает API.
+Проверка восстановления: одноразовая $HOME/tarkov-restore-test-<random>/fixture.sqlite,
+на той же FS alwaysdata, с искусственными users/sessions/user_state и реальной миграцией.
+Единственное подключение задаётся в памяти отдельного Laravel-контейнера; production .env,
+config cache, storage и SQLite не открываются. После теста удаляются только его собственные
+плоские файлы/каталог, без рекурсивного обхода. Тестовая БД не загружается в GitHub artifacts.
 users: string id PK, username nullable UNIQUE, password_hash nullable, created_at.
 sessions: token_hash PK (SHA-256), user_id FK users.id, expires_at INDEX.
 user_state: PK(user_id,state_key), user_id FK users.id, JSON value, version, updated_at.

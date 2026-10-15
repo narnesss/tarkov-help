@@ -1,0 +1,23 @@
+name: Test SQLite restore on alwaysdata
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-restore:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: alwaysdata-production
+      cancel-in-progress: false
+    environment: alwaysdata-production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Restore only a disposable fixture database on alwaysdata
+        env:
+          ALWAYSDATA_SSH_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
+          ALWAYSDATA_KNOWN_HOSTS: ${{ secrets.ALWAYSDATA_KNOWN_HOSTS }}
+        run: bash deployment/alwaysdata/github-deploy.sh test-restore

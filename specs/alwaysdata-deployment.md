@@ -257,7 +257,49 @@ exclusive и ждёт завершения старых запросов до м
 подтверждения. При приёмке на production запускайте только list/check; restore выбранных
 живых данных требует отдельного решения владельца, а не проверки работоспособности workflow.
 
-## 6. Подключение Cloudflare
+## 6. Проверка восстановления на отдельной SQLite alwaysdata
+
+После каждого успешного deploy job запускает **Verify restore on a disposable SQLite on
+alwaysdata**. Тот же сценарий можно повторить через Actions → **Test SQLite restore on
+alwaysdata** → Run workflow → main. Это отдельный workflow без полей выбора рабочей БД
+или backup. Для него не используйте Manual SQLite restore с action=restore.
+
+`test-restore.sh` берёт общий deploy lock и сверяет SHA активного релиза с SHA workflow.
+`check-restore.php` создаёт новый приватный `$HOME/tarkov-restore-test-<random>` на файловой
+системе alwaysdata; внутри только `fixture.sqlite`, её WAL/SHM, копии и блокировки.
+Проверяются реальные команды BackupSqlite/RestoreSqlite и реальная миграция схемы.
+Laravel-контейнер создаётся отдельно с единственным явно заданным fixture-подключением:
+production bootstrap, .env, APP_KEY, config cache и storage не загружаются. Аргументы
+с путями запрещены; рабочая `/home/narnes/tarkov-data/wiki.sqlite` не открывается.
+
+Сценарий проверяет:
+
+- daily-снимок и повтор без дубликата; list/check без изменения данных;
+- отказ без подтверждения и с неверным SHA-256;
+- shared/exclusive flock именно на серверной FS (важно для NFS);
+- восстановление тестовых аккаунтов/прогресса и сохранение текущих строк из активного WAL;
+- очистку старых сессий и обратное восстановление safety-копии;
+- намеренный сбой проверки после записи и автоматический возврат исходного состояния;
+- снятие маркера, целостность/FK, сохранение inode, 0600 и лимит до 4 копий / 4 МиБ.
+
+В конце успеха или перехваченной ошибки удаляются только файлы собственного случайного
+каталога, без рекурсии и следования по ссылкам. После обрыва процесса проверьте оставшиеся
+`$HOME/tarkov-restore-test-*` вручную: автоочистка чужих/прежних каталогов не выполняется.
+В Actions выводятся только PASS/FAIL и revision, SQLite не скачивается на runner.
+Зелёный job и последняя строка `PASS: тестовые файлы удалены` подтверждают полный цикл.
+Обычный CI также запускает этот сценарий без SSH и без доступа к production.
+
+Для ручного запуска по SSH (SHA берётся из текущего REVISION):
+
+```sh
+revision=$(cat /home/narnes/tarkov-api/REVISION)
+bash /home/narnes/tarkov-api/deployment/alwaysdata/test-restore.sh "${revision%%-*}"
+```
+
+Этот тест не проверяет содержимое живых аккаунтов и не восстанавливает production.
+Проверка API-блокировки HTTP остаётся в Laravel feature-тестах CI на временной SQLite.
+
+## 7. Подключение Cloudflare
 
 После push дождитесь публикации Worker из main. Сборка npm run build,
 Deploy command npx wrangler deploy. В Cloudflare → Workers & Pages → tarkov-compass →
@@ -281,7 +323,7 @@ Origin fetch использует cache: 'no-store'; cf.cacheTtl=0 недопу�
 run_worker_first включает только API и runtime-модуль, поэтому карты и страницы
 продолжают обслуживаться статикой. Pages-конфигурация остаётся автономной статикой.
 
-## 7. Проверка после включения
+## 8. Проверка после включения
 
 Обновите браузер без кэша (Ctrl+F5: bootstrap.mjs может оставаться в кэше час).
 Откройте основной сайт: в Network /api/session и /api/state должны вернуть JSON;

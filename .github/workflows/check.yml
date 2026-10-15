@@ -42,6 +42,12 @@ jobs:
           php artisan route:list --json | php -r '$routes = json_decode(stream_get_contents(STDIN), true, flags: JSON_THROW_ON_ERROR); foreach ($routes as $route) { if (!in_array($route["uri"], ["up", "api/{path?}"])) { throw new RuntimeException("Unexpected public route: ".$route["uri"]); } }'
       - name: Repeat production deploy without losing APP_KEY or SQLite
         run: php scripts/check-alwaysdata-deployment.php
+      - name: Isolated SQLite restore round trip
+        env:
+          DB_CONNECTION: mysql
+          DB_DATABASE: /must-not-open-production.sqlite
+          APP_CONFIG_CACHE: /must-not-read-production.php
+        run: php deployment/alwaysdata/check-restore.php
       - uses: actions/upload-artifact@v4
         with:
           name: alwaysdata-api
@@ -74,3 +80,8 @@ jobs:
           ALWAYSDATA_SSH_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
           ALWAYSDATA_KNOWN_HOSTS: ${{ secrets.ALWAYSDATA_KNOWN_HOSTS }}
         run: bash deployment/alwaysdata/github-deploy.sh
+      - name: Verify restore on a disposable SQLite on alwaysdata
+        env:
+          ALWAYSDATA_SSH_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
+          ALWAYSDATA_KNOWN_HOSTS: ${{ secrets.ALWAYSDATA_KNOWN_HOSTS }}
+        run: bash deployment/alwaysdata/github-deploy.sh test-restore

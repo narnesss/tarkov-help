@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 umask 077
 mode=${1:-deploy}
-[[ $mode = deploy || $mode = backup || $mode = restore ]] || { echo 'Нужен режим deploy, backup или restore' >&2; exit 1; }
+[[ $mode = deploy || $mode = backup || $mode = restore || $mode = test-restore ]] || { echo 'Нужен режим deploy, backup, restore или test-restore' >&2; exit 1; }
 if [[ $mode = restore ]]; then
   [[ ${RESTORE_ACTION:-} = list || ${RESTORE_ACTION:-} = check || ${RESTORE_ACTION:-} = restore ]] || exit 1
   if [[ $RESTORE_ACTION != list ]]; then
@@ -30,6 +30,10 @@ unset ALWAYSDATA_SSH_KEY ALWAYSDATA_KNOWN_HOSTS
 ssh_options=(-i "$ssh_dir/key" -o BatchMode=yes -o IdentitiesOnly=yes
   -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$ssh_dir/known_hosts" -o ConnectTimeout=20)
 target=narnes@ssh-narnes.alwaysdata.net
+if [[ $mode = test-restore ]]; then
+  ssh "${ssh_options[@]}" "$target" "bash /home/narnes/tarkov-api/deployment/alwaysdata/test-restore.sh '$GITHUB_SHA'"
+  exit
+fi
 if [[ $mode = restore ]]; then
   ssh "${ssh_options[@]}" "$target" "bash /home/narnes/tarkov-api/deployment/alwaysdata/restore.sh '$RESTORE_ACTION' '$RESTORE_BACKUP' '$RESTORE_SHA256' '${RESTORE_CONFIRMED:-false}'"
   exit
