@@ -32,7 +32,8 @@ export default {
     try {
       const response = await fetch(target, {
         method: request.method, headers, body: ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
-        redirect: 'manual', signal: AbortSignal.timeout(7000), cf: {cacheTtl: 0, cacheEverything: false},
+        // cacheTtl: 0 всё ещё принудительно кэширует и может удалить Set-Cookie.
+        redirect: 'manual', signal: AbortSignal.timeout(7000), cache: 'no-store',
       });
       // Не пересылаем секрет при редиректе и не выдаём HTML страницы ошибок вместо JSON.
       if (response.status >= 300 && response.status < 400 || !response.headers.get('Content-Type')?.includes('application/json')) return unavailable();

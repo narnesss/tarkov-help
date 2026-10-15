@@ -101,6 +101,8 @@ dashboard-only API_ENABLED при последующих deploy. Не добав
 API_ONLY/API_PROXY_TOKEN/APP_KEY/DB никогда не попадают туда или в dist.
 На /api/* upstream redirects/HTML/network errors становятся JSON 503. Set-Cookie,
 JSON ошибки 401/403/409/422/429 и CAS версии проходят без общего кэша.
+Origin fetch использует cache: 'no-store'; cf.cacheTtl=0 недопустим: он принудительно
+кэширует даже private-ответ и может убрать сессионный Set-Cookie. Проверять сквозной вход.
 run_worker_first включает только API и runtime-модуль, поэтому карты и страницы
 продолжают обслуживаться статикой. Pages-конфигурация остаётся автономной статикой.
 
@@ -132,3 +134,4 @@ Free alwaysdata предназначен для некоммерческого �
 - https://help.alwaysdata.com/en/docs/admin-billing/profile/suspension/
 - https://developers.cloudflare.com/workers/static-assets/routing/worker-script/
 - https://developers.cloudflare.com/workers/wrangler/configuration/
+- https://developers.cloudflare.com/workers/runtime-apis/request/

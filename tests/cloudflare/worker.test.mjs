@@ -25,7 +25,8 @@ test('proxy сохраняет метод, JSON, cookie, origin, CSRF и Set-Coo
     assert.equal(options.method, 'PUT');
     assert.equal(await new Response(options.body).text(), body);
     assert.equal(options.redirect, 'manual');
-    assert.equal(options.cf.cacheTtl, 0);
+    assert.equal(options.cache, 'no-store');
+    assert.equal(options.cf, undefined);
     for (const [name, value] of [['Origin', origin], ['X-CSRF-Token', 'csrf'], ['Cookie', 'eft_session=session'],
       ['X-Wiki-Proxy-Token', env.API_PROXY_TOKEN], ['X-Wiki-Client-IP', '198.51.100.1']]) assert.equal(options.headers.get(name), value);
     assert.equal(options.headers.has('X-Forwarded-For'), false);
