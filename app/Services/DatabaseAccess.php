@@ -18,7 +18,8 @@ final class DatabaseAccess
         $path = $this->database.'.access.lock';
         if (is_link($path)) { throw new RuntimeException('Блокировка БД не должна быть ссылкой.'); }
         $mask = umask(0077);
-        try { $lock = fopen($path, 'c'); } finally { umask($mask); }
+        // На сетевой FS shared flock требует дескриптор с правом чтения.
+        try { $lock = fopen($path, 'c+'); } finally { umask($mask); }
         if ($lock === false) { throw new RuntimeException('Нет доступа к блокировке БД.'); }
         $deadline = microtime(true) + $wait;
         do {

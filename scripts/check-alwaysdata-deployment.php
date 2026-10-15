@@ -19,6 +19,13 @@ $environment = str_replace('API_PROXY_TOKEN=', 'API_PROXY_TOKEN='.str_repeat('te
 file_put_contents($package.'/.env', $environment); chmod($package.'/.env', 0600);
 $run(['sh', 'deployment/alwaysdata/deploy.sh']);
 $before = file_get_contents($package.'/.env');
+// Ошибка standalone PHP-подготовки обязана остановить shell deploy ненулевым кодом.
+file_put_contents($database.'.restoring', 'test-only-block');
+try {
+    $process = proc_open([PHP_BINARY, 'deployment/alwaysdata/prepare.php'],
+        [0 => ['file', '/dev/null', 'r'], 1 => ['file', '/dev/null', 'w'], 2 => ['file', '/dev/null', 'w']], $pipes, $package);
+    if (!is_resource($process) || proc_close($process) === 0) { throw new RuntimeException('Ошибка prepare.php не остановила деплой.'); }
+} finally { unlink($database.'.restoring'); }
 if (!preg_match('/^APP_KEY=base64:.+$/m', $before)) { throw new RuntimeException('APP_KEY не создан.'); }
 $pdo = new PDO('sqlite:'.$database);
 $pdo->prepare('INSERT INTO users(id, username, password_hash, created_at) VALUES (?, ?, NULL, ?)')->execute(['keep-this-user', 'deploy-probe', time()]);
