@@ -11,6 +11,11 @@ Actions main публикует код через tarkov-releases; .env/storage 
 wiki:backup / config/backup.php: до 7 daily и 3 deploy снимков, суммарно до 100 МиБ.
 Общий файловый lock, VACUUM INTO + quick_check, 0600; старые копии удаляются только после
 исправного нового снимка, ссылки/живая SQLite/WAL/SHM/секреты не затрагиваются.
+Ручное wiki:restore: выбранное имя + SHA-256, совпадающие схема/журнал миграций,
+снимок текущей БД в группе deploy и атомарный SQLite Backup API в существующий файл.
+API-запросы удерживают shared access.lock; restore ждёт exclusive, затем создаёт .restoring.
+При успешном восстановлении sessions очищаются (повторный вход); users/user_state из снимка.
+При ошибке проверки safety-снимок возвращает исходные данные; при обрыве маркер закрывает API.
 users: string id PK, username nullable UNIQUE, password_hash nullable, created_at.
 sessions: token_hash PK (SHA-256), user_id FK users.id, expires_at INDEX.
 user_state: PK(user_id,state_key), user_id FK users.id, JSON value, version, updated_at.

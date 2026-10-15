@@ -97,6 +97,23 @@ try {
     $run([PHP_BINARY, $base.'/tarkov-api/artisan', 'wiki:backup', '--no-interaction']);
     if (count(glob($database.'.backup-daily-*')) !== 1) { throw new RuntimeException('Повтор daily создал лишнюю копию.'); }
     if (count(glob($database.'.backup-????????-??????-??????')) !== 3) { throw new RuntimeException('Не ограничены копии перед деплоем.'); }
+    $catalog = array_map(fn (string $line): array => json_decode($line, true, flags: JSON_THROW_ON_ERROR),
+        array_filter(explode("\n", trim($run([PHP_BINARY, $base.'/tarkov-api/artisan', 'wiki:restore', '--list'])))));
+    $selected = array_values(array_filter($catalog, fn (array $copy): bool => str_contains($copy['name'], '.backup-daily-')))[0];
+    $pdo->prepare('INSERT INTO users(id, username, password_hash, created_at) VALUES (?, ?, NULL, ?)')->execute(['after-snapshot', 'after-snapshot', time()]);
+    $arguments = ['--backup='.$selected['name'], '--sha256='.$selected['sha256']];
+    $run([PHP_BINARY, $base.'/tarkov-api/artisan', 'wiki:restore', '--check', ...$arguments]);
+    if ((int) $pdo->query("SELECT count(*) FROM users WHERE id='after-snapshot'")->fetchColumn() !== 1) { throw new RuntimeException('Проверка изменила текущие данные.'); }
+    $output = $run([PHP_BINARY, $base.'/tarkov-api/artisan', 'wiki:restore', '--confirm=RESTORE', ...$arguments]);
+    if (!preg_match('/сохранена: (\S+)/u', $output, $match)) { throw new RuntimeException('Нет имени аварийной копии.'); }
+    $safety = new PDO('sqlite:'.dirname($database).'/'.$match[1]);
+    if ((int) $safety->query("SELECT count(*) FROM users WHERE id='after-snapshot'")->fetchColumn() !== 1 ||
+        (int) $pdo->query("SELECT count(*) FROM users WHERE id='after-snapshot'")->fetchColumn() !== 0 ||
+        (int) $pdo->query("SELECT count(*) FROM users WHERE id='keep-this-user'")->fetchColumn() !== 1 ||
+        file_get_contents($base.'/tarkov-api/.env') !== $before || file_exists($database.'.restoring')) {
+        throw new RuntimeException('Не подтверждены восстановление, аварийная копия или снятие защиты API.');
+    }
+    echo "PASS: production list/check/restore, неизменный .env, сохранение текущего WAL перед восстановлением.\n";
     echo "PASS: автоматические релизы, сохранение .env/storage/SQLite, HTTP-откат, очистка кода и daily/deploy retention.\n";
 } finally {
     proc_terminate($server); proc_close($server);

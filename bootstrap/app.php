@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(api: __DIR__.'/../routes/api.php', commands: __DIR__.'/../routes/console.php', health: '/up', apiPrefix: '')
     ->withMiddleware(function (\Illuminate\Foundation\Configuration\Middleware $middleware): void {
+        $middleware->prepend(\App\Http\Middleware\GuardDatabaseRestore::class);
         // API валидирует исходный JSON сам; не загружаем большой body ради trim/null.
         $middleware->remove([\Illuminate\Foundation\Http\Middleware\TrimStrings::class, \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class]);
     })

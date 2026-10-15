@@ -1,0 +1,46 @@
+name: Manual SQLite restore on alwaysdata
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'list — список, check — проверка без записи, restore — восстановление'
+        type: choice
+        options: [list, check, restore]
+        default: list
+        required: true
+      backup:
+        description: 'Точное имя файла из списка копий (без пути)'
+        type: string
+        default: ''
+      sha256:
+        description: 'SHA-256 выбранной копии из списка'
+        type: string
+        default: ''
+      confirm_restore:
+        description: 'Подтверждаю замену данных выбранным снимком; текущая база будет сохранена'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  restore:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: alwaysdata-production
+      cancel-in-progress: false
+    environment: alwaysdata-production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Run the selected manual SQLite operation
+        env:
+          ALWAYSDATA_SSH_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
+          ALWAYSDATA_KNOWN_HOSTS: ${{ secrets.ALWAYSDATA_KNOWN_HOSTS }}
+          RESTORE_ACTION: ${{ inputs.action }}
+          RESTORE_BACKUP: ${{ inputs.backup }}
+          RESTORE_SHA256: ${{ inputs.sha256 }}
+          RESTORE_CONFIRMED: ${{ inputs.confirm_restore }}
+        run: bash deployment/alwaysdata/github-deploy.sh restore

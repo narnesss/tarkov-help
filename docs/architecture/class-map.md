@@ -17,6 +17,12 @@
 - prune-releases.php: ограниченная очистка старого кода без следования по симлинкам.
 - BackupSqlite / SqliteBackups: Artisan wiki:backup, VACUUM INTO/quick_check, приватные
   daily/deploy снимки, общий lock и лимиты числа/объёма. prepare.php использует этот же сервис.
+- RestoreSqlite / SqliteBackups: список имён/SHA-256, проверка схемы и FK, снимок текущей БД,
+  восстановление SQLite3::backup без замены файла, возврат safety-копии при ошибке проверки.
+- DatabaseAccess / GuardDatabaseRestore: shared flock на время API/бэкапа, exclusive при restore;
+  маркер незавершённой операции сохраняет private JSON 503 до безопасного восстановления.
+- restore-alwaysdata.yml / restore.sh: только workflow_dispatch main, list/check/restore,
+  явное подтверждение замены данных; общая с деплоем и daily concurrency.
 - deployment/alwaysdata/backup.sh: ежедневное задание alwaysdata через стабильный tarkov-api.
 - backup-alwaysdata.yml: ежедневный запуск 03:30 Europe/Moscow через SSH, общая с deploy
   concurrency; БД остаётся на alwaysdata, ручной Run workflow только для main.

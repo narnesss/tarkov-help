@@ -3,7 +3,20 @@
 set -Eeuo pipefail
 umask 077
 mode=${1:-deploy}
-[[ $mode = deploy || $mode = backup ]] || { echo 'Нужен режим deploy или backup' >&2; exit 1; }
+[[ $mode = deploy || $mode = backup || $mode = restore ]] || { echo 'Нужен режим deploy, backup или restore' >&2; exit 1; }
+if [[ $mode = restore ]]; then
+  [[ ${RESTORE_ACTION:-} = list || ${RESTORE_ACTION:-} = check || ${RESTORE_ACTION:-} = restore ]] || exit 1
+  if [[ $RESTORE_ACTION != list ]]; then
+    [[ ${RESTORE_BACKUP:-} =~ ^wiki\.sqlite\.backup-(daily-)?[0-9]{8}-[0-9]{6}-[a-f0-9]{6}$ ]] || { echo 'Недопустимое имя копии' >&2; exit 1; }
+    [[ ${RESTORE_SHA256:-} =~ ^[a-f0-9]{64}$ ]] || { echo 'Нужен SHA-256 из списка' >&2; exit 1; }
+  else
+    RESTORE_BACKUP= RESTORE_SHA256=
+  fi
+  if [[ $RESTORE_ACTION = restore && ${RESTORE_CONFIRMED:-false} != true ]]; then
+    echo 'Подтвердите восстановление в форме workflow' >&2; exit 1
+  fi
+  if [[ $RESTORE_ACTION != restore ]]; then RESTORE_CONFIRMED=false; fi
+fi
 : "${ALWAYSDATA_SSH_KEY:?Добавьте GitHub secret ALWAYSDATA_SSH_KEY}"
 : "${ALWAYSDATA_KNOWN_HOSTS:?Добавьте GitHub secret ALWAYSDATA_KNOWN_HOSTS}"
 : "${GITHUB_SHA:?}" "${GITHUB_RUN_ID:?}" "${GITHUB_RUN_ATTEMPT:?}" "${RUNNER_TEMP:?}"
@@ -17,6 +30,10 @@ unset ALWAYSDATA_SSH_KEY ALWAYSDATA_KNOWN_HOSTS
 ssh_options=(-i "$ssh_dir/key" -o BatchMode=yes -o IdentitiesOnly=yes
   -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$ssh_dir/known_hosts" -o ConnectTimeout=20)
 target=narnes@ssh-narnes.alwaysdata.net
+if [[ $mode = restore ]]; then
+  ssh "${ssh_options[@]}" "$target" "bash /home/narnes/tarkov-api/deployment/alwaysdata/restore.sh '$RESTORE_ACTION' '$RESTORE_BACKUP' '$RESTORE_SHA256' '${RESTORE_CONFIRMED:-false}'"
+  exit
+fi
 if [[ $mode = backup ]]; then
   ssh "${ssh_options[@]}" "$target" 'sh /home/narnes/tarkov-api/deployment/alwaysdata/backup.sh'
   exit
