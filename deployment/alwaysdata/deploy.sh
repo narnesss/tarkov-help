@@ -12,6 +12,8 @@ php artisan config:clear
 php deployment/alwaysdata/prepare.php
 php artisan migrate --force
 php artisan wiki:import-content
+# Совместимое чтение файлов уже опубликовано предыдущим релизом.
+php artisan wiki:content-files --move
 php artisan vendor:publish --tag=orchid-assets --force
 php artisan optimize
 echo 'API подготовлен. Проверьте HTTPS /up и настройте секрет Worker перед включением API_ENABLED.'

@@ -29,11 +29,23 @@ try {
 if (!preg_match('/^APP_KEY=base64:.+$/m', $before)) { throw new RuntimeException('APP_KEY не создан.'); }
 $pdo = new PDO('sqlite:'.$database);
 $pdo->prepare('INSERT INTO users(id, username, password_hash, created_at) VALUES (?, ?, NULL, ?)')->execute(['keep-this-user', 'deploy-probe', time()]);
+$legacyTask = ['id' => 'legacy-deploy-probe', 'name' => 'Сохранённая правка', 'objectives' => [['id' => 'stable-goal', 'description' => 'Текст цели']]];
+$pdo->prepare('INSERT INTO quests(quest_id, mode, name, published, payload, updated_at) VALUES (?, ?, ?, 0, ?, ?)')
+    ->execute(['legacy-deploy-probe', 'pve', 'Сохранённая правка', json_encode($legacyTask), '2026-10-01 00:00:00']);
 $pdo = null;
 $run(['sh', 'deployment/alwaysdata/deploy.sh']);
 if (file_get_contents($package.'/.env') !== $before) { throw new RuntimeException('Обновление изменило APP_KEY или .env.'); }
 $pdo = new PDO('sqlite:'.$database);
 if ((int) $pdo->query("SELECT count(*) FROM users WHERE id='keep-this-user'")->fetchColumn() !== 1) { throw new RuntimeException('Обновление потеряло данные.'); }
+$reference = $pdo->query("SELECT payload FROM quests WHERE quest_id='legacy-deploy-probe'")->fetchColumn();
+require_once $root.'/vendor/autoload.php';
+if (!str_starts_with($reference, '@file:') || \App\Services\ContentFiles::forDatabase($database)->read($reference) !== $legacyTask
+    || $pdo->query("SELECT updated_at FROM quests WHERE quest_id='legacy-deploy-probe'")->fetchColumn() !== '2026-10-01 00:00:00') {
+    throw new RuntimeException('Перенос JSON в файлы потерял правки, ID целей или даты.');
+}
+foreach (['quests', 'content_datasets'] as $table) {
+    if ($pdo->query('SELECT count(*) FROM '.$table." WHERE payload NOT LIKE '@file:%'")->fetchColumn() > 0) { throw new RuntimeException('JSON контента остался в SQLite.'); }
+}
 $backups = glob($database.'.backup-*');
 if (count($backups) !== 1) { throw new RuntimeException('Не создана резервная копия перед обновлением.'); }
 $backup = new PDO('sqlite:'.$backups[0]);

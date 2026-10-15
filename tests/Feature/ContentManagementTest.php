@@ -94,15 +94,17 @@ final class ContentManagementTest extends TestCase
         $quest->payload = [...$quest->payload, 'objectives' => [['id' => 'goal-1', 'description' => 'Найти предмет',
             'type' => 'findItem', 'foundInRaid' => true, 'item' => ['id' => 'item-1']]]];$quest->save();
         $input = $this->form();$input['revision'] = $quest->revision();
-        $input['goals'] = [['id' => 'goal-1', 'description' => 'Правка текста',
-            'type' => 'findItem', 'count' => '3'],
-            ['id' => 'goal-2', 'description' => 'Выйти с локации', 'type' => 'extract']];
+        $input['goals'] = [7 => ['id' => 'goal-2', 'description' => 'Выйти с локации', 'type' => 'extract'],
+            2 => ['id' => 'goal-1', 'description' => 'Правка текста', 'type' => 'findItem', 'count' => '3']];
         $this->actingAs($this->editor())->post('/admin/quests/'.$quest->id.'/edit/save', ['quest' => $input])->assertRedirect();
         $payload = $quest->fresh()->payload;
         $this->assertSame(3, $payload['objectives'][0]['count']);
         $this->assertSame('item-1', $payload['objectives'][0]['item']['id']);
         $this->assertTrue($payload['objectives'][0]['foundInRaid']);
         $this->assertCount(2, $payload['objectives']);
+        $input['revision'] = $quest->fresh()->revision();$input['goals'][2]['count'] = '';
+        $this->post('/admin/quests/'.$quest->id.'/edit/save', ['quest' => $input])->assertRedirect();
+        $this->assertArrayNotHasKey('count', $quest->fresh()->payload['objectives'][0]);
     }
 
     public function test_admin_mutations_require_csrf_outside_test_mode(): void

@@ -35,6 +35,7 @@ final class QuestEditScreen extends Screen
     public function layout(): array
     {
         $types = ['visit' => 'Посетить место', 'findItem' => 'Найти предмет', 'giveItem' => 'Передать предмет',
+            'findQuestItem' => 'Найти квестовый предмет', 'giveQuestItem' => 'Передать квестовый предмет',
             'shoot' => 'Уничтожить цель', 'extract' => 'Выйти с локации', 'mark' => 'Установить маяк',
             'plantItem' => 'Разместить предмет', 'buildWeapon' => 'Собрать оружие', 'skill' => 'Развить навык', 'custom' => 'Другая цель'];
         foreach ($this->record->payload['objectives'] ?? [] as $goal) {

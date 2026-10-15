@@ -35,14 +35,17 @@ final class QuestEditor
         if (array_diff($oldGoals->keys()->all(), array_column($data['goals'], 'id'))) {
             throw ValidationException::withMessages(['quest.goals' => 'Существующие ID целей нельзя удалять или менять.']);
         }
+        ksort($data['goals'], SORT_NUMERIC);
         $payload['objectives'] = array_map(function (array $goal) use ($oldGoals): array {
             $result = [...($oldGoals->get($goal['id']) ?? []), 'id' => $goal['id'], 'description' => $goal['description'], 'type' => $goal['type']];
             if (isset($goal['count']) && $goal['count'] !== '') { $result['count'] = (int) $goal['count']; }
+            elseif (array_key_exists('count', $goal)) { unset($result['count']); }
             return $result;
         }, array_values($data['goals']));
         $trader = $traders->find($data['trader_id']);
+        $previousTrader = is_array($payload['trader'] ?? null) && ($payload['trader']['id'] ?? null) === $trader['id'] ? $payload['trader'] : [];
         $payload = [...$payload, 'id' => $data['quest_id'], 'name' => $data['name'],
-            'trader' => ['id' => $trader['id'], 'name' => $trader['name'], 'imageLink' => $trader['imageLink'] ?? null],
+            'trader' => [...$trader, ...$previousTrader, 'id' => $trader['id'], 'name' => $trader['name'], 'imageLink' => $trader['imageLink'] ?? null],
             'minPlayerLevel' => (int) $data['min_player_level'], 'experience' => (int) $data['experience'],
             'description' => $data['description'] ?? ''];
         if (isset($payload['questContent'])) { $payload['questContent']['experience'] = (int) $data['experience']; }
