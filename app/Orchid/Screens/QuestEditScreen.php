@@ -49,7 +49,7 @@ final class QuestEditScreen extends Screen
         }
         return [Layout::rows([
             Input::make('quest.revision')->type('hidden'),
-            Input::make('quest.quest_id')->title('ID квеста')->required()->readonly($this->record->exists)->help('Стабильный ID. После создания не меняется.'),
+            Input::make('quest.quest_id')->type('hidden'),
             Select::make('quest.mode')->title('Режим')->options(['pve' => 'PVE', 'regular' => 'PVP'])->disabled($this->record->exists),
             Input::make('quest.name')->title('Название')->required(),
             Select::make('quest.trader_id')->title('Торговец')->options(app(TraderCatalog::class)->options())->empty('Выберите торговца')->required(),
@@ -58,11 +58,11 @@ final class QuestEditScreen extends Screen
             TextArea::make('quest.description')->title('Описание')->rows(5),
             CheckBox::make('quest.published')->title('Опубликован')->sendTrueOrFalse(),
         ])->title('Основные данные'), Layout::rows([
-            Matrix::make('quest.goals')->title('Цели задания')->columns(['ID цели' => 'id', 'Описание' => 'description', 'Действие' => 'type', 'Количество' => 'count'])
-                ->fields(['id' => Input::make()->required(), 'description' => TextArea::make()->rows(4)->required(),
+            Matrix::make('quest.goals')->title('Цели задания')->columns(['' => 'id', 'Описание' => 'description', 'Действие' => 'type', 'Количество' => 'count'])
+                ->fields(['id' => Input::make()->type('hidden'), 'description' => TextArea::make()->rows(4)->required(),
                     'type' => Select::make()->options($types), 'count' => Input::make()->type('number')->min(0)])
                 ->addRowLabel('Добавить цель')->removableRows(false)->maxRows(100)
-                ->help('Существующие ID целей сохраняйте. Подробные условия доступны после сохранения задания.'),
+                ->help('Идентификаторы создаются автоматически. После сохранения откройте «Подробные условия целей», чтобы выбрать предметы, локации и ключи по названиям.'),
             ...$sections,
         ])->title('Цели, награды и прохождение')];
     }

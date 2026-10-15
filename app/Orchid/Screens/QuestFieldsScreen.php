@@ -9,12 +9,13 @@ use Illuminate\Http\Request;
 /** Подробные условия, награды и материалы квеста редактируются обычными полями. */
 final class QuestFieldsScreen extends ContentFieldsScreen
 {
-    protected Quest $record;
+    protected ?Quest $record = null;
     private const MAIN = ['id', 'name', 'trader', 'minPlayerLevel', 'experience', 'description'];
     public function name(): string { return 'Поля квеста: '.$this->record->name; }
     public function query(Quest $quest): array
     {
         $this->record = $quest;
+        $this->context = ['mode' => $quest->mode];
         return $this->loadFields(array_diff_key($quest->payload, array_flip(self::MAIN))
             + ['objectives' => [], 'finishRewards' => [], 'questContent' => []], $quest->revision());
     }

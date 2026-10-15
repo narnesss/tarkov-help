@@ -12,6 +12,20 @@
 - `quests`: integer id, quest_id, mode (pve/regular), name, trader_id, published,
   payload — строковая ссылка `@file:SHA256` и timestamps; UNIQUE(quest_id,mode), индекс(mode,published).
 
+Миграция `2026_10_15_000003_create_content_references.php` добавляет производный
+`content_references`: integer id PK, kind, variant DEFAULT default, value (прежний игровой ID),
+label, search_text, source_dataset_id FK → content_datasets ON DELETE CASCADE nullable,
+source_pointer, quest_record_id FK → quests ON DELETE CASCADE nullable, active DEFAULT true.
+Остальные колонки NOT NULL; UNIQUE(kind,variant,value), INDEX(kind,variant,active).
+JSON здесь отсутствует. Числовой PK используется Orchid, value никогда не вводится вручную.
+Варианты разделяют игровые ID/slug локации, PVE/PVP квестов и этажи отдельных карт.
+label/search_text сознательно дублируют имена из файлов для быстрого поиска без распаковки
+каталога при каждом запросе. Поиск instr по нормализованному Unicode ограничен kind/variant;
+это не полнотекстовый индекс. При текущих размерах достаточно нескольких тысяч имён на тип.
+Повторная индексация upsert сохраняет PK; прежние отсутствующие ссылки помечаются inactive,
+остаются читаемыми в своих формах и недоступны для назначения новым связям.
+План расширения связей карт, ограничения и запросы приведены в [content-relations.md](content-relations.md).
+
 Контент находится в `content/<первые 2 символа SHA>/<SHA>.json.gz` рядом с SQLite,
 на alwaysdata — `/home/narnes/tarkov-data/content`, вне релизов и web root.
 JSON квестов и справочников в БД не хранится. Файлы неизменяемы, проверяются по SHA-256;

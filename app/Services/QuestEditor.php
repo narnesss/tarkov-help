@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Quest;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -13,6 +14,11 @@ final class QuestEditor
     public function save(Quest $quest, array $input): Quest
     {
         $traders = app(TraderCatalog::class);
+        $input['quest_id'] ??= $quest->exists ? $quest->quest_id : null;
+        if (!$quest->exists && empty($input['quest_id'])) { $input['quest_id'] = 'custom-'.bin2hex(random_bytes(12)); }
+        foreach ($input['goals'] ?? [] as $key => $goal) {
+            if (is_array($goal) && empty($goal['id'])) { $input['goals'][$key]['id'] = 'custom-'.bin2hex(random_bytes(12)); }
+        }
         $data = Validator::make($input, [
             'revision' => ['nullable', 'string'],
             'quest_id' => ['required', 'string', 'max:128', 'regex:/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/',
@@ -38,6 +44,10 @@ final class QuestEditor
         ksort($data['goals'], SORT_NUMERIC);
         $payload['objectives'] = array_map(function (array $goal) use ($oldGoals): array {
             $result = [...($oldGoals->get($goal['id']) ?? []), 'id' => $goal['id'], 'description' => $goal['description'], 'type' => $goal['type']];
+            if (!$oldGoals->has($goal['id'])) {
+                $result['maps'] = [];
+                $result[str_contains($goal['type'], 'QuestItem') ? 'questItem' : 'items'] = str_contains($goal['type'], 'QuestItem') ? null : [];
+            }
             if (isset($goal['count']) && $goal['count'] !== '') { $result['count'] = (int) $goal['count']; }
             elseif (array_key_exists('count', $goal)) { unset($result['count']); }
             return $result;
@@ -51,7 +61,7 @@ final class QuestEditor
         if (isset($payload['questContent'])) { $payload['questContent']['experience'] = (int) $data['experience']; }
         $attributes = ['quest_id' => $data['quest_id'], 'mode' => $data['mode'], 'name' => $data['name'],
             'trader_id' => $data['trader_id'], 'published' => (bool) $data['published'], 'payload' => $payload];
-        if (!$quest->exists) { $quest->fill($attributes)->save(); return $quest; }
+        if (!$quest->exists) { DB::transaction(fn () => $quest->fill($attributes)->save()); return $quest; }
         $this->update($quest, $attributes, $data['revision'] ?? '');
         return $quest;
     }
@@ -64,9 +74,11 @@ final class QuestEditor
         }
         $original = $quest->getRawOriginal('payload');
         $quest->fill($attributes); $changes = $quest->getDirty(); $changes['updated_at'] = now();
-        if (Quest::whereKey($quest->id)->where('payload', $original)->update($changes) !== 1) {
-            throw ValidationException::withMessages(['revision' => 'Данные уже изменились. Обновите страницу и повторите правку.']);
-        }
-        $quest->refresh();
+        DB::transaction(function () use ($quest, $original, $changes): void {
+            if (Quest::whereKey($quest->id)->where('payload', $original)->update($changes) !== 1) {
+                throw ValidationException::withMessages(['revision' => 'Данные уже изменились. Обновите страницу и повторите правку.']);
+            }
+            $quest->refresh(); app(ReferenceIndexer::class)->quest($quest);
+        });
     }
 }

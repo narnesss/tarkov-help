@@ -11,6 +11,8 @@ final class ContentDataset extends Model
 {
     use AsSource;
     protected $guarded = ['id'];
+    protected static function booted(): void
+    { static::saved(fn (self $dataset) => app(\App\Services\ReferenceIndexer::class)->dataset($dataset)); }
     public function revision(): string { return hash('sha256', (string) $this->getRawOriginal('payload')); }
 
     public function content(): array
