@@ -204,4 +204,22 @@ final class ContentReferencesTest extends TestCase
         $this->postJson('/admin/datasets/'.$dataset->id.'/edit/save?section=/0', ['revision' => $dataset->fresh()->revision(), 'fields' => [hash('sha256', '/0/y') => '101']])->assertUnprocessable();
         $this->assertSame(0, $dataset->fresh()->content()[0]['y']);
     }
+
+    public function test_rendered_multiple_choices_preserve_the_original_order_on_noop_save(): void
+    {
+        $quest = $this->fixtures();$payload = $quest->payload;
+        // Порядок связей намеренно противоположен порядку PK поискового индекса.
+        $payload['objectives'][0]['maps'] = ['5704e4dad2720bb55b8b4567', '5704e554d2720bac5b8b456e'];
+        $quest->payload = $payload;$quest->save();$key = hash('sha256', '/objectives/0/maps');
+        $html = $this->get('/admin/quests/'.$quest->id.'/fields?section=/objectives/0')->assertOk()->getContent();
+        $dom = new \DOMDocument();@$dom->loadHTML('<?xml encoding="utf-8" ?>'.$html);$xpath = new \DOMXPath($dom);
+        $options = $xpath->query('//select[@name="fields['.$key.'][]"]/option[@selected]');$selected = [];
+        foreach ($options as $option) { $selected[] = $option->getAttribute('value'); }
+        $this->assertSame([(string) $this->reference('location', $payload['objectives'][0]['maps'][0], 'game'),
+            (string) $this->reference('location', $payload['objectives'][0]['maps'][1], 'game')], $selected);
+        $state = $xpath->query('//input[@name="_state"]')->item(0)->getAttribute('value');
+        $this->post('/admin/quests/'.$quest->id.'/fields/save?section=/objectives/0', ['revision' => $quest->revision(), '_state' => $state,
+            'fields' => [$key => $selected]])->assertRedirect()->assertSessionHasNoErrors();
+        $this->assertSame($payload['objectives'], $quest->fresh()->payload['objectives']);
+    }
 }

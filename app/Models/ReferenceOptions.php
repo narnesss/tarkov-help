@@ -15,7 +15,11 @@ final class ReferenceOptions extends ContentReference
     {
         abort_unless(request()->user()?->hasAccess('wiki.content'), 403);
         $query = ContentReference::where('kind', $kind)->where('variant', $variant);
-        if ($this->value !== []) { return $this->options($query->whereIn('id', $this->value)->get()); }
+        if ($this->value !== []) {
+            $order = array_flip(array_map('strval', $this->value));
+            return $this->options($query->whereIn('id', $this->value)->get()
+                ->sortBy(fn (ContentReference $record) => $order[(string) $record->id])->values());
+        }
         $search = mb_strtolower(preg_replace('/[\s_-]+/u', ' ', trim((string) request()->input('search', ''))));
         return $this->options($query->where('active', true)->when($search !== '', fn ($q) => $q->whereRaw('instr(search_text, ?) > 0', [$search]))
             ->orderBy('label')->limit(min(30, max(1, (int) request()->input('chunk', 20))))->get());
