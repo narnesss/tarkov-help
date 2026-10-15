@@ -54,10 +54,29 @@ final class PlayerEmailsTest extends TestCase
         $a=$this->account('player_a');$b=$this->account('player_b');$code=$this->send($a);
         $this->emailPost($b,'verify',$code)->assertGone();
         $wrong=$code;$wrong['code']=$code['code']==='00000000'?'11111111':'00000000';
-        for($i=0;$i<5;$i++){$this->emailPost($a,'verify',$wrong)->assertUnprocessable();}
+        for($i=0;$i<5;$i++){
+            $this->emailPost($a,'verify',$wrong)->assertUnprocessable()->assertJsonPath('message','Неверный код подтверждения.');
+            $this->withCookie('eft_session',$a[0])->getJson('/api/auth/email')->assertOk()->assertJsonPath('pending.attemptsLeft',4-$i);
+        }
         $this->emailPost($a,'verify',$code)->assertStatus(429);
         $this->assertSame(5,(int)DB::table('player_email_challenges')->value('attempts'));
         $this->assertSame(0,DB::table('player_emails')->count());
+    }
+    public function test_code_lasts_thirty_minutes_and_mail_subject_decodes_as_utf8(): void
+    {
+        $who=$this->account();$code=$this->send($who);
+        $pending=DB::table('player_email_challenges')->first();
+        $this->assertSame(1800,(int)$pending->expires_at-(int)$pending->sent_at);
+        DB::table('player_email_challenges')->update(['sent_at'=>time()-1200,'expires_at'=>time()+600]);
+        $this->emailPost($who,'verify',$code)->assertOk();
+        $mail=(new VerifyPlayerEmail('12345678'))->from('narnes@alwaysdata.net')->to('player@example.test');
+        $this->assertStringContainsString('Код действует 30 минут.',$mail->render());
+        $manager=new \Illuminate\Mail\MailManager($this->app);
+        $message=$manager->mailer('array')->send($mail)->getSymfonySentMessage()->getOriginalMessage();
+        $subject=$message->getHeaders()->get('Subject')->toString();
+        $this->assertStringContainsString('=?UTF-8?B?',$subject);
+        $this->assertSame('Subject: Код подтверждения e-mail — Tarkov Compass',iconv_mime_decode($subject,ICONV_MIME_DECODE_STRICT,'UTF-8'));
+        foreach(explode("\r\n",$subject) as $line){$this->assertLessThanOrEqual(78,strlen($line));}
     }
     public function test_expired_and_replaced_codes_do_not_verify_and_old_contact_remains(): void
     {

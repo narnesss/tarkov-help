@@ -6,7 +6,7 @@
   на прежний ID; смена только после кода. До подтверждения новый адрес не заменяет старый.
 - `player_email_challenges`: PK/FK user_id, unique challenge_id, email, code_hash HMAC-SHA256,
   attempts, sent_at, expires_at. Восьмизначный код отсутствует в БД/логах/очереди/API.
-  TTL 10 минут, 5 попыток, повтор через 60 секунд; почасовые лимиты user/IP/email в rate_limits.
+  TTL 30 минут, 5 попыток, повтор через 60 секунд; почасовые лимиты user/IP/email в rate_limits.
 
 Подтверждение и OAuth используют общий player_auth_locks FOR UPDATE: проверка уникальности,
 назначение почты и выбор владельца не расходятся при конкуренции. Занятый адрес/subject

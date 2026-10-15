@@ -68,11 +68,17 @@ function renderEmail(state){
     +(pending?'Код отправлен на '+pending.email+'. Осталось попыток: '+pending.attemptsLeft+'.':'');
   if(!state.enabled)$('account-email-status').textContent+=' Отправка писем временно недоступна.';
   if(!emailLoaded){$('account-email-form').elements.email.value=pending?.email??state.email??'';emailLoaded=true;}
+  updateEmailSend();
   $('account-email-send').disabled=!state.enabled||cooldown>0;
   $('account-email-send').textContent=cooldown>0?'Повторить через '+cooldown+' с':pending?'Отправить новый код':'Отправить код';
   $('account-email-code-form').hidden=!pending;
   $('account-email-confirm').disabled=!pending||pending.attemptsLeft===0;
 }
+function updateEmailSend(){
+  const address=$('account-email-form').elements.email.value.trim().toLowerCase();
+  $('account-email-send').hidden=!!emailState?.email&&address===emailState.email;
+}
+$('account-email-form').elements.email.addEventListener('input',updateEmailSend);
 async function loadEmail(){
   if(!profileStore.profile.authenticated||!profileStore.server)return;
   try{renderEmail(await profileStore.api('/api/auth/email'));}

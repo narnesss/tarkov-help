@@ -63,7 +63,7 @@ final class PlayerEmails
             $this->throttle('user:'.$session->userId,5,3600); $this->throttle('ip:'.$ip,10,3600); $this->throttle('address:'.$email,3,3600);
             DB::table('player_email_challenges')->where('expires_at','<=',time())->delete();
             DB::table('player_email_challenges')->updateOrInsert(['user_id'=>$session->userId],['challenge_id'=>$challenge,'email'=>$email,
-                'code_hash'=>$this->digest($session->userId,$challenge,$email,$code),'attempts'=>0,'sent_at'=>time(),'expires_at'=>time()+600]);
+                'code_hash'=>$this->digest($session->userId,$challenge,$email,$code),'attempts'=>0,'sent_at'=>time(),'expires_at'=>time()+1800]);
             return true;
         });
         if($sent){

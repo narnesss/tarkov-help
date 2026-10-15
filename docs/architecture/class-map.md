@@ -1,9 +1,9 @@
 # Карта классов Tarkov Wiki
 
-- PlayerEmails / VerifyPlayerEmail: адрес и одноразовый код в личном кабинете, CSRF/Origin,
+- PlayerEmails / VerifyPlayerEmail / Utf8SubjectHeader: адрес и одноразовый код в личном кабинете, CSRF/Origin,
   HMAC кода, TTL/попытки/лимиты, транзакционное назначение email прежнему ID. Laravel Mail
   отправляет письмо через TLS SMTP alwaysdata; log/failover/array запрещены в production.
-  PlayerOAuth учитывает player_emails при выборе существующего аккаунта.
+  Utf8SubjectHeader кодирует русскую тему в UTF-8 Base64. PlayerOAuth учитывает player_emails при выборе существующего аккаунта.
 
 - PlayerAuthController / PlayerOAuth: Google/Discord через защищённые JSON POST, одноразовый
   state с привязкой к opaque-сессии, identity provider/subject и явное подключение к игроку.
