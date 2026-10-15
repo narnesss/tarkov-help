@@ -2,14 +2,14 @@
 declare(strict_types=1);
 namespace App\Http\Controllers;
 
-use App\Services\PlayerOAuth;
+use App\Services\{PlayerOAuth, PlayerProfiles};
 use EftWiki\Identity\{AccountService, Session};
 use Illuminate\Http\{JsonResponse, Request};
 
 /** Внешние способы входа сохраняют cookie/HMAC CSRF-контракт публичного API. */
 final readonly class PlayerAuthController
 {
-    public function __construct(private AccountService $accounts, private PlayerOAuth $oauth) {}
+    public function __construct(private AccountService $accounts, private PlayerOAuth $oauth, private PlayerProfiles $profiles) {}
 
     private function session(Request $request, bool $write=false): Session
     {
@@ -33,12 +33,20 @@ final readonly class PlayerAuthController
         return response()->json(['url'=>$this->oauth->begin($provider,$session)])->header('Cache-Control','private, no-store');
     }
 
+    public function profile(Request $request): JsonResponse
+    {
+        $session=$this->session($request,true);
+        $data=$request->validate(['display_name'=>'present|nullable|string|max:64']);
+        $this->profiles->rename($session,$data['display_name']);
+        return response()->json($this->profiles->publicData($session))->header('Cache-Control','private, no-store');
+    }
+
     public function finish(Request $request,string $provider): JsonResponse
     {
         $session=$this->session($request,true);
         $data=$request->validate(['state'=>'required|string|size:64','code'=>'required|string|max:4096']);
         $next=$this->oauth->finish($provider,$session,$data['state'],$data['code']);
-        return response()->json($next->publicData((string)config('app.key')))->header('Cache-Control','private, no-store')
+        return response()->json($this->profiles->publicData($next))->header('Cache-Control','private, no-store')
             ->header('Set-Cookie','eft_session='.$next->token.'; Path=/; Max-Age=2592000; HttpOnly; SameSite=Lax'.(str_starts_with((string)config('app.url'),'https://')?'; Secure':''));
     }
 }

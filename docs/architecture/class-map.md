@@ -3,6 +3,10 @@
 - PlayerAuthController / PlayerOAuth: Google/Discord через защищённые JSON POST, одноразовый
   state с привязкой к opaque-сессии, identity provider/subject и явное подключение к игроку.
   Токены провайдеров не сохраняются; AccountService::issueFor выдаёт прежний cookie-контракт.
+- PlayerProfiles: имя/аватар провайдера и пользовательское отображаемое имя отдельно от
+  логина; обогащение ответов API и CSRF-защищённое редактирование. PlayerOAuth сохраняет
+  подтверждённую почту, автоматически связывает допустимое однозначное совпадение под
+  player_auth_locks FOR UPDATE; внешний Google email требует входа в прежний аккаунт.
 - PlayerOAuthSettings / oauth-transfer.sh / player-oauth.yml: ограниченная установка
   OAuth-реквизитов через RSA-шифротекст; атомарная правка только четырёх переменных .env.
 - account.blade.php / account.mjs / account-model.mjs: отдельный кабинет, формы входа/регистрации,

@@ -14,7 +14,7 @@
   <title>{{ $title }}</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
 @foreach ($meta['styles'] as $style)
-  <link rel="stylesheet" href="{{ $style }}?v=account-1">
+  <link rel="stylesheet" href="{{ $style }}?v={{ $style === 'account.css' ? 'profile-2' : 'account-1' }}">
 @endforeach
   <link rel="modulepreload" href="profile-store.mjs">
   <meta name="wiki-routing" content="pages">

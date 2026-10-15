@@ -12,6 +12,18 @@ async function run(callback){if(busy)return;busy=true;document.body.setAttribute
 function tools(){globalThis.dispatchEvent(new CustomEvent('wiki:open-profile'));}
 for(const button of document.querySelectorAll('[data-profile-tools]'))button.onclick=tools;
 $('account-name').textContent=profileStore.profile.name;
+$('account-settings').hidden=!profileStore.profile.authenticated;
+$('account-name-form').elements.display_name.value=profileStore.profile.name;
+$('account-name-reset').disabled=!profileStore.profile.customName;
+const avatar=profileStore.profile.avatar;
+if(typeof avatar==='string'){
+  const url=new URL(avatar);
+  if(url.protocol==='https:'&&(url.hostname==='cdn.discordapp.com'||url.hostname.endsWith('.googleusercontent.com'))){
+    const image=el('img');image.alt='';image.width=64;image.height=64;image.referrerPolicy='no-referrer';
+    image.onerror=()=>{$('account-avatar').textContent=profileStore.profile.name.slice(0,1).toUpperCase();};
+    image.src=url.href;$('account-avatar').replaceChildren(image);
+  }
+}
 $('account-auth').hidden=!!profileStore.profile.authenticated;
 $('account-connections').hidden=!profileStore.profile.authenticated;
 $('account-logout').hidden=!profileStore.profile.authenticated;
@@ -40,6 +52,13 @@ $('account-form').onsubmit=event=>{event.preventDefault();run(async()=>{
 });};
 $('account-logout').onclick=()=>run(async()=>{await profileStore.authenticate('logout');location.replace(siteHref('account.html?view=login'));});
 $('account-sync').onclick=()=>run(async()=>{if(!await profileStore.flush())throw new Error('Не удалось сохранить изменения. Повтори синхронизацию позже.');notify('Прогресс сохранён на сервере.');});
+async function saveName(name){
+  if(!await profileStore.flush())throw new Error('Сначала сохрани последние изменения профиля.');
+  await profileStore.api('/api/auth/profile',{method:'POST',body:JSON.stringify({display_name:name})});
+  location.replace(siteHref('account.html?mode='+mode));
+}
+$('account-name-form').onsubmit=event=>{event.preventDefault();run(()=>saveName($('account-name-form').elements.display_name.value.trim()));};
+$('account-name-reset').onclick=()=>run(()=>saveName(null));
 for(const button of document.querySelectorAll('[data-oauth]'))button.onclick=()=>run(async()=>{
   if(!await profileStore.flush())throw new Error('Сначала сохрани последние изменения профиля.');
   const result=await profileStore.api('/api/auth/oauth/'+button.dataset.oauth+'/start',{method:'POST',body:'{}'});
@@ -51,9 +70,9 @@ async function providers(){
   try{
     const {providers}=await profileStore.api('/api/auth/options');
     for(const provider of providers)for(const button of document.querySelectorAll(`[data-oauth="${provider.id}"]`)){
-      button.disabled=!provider.enabled||provider.linked;
-      button.title=provider.linked?'Уже подключён':provider.enabled?'':'Этот способ входа пока недоступен';
-      if(provider.linked)button.textContent=(provider.id==='google'?'Google':'Discord')+' подключён';
+      button.disabled=!provider.enabled;
+      button.title=provider.linked?'Обновить имя и аватар подключённого профиля':provider.enabled?'':'Этот способ входа пока недоступен';
+      if(provider.linked)button.textContent=(provider.id==='google'?'Google':'Discord')+' подключён · обновить профиль';
     }
     const unavailable=providers.filter(p=>!p.enabled).map(p=>p.id==='google'?'Google':'Discord');
     const text=unavailable.length?'Вход через '+unavailable.join(' и ')+' пока недоступен.':'';

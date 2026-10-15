@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/api/content/data/{path}', ContentController::class)->where('path', '.*')->middleware(VerifyApiProxy::class);
 Route::get('/api/content/quest/{quest}', ContentQuestController::class)->middleware(VerifyApiProxy::class);
 Route::get('/api/auth/options', [PlayerAuthController::class, 'options'])->middleware(VerifyApiProxy::class);
+Route::post('/api/auth/profile', [PlayerAuthController::class, 'profile'])->middleware(VerifyApiProxy::class);
 Route::post('/api/auth/oauth/{provider}/start', [PlayerAuthController::class, 'begin'])->where('provider','google|discord')->middleware(VerifyApiProxy::class);
 Route::post('/api/auth/oauth/{provider}/finish', [PlayerAuthController::class, 'finish'])->where('provider','google|discord')->middleware(VerifyApiProxy::class);
 Route::any('/api/{path?}', ApiController::class)->where('path', '(?!content(?:/|$)).*')->middleware(VerifyApiProxy::class);

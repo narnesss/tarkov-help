@@ -1,5 +1,21 @@
 # Карта БД Tarkov Wiki
 
+Миграция `2026_10_16_000007_add_player_profiles.php` сохраняет users и user_state без изменений:
+
+- `player_profiles`: PK/FK user_id, пользовательский display_name, provider_name, avatar_url,
+  updated_at. Пустой override возвращает имя последнего провайдера. Ранее сохранённые
+  OAuth-имена переносятся при миграции; аватар обновляется при следующем входе.
+- `player_identities`: verified_email nullable + индекс, email_auto_link boolean. Только
+  настоящий boolean-флаг подтверждения; email не передаётся в клиентские ответы.
+- `player_auth_locks(id=1)`: блокировка решений OAuth, включая первое назначение email,
+  не допускает двух одновременных созданий по одной почте. PK/FK/UNIQUE защищают subject
+  и единственный профиль каждого провайдера у игрока. Конфликт не объединяет прогресс.
+
+Автопривязка требует однозначной подтверждённой почты с обеих сторон: Discord verified,
+Google Gmail либо email_verified + совпадающий hd Workspace. Внешний Google email
+требует явной привязки из аккаунта. Телефоны провайдеры в этих scopes не передают;
+телефонные данные и неподтверждённые адреса не используются для связывания.
+
 Миграция `2026_10_15_000006_add_player_oauth.php` добавляет только обычные колонки:
 
 - `player_identities`: PK(provider, subject), unique(user_id, provider), FK user_id → users.id,

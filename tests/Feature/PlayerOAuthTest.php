@@ -10,6 +10,8 @@ use Tests\TestCase;
 final class PlayerOAuthTest extends TestCase
 {
     use RefreshDatabase;
+    private array $googleUser=['sub'=>'google-user-1','name'=>'Игрок Google','email'=>'same@example.test','picture'=>'https://lh3.googleusercontent.com/avatar'];
+    private array $discordUser=['id'=>'123456789','global_name'=>'Игрок Discord','email'=>'same@example.test'];
 
     protected function setUp(): void
     {
@@ -19,9 +21,9 @@ final class PlayerOAuthTest extends TestCase
         Http::preventStrayRequests();
         Http::fake([
             'oauth2.googleapis.com/token'=>fn($request)=>$request['code']==='invalid'?Http::response(['error'=>'invalid_grant'],400):Http::response(['access_token'=>'google-access']),
-            'openidconnect.googleapis.com/v1/userinfo'=>Http::response(['sub'=>'google-user-1','name'=>'Игрок Google','email'=>'same@example.test']),
+            'openidconnect.googleapis.com/v1/userinfo'=>fn()=>Http::response($this->googleUser),
             'discord.com/api/oauth2/token'=>Http::response(['access_token'=>'discord-access']),
-            'discord.com/api/users/@me'=>Http::response(['id'=>'123456789','global_name'=>'Игрок Discord','email'=>'same@example.test']),
+            'discord.com/api/users/@me'=>fn()=>Http::response($this->discordUser),
         ]);
     }
 
@@ -70,6 +72,7 @@ final class PlayerOAuthTest extends TestCase
         $guest=$this->guest();$state=$this->start($guest);
         $registered=$this->authPost($guest,'/api/auth/oauth/google/finish',['state'=>$state,'code'=>'first-code'])->assertOk()->assertJsonPath('profile.authenticated',true);
         $id=$registered->json('profile.id');$cookie=$registered->headers->getCookies()[0];
+        $registered->assertJsonPath('profile.name','Игрок Google')->assertJsonPath('profile.avatar','https://lh3.googleusercontent.com/avatar');
         $this->assertTrue($cookie->isSecure());$this->assertTrue($cookie->isHttpOnly());
         $who=[$cookie->getValue(),$registered->json('csrf'),$id];
         $this->withCookie('eft_session',$guest[0])->getJson('/api/state')->assertUnauthorized();
@@ -118,11 +121,83 @@ final class PlayerOAuthTest extends TestCase
         $this->assertSame($who[2],DB::table('player_identities')->value('user_id'));
     }
 
-    public function test_matching_emails_never_merge_google_and_discord_accounts(): void
+    public function test_unverified_matching_emails_never_merge_google_and_discord_accounts(): void
     {
         $a=$this->guest();$state=$this->start($a);$first=$this->authPost($a,'/api/auth/oauth/google/finish',['state'=>$state,'code'=>'google'])->assertOk();
         $b=$this->guest();$state=$this->start($b,'discord');$second=$this->authPost($b,'/api/auth/oauth/discord/finish',['state'=>$state,'code'=>'discord'])->assertOk();
         $this->assertNotSame($first->json('profile.id'),$second->json('profile.id'));
         $this->assertSame(2,DB::table('player_identities')->count());
+    }
+
+    private function finishGoogle(array $who,array $user)
+    {
+        $this->googleUser=$user;
+        return $this->authPost($who,'/api/auth/oauth/google/finish',['state'=>$this->start($who),'code'=>'google-code']);
+    }
+
+    private function finishDiscord(array $who,array $user)
+    {
+        $this->discordUser=$user;
+        return $this->authPost($who,'/api/auth/oauth/discord/finish',['state'=>$this->start($who,'discord'),'code'=>'discord-code']);
+    }
+
+    public function test_verified_email_automatically_links_both_providers_to_existing_progress(): void
+    {
+        $first=$this->finishGoogle($this->guest(),['sub'=>'first-google','name'=>'Имя Google','email'=>' Player@Gmail.com ','email_verified'=>true])->assertOk();
+        $id=$first->json('profile.id');
+        DB::table('user_state')->insert(['user_id'=>$id,'state_key'=>'kord-achievements-pve','value'=>'["award-1"]','version'=>7,'updated_at'=>time()]);
+        $second=$this->finishDiscord($this->guest(),['id'=>'987654321','username'=>'discord-user','global_name'=>'Имя Discord','email'=>'player@gmail.com','verified'=>true,'avatar'=>str_repeat('a',32)])
+            ->assertOk()->assertJsonPath('profile.id',$id)->assertJsonPath('profile.name','Имя Discord')
+            ->assertJsonPath('profile.avatar','https://cdn.discordapp.com/avatars/987654321/'.str_repeat('a',32).'.png?size=128');
+        $this->assertSame(2,DB::table('player_identities')->where('user_id',$id)->count());
+        $this->withCookie('eft_session',$second->headers->getCookies()[0]->getValue())->getJson('/api/state')->assertJsonPath('state.kord-achievements-pve.version',7);
+        // Email остаётся приватным атрибутом сервера и не попадает в session response.
+        $this->assertStringNotContainsString('player@gmail.com',$second->getContent());
+    }
+
+    public function test_verified_email_links_google_to_discord_and_workspace_is_supported(): void
+    {
+        $first=$this->finishDiscord($this->guest(),['id'=>'777','username'=>'existing','email'=>'player@company.test','verified'=>true])->assertOk();
+        $this->finishGoogle($this->guest(),['sub'=>'workspace','name'=>'Сотрудник','email'=>'player@company.test','email_verified'=>true,'hd'=>'company.test'])
+            ->assertOk()->assertJsonPath('profile.id',$first->json('profile.id'));
+    }
+
+    public function test_google_external_mail_and_false_verified_flags_require_existing_login(): void
+    {
+        $first=$this->finishDiscord($this->guest(),['id'=>'777','username'=>'existing','email'=>'player@mail.ru','verified'=>true])->assertOk();
+        $who=$this->guest();
+        $this->finishGoogle($who,['sub'=>'external','email'=>'player@mail.ru','email_verified'=>true])->assertConflict();
+        $this->assertSame(1,DB::table('player_identities')->count());
+        $this->finishGoogle($who,['sub'=>'unverified','email'=>'player@mail.ru','email_verified'=>'true'])->assertOk()->assertJsonMissing(['id'=>$first->json('profile.id')]);
+        $this->assertNull(DB::table('player_identities')->where('subject','unverified')->value('verified_email'));
+    }
+
+    public function test_a_provider_already_connected_elsewhere_cannot_be_reassigned_by_email(): void
+    {
+        $a=$this->finishGoogle($this->guest(),['sub'=>'google-a','email'=>'player@gmail.com','email_verified'=>true])->assertOk();
+        $b=$this->finishDiscord($this->guest(),['id'=>'777','username'=>'second','email'=>'other@gmail.com','verified'=>true])->assertOk();
+        // Уже связанный subject сохраняет владельца даже после изменения почты.
+        $this->finishDiscord($this->guest(),['id'=>'777','username'=>'second','email'=>'player@gmail.com','verified'=>true])->assertOk()->assertJsonPath('profile.id',$b->json('profile.id'));
+        $this->finishGoogle($this->guest(),['sub'=>'google-c','email'=>'player@gmail.com','email_verified'=>true])->assertConflict();
+        $this->assertSame(2,DB::table('player_identities')->count());
+        $this->assertNotSame($a->json('profile.id'),$b->json('profile.id'));
+    }
+
+    public function test_second_subject_of_same_provider_cannot_replace_existing_connection(): void
+    {
+        $a=$this->finishGoogle($this->guest(),['sub'=>'google-a','email'=>'player@gmail.com','email_verified'=>true])->assertOk();
+        $this->finishGoogle($this->guest(),['sub'=>'google-b','email'=>'player@gmail.com','email_verified'=>true])->assertConflict();
+        $this->assertSame(1,DB::table('player_identities')->count());
+        $this->assertSame($a->json('profile.id'),DB::table('player_identities')->value('user_id'));
+    }
+
+    public function test_custom_name_survives_provider_refresh_and_unsafe_avatar_is_not_used(): void
+    {
+        $first=$this->finishGoogle($this->guest(),['sub'=>'google-a','name'=>'Имя Google','picture'=>'javascript:alert(1)'])->assertOk()->assertJsonPath('profile.avatar',null);
+        $who=[$first->headers->getCookies()[0]->getValue(),$first->json('csrf'),$first->json('profile.id')];
+        $this->authPost($who,'/api/auth/profile',['display_name'=>'Мой позывной'])->assertOk()->assertJsonPath('profile.name','Мой позывной');
+        $this->finishGoogle($this->guest(),['sub'=>'google-a','name'=>'Новое имя','picture'=>'https://evil.test/avatar'])->assertOk()
+            ->assertJsonPath('profile.name','Мой позывной')->assertJsonPath('profile.customName',true)->assertJsonPath('profile.avatar',null);
+        $this->assertSame('Новое имя',DB::table('player_profiles')->where('user_id',$who[2])->value('provider_name'));
     }
 }
