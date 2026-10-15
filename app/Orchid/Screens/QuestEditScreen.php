@@ -3,35 +3,30 @@ declare(strict_types=1);
 namespace App\Orchid\Screens;
 
 use App\Models\Quest;
-use App\Services\QuestEditor;
+use App\Services\{QuestEditor, TraderCatalog};
 use Illuminate\Http\Request;
 use Orchid\Screen\Screen;
 use Orchid\Screen\Actions\{Button, Link};
 use Orchid\Screen\Fields\{Input, Select, TextArea, CheckBox, Matrix};
 use Orchid\Support\Facades\{Layout, Toast};
 
-/** Форма задания: основные поля и полный JSON сложных условий/награды/медиа. */
+/** Текстовая форма задания с выбором торговца и отдельными разделами условий/наград. */
 final class QuestEditScreen extends Screen
 {
     protected ?Quest $record = null;
-
     public function name(): string { return $this->record->exists ? 'Редактирование квеста' : 'Новый квест'; }
     public function permission(): array { return ['wiki.content']; }
 
     public function query(Quest $quest): array
     {
-        $this->record = $quest; $payload = $quest->payload ?? [];
-        $json = fn ($value) => json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        return ['quest' => [
+        $this->record = $quest; $payload = $quest->payload;
+        return ['quest' => ['revision' => $quest->revision(),
             'quest_id' => $quest->quest_id, 'mode' => $quest->mode ?? 'pve', 'name' => $quest->name,
-            'trader_id' => $payload['trader']['id'] ?? '', 'trader_name' => $payload['trader']['name'] ?? '',
+            'trader_id' => $quest->trader_id,
             'min_player_level' => $payload['minPlayerLevel'] ?? 1, 'experience' => $payload['experience'] ?? 0,
             'description' => $payload['description'] ?? '', 'published' => $quest->published ?? false,
             'goals' => array_map(fn ($goal) => ['id' => $goal['id'], 'description' => $goal['description'],
-                'conditions' => $json((object) array_diff_key($goal, ['id' => true, 'description' => true]))], $payload['objectives'] ?? []),
-            'rewards' => $json($payload['finishRewards'] ?? (object) []),
-            'details' => $json((object) array_diff_key($payload, array_flip(['id', 'name', 'trader', 'minPlayerLevel', 'experience', 'description', 'objectives', 'finishRewards']))),
-        ]];
+                'type' => $goal['type'] ?? 'custom', 'count' => $goal['count'] ?? null], $payload['objectives'] ?? [])]];
     }
 
     public function commandBar(): array
@@ -39,32 +34,41 @@ final class QuestEditScreen extends Screen
 
     public function layout(): array
     {
+        $types = ['visit' => 'Посетить место', 'findItem' => 'Найти предмет', 'giveItem' => 'Передать предмет',
+            'shoot' => 'Уничтожить цель', 'extract' => 'Выйти с локации', 'mark' => 'Установить маяк',
+            'plantItem' => 'Разместить предмет', 'buildWeapon' => 'Собрать оружие', 'skill' => 'Развить навык', 'custom' => 'Другая цель'];
+        foreach ($this->record->payload['objectives'] ?? [] as $goal) {
+            if (isset($goal['type']) && !isset($types[$goal['type']])) { $types[$goal['type']] = $goal['type']; }
+        }
+        $sections = [];
+        if ($this->record->exists) {
+            foreach (['/objectives' => 'Подробные условия целей', '/finishRewards' => 'Награды', '/questContent' => 'Прохождение и материалы', '' => 'Остальные поля задания'] as $section => $title) {
+                $sections[] = Link::make($title)->route('platform.quests.fields', ['quest' => $this->record->id, 'section' => $section]);
+            }
+        }
         return [Layout::rows([
-            Input::make('quest.quest_id')->title('ID квеста')->required()->readonly($this->record->exists)
-                ->help('Стабильный ID. После создания не меняется.'),
+            Input::make('quest.revision')->type('hidden'),
+            Input::make('quest.quest_id')->title('ID квеста')->required()->readonly($this->record->exists)->help('Стабильный ID. После создания не меняется.'),
             Select::make('quest.mode')->title('Режим')->options(['pve' => 'PVE', 'regular' => 'PVP'])->disabled($this->record->exists),
             Input::make('quest.name')->title('Название')->required(),
-            Input::make('quest.trader_id')->title('ID торговца')->required(),
-            Input::make('quest.trader_name')->title('Имя торговца')->required(),
-            Input::make('quest.min_player_level')->title('Минимальный уровень')->type('number')->min(1)->max(100)->required(),
+            Select::make('quest.trader_id')->title('Торговец')->options(app(TraderCatalog::class)->options())->empty('Выберите торговца')->required(),
+            Input::make('quest.min_player_level')->title('Минимальный уровень')->type('number')->min(0)->max(100)->required(),
             Input::make('quest.experience')->title('Опыт')->type('number')->min(0)->required(),
             TextArea::make('quest.description')->title('Описание')->rows(5),
             CheckBox::make('quest.published')->title('Опубликован')->sendTrueOrFalse(),
         ])->title('Основные данные'), Layout::rows([
-            Matrix::make('quest.goals')->title('Цели задания')->columns(['ID цели' => 'id', 'Описание' => 'description', 'Условия (JSON)' => 'conditions'])
+            Matrix::make('quest.goals')->title('Цели задания')->columns(['ID цели' => 'id', 'Описание' => 'description', 'Действие' => 'type', 'Количество' => 'count'])
                 ->fields(['id' => Input::make()->required(), 'description' => TextArea::make()->rows(4)->required(),
-                    'conditions' => TextArea::make()->rows(6)->value('{}')])
+                    'type' => Select::make()->options($types), 'count' => Input::make()->type('number')->min(0)])
                 ->addRowLabel('Добавить цель')->removableRows(false)->maxRows(100)
-                ->help('Каждая цель — отдельная строка. В условиях: type, count, map, предметы, координаты и ограничения. Существующие ID сохраняйте.'),
-            TextArea::make('quest.rewards')->title('Награды (JSON)')->rows(12)->required(),
-            TextArea::make('quest.details')->title('Дополнительные данные (JSON)')->rows(20)->required()
-                ->help('Условия открытия, questContent (тексты прохождения), медиа, карты, ветки сюжета и другие поля.'),
+                ->help('Существующие ID целей сохраняйте. Подробные условия доступны после сохранения задания.'),
+            ...$sections,
         ])->title('Цели, награды и прохождение')];
     }
 
     public function save(Request $request, Quest $quest, QuestEditor $editor)
     {
-        $input = $request->input('quest', []);
+        $input = $request->input('quest', []); $input['goals'] ??= [];
         if ($quest->exists) { $input['mode'] = $quest->mode; }
         try { $editor->save($quest, $input); }
         catch (\Illuminate\Validation\ValidationException $error) {

@@ -10,6 +10,7 @@
 !/deployment/alwaysdata/environment.example
 /build/
 /database/*.sqlite*
+/database/content/
 /tests/php/coverage.json
 /.phpunit.cache/
 /storage/*.key

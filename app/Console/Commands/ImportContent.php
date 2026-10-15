@@ -26,7 +26,7 @@ final class ImportContent extends Command
                 }
                 $dataset = ContentDataset::firstOrNew(['path' => $path]);
                 if ($dataset->exists) { continue; }
-                $dataset->payload = base64_encode(file_get_contents($directory.'/datasets/'.$path.'.gz'));
+                $dataset->setContent(json_decode(gzdecode(file_get_contents($directory.'/datasets/'.$path.'.gz')), true, 128, JSON_THROW_ON_ERROR));
                 $dataset->save();
             }
             $stream = gzopen($directory.'/quests.jsonl.gz', 'rb');

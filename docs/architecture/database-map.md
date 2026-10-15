@@ -8,9 +8,18 @@
 - `admin_sessions`: штатная структура Laravel database sessions; cookie только `/admin`.
   Драйвер и таблица выбираются до создания контроллера, чтобы обычный вход сохранялся
   в том же хранилище, которое читает следующий запрос.
-- `content_datasets`: unique path, gzip/base64 payload, timestamps. Только публичный контент.
+- `content_datasets`: unique path, payload — строковая ссылка `@file:SHA256`, timestamps.
 - `quests`: integer id, quest_id, mode (pve/regular), name, trader_id, published,
-  полный JSON payload и timestamps; UNIQUE(quest_id,mode), индекс(mode,published).
+  payload — строковая ссылка `@file:SHA256` и timestamps; UNIQUE(quest_id,mode), индекс(mode,published).
+
+Контент находится в `content/<первые 2 символа SHA>/<SHA>.json.gz` рядом с SQLite,
+на alwaysdata — `/home/narnes/tarkov-data/content`, вне релизов и web root.
+JSON квестов и справочников в БД не хранится. Файлы неизменяемы, проверяются по SHA-256;
+смена ссылки в БД атомарна и отклоняет устаревшую форму. Все прежние версии остаются,
+поэтому SQLite-снимок возвращает прежние тексты сменой ссылок. Проверка/restore бэкапа
+проверяют наличие и контрольные суммы файлов. Для переноса на другой сервер нужны
+SQLite-снимок **и весь каталог content**. Автоматического удаления старых версий пока нет.
+Сессии, права Orchid и личный прогресс используют прежние форматы и контракты.
 
 ID квестов/целей импортируются без замены; создание редакторской схемы не меняет
 аккаунты/сессии/прогресс игроков. Импорт firstOrCreate сохраняет правки и черновики.

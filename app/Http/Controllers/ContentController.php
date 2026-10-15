@@ -20,7 +20,7 @@ final class ContentController
         // Не держим одновременно Eloquent-модели, распакованные цели и весь JSON каталога.
         // Ответ собирается до освобождения GuardDatabaseRestore, без отложенных DB-запросов.
         foreach (Quest::where('mode', $match[1])->where('published', true)->orderBy('id')->cursor() as $quest) {
-            $raw = $quest->getRawOriginal('payload'); $tasks[] = $raw;
+            $raw = $quest->json(); $tasks[] = $raw;
             $trader = json_decode($raw, true, 128, JSON_THROW_ON_ERROR)['trader'] ?? null;
             if (is_array($trader) && isset($trader['id']) && !isset($seen[$trader['id']])) {
                 $traders->put($trader['id'], [...($traders->get($trader['id']) ?? []), ...$trader]);

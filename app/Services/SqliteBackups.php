@@ -202,6 +202,13 @@ final class SqliteBackups
             throw new RuntimeException('Резервная копия не прошла проверку SQLite.');
         }
         if ($copy->query('PRAGMA foreign_key_check')->fetchAll() !== []) { throw new RuntimeException('Копия содержит нарушенные связи SQLite.'); }
+        // Ссылки снимка указывают на неизменяемые версии: restore не откатывает чужие файлы.
+        // Старые версии сохраняются рядом с БД и нужны для всех удерживаемых снимков.
+        $content = ContentFiles::forDatabase($this->database);
+        foreach (['quests', 'content_datasets'] as $table) {
+            if (!$copy->query("SELECT count(*) FROM sqlite_master WHERE type='table' AND name=".$copy->quote($table))->fetchColumn()) { continue; }
+            foreach ($copy->query('SELECT DISTINCT payload FROM '.$table." WHERE payload LIKE '@file:%'") as $row) { $content->json($row['payload']); }
+        }
     }
 
     /** @return list<array{path: string, kind: string, stamp: string, bytes: int}> */

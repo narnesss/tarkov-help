@@ -5,13 +5,18 @@
   `admin_sessions`; стандартные Laravel cookie/CSRF, private/no-store для экранов и ошибок.
   AdminSession выполняется глобально только для `/admin/*` до конструирования контроллеров,
   чтобы guard Orchid и StartSession использовали одно хранилище, включая вход без remember.
-- QuestListScreen / QuestEditScreen / QuestEditor: формы PVE/PVP, публикация, цели,
-  сложные условия/медиа/награды; защита ID квестов и целей личного прогресса.
-- DatasetListScreen / DatasetEditScreen / ContentDataset: JSON-редактор публичных справочников,
-  gzip/base64 в SQLite для ограничения объёма; HTTP-выдача крупных JSON без декодирования массива.
+- QuestListScreen / QuestEditScreen / QuestEditor / TraderCatalog: формы PVE/PVP, названия
+  торговцев и выбор из справочника; текстовые цели, защита ID прогресса и устаревших форм.
+- ContentFields / ContentFieldsScreen / QuestFieldsScreen / DatasetEditScreen: переходы по
+  вложенным разделам, текст/числа/да-нет, добавление полей и записей без ручного JSON.
+- Quest / ContentDataset / ContentFiles: неизменяемые gzip JSON-файлы рядом с SQLite;
+  в колонке payload только @file:SHA256, запись файла атомарна и предшествует CAS-обновлению БД.
+  Старые версии сохраняются для снимков. Чтение прежнего JSON оставлено для перехода/rollback.
+- ContentFileStorage: wiki:content-files --move, идемпотентный перенос прежних значений
+  с проверкой файлов; не меняет ID, тексты, черновики и даты редакторских правок.
 - prepare-content-seed.mjs / ImportContent: первичный перенос 63 наборов и 1226 записей
   режимов, обогащение прежними клиентскими правилами; повтор не перезаписывает редакторов.
-- ContentController / ContentQuestController: публичный контент из SQLite и проверка
+- ContentController / ContentQuestController: индекс контента из SQLite, содержимое из файлов и проверка
   существования квеста/торговца, защищённые VerifyApiProxy, без сессии и общего кэша.
 - content-client.mjs / guide-common.mjs / app.mjs: свежие JSON CMS перед статическими снимками;
   quests.mjs использует окончательные задания CMS без повторного статического наложения.

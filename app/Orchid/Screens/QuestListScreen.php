@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace App\Orchid\Screens;
 
 use App\Models\Quest;
+use App\Services\TraderCatalog;
 use Orchid\Screen\Screen;
 use Orchid\Screen\TD;
 use Orchid\Screen\Actions\Link;
@@ -29,6 +30,7 @@ final class QuestListScreen extends Screen
 
     public function layout(): array
     {
+        $traders = app(TraderCatalog::class);
         return [Layout::rows([
             Input::make('search')->title('Поиск')->type('search'),
             Select::make('mode')->title('Режим')->options(['' => 'Все', 'pve' => 'PVE', 'regular' => 'PVP']),
@@ -36,7 +38,7 @@ final class QuestListScreen extends Screen
         ]), Layout::table('quests', [
             TD::make('name', 'Название')->render(fn (Quest $quest) => Link::make($quest->name)->route('platform.quests.edit', $quest)),
             TD::make('mode', 'Режим')->render(fn (Quest $quest) => $quest->mode === 'pve' ? 'PVE' : 'PVP'),
-            TD::make('trader_id', 'Торговец'),
+            TD::make('trader_id', 'Торговец')->render(fn (Quest $quest) => e($traders->name($quest->trader_id))),
             TD::make('published', 'Публикация')->render(fn (Quest $quest) => $quest->published ? 'Опубликован' : 'Черновик'),
         ])];
     }

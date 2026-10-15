@@ -10,6 +10,9 @@
 - Orchid доступен на PHP origin `/admin` с отдельным входом редакторов. Динамические данные
   выдаются в `/api/content/*`; новые URL квестов получают оболочку через Worker.
   Заполнение и первый вход: [docs/orchid-content.md](../docs/orchid-content.md).
+- Контент Orchid находится в `/home/narnes/tarkov-data/content` в неизменяемых JSON gzip-файлах.
+  SQLite хранит ссылки на версии. Этот каталог сохранять вместе с БД; для внешней копии
+  нужны снимок SQLite и файлы content. Проверка/restore откажут при отсутствии нужного файла.
 - Laravel 13 исполняется на alwaysdata PHP 8.4; SQLite >= 3.35 (SQL RETURNING).
 - Web root: /home/narnes/tarkov-api/public. SQLite: /home/narnes/tarkov-data/wiki.sqlite.
 - API_ONLY=true отключает публичные Laravel-страницы. /up проверяет Laravel без сессии.
