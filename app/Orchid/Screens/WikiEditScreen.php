@@ -21,7 +21,7 @@ final class WikiEditScreen extends Screen
     public function query(string $type,?int $record=null): array
     {
         $this->type=$type;$this->recordId=$record;$schema=app(WikiSchema::class);
-        $row=$record===null?null:$schema->query($type)->where('rowid',$record)->firstOrFail();$values=[];
+        $row=$record===null?null:$schema->record($type,$record)->firstOrFail();$values=[];
         foreach($schema->fields($type) as $field=>$column){
             $value=$row?->$field??($column->dflt_value===null?null:trim($column->dflt_value,"'\""));
             if(isset($schema->foreigns($type)[$field])&&$value!==null){$foreign=$schema->foreigns($type)[$field];$value=$schema->query($foreign['type'])->where($foreign['column'],$value)->value('rowid');}
@@ -45,7 +45,7 @@ final class WikiEditScreen extends Screen
             $control->title($schema->title($field));if($column->notnull&&$column->dflt_value===null){$control->required();}$fields[]=$control;
         }
         $layouts=[Layout::rows($fields)->title('Данные')];
-        if($this->recordId!==null){$row=$schema->query($this->type)->where('rowid',$this->recordId)->firstOrFail();$links=[];
+        if($this->recordId!==null){$row=$schema->record($this->type,$this->recordId)->firstOrFail();$links=[];
             foreach($schema->children($this->type) as $child){$count=$schema->query($child['child'])->where($child['field'],$row->{$child['foreign']['column']})->where('archived',0)->count();
                 $links[]=Link::make($child['title'].' · '.$count)->route('platform.wiki.list',['type'=>$child['child'],'filter'=>$child['field'],'parent'=>$this->recordId]);}
             if($links!==[]){$layouts[]=Layout::rows($links)->title('Связанные записи — откройте нужный раздел для добавления');}

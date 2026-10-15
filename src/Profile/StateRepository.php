@@ -29,13 +29,20 @@ final readonly class StateRepository
         if (!is_array($value) && !($key === 'kord-atlas-game-mode' && in_array($value, ['regular', 'pve'], true))) {
             throw new HttpError(422, 'Неверный формат данных профиля.');
         }
-        $q = $this->db->prepare('INSERT INTO user_state(user_id,state_key,value,version,updated_at) VALUES (?,?,?,1,?) ON CONFLICT(user_id,state_key) DO NOTHING RETURNING version');
-        // UPDATE and first INSERT are separate atomic CAS statements: stale clients never overwrite silently.
+        $next=false;
+        // Каждая запись — атомарный CAS; версия ответа известна из условия UPDATE.
         if ($version > 0) {
-            $q = $this->db->prepare('UPDATE user_state SET value=?,version=version+1,updated_at=? WHERE user_id=? AND state_key=? AND version=? RETURNING version');
+            $q = $this->db->prepare('UPDATE user_state SET value=?,version=version+1,updated_at=? WHERE user_id=? AND state_key=? AND version=?');
             $q->execute([$encoded, $this->clock->now(), $owner, $key, $version]);
-        } else { $q->execute([$owner, $key, $encoded, $this->clock->now()]); }
-        $next = $q->fetchColumn();
+            if($q->rowCount()===1){$next=$version+1;}
+        } else {
+            try {
+                $q=$this->db->prepare('INSERT INTO user_state(user_id,state_key,value,version,updated_at) VALUES (?,?,?,1,?)');
+                $q->execute([$owner,$key,$encoded,$this->clock->now()]);$next=1;
+            } catch(\PDOException $error){
+                if(($error->errorInfo[1]??null)!==1062&&!str_contains($error->getMessage(),'UNIQUE constraint failed')){throw $error;}
+            }
+        }
         if ($next === false) { throw new HttpError(409, 'Профиль изменён в другой вкладке или на другом устройстве.', ['current' => $this->all($owner)[$key] ?? ['value' => null, 'version' => 0]]); }
         return ['value' => $value, 'version' => (int) $next];
     }

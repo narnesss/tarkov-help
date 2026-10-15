@@ -8,6 +8,7 @@
     "ext-json": "*",
     "ext-mbstring": "*",
     "ext-pdo": "*",
+    "ext-pdo_mysql": "*",
     "ext-pdo_sqlite": "*",
     "laravel/framework": "^13.0",
     "orchid/platform": "^14.53"

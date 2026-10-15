@@ -10,13 +10,13 @@ final class WikiStore
     public function __construct(private WikiSchema $schema) {}
     public function put(string $type,array $key,array $values): int
     {
-        $table = $this->schema->table($type);$old = DB::table($table)->where($key)->selectRaw('rowid AS rowid,*')->first();
-        $attributes = [...$key,...$values];$all = [...(array)$old,...$attributes];
+        $table = $this->schema->table($type);$old = $this->schema->query($type)->where($key)->first();
+        $attributes = [...$key,...$values];$all = [...($old?->getAttributes()??[]),...$attributes];
         $attributes['display_name'] = $this->schema->label($type,$all);
         $attributes['search_text'] = WikiSchema::search($attributes['display_name'].' '.($values['search_text'] ?? ''));
         if ($old === null) { return (int) DB::table($table)->insertGetId($attributes); }
         $dirty = array_filter($attributes,fn ($value,$field)=>(string)($old->$field ?? '') !== (string)($value ?? ''),ARRAY_FILTER_USE_BOTH);
-        if ($dirty !== []) { $dirty['revision'] = $old->revision+1;DB::table($table)->where('rowid',$old->rowid)->update($dirty); }
+        if ($dirty !== []) { $dirty['revision'] = $old->revision+1;$this->schema->record($type,$old->rowid)->update($dirty); }
         return (int)$old->rowid;
     }
     public function source(int $dataset,string $pointer,string $entity,int $id,string $format='object'): void

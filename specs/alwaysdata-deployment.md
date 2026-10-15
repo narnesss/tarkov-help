@@ -11,10 +11,15 @@
   выдаются в `/api/content/*`; новые URL квестов получают оболочку через Worker.
   Заполнение и первый вход: [docs/orchid-content.md](../docs/orchid-content.md).
 - Контент Orchid находится в `/home/narnes/tarkov-data/content` в неизменяемых JSON gzip-файлах.
-  SQLite хранит ссылки на версии. Этот каталог сохранять вместе с БД; для внешней копии
-  нужны снимок SQLite и файлы content. Проверка/restore откажут при отсутствии нужного файла.
-- Laravel 13 исполняется на alwaysdata PHP 8.4; SQLite >= 3.35 (SQL RETURNING).
-- Web root: /home/narnes/tarkov-api/public. SQLite: /home/narnes/tarkov-data/wiki.sqlite.
+  SQL хранит ссылки на версии. Для внешней копии нужны SQL gzip-снимок и весь content.
+  Проверка/restore откажут при отсутствии нужного файла.
+- Laravel 13 исполняется на alwaysdata PHP 8.4; production — MariaDB 11.8 через pdo_mysql.
+- База `narnes_tarkov`, host `mysql-narnes.alwaysdata.net`, пользователь `narnes`.
+  DB_CONNECTION=mysql, utf8mb4_nopad_bin, TLS с проверкой CA; пароль только в shared .env.
+- Web root: /home/narnes/tarkov-api/public. Прежняя SQLite `/home/narnes/tarkov-data/wiki.sqlite`
+  и финальный снимок сохраняются для аудита. Её `.restoring` остаётся после переноса:
+  старый PHP или случайный откат настроек не должен записать данные в устаревший источник.
+- Перенос, защита переключения и MySQL backup/restore: [mysql-migration.md](mysql-migration.md).
 - API_ONLY=true отключает публичные Laravel-страницы. /up проверяет Laravel без сессии.
 - API_PROXY_REQUIRED=true: каждый запрос API проверяет X-Wiki-Proxy-Token.
 - APP_URL — origin сайта Cloudflare, а не alwaysdata: иначе CSRF отклонит сохранения.
@@ -37,10 +42,10 @@
 - HTTPS с автоматическим сертификатом; HTTP cache для этого API выключить.
 
 Сначала загрузите файлы: изменение root directory само не создаёт каталог.
-SQLite — файл, создавать базу MySQL/PostgreSQL в панели не требуется.
+Production-база MariaDB создаётся в MySQL-разделе панели. SQLite остаётся локальным вариантом.
 Не ставьте Laravel заново из Marketplace: используется наш composer.lock и код API.
 
-## 2. Первоначальная загрузка API (уже выполнена)
+## 2. Первоначальная загрузка API с SQLite (исторический сценарий)
 
 На компьютере в корне репозитория:
 

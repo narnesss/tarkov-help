@@ -23,7 +23,7 @@ return new class extends Migration {
         }
         if (!Schema::hasTable('user_state')) {
             Schema::create('user_state', function (Blueprint $table): void {
-                $table->string('user_id', 32); $table->string('state_key'); $table->text('value');
+                $table->string('user_id', 32); $table->string('state_key'); $table->longText('value');
                 $table->integer('version')->default(1); $table->integer('updated_at');
                 $table->primary(['user_id', 'state_key']); $table->foreign('user_id')->references('id')->on('users');
             });

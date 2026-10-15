@@ -13,4 +13,6 @@
 /database/content/
 /tests/php/coverage.json
 /.phpunit.cache/
+/.phpunit.mysql.cache/
 /storage/*.key
+/storage/app/*.access.lock

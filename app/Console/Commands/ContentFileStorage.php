@@ -15,7 +15,7 @@ final class ContentFileStorage extends Command
 
     public function handle(): int
     {
-        $database = (string) config('database.connections.sqlite.database'); $lock = null;
+        $database = DatabaseAccess::configuredPath(); $lock = null;
         if ($database !== ':memory:') {
             $gate = new DatabaseAccess($database);
             if (file_exists($gate->marker())) { throw new \RuntimeException('Сначала завершите восстановление базы.'); }
@@ -45,11 +45,11 @@ final class ContentFileStorage extends Command
                 $record->json(); $checked++;
             }
         }
-        if ($moved > 0 && config('database.connections.sqlite.database') !== ':memory:') {
+        if ($moved > 0 && DB::getDriverName()==='sqlite'&&DB::connection()->getDatabaseName()!==':memory:') {
             // Убираем прежние JSON также из освобождённых страниц файла SQLite.
             DB::statement('VACUUM');
         }
-        $this->info('Проверено файлов: '.$checked.'. Перенесено записей: '.$moved.'. JSON контента в SQLite отсутствует.');
+        $this->info('Проверено файлов: '.$checked.'. Перенесено записей: '.$moved.'. JSON контента в SQL отсутствует.');
         return self::SUCCESS;
     }
 }

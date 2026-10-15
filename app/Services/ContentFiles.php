@@ -4,13 +4,18 @@ namespace App\Services;
 
 use RuntimeException;
 
-/** Неизменяемые версии контента вне релизов: SQLite хранит только ссылку на файл. */
+/** Неизменяемые версии контента вне релизов: SQL хранит только ссылку на файл. */
 final class ContentFiles
 {
     public function __construct(private readonly string $directory) {}
 
     public static function forDatabase(string $database): self
     {
+        $container=\Illuminate\Container\Container::getInstance();
+        if($container->bound('config')&&($directory=$container->make('config')->get('content.directory'))){return new self($directory);}
+        if($database!==':memory:'&&!str_contains($database,'/')&&!str_contains($database,'\\')){
+            throw new RuntimeException('Для MySQL задайте постоянный CONTENT_DIRECTORY вне каталога релиза.');
+        }
         return new self($database === ':memory:'
             ? sys_get_temp_dir().'/wiki-content-tests-'.getmypid()
             : dirname($database).'/content');

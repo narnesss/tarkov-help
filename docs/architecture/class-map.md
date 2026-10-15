@@ -1,5 +1,19 @@
 # Карта классов Tarkov Wiki
 
+- MysqlMigration / MigrateMysql: пробный и финальный перенос всех таблиц SQLite в MariaDB,
+  сохранение PK/rowid/sequence, сверка SHA-256 каждой строки, FK и файлов контента;
+  закрытие старого источника, сохранение .env/APP_KEY и атомарное переключение config cache.
+- SqlDatabaseAudit: переносимые спецификации строк, канонические SHA-256, FK anti-join,
+  контроль gzip-файлов контента и отпечаток схемы MariaDB.
+- MysqlBackups: native single-transaction SQL gzip-снимок, приватный defaults-файл,
+  retention/манифест/SHA и safety restore. BackupSqlite/RestoreSqlite выбирают сервис по драйверу.
+- WikiSchema: MySQL numeric id или сохранённый физический rowid для составных PK;
+  SQLite PRAGMA и MySQL Schema introspection предоставляют одинаковые поля именованных форм.
+- WikiSync: сериализует редактирование графа через wiki_write_locks FOR UPDATE на MariaDB,
+  чтобы одновременные изменения не обошли проверку циклов.
+- mysql-transfer.sh / migrate-mysql.yml: штатный SSH CI и RSA-OAEP-SHA256 реквизиты;
+  GitHub получает только публичный ключ/шифротекст. verify-mysql.php проверяет драйвер FPM.
+
 - WikiSchema / WikiStore: белый список предметных таблиц, типизированные поля/FK,
   имена для Unicode-поиска, стабильный upsert и происхождение исходных файлов.
 - Models/Wiki: Eloquent Item, Key, Location, Map, MapLayer, MapPoint, Document,

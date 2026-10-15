@@ -17,7 +17,7 @@ final class Options extends Record
         $query = app(WikiSchema::class)->query($type);
         if ($this->value !== []) {
             $order = array_flip(array_map('strval',$this->value));
-            $rows = $query->whereIn('rowid',$this->value)->get()->sortBy(fn ($row)=>$order[(string)$row->rowid]);
+            $rows = $query->whereIn(app(WikiSchema::class)->identity($type),$this->value)->get()->sortBy(fn ($row)=>$order[(string)$row->rowid]);
         } else {
             $search = WikiSchema::search((string)request()->input('search',''));
             if(isset(app(WikiSchema::class)->columns($type)['active'])){$query->where('active',1);}

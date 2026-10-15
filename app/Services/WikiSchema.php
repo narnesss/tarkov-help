@@ -3,7 +3,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Wiki\Record;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\{DB, Schema};
 
 /** Белый список предметных таблиц и метаданные обычных форм Orchid. */
 final class WikiSchema
@@ -26,15 +26,26 @@ final class WikiSchema
     private array $foreigns = [];
 
     public function table(string $type): string { abort_unless(isset(self::TYPES[$type]),404);return 'wiki_'.$type; }
-    public function model(string $type): Record { return (new Record)->setTable($this->table($type)); }
-    public function query(string $type) { return $this->model($type)->newQuery()->selectRaw('rowid AS rowid, *'); }
+    public function identity(string $type): string
+    { return DB::getDriverName()==='sqlite'||!isset($this->columns($type)['id'])?'rowid':'id'; }
+    public function model(string $type): Record { return (new Record)->setTable($this->table($type))->setKeyName($this->identity($type)); }
+    public function query(string $type) { return $this->model($type)->newQuery()->selectRaw($this->identity($type).' AS rowid, '.$this->table($type).'.*'); }
+    public function record(string $type,int|string $id) { return $this->query($type)->where($this->identity($type),$id); }
     public function columns(string $type): array
-    { return $this->columns[$type] ??= collect(DB::select('PRAGMA table_info('.$this->table($type).')'))->keyBy('name')->all(); }
+    {
+        if(DB::getDriverName()==='sqlite'){return $this->columns[$type]??=collect(DB::select('PRAGMA table_info('.$this->table($type).')'))->keyBy('name')->all();}
+        return $this->columns[$type]??=collect(Schema::getColumns($this->table($type)))->mapWithKeys(fn($column)=>[$column['name']=>(object)[
+            'name'=>$column['name'],'type'=>$column['type'],'notnull'=>!$column['nullable'],'dflt_value'=>$column['default'],
+        ]])->all();
+    }
     public function foreigns(string $type): array
     {
         if (isset($this->foreigns[$type])) { return $this->foreigns[$type]; }
         $fields = [];
-        foreach (DB::select('PRAGMA foreign_key_list('.$this->table($type).')') as $foreign) {
+        $foreigns=DB::getDriverName()==='sqlite'?DB::select('PRAGMA foreign_key_list('.$this->table($type).')'):array_merge(...array_map(
+            fn($foreign)=>array_map(fn($column,$target)=>(object)['table'=>$foreign['foreign_table'],'from'=>$column,'to'=>$target],$foreign['columns'],$foreign['foreign_columns']),
+            Schema::getForeignKeys($this->table($type))));
+        foreach ($foreigns as $foreign) {
             $target = substr($foreign->table,5);
             if (isset(self::TYPES[$target]) && ($foreign->to === 'id' || $foreign->to === 'code' || $foreign->to === 'item_id')) {
                 $fields[$foreign->from] = ['type'=>$target,'column'=>$foreign->to];
@@ -46,7 +57,7 @@ final class WikiSchema
     public function fields(string $type): array
     {
         return array_filter($this->columns($type), fn ($column) => !in_array($column->name,
-            ['id','external_id','slug','code','legacy_quest_id','display_name','search_text','revision','source_kind','source_hash','source_path'],true)
+            ['rowid','id','external_id','slug','code','legacy_quest_id','display_name','search_text','revision','source_kind','source_hash','source_path'],true)
             && !($type==='point_positions'&&$column->name==='location_id'));
     }
     public function children(string $type): array

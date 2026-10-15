@@ -13,7 +13,7 @@ final class WikiEditor
     public function save(string $type,?int $id,array $input): int
     {
         return $this->sync->run(fn()=>DB::transaction(function () use($type,$id,$input): int {
-            $table=$this->schema->table($type);$old=$id===null?null:$this->schema->query($type)->where('rowid',$id)->firstOrFail();
+            $table=$this->schema->table($type);$old=$id===null?null:$this->schema->record($type,$id)->firstOrFail();
             if($old!==null&&(string)$old->revision!==(string)($input['revision']??'')){$this->error('revision','Запись уже изменилась. Обновите страницу.');}
             $fields=$this->schema->fields($type);$foreigns=$this->schema->foreigns($type);$rules=[];
             if(array_diff_key($input,$fields+['revision'=>true])){$this->error('row','Недопустимые поля формы.');}
@@ -32,7 +32,7 @@ final class WikiEditor
             foreach($values as $field=>&$value){$column=$fields[$field];
                 if(isset($foreigns[$field])){
                     if($value===null||$value===''){$value=null;continue;}
-                    $foreign=$foreigns[$field];$target=$this->schema->query($foreign['type'])->where('rowid',$value)->first();
+                    $foreign=$foreigns[$field];$target=$this->schema->record($foreign['type'],$value)->first();
                     if(!$target||(($target->archived||isset($target->active)&&!$target->active)&&($old?->$field??null)!=$target->{$foreign['column']})){$this->error($field,'Выберите действующую запись по названию.');}
                     $value=$target->{$foreign['column']};
                 } elseif($value===null||$value===''){
@@ -61,10 +61,10 @@ final class WikiEditor
             $values['search_text']=WikiSchema::search($values['display_name']);
             try{
                 if($old===null){$id=(int)DB::table($table)->insertGetId($values);}
-                else{$values['revision']=$old->revision+1;if(DB::table($table)->where('rowid',$id)->where('revision',$old->revision)->update($values)!==1){$this->error('revision','Запись уже изменилась. Обновите страницу.');}}
+                else{$values['revision']=$old->revision+1;if($this->schema->record($type,$id)->where('revision',$old->revision)->update($values)!==1){$this->error('revision','Запись уже изменилась. Обновите страницу.');}}
                 app(WikiPublisher::class)->publish($type,$id,$old?->getAttributes()??[]);
             } catch(\Illuminate\Database\QueryException $error){
-                if(str_contains($error->getMessage(),'constraint')){$this->error('row','Проверьте связи и числа: запись нарушает ограничение SQLite или уже существует.');}
+                if(in_array((string)($error->errorInfo[0]??''),['23000','45000'],true)||str_contains($error->getMessage(),'constraint')){$this->error('row','Проверьте связи и числа: запись нарушает ограничение БД или уже существует.');}
                 throw $error;
             }
             return $id;

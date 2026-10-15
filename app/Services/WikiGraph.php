@@ -12,7 +12,7 @@ final class WikiGraph
     private function related(string $type,array $where): array
     { return $this->query($type)->where($where)->get()->map(fn($row)=>$this->clean((array)$row))->all(); }
     private function clean(array $row): array
-    { unset($row['search_text'],$row['source_hash'],$row['legacy_quest_id'],$row['source_path'],$row['revision']);return $row; }
+    { unset($row['rowid'],$row['search_text'],$row['source_hash'],$row['legacy_quest_id'],$row['source_path'],$row['revision']);return $row; }
     public function read(string $path): array
     {
         if(preg_match('~^wiki/(points|quests)/(\d+)\.json$~',$path,$m)){

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendor/autoload.php" colors="true" cacheDirectory=".phpunit.mysql.cache">
+  <testsuites><testsuite name="MariaDB">
+    <file>tests/Feature/WikiDomainTest.php</file>
+    <file>tests/Feature/ApiTest.php</file>
+    <file>tests/Feature/ApiProxyTest.php</file>
+    <file>tests/Feature/ContentManagementTest.php</file>
+    <file>tests/Feature/ContentReferencesTest.php</file>
+  </testsuite></testsuites>
+  <php>
+    <env name="APP_ENV" value="testing" force="true"/>
+    <env name="APP_KEY" value="base64:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=" force="true"/>
+    <env name="APP_URL" value="https://wiki.test" force="true"/>
+    <env name="APP_DEBUG" value="false" force="true"/>
+    <env name="DB_CONNECTION" value="mysql" force="true"/>
+    <env name="DB_DATABASE" value="tarkov_migration_test" force="true"/>
+    <env name="DB_USERNAME" value="root" force="true"/>
+    <env name="DB_COLLATION" value="utf8mb4_nopad_bin" force="true"/>
+    <env name="CONTENT_DIRECTORY" value="/tmp/tarkov-mysql-test-content" force="true"/>
+    <env name="CACHE_STORE" value="array" force="true"/>
+    <env name="SESSION_DRIVER" value="array" force="true"/>
+    <env name="LOG_CHANNEL" value="null" force="true"/>
+  </php>
+</phpunit>

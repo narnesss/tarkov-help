@@ -47,6 +47,14 @@ final class WikiSync
     public function run(callable $callback): mixed
     {
         $previous=$this->busy;$this->busy=true;
-        try { return $callback(); } finally { $this->busy=$previous; }
+        try {
+            if(!$previous&&in_array(\Illuminate\Support\Facades\DB::getDriverName(),['mysql','mariadb'],true)){
+                return \Illuminate\Support\Facades\DB::transaction(function() use($callback){
+                    \Illuminate\Support\Facades\DB::table('wiki_write_locks')->where('id',1)->lockForUpdate()->firstOrFail();
+                    return $callback();
+                });
+            }
+            return $callback();
+        } finally { $this->busy=$previous; }
     }
 }

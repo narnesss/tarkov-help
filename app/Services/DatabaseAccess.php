@@ -9,6 +9,12 @@ final class DatabaseAccess
 {
     public function __construct(private readonly string $database) {}
 
+    public static function configuredPath(): string
+    {
+        $connection=\Illuminate\Support\Facades\DB::connection();
+        return (string)(config('database.access_path')?:($connection->getDriverName()==='sqlite'?$connection->getDatabaseName():storage_path('app/database')));
+    }
+
     public function marker(): string { return $this->database.'.restoring'; }
 
     /** @return resource|null */

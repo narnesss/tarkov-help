@@ -15,7 +15,14 @@ try {
     }
     if (strlen((string) config('api.proxy_token')) < 32) { throw new RuntimeException('Сначала задайте API_PROXY_TOKEN длиной не менее 32 символов.'); }
     if (!config('app.key')) { $app->make(\Illuminate\Contracts\Console\Kernel::class)->call('key:generate', ['--force' => true]); }
-    if (config('database.default') !== 'sqlite') { throw new RuntimeException('Этот деплой подготовлен для SQLite.'); }
+    if (in_array(config('database.default'), ['mysql','mariadb'], true)) {
+        $directory=(string)config('content.directory');
+        if(!str_starts_with($directory,'/')||!is_dir($directory)||str_starts_with($directory,realpath(__DIR__.'/../..').'/')){throw new RuntimeException('Нужен существующий CONTENT_DIRECTORY вне релиза.');}
+        $result=(new \App\Services\MysqlBackups((string)config('database.default')))->create('deploy');
+        echo 'Создана SQL-копия перед миграциями: '.$result['path'].PHP_EOL;
+        exit(0);
+    }
+    if (config('database.default') !== 'sqlite') { throw new RuntimeException('Поддерживаются SQLite и MariaDB.'); }
     $database = (string) config('database.connections.sqlite.database');
     if (!str_starts_with($database, '/') || str_starts_with($database, realpath(__DIR__.'/../..').'/')) {
         throw new RuntimeException('DB_DATABASE должен указывать на постоянный абсолютный путь вне каталога релиза.');

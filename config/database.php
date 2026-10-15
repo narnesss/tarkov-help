@@ -18,6 +18,7 @@ return [
     */
 
     'default' => env('DB_CONNECTION', 'sqlite'),
+    'access_path' => env('DB_ACCESS_PATH'),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,7 +55,7 @@ return [
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => env('DB_CHARSET', 'utf8mb4'),
-            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_nopad_bin'),
             'prefix' => '',
             'prefix_indexes' => true,
             'strict' => true,
@@ -74,7 +75,7 @@ return [
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => env('DB_CHARSET', 'utf8mb4'),
-            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_nopad_bin'),
             'prefix' => '',
             'prefix_indexes' => true,
             'strict' => true,

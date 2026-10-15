@@ -11,9 +11,9 @@ final class WikiPublisher
     private array $datasets=[];
     public function __construct(private WikiSchema $schema,private WikiStore $store) {}
     private function row(string $type,int $id): array
-    { return (array)DB::table('wiki_'.$type)->where('rowid',$id)->first(); }
+    { return $this->schema->record($type,$id)->first()?->getAttributes()??[]; }
     private function rows(string $type,array $where): array
-    { return DB::table('wiki_'.$type)->where($where)->where('archived',0)->selectRaw('rowid AS rowid,*')->get()->map(fn($r)=>(array)$r)->all(); }
+    { return $this->schema->query($type)->where($where)->where('archived',0)->get()->map(fn($r)=>$r->getAttributes())->all(); }
     public function publish(string $type,int $id,array $before=[]): void
     {
         $row=$this->row($type,$id);$questIds=[];$pointIds=[];

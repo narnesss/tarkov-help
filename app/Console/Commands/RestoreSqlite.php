@@ -3,6 +3,8 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Services\SqliteBackups;
+use App\Services\MysqlBackups;
+use App\Services\SqlDatabaseAudit;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -10,12 +12,11 @@ use Illuminate\Support\Facades\DB;
 final class RestoreSqlite extends Command
 {
     protected $signature = 'wiki:restore {--list} {--check} {--backup=} {--sha256=} {--confirm=}';
-    protected $description = 'Просмотр, проверка и ручное восстановление выбранного SQLite-бэкапа';
+    protected $description = 'Просмотр, проверка и ручное восстановление выбранного SQL-бэкапа';
 
     public function handle(): int
     {
-        if (config('database.default') !== 'sqlite') { $this->error('Нужна SQLite.'); return self::FAILURE; }
-        $service = new SqliteBackups((string) config('database.connections.sqlite.database'),
+        $service = config('database.default') !== 'sqlite' ? new MysqlBackups((string)config('database.default')) : new SqliteBackups((string) config('database.connections.sqlite.database'),
             (int) config('backup.daily_keep'), (int) config('backup.deploy_keep'), (int) config('backup.max_bytes'));
         if ($this->option('list')) {
             foreach ($service->catalog() as $copy) { $this->line(json_encode($copy, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)); }
@@ -33,9 +34,7 @@ final class RestoreSqlite extends Command
         }
         $result = $service->restore($name, $sha, function (): void {
             DB::purge();
-            if (DB::connection()->getPdo()->query('PRAGMA quick_check')->fetchColumn() !== 'ok') {
-                throw new \RuntimeException('Laravel не подтвердил исправность восстановленной БД.');
-            }
+            SqlDatabaseAudit::foreignKeys(DB::connection()->getPdo());
             // Старый снимок не должен вновь разрешить ранее отозванные cookie-сессии.
             DB::table('sessions')->delete();
             if (\Illuminate\Support\Facades\Schema::hasTable('admin_sessions')) {

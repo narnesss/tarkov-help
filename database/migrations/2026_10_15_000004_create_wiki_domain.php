@@ -9,21 +9,25 @@ use Illuminate\Support\Facades\{DB, Schema};
 return new class extends Migration {
     public function up(): void
     {
-        DB::unprepared(file_get_contents(__DIR__.'/sql/2026_10_15_domain.sql'));
-        foreach (DB::select("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'wiki_%'") as $table) {
-            Schema::table($table->name, function (Blueprint $table): void {
-                $table->string('display_name')->default('');
+        $mysql=in_array(DB::getDriverName(),['mysql','mariadb'],true);
+        DB::unprepared(file_get_contents(__DIR__.'/sql/'.($mysql?'2026_10_15_domain.mysql.sql':'2026_10_15_domain.sql')));
+        foreach (array_filter(Schema::getTableListing($mysql?DB::connection()->getDatabaseName():'main',schemaQualified:false),fn($name)=>str_starts_with($name,'wiki_')) as $name) {
+            Schema::table($name, function (Blueprint $table): void {
+                $table->text('display_name')->default('');
                 $table->unsignedInteger('revision')->default(0);
             });
-            if (!Schema::hasColumn($table->name, 'archived')) {
-                Schema::table($table->name, fn (Blueprint $table) => $table->boolean('archived')->default(false));
+            if (!Schema::hasColumn($name, 'archived')) {
+                Schema::table($name, fn (Blueprint $table) => $table->boolean('archived')->default(false));
             }
-            if (!Schema::hasColumn($table->name, 'search_text')) {
-                Schema::table($table->name, fn (Blueprint $table) => $table->text('search_text')->default(''));
+            if (!Schema::hasColumn($name, 'search_text')) {
+                Schema::table($name, fn (Blueprint $table) => $table->text('search_text')->default(''));
             }
         }
-        DB::statement('ALTER TABLE wiki_quests ADD COLUMN legacy_quest_id INTEGER REFERENCES quests(id)');
-        DB::statement('CREATE UNIQUE INDEX wiki_quests_legacy_unique ON wiki_quests(legacy_quest_id)');
+        if($mysql){Schema::table('wiki_quests',fn(Blueprint $table)=>$table->foreignId('legacy_quest_id')->nullable()->unique()->constrained('quests'));}
+        else{DB::statement('ALTER TABLE wiki_quests ADD COLUMN legacy_quest_id INTEGER REFERENCES quests(id)');DB::statement('CREATE UNIQUE INDEX wiki_quests_legacy_unique ON wiki_quests(legacy_quest_id)');}
+        if($mysql){foreach(['wiki_objective_groups','wiki_prerequisite_groups'] as $name){
+            DB::unprepared("CREATE TRIGGER {$name}_no_self_update BEFORE UPDATE ON {$name} FOR EACH ROW BEGIN IF NEW.parent_id = NEW.id THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'self cycle'; END IF; END");
+        }}
         Schema::table('wiki_items', fn (Blueprint $table) => $table->text('description')->default(''));
         Schema::table('wiki_maps', fn (Blueprint $table) => $table->string('name')->default(''));
         Schema::table('wiki_objectives', function (Blueprint $table): void {
@@ -44,7 +48,7 @@ return new class extends Migration {
             $table->id();$table->foreignId('point_id')->constrained('wiki_map_points');
             $table->double('world_x');$table->double('world_y');$table->double('world_z');
             $table->integer('order_index')->default(0);$table->unique(['point_id','order_index']);
-            $table->string('display_name')->default('');$table->text('search_text')->default('');
+            $table->text('display_name')->default('');$table->text('search_text')->default('');
             $table->unsignedInteger('revision')->default(0);$table->boolean('archived')->default(false);
         });
         Schema::create('wiki_sources', function (Blueprint $table): void {

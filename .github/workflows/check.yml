@@ -10,7 +10,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: pdo_sqlite, sqlite3, mbstring, curl
+          extensions: pdo_mysql, pdo_sqlite, sqlite3, mbstring, curl
           coverage: none
           tools: composer
       - name: Install locked Laravel dependencies
@@ -57,7 +57,7 @@ jobs:
         run: git diff --exit-code -- public dist
   deploy-alwaysdata:
     name: Deploy Laravel API to alwaysdata
-    needs: check
+    needs: [check, mysql]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -85,3 +85,33 @@ jobs:
           ALWAYSDATA_SSH_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
           ALWAYSDATA_KNOWN_HOSTS: ${{ secrets.ALWAYSDATA_KNOWN_HOSTS }}
         run: bash deployment/alwaysdata/github-deploy.sh test-restore
+  mysql:
+    name: MariaDB, сохранность переноса и backup/restore
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:11.8
+        env:
+          MARIADB_ROOT_PASSWORD: isolated-ci-only
+          MARIADB_DATABASE: tarkov_migration_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_mysql, pdo_sqlite, sqlite3, mbstring, curl
+          coverage: none
+          tools: composer
+      - run: sudo apt-get update && sudo apt-get install -y mariadb-client
+      - run: composer install --no-interaction --prefer-dist
+      - name: Orchid, связи, зависимости, аккаунты и CAS на MariaDB
+        env:
+          DB_PASSWORD: isolated-ci-only
+        run: php vendor/bin/phpunit -c phpunit.mysql.xml
+      - name: Перенос ID/rowid, прогресса, архивов и native backup/restore
+        env:
+          MYSQL_TEST_PASSWORD: isolated-ci-only
+        run: php scripts/check-mysql-migration.php

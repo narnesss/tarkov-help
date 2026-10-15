@@ -31,11 +31,11 @@ final class WikiDomainTest extends TestCase
         return $quest;
     }
     private function id(string $type): int
-    { return (int)DB::table('wiki_'.$type)->value('rowid'); }
+    { return (int)app(WikiSchema::class)->query($type)->firstOrFail()->rowid; }
     private function save(string $type,?int $id,array $changes): int
     {
         $schema=app(WikiSchema::class);$input=[];
-        if($id!==null){$row=$schema->query($type)->where('rowid',$id)->firstOrFail();$input=['revision'=>$row->revision];
+        if($id!==null){$row=$schema->record($type,$id)->firstOrFail();$input=['revision'=>$row->revision];
             foreach($schema->fields($type) as $field=>$column){$value=$row->$field;$foreign=$schema->foreigns($type)[$field]??null;
                 if($foreign&&$value!==null){$value=$schema->query($foreign['type'])->where($foreign['column'],$value)->value('rowid');}$input[$field]=$value;}}
         return app(WikiEditor::class)->save($type,$id,[...$input,...$changes]);
@@ -47,13 +47,13 @@ final class WikiDomainTest extends TestCase
         app(WikiImporter::class)->rebuild();
         foreach($before as $type=>$count){$this->assertSame($count,DB::table('wiki_'.$type)->count(),$type);}
         $this->assertSame($refs,DB::table('content_datasets')->pluck('payload','id')->all());$this->assertSame($ref,$quest->fresh()->getRawOriginal('payload'));
-        $this->assertSame('goal-original',DB::table('wiki_objectives')->value('external_id'));$this->assertSame([],DB::select('PRAGMA foreign_key_check'));
+        $this->assertSame('goal-original',DB::table('wiki_objectives')->value('external_id'));\App\Services\SqlDatabaseAudit::foreignKeys(DB::connection()->getPdo());
         $this->assertSame(1,DB::table('wiki_key_usages')->count());
         $item=\App\Models\Wiki\Item::where('external_id','watch')->firstOrFail();
         $this->assertSame('Коттедж',$item->spawns->first()->title);
         $point=\App\Models\Wiki\MapPoint::firstOrFail();$this->assertSame('Ключ от коттеджа',$point->keys->first()->item->name);
         $this->assertSame('Письмо разведчика',$point->documents->first()->name);
-        foreach(WikiSchema::TYPES as $type=>$title){foreach(DB::select('PRAGMA table_info(wiki_'.$type.')') as $column){$this->assertStringNotContainsString('JSON',strtoupper($column->type));}}
+        foreach(WikiSchema::TYPES as $type=>$title){foreach($this->app->make(WikiSchema::class)->columns($type) as $column){$this->assertStringNotContainsString('JSON',strtoupper($column->type));}}
     }
     public function test_all_catalogs_and_create_forms_render_without_manual_ids(): void
     {
@@ -88,7 +88,7 @@ final class WikiDomainTest extends TestCase
     {
         $quest=$this->fixtures();$point=$this->id('map_points');$objective=$this->id('objectives');$key=(int)DB::table('wiki_items')->where('external_id','key')->value('id');
         $this->save('objective_points',null,['objective_id'=>$objective,'point_id'=>$point]);
-        $this->save('objective_keys',null,['objective_id'=>$objective,'key_item_id'=>$key,'optional'=>0]);
+        $this->save('objective_keys',null,['objective_id'=>$objective,'key_item_id'=>$this->id('keys'),'optional'=>0]);
         $group=$this->id('objective_groups');$this->save('objective_groups',$group,['operator'=>'and']);
         $this->save('objective_items',null,['group_id'=>$group,'item_id'=>$key,'role'=>'obtain','amount'=>2,'found_in_raid'=>1]);
         $payload=$quest->fresh()->payload;$this->assertSame('goal-original',$payload['objectives'][0]['id']);
@@ -99,7 +99,7 @@ final class WikiDomainTest extends TestCase
         $this->assertSame(2,DB::table('wiki_objective_items')->where('archived',0)->count());
         $this->get('/api/content/data/wiki/points/'.$point.'.json')->assertOk()->assertHeader('Cache-Control','no-store, private')->assertJsonPath('keys.0.record.name','Ключ от коттеджа')->assertJsonPath('quests.0.title','Поиск часов');
         $this->get('/api/content/data/wiki/quests/'.$this->id('quests').'.json')->assertOk()->assertJsonPath('objectives.0.groups.0.operator','and');
-        $this->assertSame([],DB::select('PRAGMA foreign_key_check'));
+        \App\Services\SqlDatabaseAudit::foreignKeys(DB::connection()->getPdo());
     }
     public function test_new_point_is_published_after_document_and_position_are_filled(): void
     {
@@ -135,6 +135,7 @@ final class WikiDomainTest extends TestCase
     }
     public function test_publication_failure_rolls_back_relation_and_file_reference(): void
     {
+        if(DB::getDriverName()!=='sqlite'){$this->markTestSkipped('Инъекция SQLite RAISE проверяется отдельным SQLite job; MySQL DDL фиксирует внешнюю тестовую транзакцию.');}
         $quest=$this->fixtures();$ref=$quest->getRawOriginal('payload');$count=DB::table('wiki_objective_keys')->count();
         DB::statement("CREATE TRIGGER reject_wiki_publication BEFORE UPDATE ON quests BEGIN SELECT RAISE(ABORT,'test-publication-failure'); END");
         try{$this->save('objective_keys',null,['objective_id'=>$this->id('objectives'),'key_item_id'=>DB::table('wiki_keys')->value('item_id')]);$this->fail('Сбой публикации проигнорирован');}catch(ValidationException $e){$this->assertArrayHasKey('row.row',$e->errors());}
@@ -168,6 +169,6 @@ final class WikiDomainTest extends TestCase
         $saved=DB::table('wiki_item_spawns')->where('rowid',$spawn)->first();$this->assertEquals(3,$saved->amount);$this->assertEquals(0.25,$saved->spawn_chance);$this->assertSame('На полке',$saved->notes);
         $this->assertSame('optional',DB::table('wiki_key_usages')->where('rowid',$key)->value('usage_type'));
         $this->assertSame('Новая подпись',DB::table('wiki_map_points')->where('id',$point)->value('title'));
-        $this->assertSame([],DB::select('PRAGMA foreign_key_check'));
+        \App\Services\SqlDatabaseAudit::foreignKeys(DB::connection()->getPdo());
     }
 }

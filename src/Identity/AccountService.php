@@ -42,9 +42,13 @@ final readonly class AccountService
     {
         $window = $action === 'register' ? 86400 : 900;
         $bucket = hash('sha256', $ip) . ':' . $action . ':' . intdiv($this->clock->now(), $window);
-        $q = $this->db->prepare('INSERT INTO rate_limits(bucket,count,expires_at) VALUES (?,1,?) ON CONFLICT(bucket) DO UPDATE SET count=count+1 RETURNING count');
+        $mysql=$this->db->getAttribute(\PDO::ATTR_DRIVER_NAME)==='mysql';
+        $q = $this->db->prepare($mysql
+            ?'INSERT INTO rate_limits(bucket,count,expires_at) VALUES (?,LAST_INSERT_ID(1),?) ON DUPLICATE KEY UPDATE count=LAST_INSERT_ID(count+1)'
+            :'INSERT INTO rate_limits(bucket,count,expires_at) VALUES (?,1,?) ON CONFLICT(bucket) DO UPDATE SET count=count+1 RETURNING count');
         $q->execute([$bucket, $this->clock->now() + $window]);
-        if ((int) $q->fetchColumn() > ($action === 'register' ? 10 : 8)) { throw new HttpError(429, 'Слишком много попыток. Попробуйте позже.'); }
+        $count=$mysql?(int)$this->db->lastInsertId():(int)$q->fetchColumn();
+        if ($count > ($action === 'register' ? 10 : 8)) { throw new HttpError(429, 'Слишком много попыток. Попробуйте позже.'); }
     }
 
     public function register(string $name, string $password): Session

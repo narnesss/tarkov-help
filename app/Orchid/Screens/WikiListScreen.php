@@ -26,7 +26,7 @@ final class WikiListScreen extends Screen
     {
         $field=(string)request()->query('filter','');if($field===''){return null;}
         $foreign=app(WikiSchema::class)->foreigns($type)[$field]??null;abort_unless($foreign,404);
-        $parent=app(WikiSchema::class)->query($foreign['type'])->where('rowid',request()->query('parent'))->firstOrFail();
+        $parent=app(WikiSchema::class)->record($foreign['type'],request()->query('parent'))->firstOrFail();
         return ['field'=>$field,'value'=>$parent->{$foreign['column']},'label'=>$parent->display_name];
     }
     public function commandBar(): array

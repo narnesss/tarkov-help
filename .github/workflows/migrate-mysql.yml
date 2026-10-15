@@ -1,0 +1,35 @@
+name: Перенос production SQLite в MariaDB
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Этап переноса
+        type: choice
+        required: true
+        options: [prepare, preflight, activate, verify, cleanup]
+      ciphertext:
+        description: RSA-OAEP-SHA256 base64 реквизитов (только шифротекст, без пароля)
+        type: string
+        required: false
+permissions:
+  contents: read
+concurrency:
+  group: alwaysdata-production
+  cancel-in-progress: false
+jobs:
+  transfer:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: alwaysdata-production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Выполнить выбранный этап на origin
+        env:
+          ALWAYSDATA_SSH_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
+          ALWAYSDATA_KNOWN_HOSTS: ${{ secrets.ALWAYSDATA_KNOWN_HOSTS }}
+          TRANSFER_ACTION: ${{ inputs.action }}
+          TRANSFER_CIPHERTEXT: ${{ inputs.ciphertext }}
+        run: bash deployment/alwaysdata/github-deploy.sh mysql-transfer

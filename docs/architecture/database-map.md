@@ -1,5 +1,23 @@
 # Карта БД Tarkov Wiki
 
+Production: MariaDB 11.8 на alwaysdata, `mysql-narnes.alwaysdata.net`, база `narnes_tarkov`.
+Подключение Laravel `mysql`, InnoDB/utf8mb4_nopad_bin, TLS с проверкой CA.
+Локальные и автономные тесты сохраняют SQLite. Доменный DDL MariaDB:
+`database/migrations/sql/2026_10_15_domain.mysql.sql`; миграции 000001–000005 выбирают драйвер.
+Составные/строковые PK сохраняются; их прежние SQLite rowid переносятся в отдельный
+AUTO_INCREMENT UNIQUE rowid, который не показывается пользователю. Numeric id сохраняются
+без перенумерации. display_name — TEXT, координаты — DOUBLE; user_state.value — LONGTEXT.
+JSON-колонок контента нет. `wiki_write_locks(id=1)` сериализует проверку/сохранение графа.
+Проверка/перенос каждой строки, согласованное переключение и резервные копии описаны
+в [specs/mysql-migration.md](../../specs/mysql-migration.md).
+
+`CONTENT_DIRECTORY=/home/narnes/tarkov-data/content` остаётся вне релиза.
+`DB_ACCESS_PATH=/home/narnes/tarkov-data/mysql` — общий gate действующей MariaDB.
+Старая SQLite `/home/narnes/tarkov-data/wiki.sqlite` и финальный согласованный снимок
+сохраняются, маркер старого gate остаётся: старые PHP-процессы получают 503 вместо записи.
+MySQL-копии: `/home/narnes/tarkov-data/mysql-backups`, SQL gzip + приватный манифест.
+Приведённые ниже SQLite VACUUM/Backup API относятся к локальной совместимости и старому источнику.
+
 Миграция `2026_10_15_000002_create_content_management.php` добавляет:
 
 - `admin_users`: integer id, name, unique email, password, permissions JSON,
