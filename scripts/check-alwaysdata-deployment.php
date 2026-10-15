@@ -118,7 +118,8 @@ try {
     if (count(glob($database.'.backup-daily-*')) !== 1) { throw new RuntimeException('Повтор daily создал лишнюю копию.'); }
     // Крупный каталог Orchid сокращает число копий по общему бюджету 100 МиБ.
     $deployCopies = count(glob($database.'.backup-????????-??????-??????'));
-    if ($deployCopies < 1 || $deployCopies > 3) { throw new RuntimeException('Не ограничены копии перед деплоем.'); }
+    // Новая daily-копия может занять весь бюджет и вытеснить все deploy-копии.
+    if ($deployCopies > 3) { throw new RuntimeException('Не ограничены копии перед деплоем.'); }
     $catalog = array_map(fn (string $line): array => json_decode($line, true, flags: JSON_THROW_ON_ERROR),
         array_filter(explode("\n", trim($run([PHP_BINARY, $base.'/tarkov-api/artisan', 'wiki:restore', '--list'])))));
     if (array_sum(array_column($catalog, 'bytes')) > 100 * 1024 * 1024 || array_filter($catalog, fn (array $copy): bool => !$copy['valid'])) {

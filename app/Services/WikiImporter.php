@@ -235,22 +235,26 @@ final class WikiImporter
         $this->store->source($dataset->id,$pointer,'point',$id,$kind.'-point');
         foreach(['point_category_links','point_positions','point_world_positions','point_documents','item_spawns','key_usages','media_links'] as $type){DB::table('wiki_'.$type)->where('point_id',$id)->update(['archived'=>1]);}
         $category=$kind==='document'?'document':($point['category']??'quest');
-        $this->store->put('point_categories',['code'=>$category],['name'=>$this->categoryName($category)]);
-        $this->store->put('point_category_links',['point_id'=>$id,'category'=>$category],['archived'=>0]);
-        foreach($point['cmsCategories']??[] as $code){$this->store->put('point_categories',['code'=>$code],['name'=>$this->categoryName($code)]);$this->store->put('point_category_links',['point_id'=>$id,'category'=>$code],['archived'=>0]);}
+        foreach($point['cmsCategories']??[$category] as $code){$this->store->put('point_categories',['code'=>$code],['name'=>DB::table('wiki_point_categories')->where('code',$code)->value('name')??$this->categoryName($code)]);$this->store->put('point_category_links',['point_id'=>$id,'category'=>$code],['archived'=>0]);}
         foreach($point['cmsDocuments']??[] as $ref){$doc=$this->find('documents',$ref);if($doc){$this->store->put('point_documents',['point_id'=>$id,'document_id'=>$doc],['archived'=>0]);}}
         if($kind==='document'){
             $map=DB::table('wiki_maps')->where(['location_id'=>$location,'slug'=>'documents'])->value('id');
-            foreach([['x','y'],['x2','y2']] as $order=>[$x,$y]){if($map&&isset($point[$x],$point[$y])&&$point[$x]>=0&&$point[$x]<=100&&$point[$y]>=0&&$point[$y]<=100){
+            foreach(isset($point['cmsPositions'])?[]:[['x','y'],['x2','y2']] as $order=>[$x,$y]){if($map&&isset($point[$x],$point[$y])&&$point[$x]>=0&&$point[$x]<=100&&$point[$y]>=0&&$point[$y]<=100){
                 $layer=null;if(!empty($point['floor'])){$layer=$this->store->put('map_layers',['map_id'=>$map,'external_id'=>$point['floor']],['name'=>$point['floor']==='First_Floor'?'1 этаж':$point['floor']]);}
                 $this->store->put('point_positions',['point_id'=>$id,'map_id'=>$map,'order_index'=>$order],['location_id'=>$location,'layer_id'=>$layer,'x_percent'=>$point[$x],'y_percent'=>$point[$y],'archived'=>0]);}}
             $document=$this->find('documents',$point['doc']??null);if($document){$this->store->put('point_documents',['point_id'=>$id,'document_id'=>$document],['archived'=>0]);}
             foreach($point['images']??[] as $i=>$url){if(!is_string($url)){continue;}$media=$this->store->put('media',['url'=>$url],['caption'=>$point['caption']??'']);$this->store->put('media_links',['media_id'=>$media,'point_id'=>$id],['order_index'=>$i,'archived'=>0]);}
-        } elseif(isset($point['position']['x'],$point['position']['y'],$point['position']['z'])){
+        } elseif(!isset($point['cmsWorldPositions'])&&isset($point['position']['x'],$point['position']['y'],$point['position']['z'])){
             $this->store->put('point_world_positions',['point_id'=>$id,'order_index'=>0],['world_x'=>$point['position']['x'],'world_y'=>$point['position']['y'],'world_z'=>$point['position']['z'],'archived'=>0]);
         }
-        foreach($point['itemIds']??$point['items']??[] as $reference){$item=$this->find('items',$reference);if($item){$this->store->put('item_spawns',['point_id'=>$id,'item_id'=>$item],['amount'=>1,'archived'=>0]);}}
-        foreach($point['keyIds']??$point['keys']??[] as $reference){$item=$this->find('items',$reference);if($item){$this->store->put('keys',['item_id'=>$item],[]);$this->store->put('key_usages',['point_id'=>$id,'key_item_id'=>$item,'usage_type'=>'unlock'],['archived'=>0]);}}
+        foreach($point['cmsItemSpawns']??array_map(fn($item)=>['item'=>$item,'amount'=>1],$point['itemIds']??$point['items']??[]) as $link){$item=$this->find('items',$link['item']);if($item){$this->store->put('item_spawns',['point_id'=>$id,'item_id'=>$item],['amount'=>$link['amount'],'spawn_chance'=>$link['spawn_chance']??null,'notes'=>$link['notes']??'','archived'=>0]);}}
+        foreach($point['cmsKeyUsages']??array_map(fn($item)=>['item'=>$item,'usage_type'=>'unlock'],$point['keyIds']??$point['keys']??[]) as $link){$item=$this->find('items',$link['item']);if($item){$this->store->put('keys',['item_id'=>$item],[]);$this->store->put('key_usages',['point_id'=>$id,'key_item_id'=>$item,'usage_type'=>$link['usage_type']],['notes'=>$link['notes']??'','archived'=>0]);}}
+        foreach($point['cmsPositions']??[] as $position){$version=DB::table('wiki_versions')->where('code',$position['version']['code'])->value('id')??$this->store->put('versions',['code'=>$position['version']['code']],$position['version']);
+            $map=DB::table('wiki_maps')->where(['location_id'=>$location,'version_id'=>$version,'slug'=>$position['map']['slug']])->value('id')??$this->store->put('maps',['location_id'=>$location,'version_id'=>$version,'slug'=>$position['map']['slug']],$position['map']);
+            $layer=null;if($position['layer']){$layer=DB::table('wiki_map_layers')->where(['map_id'=>$map,'external_id'=>$position['layer']['external_id']])->value('id')??$this->store->put('map_layers',['map_id'=>$map,'external_id'=>$position['layer']['external_id']],$position['layer']);}
+            $this->store->put('point_positions',['point_id'=>$id,'map_id'=>$map,'order_index'=>$position['order_index']],['location_id'=>$location,'layer_id'=>$layer,'x_percent'=>$position['x_percent'],'y_percent'=>$position['y_percent'],'archived'=>0]);}
+        foreach($point['cmsWorldPositions']??[] as $position){$this->store->put('point_world_positions',['point_id'=>$id,'order_index'=>$position['order_index']],$position+['archived'=>0]);}
+        foreach($point['cmsMedia']??[] as $media){$record=$this->store->put('media',['url'=>$media['url']],array_diff_key($media,['order_index'=>true]));$this->store->put('media_links',['point_id'=>$id,'media_id'=>$record],['order_index'=>$media['order_index'],'archived'=>0]);}
         if(isset($point['cmsQuestLinks'])){DB::table('wiki_objective_points')->where('point_id',$id)->update(['archived'=>1]);}
         if(isset($point['objectiveId'])&&!isset($point['cmsQuestLinks'])){
             $objective=DB::table('wiki_objectives as o')->join('wiki_quests as q','q.id','=','o.quest_id')->where('o.external_id',$point['objectiveId'])->where('q.mode',$mode)->where('q.external_id',$point['questId']??'')->value('o.id');

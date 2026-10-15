@@ -155,4 +155,19 @@ final class WikiDomainTest extends TestCase
         $this->save('reward_sets',$set,['archived'=>0]);$this->assertSame('watch',$quest->fresh()->payload['finishRewards']['items'][0]['item']);
         $this->assertSame('сохранить',$quest->fresh()->payload['finishRewards']['items'][0]['attributes']['custom']);
     }
+    public function test_point_attributes_and_extra_positions_survive_old_text_form_save(): void
+    {
+        $this->fixtures();$point=$this->id('map_points');$spawn=$this->id('item_spawns');$key=$this->id('key_usages');$map=$this->id('maps');
+        $this->save('item_spawns',$spawn,['amount'=>3,'spawn_chance'=>0.25,'notes'=>'На полке']);
+        $this->save('key_usages',$key,['usage_type'=>'optional','notes'=>'Есть обход']);
+        foreach([1,2] as $order){$this->save('point_positions',null,['point_id'=>$point,'map_id'=>$map,'x_percent'=>30+$order,'y_percent'=>40+$order,'order_index'=>$order]);}
+        $dataset=ContentDataset::where('path','spawns.json')->firstOrFail();$url='/admin/datasets/'.$dataset->id.'/edit/save?section=/0';
+        $this->post($url,['revision'=>$dataset->revision(),'fields'=>[hash('sha256','/0/caption')=>'Новая подпись',hash('sha256','/0/x')=>'15.5']])->assertRedirect()->assertSessionHasNoErrors();
+        $this->assertSame(3,DB::table('wiki_point_positions')->where('point_id',$point)->where('archived',0)->count());
+        $this->assertEquals(15.5,DB::table('wiki_point_positions')->where(['point_id'=>$point,'order_index'=>0])->value('x_percent'));
+        $saved=DB::table('wiki_item_spawns')->where('rowid',$spawn)->first();$this->assertEquals(3,$saved->amount);$this->assertEquals(0.25,$saved->spawn_chance);$this->assertSame('На полке',$saved->notes);
+        $this->assertSame('optional',DB::table('wiki_key_usages')->where('rowid',$key)->value('usage_type'));
+        $this->assertSame('Новая подпись',DB::table('wiki_map_points')->where('id',$point)->value('title'));
+        $this->assertSame([],DB::select('PRAGMA foreign_key_check'));
+    }
 }

@@ -31,6 +31,7 @@ final class DatasetEditScreen extends ContentFieldsScreen
             throw ValidationException::withMessages(['revision' => 'Данные уже изменились. Обновите страницу и повторите правку.']);
         }
         $original = $this->record->getRawOriginal('payload');
+        $document=app(\App\Services\WikiSync::class)->reconcileDataset($this->record->content(),$document);
         $this->record->setContent($document);
         \Illuminate\Support\Facades\DB::transaction(function () use ($original): void {
             if (ContentDataset::whereKey($this->record->id)->where('payload', $original)

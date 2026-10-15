@@ -148,6 +148,16 @@ final class WikiPublisher
         $documents=$this->rows('point_documents',['point_id'=>$id]);$items=$this->rows('item_spawns',['point_id'=>$id]);$keys=$this->rows('key_usages',['point_id'=>$id]);
         $data['itemIds']=array_map(fn($r)=>$this->external('items',$r['item_id']),$items);
         $data['keyIds']=array_map(fn($r)=>$this->external('items',$r['key_item_id']),$keys);
+        $data['cmsItemSpawns']=array_map(fn($r)=>['item'=>$this->external('items',$r['item_id']),'amount'=>$r['amount'],'spawn_chance'=>$r['spawn_chance'],'notes'=>$r['notes']],$items);
+        $data['cmsKeyUsages']=array_map(fn($r)=>['item'=>$this->external('items',$r['key_item_id']),'usage_type'=>$r['usage_type'],'notes'=>$r['notes']],$keys);
+        $data['cmsPositions']=[];
+        foreach($this->rows('point_positions',['point_id'=>$id]) as $position){$map=$this->row('maps',$position['map_id']);$version=$this->row('versions',$map['version_id']);
+            $data['cmsPositions'][]=['map'=>array_intersect_key($map,array_flip(['slug','name','image_url','width','height'])),
+                'version'=>array_intersect_key($version,array_flip(['code','patch','valid_from'])),
+                'layer'=>empty($position['layer_id'])?null:array_intersect_key($this->row('map_layers',$position['layer_id']),array_flip(['external_id','name','image_url','order_index'])),
+                'x_percent'=>$position['x_percent'],'y_percent'=>$position['y_percent'],'order_index'=>$position['order_index']];}
+        $data['cmsWorldPositions']=array_map(fn($r)=>array_intersect_key($r,array_flip(['world_x','world_y','world_z','order_index'])),$this->rows('point_world_positions',['point_id'=>$id]));
+        $data['cmsMedia']=[];foreach($this->rows('media_links',['point_id'=>$id]) as $link){$data['cmsMedia'][]=[...array_intersect_key($this->row('media',$link['media_id']),array_flip(['url','caption','source_url','author'])),'order_index'=>$link['order_index']];}
         $data['cmsDocuments']=array_map(fn($r)=>$this->external('documents',$r['document_id']),$documents);
         $data['cmsCategories']=array_column($this->rows('point_category_links',['point_id'=>$id]),'category');
         $data['cmsQuestLinks']=[];
@@ -155,7 +165,7 @@ final class WikiPublisher
         if($format==='document-point'){
             $data['caption']=$row['title'];$data['map']=$location['slug'];$data['mapName']=$location['name'];
             if($documents!==[]){$doc=$this->row('documents',$documents[0]['document_id']);$data['doc']=$doc['external_id'];$data['docName']=$doc['name'];}else{unset($data['doc'],$data['docName']);$data['cmsArchived']=true;}
-            $positions=$this->rows('point_positions',['point_id'=>$id]);usort($positions,fn($a,$b)=>$a['order_index']<=>$b['order_index']);
+            $positions=$this->rows('point_positions',['point_id'=>$id]);usort($positions,fn($a,$b)=>$a['order_index']<=>$b['order_index']);unset($data['floor']);
             foreach(array_slice($positions,0,2) as $i=>$position){$suffix=$i===0?'':'2';$data['x'.$suffix]=$position['x_percent'];$data['y'.$suffix]=$position['y_percent'];if($i===0&&!empty($position['layer_id'])){$data['floor']=$this->row('map_layers',$position['layer_id'])['external_id'];}}
             if(count($positions)<2){unset($data['x2'],$data['y2']);}
             if($positions===[]){$data['cmsArchived']=true;}
@@ -163,8 +173,9 @@ final class WikiPublisher
         } else {
             $data['name']=$row['title'];$data['gameMode']=$row['mode']==='all'?'regular':$row['mode'];$data['sourceStatus']='editor';
             $positions=$this->rows('point_world_positions',['point_id'=>$id]);if($positions!==[]){$position=$positions[0];$data['position']=['x'=>$position['world_x'],'y'=>$position['world_y'],'z'=>$position['world_z']];}
+            else{unset($data['position']);$data['cmsArchived']=true;}
             $data['category']=$data['cmsCategories'][0]??$data['category']??'quest';$data['kind']=str_starts_with($data['category'],'extract-')?'extract':$data['category'];
-            if($keys!==[]){$data['keyNames']=array_map(fn($link)=>$this->row('items',$link['key_item_id'])['name'],$keys);}
+            if($keys!==[]){$data['keyNames']=array_map(fn($link)=>$this->row('items',$link['key_item_id'])['name'],$keys);}else{unset($data['keyNames']);}
             if($data['cmsQuestLinks']!==[]){$data=[...$data,...$data['cmsQuestLinks'][0]];}else{unset($data['questId'],$data['objectiveId']);}
         }
         return $data;
