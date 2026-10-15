@@ -35,7 +35,7 @@ final class WikiSchema
     {
         if(DB::getDriverName()==='sqlite'){return $this->columns[$type]??=collect(DB::select('PRAGMA table_info('.$this->table($type).')'))->keyBy('name')->all();}
         return $this->columns[$type]??=collect(Schema::getColumns($this->table($type)))->mapWithKeys(fn($column)=>[$column['name']=>(object)[
-            'name'=>$column['name'],'type'=>$column['type'],'notnull'=>!$column['nullable'],'dflt_value'=>$column['default'],
+            'name'=>$column['name'],'type'=>$column['type'],'notnull'=>!$column['nullable'],'dflt_value'=>$column['default']==='NULL'?null:$column['default'],
         ]])->all();
     }
     public function foreigns(string $type): array

@@ -63,6 +63,7 @@ final class WikiDomainTest extends TestCase
             $dom=new \DOMDocument();@$dom->loadHTML('<?xml encoding="utf-8" ?>'.$html);$xpath=new \DOMXPath($dom);
             $this->assertSame(0,$xpath->query('//input[contains(@name,"_id]") and @type!="hidden"]')->length,$type);
             $this->assertSame(0,$xpath->query('//textarea[contains(@name,"json")]')->length,$type);
+            $this->assertSame(0,$xpath->query('//input[@value="NULL"]')->length,$type);
         }
         $html=$this->get('/admin/wiki/objective_items/create')->assertOk()->assertSee('data-controller="relation"',false)->getContent();
         $this->assertStringContainsString('Предмет',$html);
