@@ -62,7 +62,7 @@ final class PlayerEmailsTest extends TestCase
         $this->assertSame(5,(int)DB::table('player_email_challenges')->value('attempts'));
         $this->assertSame(0,DB::table('player_emails')->count());
     }
-    public function test_code_lasts_thirty_minutes_and_mail_subject_decodes_as_utf8(): void
+    public function test_code_lasts_thirty_minutes_and_mail_has_english_subject_and_russian_body(): void
     {
         $who=$this->account();$code=$this->send($who);
         $pending=DB::table('player_email_challenges')->first();
@@ -74,8 +74,9 @@ final class PlayerEmailsTest extends TestCase
         $manager=new \Illuminate\Mail\MailManager($this->app);
         $message=$manager->mailer('array')->send($mail)->getSymfonySentMessage()->getOriginalMessage();
         $subject=$message->getHeaders()->get('Subject')->toString();
-        $this->assertStringContainsString('=?UTF-8?B?',$subject);
-        $this->assertSame('Subject: Код подтверждения e-mail — Tarkov Compass',iconv_mime_decode($subject,ICONV_MIME_DECODE_STRICT,'UTF-8'));
+        $this->assertSame('Subject: Tarkov Compass - Email verification code',$subject);
+        $this->assertStringContainsString('Подтверждение e-mail в Tarkov Compass',$message->getTextBody());
+        $this->assertStringContainsString('Код: 12345678',$message->getTextBody());
         foreach(explode("\r\n",$subject) as $line){$this->assertLessThanOrEqual(78,strlen($line));}
     }
     public function test_expired_and_replaced_codes_do_not_verify_and_old_contact_remains(): void
