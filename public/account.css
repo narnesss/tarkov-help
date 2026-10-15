@@ -1,4 +1,5 @@
 @charset "UTF-8";
+.account-privacy{max-width:820px;margin:44px auto;line-height:1.9}.account-privacy h1{font-size:clamp(28px,5vw,40px);letter-spacing:-.03em}.account-privacy h2{font-size:21px;margin-top:32px}.account-privacy>p{color:#bac7b8}
 .account-page{height:auto;min-height:100dvh;overflow:auto;font-size:15px;background:radial-gradient(ellipse at 90% 12%,#26332366,transparent 45%),var(--bg)}
 .account-shell{max-width:1200px;margin:auto;padding:32px 32px 80px}.account-back{color:var(--muted);font-size:13px}.account-back:hover,.account-link:hover{color:var(--accent)}
 .account-hero{display:flex;justify-content:space-between;align-items:center;gap:32px;padding:40px 0 32px}.account-kicker{display:block;font-size:11px;font-weight:800;letter-spacing:.18em;color:var(--accent)}

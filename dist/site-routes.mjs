@@ -37,6 +37,7 @@ export function canonicalURL(value){
   else path='/reference'+(params.has('tab')?'/'+take('tab'):'');
  }else if(['quest-map-source','quest-map'].includes(segment))path='/quest-map'+(params.has('map')?'/'+take('map'):'');
  if(segment==='account')path='/account';
+ if(segment==='privacy')path='/privacy';
  if(path){url.pathname=path;url.search=params.toString();}
  return url;
 }

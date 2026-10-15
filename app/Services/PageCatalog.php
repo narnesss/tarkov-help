@@ -55,6 +55,7 @@ final readonly class PageCatalog
         $plain = preg_replace('/\.(?:html|php)$/', '', rtrim($path, '/')) ?: '/';
         $aliases = ['/' => 'index', '/index' => 'index', '/documents' => 'documents', '/raid' => 'raid', '/quest' => 'quest', '/quests' => 'quests', '/reference' => 'reference', '/boss' => 'boss', '/quest-map-source' => 'quest-map-source'];
         $aliases['/account'] = 'account';
+        $aliases['/privacy'] = 'privacy';
         if (isset($aliases[$plain])) {
             $template = $aliases[$plain];
             return ['template' => $template, 'title' => config('pages.'.$template.'.title'), 'params' => []];

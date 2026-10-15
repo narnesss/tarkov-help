@@ -23,6 +23,7 @@
   <section class="account-detail-grid"><div class="account-detail"><h2>Активные квесты</h2><p class="profile-help">То, что ты уже начал проходить.</p><div id="account-active">Загрузка…</div></div><div class="account-detail"><h2>Убежище и достижения</h2><p class="profile-help">Отмеченные постройки и полученные награды.</p><div id="account-unlocks">Загрузка…</div></div></section>
   <section class="account-connections" id="account-connections" hidden aria-labelledby="account-connections-title"><h2 id="account-connections-title">Способы входа</h2><p class="profile-help">Подключи Google или Discord к этому аккаунту, чтобы сохранить тот же прогресс при входе любым способом.</p><div class="account-actions"><button class="button" type="button" data-oauth="google" disabled>Подключить Google</button><button class="button" type="button" data-oauth="discord" disabled>Подключить Discord</button></div><p class="profile-help" id="account-connections-status"></p></section>
   <noscript><p>Для входа и отображения личного прогресса включи JavaScript.</p></noscript>
+  <p class="profile-help"><a class="account-link" href="privacy.html">Как используются данные профиля</a></p>
 </main>
-<script type="module" src="bootstrap.mjs"></script>
+<script type="module" src="bootstrap.mjs?v=account-1"></script>
 @endsection

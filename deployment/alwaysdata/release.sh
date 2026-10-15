@@ -52,6 +52,11 @@ fi
 mv "$release/storage" "$release/storage.empty"
 ln -s "$shared/storage" "$release/storage"
 ln -s "$shared/.env" "$release/.env"
+# Обычная независимая копия исключает повторную тяжёлую распаковку неизменных пакетов.
+# Жёсткие ссылки запрещены: Composer нового релиза не должен изменять работающий код.
+if test -f "$current/vendor/autoload.php" && cmp -s "$current/composer.lock" "$release/composer.lock" && cmp -s "$current/composer.json" "$release/composer.json"; then
+  cp -a "$current/vendor" "$release/vendor"
+fi
 ALWAYSDATA_RELEASE_BASE="$base" sh "$release/deployment/alwaysdata/deploy.sh"
 printf '%s\n' "$release_id" > "$release/REVISION"
 

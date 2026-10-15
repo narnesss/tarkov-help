@@ -1,6 +1,6 @@
 import {profileStore} from './profile-store.mjs';
 import {serverProfiles} from './profile-runtime.mjs';
-import {mountProfile} from './profile-ui.mjs';
+import {mountProfile} from './profile-ui.mjs?v=account-1';
 import {observeHeader} from './layout.mjs';
 import {initializeSiteRoutes,siteHref} from './site-routes.mjs';
 

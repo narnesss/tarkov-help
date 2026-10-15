@@ -10,6 +10,12 @@ return json_decode(<<<'JSON'
     "styles": ["style.css", "site-ui.css", "controls.css", "account.css"],
     "body_attributes": "class=\"account-page\" data-page=\"account\""
   },
+  "privacy": {
+    "title": "Конфиденциальность — Tarkov Compass",
+    "description": "Как Tarkov Compass использует данные аккаунтов и сохраняет личный прогресс.",
+    "styles": ["style.css", "site-ui.css", "controls.css", "account.css"],
+    "body_attributes": "class=\"account-page\" data-page=\"privacy\""
+  },
   "index": {
     "title": "Escape from Tarkov Wiki — карты, квесты и справочник",
     "description": "Подготовьтесь к следующему рейду: интерактивные карты, квесты торговцев, основной сюжет, предметы и личный прогресс в PVE и PVP.",

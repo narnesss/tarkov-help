@@ -83,11 +83,21 @@ $automatic = function (int $attempt, bool $fail = false) use ($root, $base, $add
 };
 try {
     foreach ([1, 2] as $attempt) {
+        $previousVendor = realpath($base.'/tarkov-api/vendor');
+        if ($attempt === 2) { file_put_contents($previousVendor.'/.deploy-copy-probe', 'previous-release'); }
         [$status, $id, $output] = $automatic($attempt);
         if ($status !== 0) { throw new RuntimeException('Автоматический deploy завершился ошибкой: '.$output); }
         clearstatcache(true);
         if (!is_link($base.'/tarkov-api') || trim(file_get_contents($base.'/tarkov-api/REVISION')) !== $id) {
             throw new RuntimeException('Релиз не переключился.');
+        }
+        if ($attempt === 2) {
+            $copiedProbe=$base.'/tarkov-api/vendor/.deploy-copy-probe';
+            if (!is_file($copiedProbe) || fileinode($copiedProbe) === fileinode($previousVendor.'/.deploy-copy-probe')) {
+                throw new RuntimeException('Зависимости не скопированы независимо от предыдущего релиза.');
+            }
+            file_put_contents($copiedProbe,'new-release');
+            if (file_get_contents($previousVendor.'/.deploy-copy-probe') !== 'previous-release') { throw new RuntimeException('Новый vendor изменил работающий релиз.'); }
         }
         if (file_get_contents($base.'/tarkov-api/.env') !== $before ||
             file_get_contents($base.'/tarkov-api/storage/logs/preserve.txt') !== 'keep-storage' ||
