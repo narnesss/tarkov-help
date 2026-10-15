@@ -104,9 +104,14 @@ try {
     $run([PHP_BINARY, $base.'/tarkov-api/artisan', 'wiki:backup', '--no-interaction']);
     $run([PHP_BINARY, $base.'/tarkov-api/artisan', 'wiki:backup', '--no-interaction']);
     if (count(glob($database.'.backup-daily-*')) !== 1) { throw new RuntimeException('Повтор daily создал лишнюю копию.'); }
-    if (count(glob($database.'.backup-????????-??????-??????')) !== 3) { throw new RuntimeException('Не ограничены копии перед деплоем.'); }
+    // Крупный каталог Orchid сокращает число копий по общему бюджету 100 МиБ.
+    $deployCopies = count(glob($database.'.backup-????????-??????-??????'));
+    if ($deployCopies < 1 || $deployCopies > 3) { throw new RuntimeException('Не ограничены копии перед деплоем.'); }
     $catalog = array_map(fn (string $line): array => json_decode($line, true, flags: JSON_THROW_ON_ERROR),
         array_filter(explode("\n", trim($run([PHP_BINARY, $base.'/tarkov-api/artisan', 'wiki:restore', '--list'])))));
+    if (array_sum(array_column($catalog, 'bytes')) > 100 * 1024 * 1024 || array_filter($catalog, fn (array $copy): bool => !$copy['valid'])) {
+        throw new RuntimeException('Не подтверждены лимит объёма и целостность резервных копий.');
+    }
     $selected = array_values(array_filter($catalog, fn (array $copy): bool => str_contains($copy['name'], '.backup-daily-')))[0];
     $pdo->prepare('INSERT INTO users(id, username, password_hash, created_at) VALUES (?, ?, NULL, ?)')->execute(['after-snapshot', 'after-snapshot', time()]);
     $arguments = ['--backup='.$selected['name'], '--sha256='.$selected['sha256']];
