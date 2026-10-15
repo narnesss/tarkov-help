@@ -1,5 +1,17 @@
 # Карта БД Tarkov Wiki
 
+Миграция `2026_10_16_000008_add_player_email_verification.php` добавляет:
+
+- `player_emails`: PK/FK user_id, unique email, verified_at. Один подтверждённый контакт
+  на прежний ID; смена только после кода. До подтверждения новый адрес не заменяет старый.
+- `player_email_challenges`: PK/FK user_id, unique challenge_id, email, code_hash HMAC-SHA256,
+  attempts, sent_at, expires_at. Восьмизначный код отсутствует в БД/логах/очереди/API.
+  TTL 10 минут, 5 попыток, повтор через 60 секунд; почасовые лимиты user/IP/email в rate_limits.
+
+Подтверждение и OAuth используют общий player_auth_locks FOR UPDATE: проверка уникальности,
+назначение почты и выбор владельца не расходятся при конкуренции. Занятый адрес/subject
+не переносится, конфликт не объединяет аккаунты и прогресс. JSON-колонок не добавлено.
+
 Миграция `2026_10_16_000007_add_player_profiles.php` сохраняет users и user_state без изменений:
 
 - `player_profiles`: PK/FK user_id, пользовательский display_name, provider_name, avatar_url,

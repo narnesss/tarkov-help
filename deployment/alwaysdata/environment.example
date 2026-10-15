@@ -23,3 +23,6 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 DISCORD_CLIENT_ID=
 DISCORD_CLIENT_SECRET=
+# Письма подтверждения: SMTP с самого alwaysdata не требует пароля.
+PLAYER_EMAIL_MAILER=alwaysdata
+PLAYER_EMAIL_FROM=narnes@alwaysdata.net

@@ -79,8 +79,9 @@ final readonly class PlayerOAuth
                 } elseif($identity){$owner=$identity->user_id;}
                 else {
                     $matches=$email===null?collect():DB::table('player_identities')->where('verified_email',$email)->get();
-                    $owners=$matches->pluck('user_id')->unique()->values();
-                    abort_if($owners->count()>1 || ($owners->count()===1 && (!$autoLink||!$matches->contains(fn($match)=>(bool)$match->email_auto_link))),409,
+                    $contacts=$email===null?collect():DB::table('player_emails')->where('email',$email)->pluck('user_id');
+                    $owners=$matches->pluck('user_id')->merge($contacts)->unique()->values();
+                    abort_if($owners->count()>1 || ($owners->count()===1 && (!$autoLink||($contacts->isEmpty()&&!$matches->contains(fn($match)=>(bool)$match->email_auto_link)))),409,
                         'Чтобы подключить этот способ входа, войдите в существующий аккаунт и подключите его в личном кабинете.');
                     $owner=$owners->first();
                     if($owner===null){

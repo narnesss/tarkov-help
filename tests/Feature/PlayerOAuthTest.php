@@ -200,4 +200,20 @@ final class PlayerOAuthTest extends TestCase
             ->assertJsonPath('profile.name','Мой позывной')->assertJsonPath('profile.customName',true)->assertJsonPath('profile.avatar',null);
         $this->assertSame('Новое имя',DB::table('player_profiles')->where('user_id',$who[2])->value('provider_name'));
     }
+
+    public function test_old_password_account_confirmed_email_links_google_and_discord_without_losing_progress(): void
+    {
+        config(['player-auth.email.mailer'=>'array']);\Illuminate\Support\Facades\Mail::fake();
+        $guest=$this->guest();$old=$this->authPost($guest,'/api/auth/register',['username'=>'old_player','password'=>'correct horse battery'])->assertOk();
+        $who=[$old->headers->getCookies()[0]->getValue(),$old->json('csrf'),$old->json('profile.id')];
+        DB::table('user_state')->insert(['user_id'=>$who[2],'state_key'=>'kord-achievements-pve','value'=>'["earned"]','version'=>9,'updated_at'=>time()]);
+        $pending=$this->authPost($who,'/api/auth/email/send',['email'=>'player@gmail.com'])->assertOk();$code='';
+        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\VerifyPlayerEmail::class,function($mail)use(&$code){$code=$mail->code;return true;});
+        $this->authPost($who,'/api/auth/email/verify',['challenge_id'=>$pending->json('pending.challengeId'),'code'=>$code])->assertOk();
+        $google=$this->finishGoogle($this->guest(),['sub'=>'google-old','name'=>'Google','email'=>'player@gmail.com','email_verified'=>true])->assertOk()->assertJsonPath('profile.id',$who[2]);
+        $discord=$this->finishDiscord($this->guest(),['id'=>'888','username'=>'Discord','email'=>'player@gmail.com','verified'=>true])->assertOk()->assertJsonPath('profile.id',$who[2]);
+        $this->withCookie('eft_session',$discord->headers->getCookies()[0]->getValue())->getJson('/api/state')->assertJsonPath('state.kord-achievements-pve.version',9);
+        $this->assertSame('old_player',DB::table('users')->where('id',$who[2])->value('username'));
+        $this->assertTrue(password_verify('correct horse battery',DB::table('users')->where('id',$who[2])->value('password_hash')));
+    }
 }

@@ -36,6 +36,8 @@ return [
     */
 
     'mailers' => [
+        'alwaysdata' => ['transport'=>'smtp','scheme'=>'smtp','host'=>'smtp-narnes.alwaysdata.net','port'=>587,
+            'username'=>null,'password'=>null,'require_tls'=>true,'timeout'=>5],
 
         'smtp' => [
             'transport' => 'smtp',
