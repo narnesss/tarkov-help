@@ -20,6 +20,12 @@ final class PlayerEmails
 
     private function named(Session $session): void { abort_unless($session->username!==null,403,'Сначала войдите в аккаунт.'); }
 
+    private function active(Session $session): void
+    {
+        abort_unless(DB::table('sessions')->where('token_hash',hash('sha256',$session->token))->where('user_id',$session->userId)
+            ->where('expires_at','>',time())->exists(),401,'Сессия завершена. Войдите снова.');
+    }
+
     public function status(Session $session): array
     {
         $this->named($session);
@@ -56,6 +62,7 @@ final class PlayerEmails
         $challenge=bin2hex(random_bytes(16)); $code=str_pad((string)random_int(0,99999999),8,'0',STR_PAD_LEFT);
         $sent=DB::transaction(function() use($session,$email,$ip,$challenge,$code): bool {
             DB::table('player_auth_locks')->where('id',1)->lockForUpdate()->first();
+            $this->active($session);
             abort_unless($this->available($email,$session->userId),409,'Адрес уже связан с другим аккаунтом. Войдите в него, чтобы сохранить его прогресс.');
             if(DB::table('player_emails')->where('user_id',$session->userId)->where('email',$email)->exists()){return false;}
             $previous=DB::table('player_email_challenges')->where('user_id',$session->userId)->first();
@@ -83,6 +90,7 @@ final class PlayerEmails
         $this->named($session);
         $result=DB::transaction(function() use($session,$challenge,$code): int {
             DB::table('player_auth_locks')->where('id',1)->lockForUpdate()->first();
+            $this->active($session);
             $pending=DB::table('player_email_challenges')->where('user_id',$session->userId)->where('challenge_id',$challenge)->first();
             if(!$pending || (int)$pending->expires_at<=time()){return 410;}
             if((int)$pending->attempts>=5){return 429;}

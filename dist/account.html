@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="style.css?v=account-1">
   <link rel="stylesheet" href="site-ui.css?v=account-1">
   <link rel="stylesheet" href="controls.css?v=account-1">
-  <link rel="stylesheet" href="account.css?v=email-4">
+  <link rel="stylesheet" href="account.css?v=recovery-1">
   <link rel="modulepreload" href="profile-store.mjs">
   <meta name="wiki-routing" content="pages">
 </head>
@@ -44,10 +44,32 @@
     <div class="account-auth-copy"><span class="account-kicker">СОХРАНИ СВОЙ ПУТЬ</span><h2 id="account-auth-title">Продолжай с любого устройства</h2><p>Войди в аккаунт, чтобы твои отметки и заметки всегда были под рукой.</p><p class="profile-help">Прогресс гостя остаётся в его профиле. Перед созданием нового аккаунта скачай его, а после входа загрузи в свой аккаунт.</p><button class="button" type="button" data-profile-tools>Скачать или перенести профиль</button></div>
     <div class="account-auth-form">
       <div class="account-auth-tabs" role="group" aria-label="Вход или регистрация"><button type="button" data-auth-view="login" aria-pressed="true">Вход</button><button type="button" data-auth-view="register" aria-pressed="false">Регистрация</button></div>
+      <p id="account-auth-feedback" role="status" aria-live="polite"></p>
+      <div id="account-auth-login">
       <div class="account-social" id="account-providers"><button class="button social-google" type="button" data-oauth="google" disabled>Продолжить с Google</button><button class="button social-discord" type="button" data-oauth="discord" disabled>Продолжить с Discord</button></div>
       <p class="profile-help" id="account-provider-status">Проверяем доступные способы входа…</p>
       <div class="account-divider"><span>или по логину и паролю</span></div>
       <form id="account-form" method="post" action="/api/auth/login"><label class="profile-field">Логин<input name="username" autocomplete="username" required minlength="3" maxlength="32" aria-describedby="account-username-help"></label><p class="profile-help" id="account-username-help">От 3 до 32 букв или цифр, также можно использовать _ и дефис.</p><label class="profile-field">Пароль<input name="password" type="password" autocomplete="current-password" required aria-describedby="account-password-help"></label><p class="profile-help" id="account-password-help" hidden>От 12 до 72 байт. Для пароля из латинских букв — от 12 до 72 символов.</p><label class="profile-field" id="account-confirm-label" hidden>Повтори пароль<input name="confirmation" type="password" autocomplete="new-password"></label><button class="button primary" id="account-submit" type="submit">Войти</button></form>
+      <button class="account-link account-forgot" type="button" id="account-forgot">Забыли пароль?</button>
+      </div>
+      <section id="account-recovery" hidden aria-labelledby="account-recovery-title">
+        <h3 id="account-recovery-title">Восстановление пароля</h3>
+        <p class="profile-help">Укажи почту, которую подтвердил в личном кабинете. Восстановление сохранит твой прежний аккаунт и прогресс.</p>
+        <form id="account-recovery-request" method="post" action="/api/auth/password/request">
+          <label class="profile-field">Подтверждённый e-mail<input type="email" name="email" required maxlength="254" autocomplete="email"></label>
+          <button class="button" id="account-recovery-send" type="submit" disabled>Получить код восстановления</button>
+        </form>
+        <form id="account-recovery-reset" method="post" action="/api/auth/password/reset" hidden>
+          <label class="profile-field">Код восстановления<input name="code" required inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{8}" minlength="8" maxlength="8" aria-describedby="account-recovery-code-help"></label>
+          <p class="profile-help" id="account-recovery-code-help">8 цифр, срок действия — 30 минут. Введи код в том же браузере, где запросил письмо.</p>
+          <label class="profile-field">Новый пароль<input name="password" type="password" autocomplete="new-password" required aria-describedby="account-recovery-password-help"></label>
+          <p class="profile-help" id="account-recovery-password-help">От 12 до 72 байт. Для пароля из латинских букв — от 12 до 72 символов.</p>
+          <label class="profile-field">Повтори новый пароль<input name="password_confirmation" type="password" autocomplete="new-password" required></label>
+          <button class="button primary" id="account-recovery-confirm" type="submit">Сохранить новый пароль</button>
+        </form>
+        <p class="profile-help">Если почта ещё не подтверждена, войди прежним способом и подтверди её в кабинете. Прогресс другого гостевого профиля не переносится автоматически.</p>
+        <button class="account-link account-forgot" type="button" id="account-recovery-back">Вернуться ко входу</button>
+      </section>
     </div>
   </section>
   <section class="account-controls" aria-label="Настройки профиля"><div class="account-mode" role="group" aria-label="Игровой режим"><button type="button" data-account-mode="pve" aria-pressed="true">PVE</button><button type="button" data-account-mode="regular" aria-pressed="false">PVP</button></div><div class="account-actions"><button class="button" id="account-sync" type="button">Синхронизировать</button><button class="button" type="button" data-profile-tools>Управление профилем</button><button class="button" id="account-logout" type="button" hidden>Выйти</button></div></section>
@@ -58,6 +80,6 @@
   <noscript><p>Для входа и отображения личного прогресса включи JavaScript.</p></noscript>
   <p class="profile-help"><a class="account-link" href="privacy.html">Как используются данные профиля</a></p>
 </main>
-<script type="module" src="bootstrap.mjs?v=email-4"></script>
+<script type="module" src="bootstrap.mjs?v=recovery-1"></script>
 </body>
 </html>

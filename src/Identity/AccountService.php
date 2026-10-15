@@ -78,15 +78,22 @@ final readonly class AccountService
 
     public function login(string $name, string $password): Session
     {
-        $q = $this->db->prepare('SELECT id, username, password_hash FROM users WHERE username=?');
-        $q->execute([mb_strtolower(trim($name))]); $user = $q->fetch(\PDO::FETCH_ASSOC);
-        // A fixed valid hash keeps missing-user work comparable to a wrong password.
-        $hash = $user['password_hash'] ?? '$2y$12$0SVHOdslyUrSFAVdnTZH2.Ovmh0qaOBHP50laGRQZtsNpPJqpPBf.';
-        if (strlen($password) > 72 || !password_verify($password, $hash) || !is_string($user['password_hash'] ?? null)) { throw new HttpError(401, 'Неверный логин или пароль.'); }
-        if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
-            $this->db->prepare('UPDATE users SET password_hash=? WHERE id=?')->execute([password_hash($password, PASSWORD_DEFAULT), $user['id']]);
-        }
-        return $this->issue($user['id'], $user['username']);
+        // Проверка пароля и выдача сессии не могут обойти одновременный сброс пароля.
+        $ownsTransaction=!$this->db->inTransaction();
+        if($ownsTransaction){$this->db->beginTransaction();}
+        try {
+            $q = $this->db->prepare('SELECT id, username, password_hash FROM users WHERE username=?'.($this->db->getAttribute(\PDO::ATTR_DRIVER_NAME)==='mysql'?' FOR UPDATE':''));
+            $q->execute([mb_strtolower(trim($name))]); $user = $q->fetch(\PDO::FETCH_ASSOC);
+            // A fixed valid hash keeps missing-user work comparable to a wrong password.
+            $hash = $user['password_hash'] ?? '$2y$12$0SVHOdslyUrSFAVdnTZH2.Ovmh0qaOBHP50laGRQZtsNpPJqpPBf.';
+            if (strlen($password) > 72 || !password_verify($password, $hash) || !is_string($user['password_hash'] ?? null)) { throw new HttpError(401, 'Неверный логин или пароль.'); }
+            if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
+                $this->db->prepare('UPDATE users SET password_hash=? WHERE id=?')->execute([password_hash($password, PASSWORD_DEFAULT), $user['id']]);
+            }
+            $session=$this->issue($user['id'], $user['username']);
+            if($ownsTransaction){$this->db->commit();}
+            return $session;
+        }catch(\Throwable $error){if($ownsTransaction&&$this->db->inTransaction()){$this->db->rollBack();}throw $error;}
     }
 
     public function revoke(Session $session): void

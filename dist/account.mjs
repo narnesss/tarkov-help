@@ -32,7 +32,9 @@ $('account-sync').hidden=!profileStore.server;
 $('account-storage').textContent=profileStore.server?(profileStore.profile.authenticated?'Аккаунт · прогресс на сервере':'Гостевой профиль · прогресс на сервере'):'Локальный профиль · в этом браузере';
 
 function setView(next){
-  view=next==='register'?'register':'login';
+  view=['register','reset'].includes(next)?next:'login';
+  $('account-auth-login').hidden=view==='reset';$('account-recovery').hidden=view!=='reset';
+  $('account-forgot').hidden=view!=='login';$('account-auth-feedback').textContent='';
   for(const button of document.querySelectorAll('[data-auth-view]'))button.setAttribute('aria-pressed',String(button.dataset.authView===view));
   $('account-submit').textContent=view==='register'?'Создать аккаунт':'Войти';
   const form=$('account-form');form.elements.password.autocomplete=view==='register'?'new-password':'current-password';
@@ -41,6 +43,49 @@ function setView(next){
   const url=new URL(location.href);url.searchParams.set('view',view);history.replaceState(null,'',url);
 }
 for(const button of document.querySelectorAll('[data-auth-view]'))button.onclick=()=>setView(button.dataset.authView);
+$('account-forgot').onclick=()=>setView('reset');
+$('account-recovery-back').onclick=()=>setView('login');
+let recovery=null,recoveryAttempts=0;
+function renderRecovery(){
+  const now=Math.floor(Date.now()/1000),cooldown=Math.max(0,(recovery?.resendAt??0)-now);
+  if(recovery&&recovery.expiresAt<=now){recovery=null;if(view==='reset')$('account-auth-feedback').textContent='Срок кода истёк. Запроси новый код восстановления.';}
+  $('account-recovery-send').disabled=!profileStore.server||busy||cooldown>0;
+  $('account-recovery-send').textContent=cooldown>0?'Повторить через '+cooldown+' с':recovery?'Отправить новый код':'Получить код восстановления';
+  $('account-recovery-reset').hidden=!recovery;
+  $('account-recovery-confirm').disabled=busy||recoveryAttempts>=5;
+}
+async function recover(callback){
+  await run(async()=>{try{$('account-auth-feedback').textContent='';await callback();}catch(error){$('account-auth-feedback').textContent=error.message;}});
+  renderRecovery();
+}
+$('account-recovery-request').onsubmit=event=>{event.preventDefault();recover(async()=>{
+  const response=await profileStore.api('/api/auth/password/request',{method:'POST',body:JSON.stringify({email:$('account-recovery-request').elements.email.value.trim()})});
+  recovery=response;recoveryAttempts=0;$('account-recovery-reset').reset();$('account-auth-feedback').textContent=response.message;renderRecovery();
+  $('account-recovery-reset').elements.code.focus();
+});};
+$('account-recovery-request').elements.email.addEventListener('input',()=>{
+  if(recovery){recovery=null;$('account-recovery-reset').reset();$('account-auth-feedback').textContent='';renderRecovery();}
+});
+$('account-recovery-reset').onsubmit=event=>{event.preventDefault();recover(async()=>{
+  if(!recovery||recovery.expiresAt<=Date.now()/1000)throw new Error('Запроси новый код восстановления.');
+  const form=$('account-recovery-reset'),password=form.elements.password.value,confirmation=form.elements.password_confirmation.value;
+  const bytes=new TextEncoder().encode(password).length;
+  if(bytes<12||bytes>72||password.includes('\0'))throw new Error('Пароль должен занимать от 12 до 72 байт, без нулевых символов.');
+  if(password!==confirmation)throw new Error('Пароли не совпадают.');
+  try{
+    const response=await profileStore.api('/api/auth/password/reset',{method:'POST',body:JSON.stringify({challenge_id:recovery.challengeId,
+      code:form.elements.code.value.trim(),password,password_confirmation:confirmation})});
+    recovery=null;form.reset();setView('login');$('account-form').elements.username.value=response.username;$('account-form').elements.password.value='';
+    $('account-auth-feedback').textContent=response.message;$('account-form').elements.password.focus();
+  }catch(error){
+    if(error.status===422&&!error.data?.errors&&error.message.startsWith('Код неверен')){
+      recoveryAttempts++;form.elements.code.value='';
+      if(recoveryAttempts>=5)error.message='Пять попыток исчерпаны. Запроси новый код восстановления.';
+    }
+    throw error;
+  }
+});};
+setInterval(renderRecovery,1000);renderRecovery();
 $('account-form').onsubmit=event=>{event.preventDefault();run(async()=>{
   const form=event.currentTarget??$('account-form'),username=form.elements.username.value.trim(),password=form.elements.password.value;
   if(view==='register'){

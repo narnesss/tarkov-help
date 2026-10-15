@@ -16,6 +16,8 @@ Route::post('/api/auth/profile', [PlayerAuthController::class, 'profile'])->midd
 Route::get('/api/auth/email', [PlayerAuthController::class, 'emailStatus'])->middleware(VerifyApiProxy::class);
 Route::post('/api/auth/email/send', [PlayerAuthController::class, 'sendEmail'])->middleware(VerifyApiProxy::class);
 Route::post('/api/auth/email/verify', [PlayerAuthController::class, 'verifyEmail'])->middleware(VerifyApiProxy::class);
+Route::post('/api/auth/password/request', [PlayerAuthController::class, 'requestPassword'])->middleware(VerifyApiProxy::class);
+Route::post('/api/auth/password/reset', [PlayerAuthController::class, 'resetPassword'])->middleware(VerifyApiProxy::class);
 Route::post('/api/auth/oauth/{provider}/start', [PlayerAuthController::class, 'begin'])->where('provider','google|discord')->middleware(VerifyApiProxy::class);
 Route::post('/api/auth/oauth/{provider}/finish', [PlayerAuthController::class, 'finish'])->where('provider','google|discord')->middleware(VerifyApiProxy::class);
 Route::any('/api/{path?}', ApiController::class)->where('path', '(?!content(?:/|$)).*')->middleware(VerifyApiProxy::class);

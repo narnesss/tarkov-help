@@ -1,5 +1,12 @@
 # Карта классов Tarkov Wiki
 
+- PlayerPasswordRecovery / ResetPlayerPassword: восстановление через подтверждённый player_emails,
+  код на 30 минут с HMAC/5 попытками и привязкой к opaque-сессии запроса. Одинаковые ответы
+  для неизвестных адресов; SMTP после HTTP-ответа под отдельной shared-блокировкой DatabaseAccess.
+  Смена только users.password_hash, отзыв прежних sessions, OAuth-состояний и почтовых кодов.
+  AccountService::login сериализует пароль/выдачу сессии с обновлением users; OAuth и PlayerEmails
+  повторно проверяют сессию под player_auth_locks, чтобы завершённый сброс нельзя было обойти.
+
 - PlayerEmails / VerifyPlayerEmail: адрес и одноразовый код в личном кабинете, CSRF/Origin,
   HMAC кода, TTL/попытки/лимиты, транзакционное назначение email прежнему ID. Laravel Mail
   отправляет письмо через TLS SMTP alwaysdata; log/failover/array запрещены в production.

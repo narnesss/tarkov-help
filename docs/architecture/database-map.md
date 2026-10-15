@@ -1,5 +1,15 @@
 # Карта БД Tarkov Wiki
 
+Миграция `2026_10_16_000009_add_player_password_recovery.php` добавляет `player_password_resets`:
+PK/FK user_id, unique challenge_id, email/email_verified_at, session_hash, credential_hash,
+code_hash HMAC-SHA256, attempts, sent_at, expires_at. TTL 30 минут, 5 попыток, одноразовый код.
+Запрос доступен гостю с прежним CSRF/Origin; контакт должен быть подтверждён в player_emails.
+Лимиты в rate_limits: повтор через 60 секунд, 3 запроса/час на адрес, 10 на IP; ключи хешированы
+и одинаковы для известных и неизвестных адресов. Никаких JSON или открытых паролей/кодов.
+При восстановлении прежние users.id/username/created_at, player_emails/profiles/identities
+и все user_state остаются неизменными. Меняется только password_hash; sessions и незавершённые
+запросы владельца отзываются в той же транзакции. Автоматического входа после сброса нет.
+
 Миграция `2026_10_16_000008_add_player_email_verification.php` добавляет:
 
 - `player_emails`: PK/FK user_id, unique email, verified_at. Один подтверждённый контакт

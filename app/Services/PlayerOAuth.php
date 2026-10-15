@@ -71,6 +71,8 @@ final readonly class PlayerOAuth
             return DB::transaction(function() use($provider,$subject,$display,$avatar,$email,$autoLink,$session,$challenge): Session {
                 // Сериализует также случай, когда совпадающей почты ещё нет: два первых входа не создадут дубликат.
                 DB::table('player_auth_locks')->where('id',1)->lockForUpdate()->first();
+                abort_unless(DB::table('sessions')->where('token_hash',hash('sha256',$session->token))->where('user_id',$session->userId)
+                    ->where('expires_at','>',time())->exists(),401,'Сессия завершена. Начните вход ещё раз.');
                 $identity=DB::table('player_identities')->where('provider',$provider)->where('subject',$subject)->lockForUpdate()->first();
                 if($challenge->link_user_id!==null){
                     abort_unless($challenge->link_user_id===$session->userId && $session->username!==null,403,'Сессия изменилась. Повторите вход.');
