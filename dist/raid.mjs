@@ -13,6 +13,7 @@ import {galleryBlock} from './gallery.mjs?v=lazy-20261016';
 import {json} from './guide-common.mjs?v=lazy-20261016';
 import {loadContentBundle} from './content-bundles.mjs?v=lazy-20261016';
 import {bindMapTooltip} from './raid-tooltip.mjs';
+import {scopedRaidPoints} from './raid-scope.mjs';
 import {QuestMapFocusReceiver} from './quest-map-messages.mjs';
 import { CATEGORIES, LOOT_NAMES, titleOf, validPosition, floorOf, poiFloor, filterPois, projectPosition, projectRaster, rasterRegion, iconPath, displayPosition } from './raid-model.mjs';
 
@@ -208,7 +209,7 @@ async function setLocation(id, {initial = false} = {}) {
     if (token !== requestId) return;
     definition = next; selected = null; $('raid-detail').hidden = true;
     const payload=localizeDisplay(dataCache.get(dataKey));next.mapInfo=payload.mapInfo;
-    pois = payload.pois.filter(p => validPosition(p.position) && CATEGORIES[p.category]).map(p => ({...p,floor:poiFloor(next,p)}));
+    pois = scopedRaidPoints(payload,id,gameMode).filter(p => validPosition(p.position) && CATEGORIES[p.category]).map(p => ({...p,floor:poiFloor(next,p)}));
     for (const p of pois) if (p.lootType && !(p.lootType in LOOT_NAMES)) lootTypes.add(p.lootType);
     currentFloor = initial && params.has('floor') ? params.get('floor') : initial && questFilter ? 'all' : (read(prefsKey)?.floors?.[id+':'+artworkMode]||'all');
     currentFloor=next.floorAliases?.[currentFloor]||currentFloor;if (!['all',next.baseFloor.id,...next.floors.map(f=>f.id)].includes(currentFloor)) currentFloor = 'all';

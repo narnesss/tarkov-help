@@ -1,0 +1,297 @@
+Иллюстрации и схемы обновления квестов, 16 октября 2026.
+
+Исходные материалы: предоставленные владельцем HTML-снимки Escape from Tarkov Wiki и актуальные страницы Callsign Malachite / Fog of War.
+Тексты прохождения пересказаны по этим источникам. Изображения уменьшены и преобразованы в WebP; отметки источников сохранены. Координаты меток относятся только к указанной схеме, не являются игровыми мировыми координатами.
+
+Карты: u/Jindouz (на основе Monkimonk и других авторов, указанных на схемах), re3mr.com, xTycho; Лабиринт: Re3mr / ScavStoleMyTV. Схема xTycho: CC BY-NC-SA 4.0. Остальные карты: условия CC BY-NC-SA указаны на самих изображениях. Тексты сообщества Wiki: CC BY-NC-SA 3.0, если страница не указывает другое. Игровые скриншоты и материалы — Battlestate Games и соответствующие правообладатели.
+Лицензии: https://creativecommons.org/licenses/by-nc-sa/3.0/ и https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+assets/quest-guides/ff0b31cd6cf7f0b63c.webp
+Место лагеря отмечено на карте
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%90%D0%B1%D0%BE%D0%BD%D0%B5%D0%BD%D1%82_%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%BE_%D0%BD%D0%B5%D0%B4%D0%BE%D1%81%D1%82%D1%83%D0%BF%D0%B5%D0%BD
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/9/91/Bogatyrs_patch_Lighthouse_map.png/revision/latest?cb=20260908235615
+
+assets/quest-guides/7656645215fc995a37.webp
+Лагерь
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%90%D0%B1%D0%BE%D0%BD%D0%B5%D0%BD%D1%82_%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%BE_%D0%BD%D0%B5%D0%B4%D0%BE%D1%81%D1%82%D1%83%D0%BF%D0%B5%D0%BD
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/7/78/Bogatyrs_patch_Lighthouse_BEAR_camp.png/revision/latest?cb=20260908190604
+
+assets/quest-guides/e9d19aba5d4afb867c.webp
+Места, где можно найти WI-FI камеры, на карте.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B0%D0%B4%D0%BD%D1%8F%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%D0%B0%D1%87%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/f/f0/Cast_the_Net_Shoreline_Map.png/revision/latest?cb=20260807195029
+
+assets/quest-guides/2d61336c9f0a7075c6.webp
+Экскаватор у лагеря контрабандистов.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B0%D0%B4%D0%BD%D1%8F%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%D0%B0%D1%87%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/2/24/Cast_the_Net_Shoreline_Camera_1.png/revision/latest?cb=20260807195007
+
+assets/quest-guides/f0331ad54bdf091064.webp
+Грузовик "Урал" рядом с электростанцией.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B0%D0%B4%D0%BD%D1%8F%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%D0%B0%D1%87%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/0/0b/Cast_the_Net_Shoreline_Camera_2.png/revision/latest?cb=20260807195013
+
+assets/quest-guides/0b08a1c26545eb438e.webp
+Места, где можно найти WI-FI камеры, на карте.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B0%D0%B4%D0%BD%D1%8F%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%D0%B0%D1%87%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/6/6a/Cast_the_Net_Streets_of_Tarkov_Map.png/revision/latest?cb=20260807201415
+
+assets/quest-guides/3fbed8be3be7d69241.webp
+У бетономешалки рядом с обрушившимся краном.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B0%D0%B4%D0%BD%D1%8F%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%D0%B0%D1%87%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/f/fc/Cast_the_Net_Streets_of_Tarkov_Camera_1.png/revision/latest?cb=20260807201230
+
+assets/quest-guides/b6d863737ebe683139.webp
+Биотуалеты перед кинотеатром "Родина".
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B0%D0%B4%D0%BD%D1%8F%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%D0%B0%D1%87%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/c/c8/Cast_the_Net_Streets_of_Tarkov_Camera_2.png/revision/latest?cb=20260808190114
+
+assets/quest-guides/37636995160ebd9dbf.webp
+Места, где можно найти WI-FI камеры, на карте.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B0%D0%B4%D0%BD%D1%8F%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%D0%B0%D1%87%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/5/5c/Cast_the_Net_Ground_Zero_Map.png/revision/latest?cb=20260807195633
+
+assets/quest-guides/bda52d476cf0ac2603.webp
+У грузовика на съезде к переходу на Улицы Таркова.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B0%D0%B4%D0%BD%D1%8F%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%D0%B0%D1%87%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/a/a8/Cast_the_Net_Ground_Zero_Camera_1.png/revision/latest?cb=20260807195138
+
+assets/quest-guides/14e5d08bab381fbdb6.webp
+Внутри жёлтого автобуса под землёй.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B0%D0%B4%D0%BD%D1%8F%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%D0%B0%D1%87%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/5/51/Cast_the_Net_Ground_Zero_Camera_2.png/revision/latest?cb=20260807195241
+
+assets/quest-guides/bbfdfcfb5b3bf8cfe3.webp
+На левой гусенице экскаватора.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B0%D0%B4%D0%BD%D1%8F%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%D0%B0%D1%87%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/9/97/Cast_the_Net_Shoreline_Camera_1_close.png/revision/latest?cb=20260808235556
+
+assets/quest-guides/0bf9e21e3a3a22b4e3.webp
+На левом краю заднего бампера грузовика.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B0%D0%B4%D0%BD%D1%8F%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%D0%B0%D1%87%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/8/88/Cast_the_Net_Shoreline_Camera_2_close.png/revision/latest?cb=20260809000702
+
+assets/quest-guides/de4bbd053b041fc6e6.webp
+Камера лежит на левом заднем колесе грузовика.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B0%D0%B4%D0%BD%D1%8F%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%D0%B0%D1%87%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/6/63/Cast_the_Net_SOT_Camera_1_close.png/revision/latest?cb=20260808235736
+
+assets/quest-guides/ad7be97e59b9887f57.webp
+Камера лежит внутри открытой кабинки.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B0%D0%B4%D0%BD%D1%8F%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%D0%B0%D1%87%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/4/4d/Cast_the_Net_SOT_Camera_2_close.png/revision/latest?cb=20260808232642
+
+assets/quest-guides/c0c35921bf8655f324.webp
+Камера на топливном баке грузовика.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B0%D0%B4%D0%BD%D1%8F%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%D0%B0%D1%87%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/c/cf/Reverse_Gear_GZ_Camera_1_close.png/revision/latest?cb=20260808184534
+
+assets/quest-guides/30679b6e323140c09d.webp
+На спинке одного из задних сидений.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B0%D0%B4%D0%BD%D1%8F%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%D0%B0%D1%87%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/7/7f/Reverse_Gear_GZ_Camera_2_close.png/revision/latest?cb=20260808184541
+
+assets/quest-guides/21880976c10335734c.webp
+Расположение здания TerraGroup на карте
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B2%D0%BE%D0%BD%D0%BA%D0%B8_%D0%B1%D0%B5%D0%B7_%D0%BE%D1%82%D0%B2%D0%B5%D1%82%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/e/e8/Saving_the_Mole_Map.png/revision/latest?cb=20240325024052
+
+assets/quest-guides/db381fbdf98118ab6f.webp
+Комплекс зданий TerraGroup
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B2%D0%BE%D0%BD%D0%BA%D0%B8_%D0%B1%D0%B5%D0%B7_%D0%BE%D1%82%D0%B2%D0%B5%D1%82%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/a/a8/Ground_Zero_TerraGroup_Building.png/revision/latest?cb=20250708201533
+
+assets/quest-guides/cc78a1104d08e167c1.webp
+Место закладки за стойкой ресепшена на втором этаже
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%97%D0%B2%D0%BE%D0%BD%D0%BA%D0%B8_%D0%B1%D0%B5%D0%B7_%D0%BE%D1%82%D0%B2%D0%B5%D1%82%D0%B0
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/3/37/Unanswered_Calls_stash_position.png/revision/latest?cb=20260811182555
+
+assets/quest-guides/55e19a43b72b497251.webp
+Расположение проломов на карте
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%9A%D0%B0%D0%BF%D0%BA%D0%B0%D0%BD
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/3/38/Stay_Clear_of_Blast_Zone_Map.png/revision/latest?cb=20260812210146
+
+assets/quest-guides/f13b6f849c2b0998c2.webp
+Пролом в заборе с западной стороны
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%9A%D0%B0%D0%BF%D0%BA%D0%B0%D0%BD
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/6/63/Stay_Clear_of_Blast_Zone_West_Fence.png/revision/latest?cb=20260812210222
+
+assets/quest-guides/6d80de32572f53133e.webp
+Пролом в заборе с северной стороны
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%9A%D0%B0%D0%BF%D0%BA%D0%B0%D0%BD
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/7/70/Stay_Clear_of_Blast_Zone_North_Fence.png/revision/latest?cb=20260812210229
+
+assets/quest-guides/2c8dba36445a5cb862.webp
+Пролом в заборе с восточной стороны
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%9A%D0%B0%D0%BF%D0%BA%D0%B0%D0%BD
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/7/74/Stay_Clear_of_Blast_Zone_East_Fence.png/revision/latest?cb=20260812210234
+
+assets/quest-guides/6bb4da9030929ac767.webp
+Местоположение перехода, отмеченное на карте подвала западного крыла
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%9B%D0%B0%D0%B1%D0%B8%D1%80%D0%B8%D0%BD%D1%82
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/b/be/The_Labyrinth_Transit_Map.png/revision/latest?cb=20250328020348
+
+assets/quest-guides/e18eb6360d3d378821.webp
+Дверь которую нужно открыть ключом от помещения "ООО КНОССОС"
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%9B%D0%B0%D0%B1%D0%B8%D1%80%D0%B8%D0%BD%D1%82
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/9/9e/The_Labyrinth_Transit_Door.png/revision/latest?cb=20251012162826
+
+assets/quest-guides/8397dc9d441c5cd81e.webp
+Переход на саму локацию. Требуется Ключ-карта Labrys
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%9B%D0%B0%D0%B1%D0%B8%D1%80%D0%B8%D0%BD%D1%82
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/5/58/The_Labyrinth_Transit.png/revision/latest?cb=20251012163024
+
+assets/quest-guides/fc108a6e7388299e22.webp
+Кнопка через которую можно отключить сигнализацию
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%9B%D0%B0%D0%B1%D0%B8%D1%80%D0%B8%D0%BD%D1%82
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/f/fd/Labyrinth_Alarm_Button.png/revision/latest?cb=20250330174122
+
+assets/quest-guides/dca1f39a3d214bb504.webp
+Re3mrLabyrinth RU by ScavStoleMyTV 06C
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%9B%D0%B0%D0%B1%D0%B8%D1%80%D0%B8%D0%BD%D1%82
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_ru_gamepedia/images/b/b5/Re3mrLabyrinth_RU_by_ScavStoleMyTV_06C.png/revision/latest?cb=20260509104345
+
+assets/quest-guides/525afbd4016594726f.webp
+Места появления кейса на карте.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%9D%D0%B5%D0%B7%D0%B2%D0%B0%D0%BD%D1%8B%D0%B5_%D0%B3%D0%BE%D1%81%D1%82%D0%B8._%D0%A7%D0%B0%D1%81%D1%82%D1%8C_1
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/0/0c/Uninvited_Guests_-_Part_1_Map.png/revision/latest?cb=20260807185600
+
+assets/quest-guides/1d8e2b7cc3c5d2f0f2.webp
+Кейс внутри общежития у вышки Сорди
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%9D%D0%B5%D0%B7%D0%B2%D0%B0%D0%BD%D1%8B%D0%B5_%D0%B3%D0%BE%D1%81%D1%82%D0%B8._%D0%A7%D0%B0%D1%81%D1%82%D1%8C_1
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/7/71/Uninvited_Guests_-_Part_1_Spawn_1.png/revision/latest?cb=20260816033804
+
+assets/quest-guides/38b30c4d94354d907a.webp
+Кейс на втором этаже метеостанции, в углу рядом с тумбами
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%9D%D0%B5%D0%B7%D0%B2%D0%B0%D0%BD%D1%8B%D0%B5_%D0%B3%D0%BE%D1%81%D1%82%D0%B8._%D0%A7%D0%B0%D1%81%D1%82%D1%8C_1
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/0/00/Uninvited_Guests_-_Part_1_Spawn_2.png/revision/latest?cb=20260821172613
+
+assets/quest-guides/6516268b62d1e10b7a.webp
+Кейс внутри ГЭС рядом с дверью ключа от склада ГЭС
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%9D%D0%B5%D0%B7%D0%B2%D0%B0%D0%BD%D1%8B%D0%B5_%D0%B3%D0%BE%D1%81%D1%82%D0%B8._%D0%A7%D0%B0%D1%81%D1%82%D1%8C_1
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/0/0a/Uninvited_Guests_-_Part_1_Spawn_3.png/revision/latest?cb=20260807190802
+
+assets/quest-guides/17c36db51d3393cb10.webp
+Расположение передатчиков на карте
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%A0%D0%B0%D0%B7%D1%80%D1%8B%D0%B2_%D1%86%D0%B5%D0%BF%D0%B8
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/6/6f/Break_the_Chain_Customs_Map.jpg/revision/latest?cb=20260812212022
+
+assets/quest-guides/97b483b7c9099beb53.webp
+Передатчик на трубе котельной
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%A0%D0%B0%D0%B7%D1%80%D1%8B%D0%B2_%D1%86%D0%B5%D0%BF%D0%B8
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/6/61/Break_the_Chain_Factory_Chimney_Repeater.png/revision/latest?cb=20260901213938
+
+assets/quest-guides/51a2ce530ea4cb0c8c.webp
+Передатчик на опоре ЛЭП рядом с выходом Диких "ЖД к военной базе"
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%A0%D0%B0%D0%B7%D1%80%D1%8B%D0%B2_%D1%86%D0%B5%D0%BF%D0%B8
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/2/24/Break_the_Chain_Power_Line_Repeater.png/revision/latest?cb=20260828135938
+
+assets/quest-guides/a1dc7b3c2b8b6d9ae7.webp
+Расположение передатчиков на карте
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%A0%D0%B0%D0%B7%D1%80%D1%8B%D0%B2_%D1%86%D0%B5%D0%BF%D0%B8
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/f/f7/Break_the_Chain_Woods_Map.png/revision/latest?cb=20260926210823
+
+assets/quest-guides/b00ddbce6fed182918.webp
+Передатчик на вершине горы, где спавнится Дикий-снайпер
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%A0%D0%B0%D0%B7%D1%80%D1%8B%D0%B2_%D1%86%D0%B5%D0%BF%D0%B8
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/e/e1/Break_the_Chain_Mountain_Repeater.png/revision/latest?cb=20260926213238
+
+assets/quest-guides/f1449f39e871e6bcd7.webp
+Передатчик на радиовышке у выхода Диких "Бункер Диких"
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%A0%D0%B0%D0%B7%D1%80%D1%8B%D0%B2_%D1%86%D0%B5%D0%BF%D0%B8
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/8/80/Break_the_Chain_Cell_Tower_Repeater.png/revision/latest?cb=20260930164510
+
+assets/quest-guides/d260026feb79a821e7.webp
+Fog of War Banner
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%A2%D1%83%D0%BC%D0%B0%D0%BD_%D0%B2%D0%BE%D0%B9%D0%BD%D1%8B
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/6/6e/Fog_of_War_Banner.png/revision/latest?cb=20260908142209
+
+assets/quest-guides/898cec9bad2415b992.webp
+Расположение ноутбука, отмеченное на карте.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%A4%D0%B8%D0%BD%D0%B8%D1%88%D0%BD%D0%B0%D1%8F_%D0%BF%D1%80%D1%8F%D0%BC%D0%B0%D1%8F
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/5/5d/Final_Stretch_Map.png/revision/latest?cb=20260812193630
+
+assets/quest-guides/9946e679178696ab52.webp
+Зайдите в закусочную, чтобы попасть в переулок за ней.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%A4%D0%B8%D0%BD%D0%B8%D1%88%D0%BD%D0%B0%D1%8F_%D0%BF%D1%80%D1%8F%D0%BC%D0%B0%D1%8F
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/d/d2/Final_Stretch_Diner.png/revision/latest?cb=20260812193635
+
+assets/quest-guides/c9dc27929d0c40b84c.webp
+Вентиляционная труба, в которой появляется ноутбук.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%A4%D0%B8%D0%BD%D0%B8%D1%88%D0%BD%D0%B0%D1%8F_%D0%BF%D1%80%D1%8F%D0%BC%D0%B0%D1%8F
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/8/8f/Final_Stretch_Ventilation.png/revision/latest?cb=20260812193643
+
+assets/quest-guides/e8fa46fd0abeef381e.webp
+Место появления ноутбука.
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%A4%D0%B8%D0%BD%D0%B8%D1%88%D0%BD%D0%B0%D1%8F_%D0%BF%D1%80%D1%8F%D0%BC%D0%B0%D1%8F
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/5/55/Final_Stretch_Laptop_Spawn.png/revision/latest?cb=20260812193648
+
+assets/quest-guides/52877e1789c9501add.webp
+Точки остановок БТР
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%A7%D0%B5%D1%81%D1%82%D0%BD%D1%8B%D0%B9_%D0%BE%D1%82%D0%B7%D1%8B%D0%B2
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/e/ec/Lighthouse_BTR_stops_map.png/revision/latest?cb=20260909213906
+
+assets/quest-guides/d4bc571f5e2aff350b.webp
+Блокпост ООН
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%A7%D0%B5%D1%81%D1%82%D0%BD%D1%8B%D0%B9_%D0%BE%D1%82%D0%B7%D1%8B%D0%B2
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/8/88/Honest_Review_UN_Checkpoint.png/revision/latest?cb=20260913224538
+
+assets/quest-guides/fed1066f21b645467e.webp
+Перекрёсток в деревне
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%A7%D0%B5%D1%81%D1%82%D0%BD%D1%8B%D0%B9_%D0%BE%D1%82%D0%B7%D1%8B%D0%B2
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/6/62/Honest_Review_Village_Crossroads.png/revision/latest?cb=20260913224332
+
+assets/quest-guides/944c8a409e7915fdd0.webp
+Парковка между двумя корпусами
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/%D0%A7%D0%B5%D1%81%D1%82%D0%BD%D1%8B%D0%B9_%D0%BE%D1%82%D0%B7%D1%8B%D0%B2
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/4/4e/Honest_Review_WTP_Building_2_Parking.png/revision/latest?cb=20260913224120
+
+assets/quest-guides/callsign-malachite.webp
+Позывной «Малахит»
+Источник: https://escapefromtarkov.fandom.com/ru/wiki/Позывной_«Малахит»
+Оригинал: Локальная копия, предоставленная владельцем сайта
+
+assets/quest-guides/274abc8367f3bba80c.webp
+Хижина у горного озера — расположение на карте
+Источник: https://escapefromtarkov.fandom.com/wiki/Callsign_Malachite
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/c/c8/All-Inclusive_Support_Location.png/revision/latest?cb=20260915063646
+
+assets/quest-guides/14d1b9db38fed4464b.webp
+Заброшенная хижина у выхода «Проход у озера»
+Источник: https://escapefromtarkov.fandom.com/wiki/Callsign_Malachite
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/5/5f/Passage_by_the_Lake.png/revision/latest?cb=20260915224210
+
+assets/quest-guides/2aae6fa20bd3dde125.webp
+Личное дело за матрасом в хижине
+Источник: https://escapefromtarkov.fandom.com/wiki/Callsign_Malachite
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/5/5a/Callsign_Malachite_Spawn.png/revision/latest?cb=20260915224323
+
+assets/quest-guides/f1363deb82398d3e37.webp
+Места разведки на очистных сооружениях
+Источник: https://escapefromtarkov.fandom.com/wiki/Fog_of_War
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/b/bd/Fog_of_War_Map.png/revision/latest?cb=20261008222120
+
+assets/quest-guides/17f8c1fd77f6ab23cd.webp
+Северный пост у БРДМ
+Источник: https://escapefromtarkov.fandom.com/wiki/Fog_of_War
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/5/5f/Fog_of_War_BRDM_Location.png/revision/latest?cb=20260915060849
+
+assets/quest-guides/dd4994eadc9b9b6502.webp
+Юго-западный блокпост с дозорной вышкой
+Источник: https://escapefromtarkov.fandom.com/wiki/Fog_of_War
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/9/97/Fog_of_War_Southwestern_Location.png/revision/latest?cb=20260915060903
+
+assets/quest-guides/3d39211e3799829e99.webp
+Лестница на крышу корпуса № 1
+Источник: https://escapefromtarkov.fandom.com/wiki/Fog_of_War
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/4/4f/Stairs1.png/revision/latest?cb=20220702233514
+
+assets/quest-guides/f6e5b7b148de5a23d5.webp
+Лестница на крышу корпуса № 2
+Источник: https://escapefromtarkov.fandom.com/wiki/Fog_of_War
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/a/a7/Stairs2.png/revision/latest?cb=20220702233516
+
+assets/quest-guides/214254955dddaf9b48.webp
+Лестница на крышу корпуса № 3
+Источник: https://escapefromtarkov.fandom.com/wiki/Fog_of_War
+Оригинал: https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/a/a0/Stairs3.png/revision/latest?cb=20220702233518

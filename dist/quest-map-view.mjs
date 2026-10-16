@@ -1,5 +1,5 @@
 import {el} from './guide-common.mjs?v=lazy-20261016';
-import {questMapPlan,questMapURL,questMapFocusIndexes} from './quest-map-model.mjs?v=release-20261016';
+import {questMapPlan,questMapURL,questMapFocusIndexes,questMapForLocation} from './quest-map-model.mjs?v=guides-20261016';
 import {QUEST_MAP_READY,QUEST_MAP_FOCUS,questMapContextMatches} from './quest-map-messages.mjs';
 let viewSequence=0;
 export class QuestMapView {
@@ -24,7 +24,7 @@ export class QuestMapView {
  }
  deliver(){if(!this.ready||!this.pending||!this.frame.contentWindow)return;this.frame.contentWindow.postMessage(this.pending,location.origin);this.pending=null;}
  focus(mapId,objective='') {
-  if(!this.maps.some(m=>m.id===mapId))return false;this.show(mapId);
+  const map=questMapForLocation(this.maps,mapId,objective);if(!map)return false;this.show(map.id);
   this.pending={type:QUEST_MAP_FOCUS,...this.context(),objectiveId:objective,pointIndexes:questMapFocusIndexes(this.current,objective,this.task.objectives)};this.deliver();
   this.full.href=questMapURL(this.task.id,this.mode,this.current,objective,false);this.frame.loading='eager';
   this.root.scrollIntoView?.({block:'start',behavior:globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return true;

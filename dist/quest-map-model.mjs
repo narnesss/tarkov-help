@@ -16,9 +16,14 @@ export function questMapURL(taskId,mode,map,objective='',embed=true) {
 }
 export function sourcePoint(point,asset) {return [-point.y*asset.height/100,point.x*asset.width/100];}
 
+export function questMapForLocation(plans,locationId,objectiveId){
+ const candidates=(plans||[]).filter(map=>map.id===locationId||map.locationId===locationId);
+ return candidates.find(map=>objectiveId&&map.points.some(p=>p.objectiveId===objectiveId||p.objectiveIds?.includes(objectiveId)))||candidates[0];
+}
+
 export function questMapFocusIndexes(map,objectiveId,objectives=[]){
  if(!objectiveId)return [];
- const exact=map.points.flatMap((point,index)=>point.objectiveId===objectiveId?[index]:[]);if(exact.length)return exact;
+ const exact=map.points.flatMap((point,index)=>point.objectiveId===objectiveId||point.objectiveIds?.includes(objectiveId)?[index]:[]);if(exact.length)return exact;
  const objective=objectives.find(o=>o.id===objectiveId);
  const key=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/ё/g,'е').replace(/[\s.,«»"“”]+/g,' ').trim();
  const label=key(objective?.description),labels=label?map.points.flatMap((point,index)=>key(point.name)===label?[index]:[]):[];

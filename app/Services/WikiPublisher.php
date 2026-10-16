@@ -148,6 +148,7 @@ final class WikiPublisher
     }
     private function pointData(array $row,array $data,string $format): array
     {
+        $previousPosition=$data['position']??null;$needsReview=($data['sourceStatus']??null)==='unverified-coordinates';
         $id=$row['id'];$location=$this->row('locations',$row['location_id']);$data['id']=$data['id']??$row['external_id'];
         $data['description']=$row['description'];$data['cmsArchived']=(bool)($row['archived']||!$row['active']);
         $documents=$this->rows('point_documents',['point_id'=>$id]);$items=$this->rows('item_spawns',['point_id'=>$id]);$keys=$this->rows('key_usages',['point_id'=>$id]);
@@ -176,12 +177,17 @@ final class WikiPublisher
             if($positions===[]){$data['cmsArchived']=true;}
             $data['images']=[];foreach($this->rows('media_links',['point_id'=>$id]) as $link){$data['images'][]=$this->row('media',$link['media_id'])['url'];}
         } else {
-            $data['name']=$row['title'];$data['gameMode']=$row['mode']==='all'?'regular':$row['mode'];$data['sourceStatus']='editor';
+            $data['name']=$row['title'];$data['gameMode']=$row['mode']==='all'?'regular':$row['mode'];$data['sourceStatus']=$needsReview?'unverified-coordinates':'editor';
             $positions=$this->rows('point_world_positions',['point_id'=>$id]);if($positions!==[]){$position=$positions[0];$data['position']=['x'=>$position['world_x'],'y'=>$position['world_y'],'z'=>$position['world_z']];}
             else{unset($data['position']);$data['cmsArchived']=true;}
             $data['category']=$data['cmsCategories'][0]??$data['category']??'quest';$data['kind']=str_starts_with($data['category'],'extract-')?'extract':$data['category'];
             if($keys!==[]){$data['keyNames']=array_map(fn($link)=>$this->row('items',$link['key_item_id'])['name'],$keys);}else{unset($data['keyNames']);}
             if($data['cmsQuestLinks']!==[]){$data=[...$data,...$data['cmsQuestLinks'][0]];}else{unset($data['questId'],$data['objectiveId']);}
+        }
+        if($needsReview&&is_array($previousPosition)&&isset($data['position'])){
+            foreach(['x','y','z'] as $axis){if(abs((float)$previousPosition[$axis]-(float)$data['position'][$axis])>0.001){
+                unset($data['hiddenByDefault'],$data['reviewReason']);$data['sourceStatus']='editor';break;
+            }}
         }
         return $data;
     }

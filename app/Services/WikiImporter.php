@@ -87,6 +87,44 @@ final class WikiImporter
         }
         $this->ids=[];$this->state('dataset',$dataset->id,$ref);
     }
+    /** Обновляет только проверенные точки, если остальная проекция набора уже актуальна. */
+    public function changedPoints(ContentDataset $dataset,array $ids,string $previousRef): void
+    {
+        if(!$this->unchanged('dataset',$dataset->id,$previousRef,false)){$this->dataset($dataset);return;}
+        $data=$dataset->content();$found=[];
+        foreach($data['pois']??[] as $i=>$point){if(!in_array($point['id']??null,$ids,true)){continue;}
+            $point['map']=$data['mapId'];$this->point($dataset,$point,'/pois/'.$i,'raid');$found[]=$point['id'];}
+        if(array_diff($ids,$found)!==[]){throw new \RuntimeException('Не все изменённые точки найдены в наборе.');}
+        $this->ids=[];$this->state('dataset',$dataset->id,(string)$dataset->getRawOriginal('payload'));
+    }
+
+    /** Разделяет совпадающие служебные ID разных карт, сохраняя все прежние строки и публичные ID. */
+    public function repairPointScopes(): int
+    {
+        $created=0;
+        foreach(ContentDataset::where('path','like','raid/%')->orderBy('id')->cursor() as $dataset){
+            if(!$this->isPoints($dataset->path)){continue;}$data=$dataset->content();if(!isset($data['pois'],$data['mapId'])){continue;}
+            $location=$this->find('locations',$data['mapId']);if(!$location){continue;}
+            $mode=str_contains($dataset->path,'/pve/')?'pve':'regular';
+            foreach($data['pois'] as $i=>$point){
+                $old=DB::table('wiki_map_points')->where('external_id',$point['id'])->where('mode',$mode)->first();
+                if(!$old||(int)$old->location_id===$location){continue;}
+                $key=$this->pointExternal($point['id'],$mode,$location,'raid');
+                $existing=DB::table('wiki_map_points')->where('external_id',$key)->where('mode',$mode)->value('id');
+                if($existing){$this->store->source($dataset->id,'/pois/'.$i,'point',(int)$existing,'raid-point');continue;}
+                $point['map']=$data['mapId'];$this->point($dataset,$point,'/pois/'.$i,'raid');$created++;
+            }
+            $this->ids=[];
+        }
+        return $created;
+    }
+
+    private function pointExternal(string $publicId,string $mode,int $location,string $kind): string
+    {
+        $row=DB::table('wiki_map_points')->where('external_id',$publicId)->where('mode',$mode)->first();
+        return !$row||(int)$row->location_id===$location?$publicId:'scoped-'.hash('sha256',$kind."\0".$mode."\0".$location."\0".$publicId);
+    }
+
     private function item(array $record): int
     {
         $old=DB::table('wiki_items')->where('external_id',$record['id'])->first();
@@ -234,7 +272,8 @@ final class WikiImporter
     {
         $location=$this->find('locations',$point['map']??null,'dataset:'.$dataset->id,'map');if(!$location||empty($point['id'])){return;}
         $mode=$kind==='document'?'all':(str_contains($dataset->path,'/pve/')?'pve':'regular');
-        $id=$this->store->put('map_points',['external_id'=>$point['id'],'mode'=>$mode],['location_id'=>$location,'title'=>$point['caption']??$point['name']??'Точка',
+        $external=$this->pointExternal($point['id'],$mode,$location,$kind);
+        $id=$this->store->put('map_points',['external_id'=>$external,'mode'=>$mode],['location_id'=>$location,'title'=>$point['caption']??$point['name']??'Точка',
             'description'=>$point['description']??'','source_kind'=>$kind,'active'=>(int)empty($point['cmsArchived']),'archived'=>(int)!empty($point['cmsArchived'])]);
         $this->store->source($dataset->id,$pointer,'point',$id,$kind.'-point');
         foreach(['point_category_links','point_positions','point_world_positions','point_documents','item_spawns','key_usages','media_links'] as $type){DB::table('wiki_'.$type)->where('point_id',$id)->update(['archived'=>1]);}

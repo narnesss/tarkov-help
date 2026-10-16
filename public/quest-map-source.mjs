@@ -11,6 +11,7 @@ async function start(){
  image.on('error',()=>{showError('Не удалось загрузить схему.');});
  image.on('load',()=>{$('qmap-loading').hidden=true;});
  $('qmap-title').textContent=asset.ru;$('qmap-count').textContent=points.length+' точек задания';
+ if(typeof asset.sourceUrl==='string'&&/^https:\/\//.test(asset.sourceUrl))$('qmap-source').href=asset.sourceUrl;
  const positions=[],markers=[];
  for(const [i,point] of points.entries()){
   const position=sourcePoint(point,asset);positions.push(position);

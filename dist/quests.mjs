@@ -1,6 +1,6 @@
 import {siteHref,pageParams,canonicalURL} from './site-routes.mjs?v=release-20261016';
 import {questChoiceIndex,questChoicePlan} from './quest-choice-model.mjs';
-import {QuestMapView} from './quest-map-view.mjs?v=lazy-20261016';
+import {QuestMapView} from './quest-map-view.mjs?v=guides-20261016';
 import {questHref,catalogHref,catalogRoute,sectionTasks,catalogGroups,questPreview} from './quest-catalog-model.mjs?v=release-20261016';
 import {QuestObjectiveWorkspace} from './quest-objective-workspace.mjs?v=lazy-20261016';
 import {QuestSaveFeedback} from './quest-save-feedback.mjs?v=lazy-20261016';
@@ -9,9 +9,10 @@ import {rewardLabels,resolveAchievement,rewardAchievementNames,groupRewardLines,
 import {hasQuestRoadmap,questGalleryPlan} from './quest-view-model.mjs';
 import {resolveGameMode} from './game-mode.mjs';
 import {ruText} from './ru-data.mjs';
-import {questExtras,questUiExtras,enrichQuests} from './quest-extras.mjs?v=lazy-20261016';
+import {questExtras,questUiExtras,enrichQuests} from './quest-extras.mjs?v=guides-20261016';
 import {pageDataset} from './page-data.mjs?v=lazy-20261016';
-import {questBriefing} from './quest-briefing.mjs?v=lazy-20261016';
+import {questBriefing} from './quest-briefing.mjs?v=guides-20261016';
+import {questMapForLocation,questMapURL} from './quest-map-model.mjs?v=guides-20261016';
 import {galleryBlock} from './gallery.mjs?v=lazy-20261016';
 import {objectiveConditions,objectiveGuide,questOverview} from './quest-details.mjs';
 import {orderedObjectives} from './roadmap-model.mjs';
@@ -71,7 +72,7 @@ function keyGroups(value){
     for(const ref of refs)wrap.append(itemChip(ref));root.append(wrap);
   }return root;
 }
-function mapLink(mapId,questId,label='На карте',objective){const map=maps.get(idOf(mapId));if(!map)return null;const a=el('a',`${label}: ${map.name}`,'button');a.href=siteHref(`raid.html?map=${encodeURIComponent(mapAlias(map.normalizedName))}&quest=${encodeURIComponent(questId)}&mode=${mode}${objective?'&objective='+encodeURIComponent(objective):''}`);a.onclick=e=>{if(e&&(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button>0))return;if(questMap?.focus(mapAlias(map.normalizedName),objective)){e?.preventDefault();}};return a;}
+function mapLink(mapId,questId,label='На карте',objective){const map=maps.get(idOf(mapId));if(!map)return null;const alias=mapAlias(map.normalizedName),plan=questMapForLocation(extras.questMaps?.modes?.[mode]?.[questId],alias,objective);const a=el('a',`${label}: ${map.name}`,'button');a.href=plan?questMapURL(questId,mode,plan,objective,false):siteHref(`raid.html?map=${encodeURIComponent(alias)}&quest=${encodeURIComponent(questId)}&mode=${mode}${objective?'&objective='+encodeURIComponent(objective):''}`);a.onclick=e=>{if(e&&(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button>0))return;if(questMap?.focus(alias,objective)){e?.preventDefault();}};return a;}
 function statusName(task){if(task.catalogUnavailableModes?.includes(mode))return 'Недоступен в '+mode.toUpperCase();const state=questState(task,progress);if(state!=='notstarted')return QUEST_STATES[state];const a=availability(task,progress);return a.available?(a.external?'Проверить условия':'По цепочке доступен'):'Закрыт';}
 function renderTraders(){
  const main=sectionTasks(tasks,'all'),total=main.filter(t=>questState(t,progress)==='complete').length;$('quest-done').textContent=num(total);$('quest-total').textContent=` / ${num(main.length)} выполнено`;$('quest-progress').max=main.length;$('quest-progress').value=total;
@@ -209,7 +210,7 @@ function renderObjectives(root,t){
     if(o.requiredKeys?.length)body.append(el('p','Ключи для этой цели:','objective-subheading'),keyGroups(o.requiredKeys));
     if(o.requiredItems?.length){const needed=el('div','','objective-items');body.append(el('p','Потребуется:'));for(const item of o.requiredItems){for(const ref of itemReferences(item.ids||item.item||item.id))needed.append(itemChip(ref,item.count||1));if(item.foundInRaid)needed.append(el('span','Найдено в рейде','quest-tag'));if((item.ids||[]).length>1)needed.append(el('span','Подходят альтернативные предметы из списка.'));}body.append(needed);}const photos=gallery.byObjective.get(o.id);if(photos?.length)body.append(galleryBlock(photos,{title:'Место выполнения',compact:true,association:'objective',contextTitle:t.name,carousel:gallery.frames}));
     if(o.markerItem)body.append(el('p','Устройство для установки:'),itemChip(o.markerItem));
-    const mapIds=[...new Set([...(o.maps||[]).map(idOf),...(o.zones||[]).map(x=>idOf(x.map))])];const mapRows=el('div','','quest-map-links');const seen=new Set();for(const id of mapIds){const m=maps.get(id),alias=m&&mapAlias(m.normalizedName);if(alias&&!seen.has(alias)){seen.add(alias);const a=mapLink(id,t.id,o.noMapCoordinates?'Локация':'Места задания',o.noMapCoordinates?undefined:o.id);if(a&&o.noMapCoordinates){const url=new URL(a.href,location.href);url.searchParams.delete('quest');a.href=url.toString();}if(a)mapRows.append(a);}}body.append(mapRows);row.append(check,summary);objectiveWorkspace.register(o,row,body,check,doneNote);
+    const mapIds=[...new Set([...(o.maps||[]).map(idOf),...(o.zones||[]).map(x=>idOf(x.map))])];const mapRows=el('div','','quest-map-links');const seen=new Set();for(const id of mapIds){const m=maps.get(id),alias=m&&mapAlias(m.normalizedName);if(alias&&!seen.has(alias)){seen.add(alias);const a=mapLink(id,t.id,o.noMapCoordinates?'Локация':'Места задания',o.noMapCoordinates?undefined:o.id);if(a&&o.noMapCoordinates){const url=new URL(a.href,location.href);if(/^\/raid(?:\/|\.html|$)/.test(url.pathname))url.searchParams.delete('quest');a.href=url.toString();}if(a)mapRows.append(a);}}body.append(mapRows);row.append(check,summary);objectiveWorkspace.register(o,row,body,check,doneNote);
   }objectiveWorkspace.refresh();
   questMap=new QuestMapView(t,{mode,index:extras.questMaps,objectives});root.append(questMap.root);
   if(gallery.general.length)root.append(galleryBlock(gallery.general,{title:'Где выполнять задание',contextTitle:t.name,carousel:gallery.frames}));

@@ -11,7 +11,7 @@ use App\Services\PublicCatalog;
 /** Собирает и кэширует публичный контент без открытия сессии игрока. */
 final class ContentController
 {
-    private const FORMAT='public-views-20261016-v2';
+    private const FORMAT='public-views-20261016-v3';
     public const BUNDLES=[
         'quest-extras'=>[
             'guide/quest-media.json'=>null,'guide/story.json'=>null,'guide/quest-conditions.json'=>['quests'=>[]],
@@ -107,7 +107,7 @@ final class ContentController
         if ($path === 'home.json') { return $this->home($dataset,$quests); }
         if (!preg_match('~^guide/quests-(pve|regular)\.json$~', $path, $match)) {
             $raw=$dataset->json();$data=json_decode($raw,true,128,JSON_THROW_ON_ERROR);$changed=false;
-            foreach(['pois','items','maps','traders'] as $field){if(is_array($data[$field]??null)){$filtered=array_filter($data[$field],fn($row)=>!is_array($row)||empty($row['cmsArchived']));if(count($filtered)!==count($data[$field])){$data[$field]=array_values($filtered);$changed=true;}}}
+            foreach(['pois','items','maps','traders'] as $field){if(is_array($data[$field]??null)){$filtered=array_filter($data[$field],fn($row)=>!is_array($row)||(empty($row['cmsArchived'])&&($field!=='pois'||($row['sourceStatus']??null)!=='unverified-coordinates')));if(count($filtered)!==count($data[$field])){$data[$field]=array_values($filtered);$changed=true;}}}
             if(array_is_list($data)){$filtered=array_filter($data,fn($row)=>!is_array($row)||empty($row['cmsArchived']));if(count($filtered)!==count($data)){$data=array_values($filtered);$changed=true;}}
             if($view!=='full'){$data=PublicCatalog::dataset($data,$path,$view,$id);$changed=true;}
             if($changed){return response()->json($data)->header('Cache-Control','private, no-store');}

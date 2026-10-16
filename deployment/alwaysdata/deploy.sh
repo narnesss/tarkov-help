@@ -15,6 +15,7 @@ php artisan wiki:import-content
 # Совместимое чтение файлов уже опубликовано предыдущим релизом.
 php artisan wiki:content-files --move
 php artisan wiki:import-domain
+php artisan wiki:content-updates
 php artisan wiki:reference-index
 php artisan vendor:publish --tag=orchid-assets --force
 php artisan optimize

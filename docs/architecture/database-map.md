@@ -1,5 +1,18 @@
 # Карта БД Tarkov Wiki
 
+Пакеты ContentUpdates используют существующую wiki_projection_states:
+owner_type=content-update, owner_id=номер пакета, content_ref=SHA-256.
+Маркер записывается в той же транзакции, что SQL-ссылки на неизменяемые JSON-файлы.
+Новые JSON-колонки не добавляются. Архив ошибочной точки сохраняет её SQL/external ID,
+FK и личные отметки. Неподтверждённые внешние координаты остаются в файле с reviewReason
+и sourceStatus=unverified-coordinates; API их не публикует до редакторского исправления.
+
+Служебные ID точек (`loot-7`, `spawn-14`) локальны для карты. Прежняя SQL-строка и её FK
+сохраняются; совпавшая точка другой локации получает новую SQL-строку с external_id
+scoped-SHA256(kind, mode, location_id, public_id). wiki_sources связывает каждый указатель
+с правильной строкой. ID в JSON и ключах личного прогресса не меняются. Одноразовый проход
+repairPointScopes разделяет старые совпадения без перезаписи уже исправленных строк.
+
 Миграция `2026_10_16_000009_add_player_password_recovery.php` добавляет `player_password_resets`:
 PK/FK user_id, unique challenge_id, email/email_verified_at, session_hash, credential_hash,
 code_hash HMAC-SHA256, attempts, sent_at, expires_at. TTL 1 час, 5 попыток, одноразовый код.

@@ -34,5 +34,5 @@
   <dialog id="raid-about-dialog" class="dialog raid-about-dialog"><div class="dialog-heading"><h2>Интерактивные карты</h2><button id="raid-about-close" class="icon-button" aria-label="Закрыть">×</button></div><p>Выберите локацию, этаж и нужные слои. Отметки и заметки сохраняются в вашем профиле.</p><ul class="source-list"><li><a href="https://tarkov.help/ru" target="_blank" rel="noopener noreferrer">Tarkov.help — прохождения ↗</a></li><li><a href="https://escapefromtarkov.fandom.com/ru/wiki/Escape_from_Tarkov_Wiki" target="_blank" rel="noopener noreferrer">Русская Wiki ↗</a></li></ul><p class="muted">Авторы карт: Shebuka, RE3MR, Jindouz, xTycho, NepPure и участники сообщества. Игровые материалы — Battlestate Games. Карты распространяются на условиях CC BY-NC-SA 4.0; исходные права сохранены.</p></dialog>
   <div class="toast" id="raid-toast" role="status" hidden></div>
   <script src="vendor/leaflet.js"></script>
-  <script type="module" src="bootstrap.mjs?v=session-20261016"></script>
+  <script type="module" src="bootstrap.mjs?v=scope-20261016"></script>
 @endsection

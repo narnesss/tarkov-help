@@ -13,7 +13,7 @@ const copy = name => {
   fs.mkdirSync(path.dirname(destination), {recursive: true});
   fs.cpSync(source, destination, {recursive: true});
 };
-for (const name of ['app', 'config', 'routes', 'src', 'resources/views', 'database/migrations',
+for (const name of ['app', 'config', 'routes', 'src', 'resources/views', 'database/migrations', 'database/content-updates',
   'bootstrap/app.php', 'bootstrap/providers.php', 'public/index.php', 'public/.htaccess',
   'public/admin-user-validation.mjs', 'public/admin-content-validation.mjs', 'public/password-policy.mjs',
   'artisan', 'composer.json', 'composer.lock', 'deployment/alwaysdata']) copy(name);
