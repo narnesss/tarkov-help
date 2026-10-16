@@ -26,11 +26,17 @@ final readonly class PlayerAdmin
     public function save(?string $id,array $input):Player
     {
         $input['username']=is_string($input['username']??null)?mb_strtolower(trim($input['username'])):$input['username']??null;
-        $input['email']=is_string($input['email']??null)?strtolower(trim($input['email'])):null;
+        $input['email']=is_string($input['email']??null)?strtolower(trim($input['email'])):($input['email']??null);
         $data=Validator::make($input,[
-            'username'=>['required','string','regex:/^[\p{L}\p{N}_-]{3,32}$/uD',Rule::unique('users','username')->ignore($id)],
-            'display_name'=>'required|string|max:64','avatar_url'=>'nullable|string|max:2048','email'=>'nullable|email:rfc|max:254',
-            'password'=>[$id===null?'required':'nullable','string'],
+            'username'=>['bail','required','string','regex:/^[\p{L}\p{N}_-]{3,32}$/uD',Rule::unique('users','username')->ignore($id)],
+            'display_name'=>'required|string|max:64','avatar_url'=>'nullable|string|max:2048','email'=>'bail|nullable|string|email:rfc|max:254',
+            'password'=>['bail',$id===null?'required':'nullable','string','max:72'],
+        ],[
+            'username.required'=>'Введите логин.','username.string'=>'Логин должен быть текстом.','username.regex'=>'Логин: 3–32 буквы, цифры, дефис или _.','username.unique'=>'Этот логин уже занят.',
+            'display_name.required'=>'Введите отображаемое имя.','display_name.string'=>'Имя должно быть текстом.','display_name.max'=>'Имя: не более 64 символов.',
+            'avatar_url.string'=>'Адрес аватара должен быть текстом.','avatar_url.max'=>'Адрес аватара: не более 2048 символов.',
+            'email.string'=>'E-mail должен быть текстом.','email.email'=>'Введите корректный e-mail.','email.max'=>'E-mail: не более 254 символов.',
+            'password.required'=>'Введите пароль.','password.string'=>'Пароль должен быть текстом.','password.max'=>'Пароль: максимум 72 байта.',
         ])->validate();
         if(preg_match('/[\p{C}<>]/u',$data['display_name'])||trim($data['display_name'])===''){throw ValidationException::withMessages(['display_name'=>'Введите имя без управляющих символов и < >.']);}
         $avatar=trim($data['avatar_url']??'')?:null;
@@ -39,7 +45,7 @@ final readonly class PlayerAdmin
         $password=$data['password']??'';
         if($password!==''&&($error=PasswordPolicy::error($password,$data['username']))!==null){throw ValidationException::withMessages(['password'=>$error]);}
         return DB::transaction(function()use($id,$input,$data,$avatar,$password):Player{
-            $owner=$this->lock($id,$input);$email=$data['email']?:null;
+            $owner=$this->lock($id,$input);$email=($data['email']??null)?:null;
             if(DB::table('users')->where('username',$data['username'])->when($id,fn($q)=>$q->where('id','<>',$id))->exists()){throw ValidationException::withMessages(['username'=>'Этот логин уже занят.']);}
             if($email&&(DB::table('player_emails')->where('email',$email)->when($id,fn($q)=>$q->where('user_id','<>',$id))->exists()
                 ||DB::table('player_identities')->where('verified_email',$email)->when($id,fn($q)=>$q->where('user_id','<>',$id))->exists())){throw ValidationException::withMessages(['email'=>'Этот адрес связан с другим аккаунтом.']);}

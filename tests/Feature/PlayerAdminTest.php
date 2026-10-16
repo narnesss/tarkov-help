@@ -12,7 +12,7 @@ final class PlayerAdminTest extends TestCase
 {
     use RefreshDatabase;
     private function admin(bool $allowed=true):User
-    {return User::create(['name'=>'Владелец','email'=>'owner@example.test','password'=>bcrypt('admin-test'),'permissions'=>['platform.index'=>true,'wiki.content'=>true,'wiki.users'=>$allowed]]);}
+    {return User::create(['name'=>'Владелец','email'=>$allowed?'owner@example.test':'editor@example.test','password'=>bcrypt('admin-test'),'permissions'=>['platform.index'=>true,'wiki.content'=>true,'wiki.users'=>$allowed]]);}
     private function input():array
     {return ['username'=>'managed_player','display_name'=>'Игрок','email'=>'','avatar_url'=>'','password'=>'Cedar!Kite9_Moon'];}
     public function test_migration_preserves_visible_profiles_and_grants_management_only_to_initial_admin():void
@@ -30,6 +30,12 @@ final class PlayerAdminTest extends TestCase
     {
         $this->actingAs($this->admin(false));$this->get('/admin/players')->assertForbidden();
         $this->post('/admin/players/create/save',['player'=>$this->input()])->assertForbidden();
+        $this->assertSame(0,DB::table('users')->count());
+    }
+    public function test_unauthenticated_requests_cannot_manage_players():void
+    {
+        $this->get('/admin/players')->assertRedirect('/admin/login');
+        $this->postJson('/admin/players/create/save',['player'=>$this->input()])->assertUnauthorized();
         $this->assertSame(0,DB::table('users')->count());
     }
     public function test_admin_can_create_edit_and_delete_player_without_manual_ids_or_progress_loss():void
@@ -69,5 +75,51 @@ final class PlayerAdminTest extends TestCase
         $reuse=[...$input,'revision'=>$editor->revision($owner->id)];$this->post('/admin/players/'.$owner->id.'/edit/save',['player'=>$reuse])->assertUnprocessable();
         $this->postJson('/admin/players/create/save',['player'=>[...$input,'username'=>'weak_player','password'=>'weak password 99']])->assertUnprocessable()->assertJsonValidationErrors('player.password')->assertDontSee('weak password 99');
         $this->assertSame(2,DB::table('users')->count());
+    }
+
+    public function test_direct_posts_reject_injections_xss_and_invalid_types_without_partial_changes():void
+    {
+        $this->actingAs($this->admin());$editor=app(PlayerAdmin::class);$owner=$editor->save(null,$this->input());
+        $other=$editor->save(null,[...$this->input(),'username'=>'other_player','email'=>'kept@example.test']);
+        $before=$editor->revision($owner->id);$otherBefore=$editor->revision($other->id);
+        $base=[...$this->input(),'password'=>'','revision'=>$before];
+        $cases=[['username',"probe' OR '1'='1"],['username',['unexpected']],['display_name','<img src=x onerror=alert(1)>'],['display_name',"Имя\0"],
+            ['display_name',str_repeat('я',65)],['email',['unexpected']],['password',['unexpected']],['avatar_url',['unexpected']],
+            ['avatar_url','javascript:alert(1)'],['avatar_url','data:image/svg+xml,x'],['avatar_url','https://cdn.discordapp.com.evil.test/x'],
+            ['avatar_url','https://cdn.discordapp.com@evil.test/x'],['avatar_url','https://cdn.discordapp.com:443/x'],
+            ['avatar_url','https://cdn.discordapp.com/x" onerror="alert(1)'],['password','lowercaseonly9!']];
+        foreach($cases as [$field,$value]){
+            $this->postJson('/admin/players/'.$owner->id.'/edit/save',['player'=>[...$base,$field=>$value]])->assertUnprocessable()->assertJsonValidationErrors('player.'.$field);
+            $this->assertSame($before,$editor->revision($owner->id));$this->assertSame($otherBefore,$editor->revision($other->id));
+        }
+        foreach(['save','remove'] as $action)$this->postJson('/admin/players/'.$owner->id.'/edit/'.$action,['player'=>'invalid'])->assertUnprocessable()->assertJsonValidationErrors('player');
+        $this->postJson('/admin/players/'.$owner->id.'/edit/remove',['player'=>['revision'=>str_repeat('0',64)]])->assertConflict();
+        $this->assertSame(2,DB::table('users')->count());
+    }
+
+    public function test_search_and_legacy_names_are_escaped_and_queries_do_not_expand_from_sql_text():void
+    {
+        $this->actingAs($this->admin());$owner=app(PlayerAdmin::class)->save(null,$this->input());
+        $attack='<img src=x onerror=alert(1)>';
+        DB::table('player_profiles')->where('user_id',$owner->id)->update(['display_name'=>$attack]);
+        foreach(['/admin/players','/admin/players/'.$owner->id.'/edit'] as $url){$this->get($url)->assertOk()->assertSee(e($attack),false)->assertDontSee($attack,false);}
+        $this->get('/admin/players?'.http_build_query(['search'=>"' OR 1=1 --"]))->assertOk()->assertDontSee($owner->username);
+        $this->get('/admin/players?'.http_build_query(['search'=>$attack]))->assertOk()->assertDontSee($attack,false);
+        $this->assertSame(1,DB::table('users')->count());
+    }
+
+    public function test_csrf_permissions_and_mass_assignment_cannot_modify_other_accounts():void
+    {
+        $admin=$this->admin();$this->actingAs($admin);$editor=app(PlayerAdmin::class);$owner=$editor->save(null,$this->input());
+        $other=$editor->save(null,[...$this->input(),'username'=>'other_player']);$otherBefore=$editor->revision($other->id);
+        $input=[...$this->input(),'password'=>'','revision'=>$editor->revision($owner->id),'id'=>$other->id,'is_admin'=>true,'permissions'=>['wiki.users'=>true]];
+        $this->postJson('/admin/players/'.$owner->id.'/edit/save',['player'=>$input])->assertRedirect();
+        $this->assertSame($otherBefore,$editor->revision($other->id));$this->assertSame(1,User::count());
+        $this->actingAs($this->admin(false));
+        $this->get('/admin/players/'.$owner->id.'/edit')->assertForbidden();
+        foreach(['save','remove'] as $action)$this->postJson('/admin/players/'.$owner->id.'/edit/'.$action,['player'=>$input])->assertForbidden();
+        $this->actingAs($admin);$this->app->instance('env','production');
+        foreach(['/admin/players/create/save','/admin/players/'.$owner->id.'/edit/save','/admin/players/'.$owner->id.'/edit/remove'] as $url){$this->postJson($url,['player'=>$input])->assertStatus(419);}
+        $this->assertSame(2,DB::table('users')->count());$this->assertSame($otherBefore,$editor->revision($other->id));
     }
 }
