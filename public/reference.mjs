@@ -21,10 +21,12 @@ const pageSize=40;const money=v=>v===null||v===undefined?'Нет цены':num(v
 const duration=formatDuration;
 function itemLink(ref,count){const item=items.get(idOf(ref));const b=usesPageRoutes()?el('a','','guide-item'):action('',()=>showItem(idOf(ref)),'guide-item');if(usesPageRoutes())b.href=siteHref('reference.html?'+new URLSearchParams({tab:'items',item:idOf(ref),mode}));if(item?.iconLink)b.append(image(item.iconLink));b.append(el('span',item?.name||'Предмет '+idOf(ref)));if(count!==undefined)b.append(el('b','× '+num(count)));return b;}
 function setOptions(id,choices){$(id).replaceChildren(...choices.map(([value,name])=>{const o=el('option',name);o.value=value;return o;}));}
+function revealActiveTab(){const nav=$('reference-tabs'),active=nav.querySelector('[aria-current="page"]');if(!active||getComputedStyle(nav).flexDirection!=='row'||nav.scrollWidth<=nav.clientWidth)return;const box=nav.getBoundingClientRect(),target=active.getBoundingClientRect();nav.scrollTo({left:nav.scrollLeft+target.left-box.left-(nav.clientWidth-target.width)/2,behavior:'auto'});}
 function setTab(next){if(!TABS[next])return;tab=next;page=0;$('reference-search').value='';const u=new URL(usesPageRoutes()?'reference.html':location.href,location.origin+'/');u.search='';u.searchParams.set('tab',tab);u.searchParams.set('mode',mode);history.replaceState(null,'',canonicalURL(u));return load().catch(fail);}
 function configure(){
   $('reference-title').textContent=TABS[tab][0];$('reference-crumb').textContent=TABS[tab][0];$('reference-description').textContent=TABS[tab][1];$('reference-mode').value=mode;
   $('reference-tabs').replaceChildren(...Object.entries(TABS).map(([id,[name]])=>{const b=action(name,()=>setTab(id),'');b.dataset.tab=id;if(tab===id)b.setAttribute('aria-current','page');return b;}));
+  revealActiveTab();
   let filters=[['all','Все категории']],sorts=[['name','По названию']];
   if(tab==='items')filters.push(...[...new Set([...items.values()].flatMap(i=>i.types||[]))].sort().map(t=>[t,TYPE_NAMES[t]||t]));
   if(tab==='ammo')filters=[['all','Все калибры'],...[...new Set([...items.values()].filter(i=>i.properties?.propertiesType==='ItemPropertiesAmmo').map(i=>i.properties.caliber))].filter(Boolean).sort().map(c=>[c,c.replace(/^Caliber/,'')])];
@@ -60,7 +62,23 @@ function render(){if(!data)return;$('reference-count').hidden=false;document.que
   if(tab==='bosses'){const a=el('a','Все боссы: описание и здоровье →','button');a.href=siteHref(`boss.html?mode=${mode}`);a.classList.add('boss-catalog-link');root.append(a);}
   if(['items','ammo','needed'].includes(tab))renderTable(root,visible);else{const cards=el('div','','reference-cards');for(const row of visible)cards.append(renderCard(row));root.append(cards);}
 }
-function renderTable(root,rows){const wrap=el('div','','reference-table-wrap'),table=el('table','','reference-table'),head=el('thead'),tr=el('tr');const headers=tab==='ammo'?['Патрон','Калибр','Урон','Пробитие','Бронеурон','Скорость']:tab==='needed'?['Предмет','Нужно','Условие','Для заданий']:['Предмет','Торговцу','Габариты'];for(const [index,h] of headers.entries()){const th=el('th',h,index>0&&!(tab==='needed'&&index===3)?'number':'');th.scope='col';tr.append(th);}head.append(tr);table.append(head);const body=el('tbody');for(const r of rows){const row=el('tr'),name=el('td');name.append(itemLink(r.id));row.append(name);let values;if(tab==='ammo')values=[r.properties.caliber?.replace(/^Caliber/,''),r.properties.damage,r.properties.penetrationPower,num(r.properties.armorDamage)+'%',num(r.properties.initialSpeed)+' м/с'];else if(tab==='needed')values=[num(r.count),r.foundInRaid?'В рейде':'Любые'];else values=[money(sellPrice(r)),r.width&&r.height?`${r.width} × ${r.height}`:'—'];for(const v of values)row.append(el('td',String(v??'—'),'number'));if(tab==='needed'){const td=el('td');for(const t of r.tasks){const a=el('a',t.name,'guide-link');a.href=siteHref(`quests.html?quest=${encodeURIComponent(t.id)}&mode=${mode}`);td.append(a,el('br'));}row.append(td);}body.append(row);}table.append(body);wrap.append(table);root.append(wrap);}
+function renderTable(root,rows){
+  const wrap=el('div','','reference-table-wrap'),table=el('table','','reference-table'),head=el('thead'),tr=el('tr');
+  const headers=tab==='ammo'?['Патрон','Калибр','Урон','Пробитие','Бронеурон','Скорость']:tab==='needed'?['Предмет','Нужно','Условие','Для заданий']:['Предмет','Торговцу','Габариты'];
+  if(tab!=='ammo')table.classList.add('reference-item-table');
+  table.setAttribute('role','table');head.setAttribute('role','rowgroup');tr.setAttribute('role','row');
+  for(const [index,h] of headers.entries()){const th=el('th',h,index>0&&!(tab==='needed'&&index===3)?'number':'');th.scope='col';th.setAttribute('role','columnheader');tr.append(th);}
+  head.append(tr);table.append(head);const body=el('tbody');body.setAttribute('role','rowgroup');
+  for(const r of rows){
+    const row=el('tr'),name=el('td');row.setAttribute('role','row');name.append(itemLink(r.id));row.append(name);
+    let values;if(tab==='ammo')values=[r.properties.caliber?.replace(/^Caliber/,''),r.properties.damage,r.properties.penetrationPower,num(r.properties.armorDamage)+'%',num(r.properties.initialSpeed)+' м/с'];else if(tab==='needed')values=[num(r.count),r.foundInRaid?'В рейде':'Любые'];else values=[money(sellPrice(r)),r.width&&r.height?`${r.width} × ${r.height}`:'—'];
+    for(const v of values)row.append(el('td',String(v??'—'),'number'));
+    if(tab==='needed'){const td=el('td');for(const t of r.tasks){const a=el('a',t.name,'guide-link');a.href=siteHref(`quests.html?quest=${encodeURIComponent(t.id)}&mode=${mode}`);td.append(a,el('br'));}row.append(td);}
+    for(const [index,cell] of [...row.children].entries()){cell.setAttribute('role','cell');if(tab!=='ammo'){const label=el('span',headers[index],'reference-cell-label');label.setAttribute('aria-hidden','true');cell.prepend(label);}}
+    body.append(row);
+  }
+  table.append(body);wrap.append(table);root.append(wrap);
+}
 function renderCard(r){const card=el('article','','reference-card');card.append(el('h3',r.name));
   if(['barters','crafts'].includes(tab)){
     const offered=r.productItem||r.offeredItem;card.append(itemLink(offered.item,offered.count));card.append(el('p',tab==='barters'?`${nameTrader(r.trader)} · лояльность ${r.minTraderLevel}`:`${stations.get(idOf(r.station))?.name||'Убежище'} · уровень ${r.level} · ${duration(r.duration)}`));card.append(el('h4','Требуется'));for(const required of r.requiredItems||[]){card.append(itemLink(required.item,required.count));if(required.attributes?.tool)card.append(el('small','Инструмент: не расходуется'));}
@@ -98,4 +116,5 @@ async function showItem(id){let item=items.get(id);if(!item){toast('Карточ
 const sourceRequests=new Map(),itemDetails=new Set();
 function once(key,read){if(!sourceRequests.has(key))sourceRequests.set(key,read().catch(error=>{sourceRequests.delete(key);throw error;}));return sourceRequests.get(key);}
 async function load(){const current=++token;$('reference-content').replaceChildren(empty('Загрузка справочника…'));const result=await loadReferenceSources(mode,{dataset:(key,path,options)=>once(key+JSON.stringify(options??{}),()=>pageDataset(key,path,options)),json:path=>once(path,()=>json(path)),extras:questExtras},tab);if(current!==token)return;[data,catalog,quests,btr,bosses]=result.slice(0,5).map(x=>localizeDisplay(x));if(!quests.cms)quests=enrichQuests(quests,result[5]);items=new Map([...list(catalog.items),...list(quests.questItems).map(i=>({...i,types:['quest']}))].map(i=>[i.id,i]));itemDetails.clear();traders=new Map(list(data.traders).map(t=>[t.id,t]));stations=new Map(list(data.hideout).map(s=>[s.id,s]));configure();restoreView();if(pageParams().has('item'))await showItem(pageParams().get('item'));else render();}
+window.addEventListener('resize',revealActiveTab);
 $('reference-mode').onchange=()=>{mode=$('reference-mode').value;writeStorage('kord-atlas-game-mode',mode);page=0;const url=new URL(location.href);url.searchParams.set('mode',mode);history.replaceState(null,'',canonicalURL(url));return load().catch(fail);};$('reference-search').oninput=()=>{page=0;render();};for(const id of ['reference-filter','reference-sort'])$(id).onchange=()=>{page=0;render();};$('reference-prev').onclick=()=>{page--;render();};$('reference-next').onclick=()=>{page++;render();};$('item-close').onclick=()=>$('item-dialog').close();function fail(){$('reference-content').replaceChildren(empty('Не удалось загрузить справочник.'),action('Повторить',()=>load().catch(fail)));}load().catch(fail);

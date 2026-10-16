@@ -1,0 +1,70 @@
+/* Справочник на узких экранах: карточки предметов и отдельная прокрутка таблиц сравнения. */
+body[data-page="reference"] .reference-filters > label,
+body[data-page="reference"] .reference-heading > div,
+body[data-page="reference"] .reference-card,
+body[data-page="reference"] .item-stat-grid { min-width: 0; }
+body[data-page="reference"] .reference-heading :is(h2, p),
+body[data-page="reference"] .reference-card :is(h3, p, small, a, summary),
+body[data-page="reference"] .item-stat-grid strong { overflow-wrap: anywhere; }
+body[data-page="reference"] .reference-heading .quest-tag { flex-shrink: 0; }
+.reference-cell-label { display: none; }
+@media (max-width: 850px) {
+  body[data-page="reference"] .topbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; height: auto; min-height: 0; padding: 8px 10px; }
+  body[data-page="reference"] .topbar .brand { grid-column: 1; grid-row: 1; min-width: 0; margin: 0; gap: 7px; white-space: normal; }
+  body[data-page="reference"] .topbar .site-logo { width: 28px; height: 32px; flex-basis: 28px; }
+  body[data-page="reference"] .topbar .brand-wordmark { min-width: 0; font-size: 11px; letter-spacing: 0; }
+  body[data-page="reference"] .topbar .brand-light { font-size: 10px; }
+  body[data-page="reference"] .topbar .header-right { display: flex; grid-column: 2; grid-row: 1; margin: 0; gap: 6px; }
+  body[data-page="reference"] .topbar .atlas-modes { grid-column: 1 / -1; grid-row: 2; position: static; display: flex; flex-wrap: nowrap; justify-content: flex-start; min-width: 0; width: 100%; margin: 0; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+  body[data-page="reference"] .topbar .atlas-modes a { flex: 1 0 auto; min-height: 44px; padding: 12px 10px; white-space: nowrap; overflow-wrap: normal; font-size: 13px; text-align: center; }
+  body[data-page="reference"] .topbar .profile-trigger { width: 44px; min-width: 44px; max-width: 44px; padding: 0; font-size: 0; }
+  body[data-page="reference"] .topbar .profile-trigger::before { margin: 0; font-size: 22px; }
+}
+@media (max-width: 700px) {
+  body[data-page="reference"] .reference-toolbar-title > p { display: none; }
+  body[data-page="reference"] .reference-filters { grid-template-columns: 100px minmax(0, 1fr); }
+  body[data-page="reference"] .reference-filters .reference-search-label { grid-column: 1 / -1; }
+  body[data-page="reference"] .reference-filters #reference-filter-label { grid-column: 2; }
+  body[data-page="reference"] .reference-filters #reference-sort-label { grid-column: 1 / -1; }
+  body[data-page="reference"] .reference-tabs { overscroll-behavior-x: contain; scrollbar-width: thin; }
+  body[data-page="reference"] .reference-heading { flex-wrap: wrap; }
+  body[data-page="reference"] .reference-heading > div { flex: 1; min-width: min(100%, 210px); }
+  body[data-page="reference"] .reference-table .guide-item { min-height: 44px; }
+  body[data-page="reference"] .reference-card { padding: 16px; }
+  body[data-page="reference"] .reference-card .button { max-width: 100%; white-space: normal; text-align: center; }
+  body[data-page="reference"] .reference-card .guide-item { width: 100%; box-sizing: border-box; }
+  body[data-page="reference"] .reference-card .guide-item b { max-width: 7ch; white-space: normal; overflow-wrap: anywhere; }
+  body[data-page="reference"] .reference-card table { display: block; max-width: 100%; overflow-x: auto; }
+  body[data-page="reference"] .item-detail-grid { grid-template-columns: clamp(80px, 24vw, 120px) minmax(0, 1fr); }
+  body[data-page="reference"] .item-detail-grid img { width: 100%; max-width: 120px; }
+  body[data-page="reference"] .item-dialog { width: calc(100vw - 20px); max-width: calc(100vw - 20px); max-height: calc(100dvh - 20px); margin: 10px; padding: 16px; box-sizing: border-box; overscroll-behavior: contain; }
+  body[data-page="reference"] .item-dialog .dialog-heading { position: sticky; top: -16px; z-index: 2; padding-block: 12px; background: var(--reading-panel); }
+  body[data-page="reference"] .item-dialog .dialog-heading h2 { min-width: 0; font-size: 22px; overflow-wrap: anywhere; }
+  body[data-page="reference"] .item-dialog .icon-button { flex-shrink: 0; margin: 0; }
+}
+@media (max-width: 1000px) {
+  body[data-page="reference"] .reference-main .reference-item-table { display: block; min-width: 0; width: 100%; }
+  body[data-page="reference"] .reference-item-table > thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  body[data-page="reference"] .reference-item-table > tbody { display: block; }
+  body[data-page="reference"] .reference-item-table tbody > tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding: 16px; border-bottom: 1px solid var(--reading-border); }
+  body[data-page="reference"] .reference-item-table tbody > tr:last-child { border-bottom: 0; }
+  body[data-page="reference"] .reference-item-table td { display: block; min-width: 0; width: auto; padding: 0; border: 0; text-align: left; white-space: normal; overflow-wrap: anywhere; }
+  body[data-page="reference"] .reference-item-table td.number { text-align: left; }
+  body[data-page="reference"] .reference-item-table td:first-child,
+  body[data-page="reference"] .reference-item-table td:nth-child(4) { grid-column: 1 / -1; }
+  body[data-page="reference"] .reference-item-table .reference-cell-label { display: block; margin-bottom: 5px; color: var(--reading-muted); font-size: 12px; }
+  body[data-page="reference"] .reference-item-table td:first-child > .reference-cell-label { display: none; }
+}
+@media (max-width: 540px) {
+  body[data-page="reference"] .topbar:has([data-player-guest]:not([hidden])) { grid-template-columns: 44px minmax(0, 1fr) auto; }
+  body[data-page="reference"] .topbar:has([data-player-guest]:not([hidden])) .brand { grid-column: 1 / -1; }
+  body[data-page="reference"] .topbar:has([data-player-guest]:not([hidden])) .header-right { display: contents; }
+  body[data-page="reference"] .topbar:has([data-player-guest]:not([hidden])) .profile-trigger { grid-column: 1; grid-row: 2; }
+  body[data-page="reference"] .topbar:has([data-player-guest]:not([hidden])) .player-login { grid-column: 2; grid-row: 2; justify-self: end; }
+  body[data-page="reference"] .topbar:has([data-player-guest]:not([hidden])) .player-register { grid-column: 3; grid-row: 2; }
+  body[data-page="reference"] .topbar:has([data-player-guest]:not([hidden])) .atlas-modes { grid-row: 3; }
+}
+@media (max-width: 420px) {
+  body[data-page="reference"] .reference-filters #reference-filter-label { grid-column: 1 / -1; }
+  body[data-page="reference"] .reference-card .achievement-icon { float: none; display: block; margin: 0 0 14px; }
+}

@@ -125,7 +125,8 @@ return json_decode(<<<'JSON'
       "quest-ui.css",
       "site-ui.css",
       "reference-ui.css",
-      "controls.css"
+      "controls.css",
+      "reference-responsive.css"
     ],
     "body_attributes": "class=\"guide-page\" data-page=\"reference\""
   },

@@ -18,5 +18,5 @@
   <p id="reference-data-date" class="reference-help" role="status"></p><div id="reference-content"></div><div class="reference-pager"><button class="button" id="reference-prev">← Назад</button><span id="reference-page"></span><button class="button" id="reference-next">Далее →</button></div>
 </section></main>
 <dialog class="dialog item-dialog" id="item-dialog"><div class="dialog-heading"><h2 id="item-title"></h2><button class="icon-button" id="item-close" aria-label="Закрыть предмет">×</button></div><div id="item-body" class="item-dialog-body"></div></dialog><div class="toast" id="guide-toast" role="status" hidden></div>
-  <script type="module" src="bootstrap.mjs?v=session-20261016"></script>
+  <script type="module" src="bootstrap.mjs?v=mobile-reference-20261016"></script>
 @endsection
