@@ -47,7 +47,7 @@ final class QuestListScreen extends Screen
             Input::make('search')->title('Поиск')->type('search')->maxlength(255)->set('data-admin-search','1'),
             Select::make('trader')->title('Торговец')->options(['all'=>'Все торговцы',...$traders->options()]),
             Select::make('state')->title('Публикация')->options(['all'=>'Все','published'=>'Опубликованные','draft'=>'Черновики']),
-            \Orchid\Screen\Actions\Button::make('Найти')->method('filter'),
+            \Orchid\Screen\Actions\Button::make('Найти')->method('filter')->rawClick(),
         ]),Layout::view('platform.content-validation'), Layout::table('quests', [
             TD::make('name', 'Название')->render(fn (Quest $quest) => Link::make($quest->name)->route('platform.quests.edit', $quest)),
             TD::make('mode', 'Режим')->render(fn (Quest $quest) => $quest->mode === 'pve' ? 'PVE' : 'PVP'),

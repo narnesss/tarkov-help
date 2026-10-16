@@ -67,7 +67,7 @@ final class WikiListScreen extends Screen
         $extra=[];foreach($this->filters as $key=>$value){$extra[]=$key==='location'?Select::make('location')->title('Локация')->options([''=>'Все локации']+\Illuminate\Support\Facades\DB::table('wiki_locations')->where('archived',0)->orderBy('name')->pluck('name','id')->all()):Input::make($key)->type('hidden');}
         return [Layout::view('platform.catalog-tabs'),Layout::view('platform.content-validation'),Layout::rows([Input::make('search')->title('Поиск по названию')->maxlength(255)->set('data-admin-search','1')->value(request()->query('q','')),...$extra,
             CheckBox::make('show_archived')->title('Показать архив')->value((int)request()->boolean('archived'))->sendTrueOrFalse(),
-            Button::make('Найти')->method('search',self::parameters($type))])->title($context['label']??'Поиск'),Layout::table('records',[
+            Button::make('Найти')->method('search',self::parameters($type))->rawClick()])->title($context['label']??'Поиск'),Layout::table('records',[
             TD::make('display_name','Запись')->render(fn($row)=>Link::make($row->display_name)->route('platform.wiki.edit',['type'=>$type,'record'=>$row->rowid,...self::parameters($type)])),
             TD::make('archived','Состояние')->render(fn($row)=>$row->archived?'В архиве':'Активна'),
         ])];

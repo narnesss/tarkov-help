@@ -95,7 +95,12 @@ final class AdminNavigationTest extends TestCase
     public function test_filters_do_not_block_navigation_but_edit_forms_keep_abandonment_protection(): void
     {
         $this->fixtures();
-        foreach(['/admin/quests','/admin/wiki/map_points','/admin/datasets'] as $url){$this->get($url)->assertOk()->assertSee('data-form-need-prevents-form-abandonment-value="false"',false);}
+        foreach(['/admin/quests','/admin/wiki/map_points','/admin/datasets'] as $url){
+            $html=$this->get($url)->assertOk()->assertSee('data-form-need-prevents-form-abandonment-value="false"',false)->getContent();
+            $dom=new \DOMDocument();@$dom->loadHTML($html);$xpath=new \DOMXPath($dom);
+            $buttons=$xpath->query('//button[contains(@formaction,"/filter") or contains(@formaction,"/search")]');
+            $this->assertSame(1,$buttons->length);$this->assertSame('false',$buttons->item(0)->getAttribute('data-turbo'));
+        }
         $this->get('/admin/wiki/items/create')->assertOk()->assertSee('data-form-need-prevents-form-abandonment-value="true"',false);
     }
 }

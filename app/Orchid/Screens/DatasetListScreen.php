@@ -30,7 +30,7 @@ final class DatasetListScreen extends Screen
     {
         return [Layout::view('platform.catalog-tabs'),Layout::view('platform.content-validation'),Layout::rows([
             Input::make('group')->type('hidden'),Input::make('mode')->type('hidden'),Input::make('search')->title('Поиск справочника')->maxlength(255)->set('data-admin-search','1'),
-            \Orchid\Screen\Actions\Button::make('Найти')->method('search'),
+            \Orchid\Screen\Actions\Button::make('Найти')->method('search')->rawClick(),
         ]),Layout::table('datasets', [
             TD::make('title', 'Справочник')->render(fn ($row) => Link::make($row->title)->route('platform.datasets.edit',['dataset'=>$row->id,'section'=>$row->section])),
             TD::make('mode','Режим')->render(fn($row)=>e($row->mode)),
