@@ -16,4 +16,8 @@ test('ошибка выделяет поля, связывает сообщен�
   password.validationMessage='Заполните пароль.';let prevented=false;
   events.invalid({target:password,preventDefault(){prevented=true;}});
   assert.equal(prevented,true);assert.equal(block.textContent,'Заполните пароль.');assert.equal(focused,'password');
+  password.validity={valid:false};confirmation.validity={valid:false};confirmation.validationMessage='Повторите пароль.';
+  events.invalid({target:confirmation,preventDefault(){}});
+  assert.equal(focused,'password');assert.equal(block.textContent,'Заполните пароль.');
+  assert.equal(password.attrs['aria-invalid'],'true');assert.equal(confirmation.attrs['aria-invalid'],'true');
 });

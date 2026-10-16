@@ -17,7 +17,13 @@ export function formFeedback(form,blocks){
     targets[0]?.focus();return true;
   }
   form.addEventListener('input',clear);
-  form.addEventListener('invalid',event=>{if(blocks[event.target.name]){event.preventDefault();show(event.target.validationMessage,[event.target.name]);}},true);
+  form.addEventListener('invalid',event=>{
+    if(!blocks[event.target.name])return;
+    event.preventDefault();
+    const invalid=fields().filter(field=>!field.disabled&&field.validity?.valid===false&&blocks[field.name]);
+    const first=invalid[0]??event.target;
+    show(first.validationMessage,invalid.length?invalid.map(field=>field.name):[first.name]);
+  },true);
   return {clear,show};
 }
 
