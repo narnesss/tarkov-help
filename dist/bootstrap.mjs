@@ -12,7 +12,7 @@ const entry = document.body.dataset.page;
 try {
   const initializing=profileStore.initialize(runtime);
   if(['quests','raid','reference'].includes(entry)){
-    import('./page-data-preload.mjs?v=release-20261016').then(module=>module.preloadPageData(entry)).catch(()=>{});
+    import('./page-data-preload.mjs?v=lazy-20261016').then(module=>module.preloadPageData(entry)).catch(()=>{});
   }
   await initializing;
 }
@@ -34,7 +34,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 if (entry === 'index' && ['map','point'].some(key=>new URLSearchParams(location.search).has(key))) {
   location.replace(siteHref('documents.html'+location.search+location.hash));
 } else {
-const modules = {index: './home.mjs?v=release-20261016', documents: './app.mjs?v=release-20261016b', raid: './raid.mjs?v=release-20261016', quests: './quests.mjs?v=release-20261016', reference: './reference.mjs?v=release-20261016', boss: './boss.mjs?v=release-20261016', account: './account.mjs?v=release-20261016'};
+const modules = {index: './home.mjs?v=lazy-20261016', documents: './app.mjs?v=lazy-20261016', raid: './raid.mjs?v=lazy-20261016', quests: './quests.mjs?v=lazy-20261016', reference: './reference.mjs?v=lazy-20261016', boss: './boss.mjs?v=lazy-20261016', account: './account.mjs?v=lazy-20261016'};
 if (modules[entry]) await import(modules[entry]);
 
 }

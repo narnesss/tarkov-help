@@ -1,5 +1,5 @@
 import {profileStore} from './profile-store.mjs';
-import {json,el,action} from './guide-common.mjs?v=release-20261016';
+import {json,el,action} from './guide-common.mjs?v=lazy-20261016';
 import {siteHref} from './site-routes.mjs?v=release-20261016';
 import {resolveGameMode} from './game-mode.mjs';
 import {accountSummary} from './account-model.mjs';

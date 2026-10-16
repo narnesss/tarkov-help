@@ -1,7 +1,8 @@
-import {contentBundleResponse} from './content-client.mjs?v=release-20261016';
-import {json} from './guide-common.mjs?v=release-20261016';
+import {contentBundleResponse} from './content-client.mjs?v=lazy-20261016';
+import {json} from './guide-common.mjs?v=lazy-20261016';
 
 export const PUBLIC_BUNDLES={
+  'quest-ui':[['guide/quest-choices.json',{}],['guide/quest-map-index.json'],['guide/quest-reward-support.json',{}],['guide/ticket-map.json'],['guide/quest-conditions.json',{quests:{}}]],
   'quest-extras':[
     ['guide/quest-media.json'],['guide/story.json'],['guide/quest-conditions.json',{quests:{}}],
     ['guide/objective-patches.json',{}],['guide/media-localization.json',{}],['guide/wiki-quests.json',{quests:{}}],

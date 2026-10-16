@@ -9,8 +9,14 @@ test('CMS-справочник не запрашивает вспомогате�
     json:async url=>{calls.push(url);return {url};},
     extras:()=>{throw Error('Лишняя загрузка вспомогательных файлов');},
   });
-  assert.equal(calls.length,5);assert.equal(result[2].tasks[0].id,'stable');assert.equal(result[5],null);
+  assert.equal(calls.length,3);assert.equal(result[2].tasks[0].id,'stable');assert.equal(result[5],null);
   assert.ok(calls.includes('data/guide/reference-pve.json'));assert.ok(calls.includes('data/guide/items-pve.json'));
+});
+test('боссы и БТР загружаются только при открытии их раздела',async()=>{
+  for(const tab of ['items','crafts','bosses','btr']){
+    const paths=[];await loadReferenceSources('pve',{dataset:async()=>({cms:true}),json:async path=>{paths.push(path);return {};},extras:async()=>({})},tab);
+    assert.deepEqual(paths,tab==='bosses'?['data/guide/bosses.json']:tab==='btr'?['data/guide/btr.json']:[]);
+  }
 });
 test('автономный справочник сохраняет обогащение квестов и выбранный режим',async()=>{
   let extraCalls=0;const paths=[];const extra={media:{quests:{}}};

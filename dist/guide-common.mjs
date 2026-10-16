@@ -1,7 +1,7 @@
 import {readPersonal,writePersonal} from './profile-store.mjs';
 import {ruText,localizeDisplay} from './ru-data.mjs';
 import {publicLinkURL,PUBLIC_HELP,PUBLIC_WIKI} from './public-links.mjs';
-import {contentResponse} from './content-client.mjs?v=release-20261016';
+import {contentResponse} from './content-client.mjs?v=lazy-20261016';
 import {createJsonPreloader} from './json-preload.mjs?v=release-20261016';
 export const $=id=>document.getElementById(id);
 export const el=(tag,text='',className='')=>{const n=document.createElement(tag);n.textContent=ruText(text);n.className=className;return n;};

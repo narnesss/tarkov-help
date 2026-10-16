@@ -10,7 +10,7 @@ use App\Http\Middleware\VerifyApiProxy;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/api/content/data/{path}', ContentController::class)->where('path', '.*')->middleware(VerifyApiProxy::class);
-Route::get('/api/content/bundle/{name}',[ContentController::class,'bundle'])->where('name','quest-extras|raid-base')->middleware(VerifyApiProxy::class);
+Route::get('/api/content/bundle/{name}',[ContentController::class,'bundle'])->where('name','quest-extras|raid-base|quest-ui')->middleware(VerifyApiProxy::class);
 Route::get('/api/content/quest/{quest}', ContentQuestController::class)->middleware(VerifyApiProxy::class);
 Route::get('/api/auth/options', [PlayerAuthController::class, 'options'])->middleware(VerifyApiProxy::class);
 Route::post('/api/auth/profile', [PlayerAuthController::class, 'profile'])->middleware(VerifyApiProxy::class);

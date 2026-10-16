@@ -53,5 +53,5 @@
   <noscript><p>Для входа и отображения личного прогресса включи JavaScript.</p></noscript>
   <p class="profile-help"><a class="account-link" href="privacy.html">Как используются данные профиля</a></p>
 </main>
-<script type="module" src="bootstrap.mjs?v=legal-2"></script>
+<script type="module" src="bootstrap.mjs?v=lazy-1"></script>
 @endsection

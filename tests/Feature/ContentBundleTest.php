@@ -47,4 +47,12 @@ final class ContentBundleTest extends TestCase
         $this->getJson($url,['X-Wiki-Proxy-Token'=>str_repeat('s',64),'X-Wiki-Client-IP'=>'198.51.100.1'])->assertOk()->assertHeader('X-Wiki-Content-Cache','HIT');
         $this->getJson('/api/content/bundle/users')->assertNotFound();
     }
+    public function test_card_support_excludes_bulk_media_and_has_small_revision_check(): void
+    {
+        $this->fixtures('quest-ui');$url='/api/content/bundle/quest-ui';
+        $data=$this->getJson($url)->assertOk()->assertHeaderMissing('Set-Cookie');$this->assertCount(5,$data->json('files'));
+        $this->assertArrayNotHasKey('guide/quest-media.json',$data->json('files'));
+        $revision=$this->getJson($url.'?revision=1')->assertOk()->assertHeader('Cache-Control','no-store, private');
+        $this->assertSame($data->headers->get('X-Wiki-Content-Revision'),$revision->json('revision'));$this->assertLessThan(100,strlen($revision->getContent()));
+    }
 }

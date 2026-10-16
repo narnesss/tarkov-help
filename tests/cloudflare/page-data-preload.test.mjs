@@ -18,5 +18,5 @@ test('предзагружаются только публичные данны�
   const paths=[];const run=(page,query)=>preloadPageData(page,{params:new URLSearchParams(query),preload:url=>paths.push(url)});
   run('quests','mode=pve');run('reference','mode=regular');run('raid','mode=pve&map=interchange');
   run('account','mode=pve');run('raid','mode=pve&map=../../state');run('quests','mode=unknown');run('quests','');
-  assert.deepEqual(paths,['data/guide/quests-pve.json','data/guide/reference-regular.json','data/raid/pve/interchange.json']);
+  assert.deepEqual(paths,['data/guide/quests-pve.json','data/guide/items-regular.json','data/raid/pve/interchange.json']);
 });

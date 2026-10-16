@@ -1,15 +1,17 @@
 import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs?v=release-20261016';
 import {publicLinkURL,publicAttribution} from './public-links.mjs';
-import {LooseLootFilter} from './loose-loot-ui.mjs?v=release-20261016';
+import {LooseLootFilter} from './loose-loot-ui.mjs?v=lazy-20261016';
 import {LooseLootPreferences,loosePresentation,looseItemRecord,looseItemIds,LOOSE_FALLBACK_ICON} from './loose-loot-model.mjs';
 import {resolveGameMode} from './game-mode.mjs';
 import {readPersonal,writePersonal} from './profile-store.mjs';
 const storePersonal=(key,value)=>{if(!writePersonal(key,value))throw new Error('Локальное сохранение недоступно');};
 import {ruText,localizeDisplay} from './ru-data.mjs';
-import {questExtras,mediaFor} from './quest-extras.mjs?v=release-20261016';
-import {galleryBlock} from './gallery.mjs?v=release-20261016';
-import {json} from './guide-common.mjs?v=release-20261016';
-import {loadContentBundle} from './content-bundles.mjs?v=release-20261016';
+import {questExtras,mediaFor} from './quest-extras.mjs?v=lazy-20261016';
+import {pageDataset} from './page-data.mjs?v=lazy-20261016';
+import {questGalleryPlan} from './quest-view-model.mjs';
+import {galleryBlock} from './gallery.mjs?v=lazy-20261016';
+import {json} from './guide-common.mjs?v=lazy-20261016';
+import {loadContentBundle} from './content-bundles.mjs?v=lazy-20261016';
 import {bindMapTooltip} from './raid-tooltip.mjs';
 import {QuestMapFocusReceiver} from './quest-map-messages.mjs';
 import { CATEGORIES, LOOT_NAMES, titleOf, validPosition, floorOf, poiFloor, filterPois, projectPosition, projectRaster, rasterRegion, iconPath, displayPosition } from './raid-model.mjs';
@@ -30,7 +32,8 @@ const categories = new Set((Array.isArray(prefs.categories) ? prefs.categories :
 const lootTypes = new Set(Array.isArray(prefs.lootTypes) ? prefs.lootTypes : Object.keys(LOOT_NAMES));
 let maps = [], definition, pois = [], visible = [], selected = null, leaflet, markerLayer, outlineLayer, labelsLayer, artwork;
 let currentFloor = 'all', listLimit = 100, requestId = 0, artworkId = 0, markers = new Map(), timer;
-let itemNames = {}, questIndex = {}, btrReference, routeLayer, extras;
+let itemNames = {}, questIndex = {}, btrReference, routeLayer;
+const pointMedia=new Map();
 let iconSize = Math.max(16,Math.min(36,Number(prefs.iconSize) || 24));
 const dataCache = new Map(), svgCache = new Map();
 const params = pageParams();
@@ -223,7 +226,10 @@ async function setLocation(id, {initial = false} = {}) {
     }
     L.control.zoom({position:'topright',zoomInTitle:'Приблизить',zoomOutTitle:'Отдалить'}).addTo(leaflet);
     markerLayer = L.layerGroup().addTo(leaflet); outlineLayer = L.layerGroup().addTo(leaflet); labelsLayer = L.layerGroup().addTo(leaflet); routeLayer=L.layerGroup().addTo(leaflet);
-    leaflet.on('click',closeDetail); fit(); buildFilters(); render(); await loadArtwork();drawRoute();
+    leaflet.on('click',closeDetail); fit();await loadArtwork();
+    // Даём браузеру показать подложку до построения списков и множества маркеров.
+    await new Promise(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));if(token!==requestId)return;
+    buildFilters();render();drawRoute();
     if (token !== requestId) return;
     $('raid-loading').hidden = true;
     if (initial && params.has('poi')) { const p = pois.find(p=>p.id===params.get('poi')); if (p) await showPoi(p,true); }
@@ -257,7 +263,7 @@ function render() {
   const available=pois.filter(p=>(!embedded||!p.hiddenByDefault)&&(!p.hiddenByDefault||$('raid-legacy').checked||checked(p)||p.id===params.get('poi')||(questFilter&&p.questId===questFilter))&&(!questFilter||p.questId===questFilter)&&(!objectiveFilter||p.objectiveId===objectiveFilter));
   visible = filterPois(available,{categories,lootTypes,looseItems:activeLooseSelection,looseCatalog:itemCatalog,query:$('raid-search').value,floor:currentFloor,status:$('raid-status').value,checked:new Set(pois.filter(checked).map(p=>p.id))});
   $('raid-quest-filter').hidden=!questFilter;
-  if(questFilter){$('raid-quest-name').textContent=questIndex[gameMode]?.[questFilter]?.name||extras.story.tasks.find(t=>t.id===questFilter)?.name||'Выбранное задание';$('raid-quest-link').href=siteHref(`quests.html?quest=${encodeURIComponent(questFilter)}&mode=${gameMode}`);}
+  if(questFilter){$('raid-quest-name').textContent=questIndex[gameMode]?.[questFilter]?.name||'Выбранное задание';$('raid-quest-link').href=siteHref(`quests.html?quest=${encodeURIComponent(questFilter)}&mode=${gameMode}`);}
   $('raid-visible').textContent = embedded?`${visible.length} точек задания`:`${visible.length.toLocaleString('ru')} из ${pois.length.toLocaleString('ru')} объектов`;
   $('raid-list-count').textContent = visible.length;
   markerLayer.clearLayers(); markers = new Map();
@@ -286,6 +292,24 @@ function renderList() {
   if (!visible.length) $('raid-list').append(el('p',questFilter?'У выбранной цели нет точных координат на этой локации или точки скрыты фильтрами. Условия задания доступны по ссылке выше.':'Нет подходящих объектов. Измените этаж, запрос или включённые слои.','raid-empty'));
   $('raid-more').hidden = visible.length<=listLimit;
 }
+async function loadPointMedia(p,root,description){
+ const mode=gameMode,request=requestId,key=mode+':'+p.questId;
+ root.replaceChildren(el('p','Загружаем иллюстрации задания…'));
+ try{
+  if(!pointMedia.has(key)){
+   if(pointMedia.size>=20)pointMedia.delete(pointMedia.keys().next().value);
+   const pending=pageDataset('quest-'+key,`data/guide/quests-${mode}.json`,{view:'detail',id:p.questId}).then(async bundle=>{
+    const task=bundle.tasks.find(task=>task.id===p.questId);if(!task)throw Error('Иллюстрации задания недоступны.');
+    return bundle.cms?{task,frames:questGalleryPlan(task).frames}:{task,extras:await questExtras()};
+   }).catch(error=>{pointMedia.delete(key);throw error;});pointMedia.set(key,pending);
+  }
+  const value=await pointMedia.get(key);if(request!==requestId||mode!==gameMode||selected?.id!==p.id||!root.isConnected)return;
+  const exact=value.frames?.filter(frame=>frame.objectiveIds?.includes(p.objectiveId)),pictures=value.extras?mediaFor(value.extras,p.questId,p.objectiveId):{images:exact.length?exact:value.frames,association:exact.length?'objective':'quest'};
+  const translated=value.task.objectives?.find(goal=>goal.id===p.objectiveId)?.description||value.extras?.patches?.objectives?.[p.objectiveId];
+  if(translated&&/[А-ЯЁа-яё]/.test(translated)&&!/[А-ЯЁа-яё]/.test(p.description||''))description.textContent=translated;
+  root.replaceChildren();if(pictures.images.length)root.append(galleryBlock(pictures.images,{compact:true,association:pictures.association,title:pictures.association==='objective'?'Где выполнить эту цель':'Скриншоты задания'}));
+ }catch(error){if(request===requestId&&selected?.id===p.id&&root.isConnected)root.replaceChildren(el('p','Иллюстрации пока недоступны.'),link('Открыть задание',siteHref(`quests.html?quest=${encodeURIComponent(p.questId)}&mode=${mode}`)));}
+}
 async function showPoi(p, center = false) {
   if (selected && markers.has(selected.id)) updateMarker(selected,false);
   if (center && currentFloor !== 'all' && currentFloor !== p.floor) await changeFloor(p.floor);
@@ -297,10 +321,10 @@ async function showPoi(p, center = false) {
   }
   $('raid-detail').hidden=false;$('poi-category').textContent=CATEGORIES[p.category][0];$('poi-title').textContent=pointTitle(p);$('poi-floor').textContent=floorName(p.floor);
   const info=$('poi-info');info.replaceChildren();
-  const description=/[А-ЯЁа-яё]/.test(p.description||'')?p.description:extras?.patches?.objectives?.[p.objectiveId]||p.description;if(description)info.append(el('p',description));
+  const description=el('p',p.description||'');if(p.description)info.append(description);
   if(p.displayPositionMeaning&&definition.documentMap)info.append(el('p',p.displayPositionMeaning));if(p.coordinateNote)info.append(el('p',p.coordinateNote));if(p.coordinateSource)info.append(link('Источник координат ↗',p.coordinateSource));else if(p.positionCorrectionSource?.url)info.append(link('Источник уточнения точки ↗',p.positionCorrectionSource.url));if(p.storySourceUrl)info.append(link('Источник сюжетной точки ↗',p.storySourceUrl));
   if(p.sourceNote)info.append(el('p',publicAttribution(p.sourceNote)));else if(p.hiddenByDefault)info.append(el('p','Неподтверждённая точка или вариант другой записи. Сохранена для ваших прежних отметок.'));
-  if(p.questId){const pictures=mediaFor(extras,p.questId,p.objectiveId);if(pictures.images.length)info.append(galleryBlock(pictures.images,{compact:true,association:pictures.association,title:pictures.association==='objective'?'Где выполнить эту цель':'Скриншоты задания'}));const a=el('a','Открыть задание: условия, цепочка и награды','button');a.href=siteHref(`quests.html?quest=${encodeURIComponent(p.questId)}&mode=${gameMode}`);info.append(a);}
+  if(p.questId){const media=el('div');info.append(media);loadPointMedia(p,media,description);const a=el('a','Открыть задание: условия, цепочка и награды','button');a.href=siteHref(`quests.html?quest=${encodeURIComponent(p.questId)}&mode=${gameMode}`);info.append(a);}
   for(const condition of p.conditions||[])info.append(el('p',condition));
   if(p.trader)info.append(el('p',`Торговец: ${p.trader} · Уровень от ${p.minLevel}`));
   if(p.category==='loot'||p.category==='loose-loot')info.append(el('p','Возможное место лута. Наличие и содержимое меняются между рейдами.'));
@@ -337,7 +361,7 @@ function drawRoute(){
 
 async function start() {
   if(!globalThis.L)throw new Error('Не удалось загрузить модуль карты');
-  const [[sourceMaps,names,calibration,qIndex,btr,looseCatalog],more]=await Promise.all([loadContentBundle('raid-base'),questExtras()]);itemCatalog=looseCatalog.items;questIndex=qIndex;btrReference=btr;extras=more;
+  const [sourceMaps,names,calibration,qIndex,btr,looseCatalog]=await loadContentBundle('raid-base');itemCatalog=looseCatalog.items;questIndex=qIndex;btrReference=btr;
   maps=localizeDisplay(sourceMaps).map(m=>({...m,documentMap:calibration[m.id]}));itemNames=names;
   looseFilter=new LooseLootFilter($('raid-loose-details'),{catalog:itemCatalog,preferences:loosePrefs,image:itemImage,onChange:render,onPersist:savePrefs});
   const mall=maps.find(m=>m.id==='interchange');if(mall){mall.baseFloor={...mall.baseFloor,name:'Территория / паркинг'};mall.floors=mall.floors.map(f=>({...f,name:f.id==='First_Floor'?'1 этаж торгового центра':'2 этаж торгового центра'}));}

@@ -1,0 +1,71 @@
+<?php
+declare(strict_types=1);
+namespace Tests\Feature;
+
+use App\Models\{ContentDataset,Quest};
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+/** Проверяет отложенные карточки, совместимость старого API и целостность прогресса. */
+final class ContentViewsTest extends TestCase
+{
+    use RefreshDatabase;
+    private function dataset(string $path,array $content): void
+    { $row=new ContentDataset(['path'=>$path]);$row->setContent($content);ContentDataset::withoutEvents(fn()=>$row->save()); }
+    private function fixtures(): Quest
+    {
+        $this->dataset('guide/quests-pve.json',['meta'=>['mode'=>'pve'],'items'=>[['id'=>'used','name'=>'Нужный'],['id'=>'unrelated','name'=>'Другой']],
+            'questItems'=>[['id'=>'stable-item','name'=>'Квестовый']],'maps'=>[['id'=>'map','normalizedName'=>'woods']],
+            'traders'=>[['id'=>'prapor','name'=>'Прапор','tasks'=>array_fill(0,200,'лишнее')]]]);
+        return Quest::create(['quest_id'=>'stable','mode'=>'pve','name'=>'Задание','published'=>true,'trader_id'=>'prapor','payload'=>[
+            'id'=>'stable','name'=>'Задание','trader'=>['id'=>'prapor','name'=>'Прапор','tasks'=>array_fill(0,200,'лишнее')],
+            'objectives'=>[['id'=>'goal','description'=>'Найти предмет','type'=>'giveItem','item'=>['id'=>'used','name'=>'Нужный'], 'media'=>[['url'=>'https://example.test/image.jpg']]],['id'=>'archived','cmsArchived'=>true]],
+            'storyBranches'=>[['id'=>'branch','objectiveIds'=>['goal']]],'taskRequirements'=>[['task'=>['id'=>'previous'],'status'=>['complete']]],
+            'finishRewards'=>['items'=>[['item'=>['id'=>'used'],'count'=>4]]],'questContent'=>['briefing'=>['paragraphs'=>[str_repeat('Текст ',5000)]]],
+        ]]);
+    }
+    public function test_catalog_keeps_ids_conditions_search_and_rewards_but_defers_heavy_card(): void
+    {
+        $this->fixtures();$url='/api/content/data/guide/quests-pve.json';
+        $full=$this->getJson($url)->assertOk();$small=$this->getJson($url.'?view=catalog')->assertOk()->assertHeader('Cache-Control','no-store, private')->assertHeaderMissing('Set-Cookie');
+        $small->assertJsonPath('catalog',true)->assertJsonPath('tasks.0.id','stable')->assertJsonPath('tasks.0.objectives.0.id','goal')
+            ->assertJsonPath('tasks.0.objectives.0.description','Найти предмет')->assertJsonCount(1,'tasks.0.objectives')->assertJsonPath('tasks.0._detailPending',true)
+            ->assertJsonPath('tasks.0.taskRequirements.0.task.id','previous')->assertJsonPath('tasks.0.finishRewards.items.0.count',4)->assertJsonPath('tasks.0.storyBranches.0.objectiveIds.0','goal');
+        $this->assertArrayNotHasKey('questContent',$small->json('tasks.0'));$this->assertArrayNotHasKey('tasks',$small->json('tasks.0.trader'));
+        $this->assertLessThan(strlen($full->getContent())/5,strlen($small->getContent()));
+        $this->getJson($url.'?view=catalog')->assertOk()->assertHeader('X-Wiki-Content-Cache','HIT');
+        $detail=$this->getJson($url.'?view=detail&id=stable')->assertOk()->assertJsonCount(1,'tasks')->assertJsonCount(1,'items')->assertJsonPath('items.0.id','used')->assertJsonPath('tasks.0.objectives.0.media.0.url','https://example.test/image.jpg');
+        $this->assertSame($full->json('tasks.0'),$detail->json('tasks.0'));$this->assertDatabaseCount('users',0);$this->assertDatabaseCount('user_state',0);
+    }
+    public function test_edits_modes_unpublishing_and_wrong_query_cannot_return_stale_details(): void
+    {
+        $quest=$this->fixtures();$url='/api/content/data/guide/quests-pve.json';
+        $this->getJson($url.'?view=detail&id=stable')->assertOk();$quest->published=false;$quest->save();
+        $this->getJson($url.'?view=detail&id=stable')->assertNotFound();$this->getJson($url.'?view=catalog')->assertJsonCount(0,'tasks');
+        foreach(['view[]=catalog','view=unsupported','view=detail','view=detail&id[]=stable','view=catalog&id=stable','view=detail&id=%27%20OR%201%3D1'] as $query){$this->getJson($url.'?'.$query)->assertUnprocessable();}
+        $this->getJson($url.'?view=detail&id=other')->assertNotFound();
+        $quest->published=true;$payload=$quest->payload;$payload['name']='Исправлено';$quest->payload=$payload;$quest->save();
+        $this->getJson($url.'?view=detail&id=stable')->assertJsonPath('tasks.0.name','Исправлено');
+    }
+    public function test_small_revision_check_changes_after_edit_and_keeps_views_separate(): void
+    {
+        $quest=$this->fixtures();$url='/api/content/data/guide/quests-pve.json?view=catalog';
+        $revision=$this->getJson($url.'&revision=1')->assertOk()->assertHeader('Cache-Control','no-store, private')->assertHeaderMissing('Set-Cookie');
+        $this->assertLessThan(100,strlen($revision->getContent()));$this->assertSame($revision->json('revision'),$this->getJson($url)->headers->get('X-Wiki-Content-Revision'));
+        $this->assertNotSame($revision->json('revision'),$this->getJson('/api/content/data/guide/quests-pve.json?revision=1')->json('revision'));
+        $payload=$quest->payload;$payload['name']='Новая редакция';$quest->payload=$payload;$quest->save();
+        $this->assertNotSame($revision->json('revision'),$this->getJson($url.'&revision=1')->json('revision'));
+        $this->getJson('/api/content/data/guide/quests-pve.json?view=lookup')->assertOk()->assertJsonPath('lookup',true)->assertJsonCount(0,'tasks')->assertJsonPath('questItems.0.id','stable-item');
+        $this->getJson($url.'&revision[]=1')->assertUnprocessable();$this->assertDatabaseCount('user_state',0);
+    }
+    public function test_item_cards_and_reference_views_preserve_source_and_hide_unrelated_metadata(): void
+    {
+        $this->dataset('guide/items-pve.json',['meta'=>[],'items'=>[['id'=>'item','name'=>'Предмет','description'=>'Поисковый текст','image512pxLink'=>'https://example.test/image.jpg','sellFor'=>[['priceRUB'=>123]],'properties'=>['propertiesType'=>'ItemPropertiesAmmo','damage'=>70]],['id'=>'archived','cmsArchived'=>true]]]);
+        $this->getJson('/api/content/data/guide/items-pve.json?view=catalog')->assertOk()->assertJsonPath('catalog',true)->assertJsonCount(1,'items')->assertJsonPath('items.0.marketTraderPrice',123)->assertJsonPath('items.0.properties.damage',70)->assertJsonMissingPath('items.0.image512pxLink');
+        $this->getJson('/api/content/data/guide/items-pve.json?view=detail&id=item')->assertOk()->assertJsonPath('items.0.image512pxLink','https://example.test/image.jpg');
+        $this->getJson('/api/content/data/guide/items-pve.json?view=detail&id=archived')->assertNotFound();
+        $this->dataset('guide/reference-pve.json',['maps'=>[['id'=>'woods','name'=>'Лес','bosses'=>[['mob'=>'boss']], 'pois'=>array_fill(0,100,'точка')]],'mapMetadata'=>['large'=>'метаданные'],'crafts'=>[['id'=>'craft']]]);
+        $this->getJson('/api/content/data/guide/reference-pve.json?view=catalog')->assertOk()->assertJsonPath('maps.0.bosses.0.mob','boss')->assertJsonPath('crafts.0.id','craft')->assertJsonMissingPath('mapMetadata')->assertJsonMissingPath('maps.0.pois');
+        $this->getJson('/api/content/data/guide/reference-pve.json')->assertJsonPath('mapMetadata.large','метаданные');
+    }
+}

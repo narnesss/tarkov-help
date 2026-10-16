@@ -1,23 +1,24 @@
 import {siteHref,pageParams,canonicalURL} from './site-routes.mjs?v=release-20261016';
 import {questChoiceIndex,questChoicePlan} from './quest-choice-model.mjs';
-import {QuestMapView} from './quest-map-view.mjs?v=release-20261016';
+import {QuestMapView} from './quest-map-view.mjs?v=lazy-20261016';
 import {questHref,catalogHref,catalogRoute,sectionTasks,catalogGroups,questPreview} from './quest-catalog-model.mjs?v=release-20261016';
-import {QuestObjectiveWorkspace} from './quest-objective-workspace.mjs?v=release-20261016';
-import {QuestSaveFeedback} from './quest-save-feedback.mjs?v=release-20261016';
+import {QuestObjectiveWorkspace} from './quest-objective-workspace.mjs?v=lazy-20261016';
+import {QuestSaveFeedback} from './quest-save-feedback.mjs?v=lazy-20261016';
 import {setObjective} from './quest-workspace-model.mjs';
 import {rewardLabels,resolveAchievement,rewardAchievementNames,groupRewardLines,rewardTradeUnlocks} from './quest-reward-model.mjs';
 import {hasQuestRoadmap,questGalleryPlan} from './quest-view-model.mjs';
 import {resolveGameMode} from './game-mode.mjs';
 import {ruText} from './ru-data.mjs';
-import {questExtras,enrichQuests} from './quest-extras.mjs?v=release-20261016';
-import {questBriefing} from './quest-briefing.mjs?v=release-20261016';
-import {galleryBlock} from './gallery.mjs?v=release-20261016';
+import {questExtras,questUiExtras,enrichQuests} from './quest-extras.mjs?v=lazy-20261016';
+import {pageDataset} from './page-data.mjs?v=lazy-20261016';
+import {questBriefing} from './quest-briefing.mjs?v=lazy-20261016';
+import {galleryBlock} from './gallery.mjs?v=lazy-20261016';
 import {objectiveConditions,objectiveGuide,questOverview} from './quest-details.mjs';
 import {orderedObjectives} from './roadmap-model.mjs';
-import {TicketQuestMap} from './ticket-quest-map.mjs?v=release-20261016';
-import {GunsmithView} from './gunsmith-ui.mjs?v=release-20261016';
+import {TicketQuestMap} from './ticket-quest-map.mjs?v=lazy-20261016';
+import {GunsmithView} from './gunsmith-ui.mjs?v=lazy-20261016';
 import {itemReferences,resolveQuestItem} from './quest-items.mjs';
-import {$,el,num,image,external,json,readStorage,writeStorage,toast,download,apiDataset,cached,section,action,empty} from './guide-common.mjs?v=release-20261016';
+import {$,el,num,image,external,json,readStorage,writeStorage,toast,download,apiDataset,cached,section,action,empty} from './guide-common.mjs?v=lazy-20261016';
 import {QUEST_STATES,idOf,list,mapAlias,taskMaps,sanitizeQuestProgress,questState,availability,requirementStatus,followingTasks,filterQuests,chainColumns} from './quest-model.mjs';
 
 const params=pageParams();
@@ -122,7 +123,7 @@ function renderList(){
 function renderRoute(){
  const layout=$('quest-layout');layout.classList.toggle('detail-open',route.kind==='quest');
  if(route.kind==='quest'){
-  layout.dataset.view='quest';selected=byId.get(route.id);if(selected){renderDetail();}
+  layout.dataset.view='quest';selected=byId.get(route.id);if(selected){if(data.cms&&(selected._detailPending||!extras.uiReady)){loadDetail(selected.id);}else{renderDetail();}}
   else{questMap?.destroy();questMap=null;$('quest-detail').replaceChildren(empty('Задание не найдено в этом режиме.'),routeLink('← К каталогу квестов',catalogHref('hub',mode),'button'));document.title='Квест не найден — Escape from Tarkov Wiki';}
  }else{objectiveWorkspace=null;questMap?.destroy();questMap=null;roadmap?.destroy();roadmap=null;feedback.root=null;$('quest-detail').replaceChildren();selected=null;filterTrader=route.section;renderList();}
 }
@@ -336,9 +337,19 @@ function setData(bundle){
   $('quest-data-date').textContent=`Данные: ${new Date(bundle.meta.fetchedAt).toLocaleString('ru-RU')}. ${sectionTasks(tasks,'all').length} квестов · ${mode==='pve'?'PVE':'PVP'}.`;if(bundle.wikiCoverage){$('quest-data-date').textContent+=` Wiki: ${bundle.wikiCoverage.exactMatches} из ${bundle.wikiCoverage.attempted} страниц.`;}
   restoreView();renderTraders();renderRoute();
 }
-async function loadMode(){questMap?.destroy();questMap=null;const token=++request;for(const n of [...$('quest-layout').querySelectorAll('input,select,button'),...$('quest-filters-dialog').querySelectorAll('input,select,button')])n.disabled=true;$('quest-detail').replaceChildren(empty('Загружаем задания…'));selected=null;filterTrader='all';const [bundle,more]=await Promise.all([json('data/guide/quests-'+mode+'.json').catch(async error=>{const offline=await cached('quests-'+mode);if(offline)return offline;throw error;}),questExtras()]);extras=more;if(token!==request)return;setData(bundle);for(const n of [...$('quest-layout').querySelectorAll('input,select,button'),...$('quest-filters-dialog').querySelectorAll('input,select,button')])n.disabled=false;}
+async function loadDetail(id){
+ const current=request,target=mode;const root=$('quest-detail');root.replaceChildren(empty('Загружаем подробности задания…'));
+ try{
+  const [detail,more]=await Promise.all([pageDataset('quests-'+target,'data/guide/quests-'+target+'.json',{view:'detail',id}),questUiExtras()]);
+  if(current!==request||target!==mode||route.kind!=='quest'||route.id!==id)return;
+  const task=detail.tasks.find(task=>task.id===id);if(!task)throw new Error('Задание недоступно в этом режиме.');
+  const catalogTasks=tasks.map(row=>row.id===id?task:row),items=[...new Map([...(data.items||[]),...(detail.items||[])].map(item=>[item.id,item])).values()];
+  data={...data,...detail,tasks:catalogTasks,items};tasks=catalogTasks;byId.set(id,task);extras=more;choices=questChoiceIndex(tasks,extras.choices,mode);renderRoute();
+ }catch(error){if(current!==request||route.kind!=='quest'||route.id!==id)return;root.replaceChildren(empty(error.message||'Не удалось загрузить подробности.'),action('Повторить',()=>loadDetail(id)),routeLink('← К списку заданий',backHref(),'button'));}
+}
+async function loadMode(){questMap?.destroy();questMap=null;const token=++request;for(const n of [...$('quest-layout').querySelectorAll('input,select,button'),...$('quest-filters-dialog').querySelectorAll('input,select,button')])n.disabled=true;$('quest-detail').replaceChildren(empty('Загружаем задания…'));selected=null;filterTrader='all';const bundle=await pageDataset('quests-'+mode,'data/guide/quests-'+mode+'.json');const more=bundle.cms?{choices:{}}:await questExtras();if(token!==request)return;extras=more;setData(bundle);for(const n of [...$('quest-layout').querySelectorAll('input,select,button'),...$('quest-filters-dialog').querySelectorAll('input,select,button')])n.disabled=false;}
 async function refresh(){const target=mode,token=request,baseline=data;const b=$('quest-refresh');b.disabled=true;b.textContent='Обновление…';const abort=new AbortController();const timeout=setTimeout(()=>abort.abort(),25000);
-  if(data?.cms){try{const bundle=await json('data/guide/quests-'+target+'.json',abort.signal);if(!bundle.cms)throw new Error('CMS unavailable');if(token===request)setData(bundle);toast('Квесты обновлены');}catch{toast('Не удалось обновить квесты. Повторите позже.');}finally{clearTimeout(timeout);b.disabled=false;b.textContent='Обновить квесты ↻';}return;}
+  if(data?.cms){try{const bundle=await pageDataset('quests-'+target,'data/guide/quests-'+target+'.json',{view:'catalog'},abort.signal);if(!bundle.cms)throw new Error('CMS unavailable');if(token===request)setData(bundle);toast('Квесты обновлены');}catch{toast('Не удалось обновить квесты. Повторите позже.');}finally{clearTimeout(timeout);b.disabled=false;b.textContent='Обновить квесты ↻';}return;}
   try{const [fresh,rawTraders]=await Promise.all([apiDataset('tasks',target,abort.signal),apiDataset('traders',target,abort.signal)]);const bundle={...baseline,tasks:list(fresh.tasks),questItems:fresh.questItems,achievements:fresh.achievements,traders:list(rawTraders.traders||rawTraders),meta:{...baseline.meta,fetchedAt:new Date().toISOString(),source:'https://json.tarkov.dev/'+target+'/tasks'}};if(!bundle.tasks.length)throw new Error('Empty');await cached('quests-'+target,bundle);if(token===request)setData(bundle);toast('Квесты обновлены из API');}catch{toast('API сейчас недоступен. Сохранённые задания и прогресс продолжают работать.');}finally{clearTimeout(timeout);b.disabled=false;b.textContent='Обновить квесты ↻';}}
 function wire(){
   $('quest-mode').onchange=()=>{feedback.clearUndo();mode=$('quest-mode').value;writeStorage('kord-atlas-game-mode',mode);const url=new URL(location.href);url.searchParams.set('mode',mode);history.replaceState(null,'',canonicalURL(url));updateParams();return loadMode().catch(fail);};

@@ -64,5 +64,5 @@
   <section class="home-documents"><div><span class="home-kicker">KORD BREACH</span><h2>Секретные документы</h2><p>376 мест возможного появления на 12 локациях. Фотографии, отметки найденного и личные заметки.</p></div><a class="button quiet" href="documents.html">Открыть атлас <svg aria-hidden="true"><use href="#home-doc"/></svg></a></section>
   <footer class="home-footer"><div><img src="assets/site-logo.svg" alt="" width="30" height="30"><span>ESCAPE FROM TARKOV WIKI<small>Неофициальный справочник. Игровые материалы — Battlestate Games.</small></span></div><nav aria-label="Справочные материалы"><a href="https://tarkov.help/ru" target="_blank" rel="noopener noreferrer">Tarkov.help ↗</a><a href="https://escapefromtarkov.fandom.com/ru/wiki/Escape_from_Tarkov_Wiki" target="_blank" rel="noopener noreferrer">Русская Wiki ↗</a></nav></footer>
 </main>
-  <script type="module" src="bootstrap.mjs?v=legal-2"></script>
+  <script type="module" src="bootstrap.mjs?v=lazy-1"></script>
 @endsection

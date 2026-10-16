@@ -1,4 +1,4 @@
-import {el} from './guide-common.mjs?v=release-20261016';
+import {el} from './guide-common.mjs?v=lazy-20261016';
 import {questMapPlan,questMapURL,questMapFocusIndexes} from './quest-map-model.mjs?v=release-20261016';
 import {QUEST_MAP_READY,QUEST_MAP_FOCUS,questMapContextMatches} from './quest-map-messages.mjs';
 let viewSequence=0;

@@ -1,4 +1,4 @@
-import {el, action} from './guide-common.mjs?v=release-20261016';
+import {el, action} from './guide-common.mjs?v=lazy-20261016';
 import {objectiveGroups, objectiveWindow} from './quest-workspace-model.mjs';
 
 /** All goals stay in source order; the contents only scroll to a goal. */

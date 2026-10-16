@@ -1,5 +1,5 @@
 import {pageParams,initializeSiteRoutes} from './site-routes.mjs?v=release-20261016';
-import {json} from './guide-common.mjs?v=release-20261016';import {sourcePoint} from './quest-map-model.mjs?v=release-20261016';
+import {json} from './guide-common.mjs?v=lazy-20261016';import {sourcePoint} from './quest-map-model.mjs?v=release-20261016';
 import {QuestMapFocusReceiver} from './quest-map-messages.mjs';
 const $=id=>document.getElementById(id),textNode=text=>{const n=document.createElement('span');n.textContent=text;return n;};
 function showError(message){const root=$('qmap-loading');root.hidden=false;root.replaceChildren(textNode(message));const retry=document.createElement('button');retry.textContent='Повторить';retry.type='button';retry.onclick=()=>location.reload();root.append(retry);}

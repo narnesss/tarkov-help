@@ -1,10 +1,12 @@
 import {applyCatalogUpdate} from './quest-catalog-update.mjs';
 import {applyQuestPatch} from './quest-patch-update.mjs';
-import {loadContentBundle} from './content-bundles.mjs?v=release-20261016';
+import {loadContentBundle} from './content-bundles.mjs?v=lazy-20261016';
 import {localizeDisplay} from './ru-data.mjs';
 import {assemblyFrames} from './gunsmith-model.mjs';
 import {applyQuestContent} from './quest-content-model.mjs';
 let loaded;
+let uiLoaded;
+export function questUiExtras(){return uiLoaded||=loadContentBundle('quest-ui').then(([choices,questMaps,rewardSupport,ticketMap,conditions])=>({choices,questMaps,rewardSupport,ticketMap,conditions,uiReady:true})).catch(error=>{uiLoaded=null;throw error;});}
 export function storyGallery(task){const byUrl=new Map();for(const o of task.objectives||[])for(const frame of o.media||[]){if(!frame.url)continue;const old=byUrl.get(frame.url);if(old){if(!old.objectiveIds.includes(o.id))old.objectiveIds.push(o.id);}else byUrl.set(frame.url,{...frame,id:frame.url,url:frame.url,fullUrl:frame.url,sourceUrl:frame.source,objectiveIds:[o.id],association:'objective'});}return [...byUrl.values()];}
 export function localizeQuestMedia(frame,localization){const patch=localization?.images?.[frame.originalUrl||frame.fullUrl||frame.url];return patch?{...frame,...patch,url:patch.url||frame.url,originalUrl:frame.originalUrl||frame.fullUrl||frame.url,fullUrl:patch.url||frame.fullUrl||frame.url}:frame;}
 export function questExtras(){return loaded||=loadContentBundle('quest-extras').then(([media,story,conditions,patches,localization,wiki,gunsmith,catalog,questMaps,choices,rewardSupport,questPatch,ticketMap,content])=>{for(const task of Object.values(media.quests||{}))if(task.gallery)task.gallery=task.gallery.map(frame=>localizeQuestMedia(frame,localization));for(const task of story.tasks||[]){for(const objective of task.objectives||[])if(objective.media)objective.media=objective.media.map(frame=>localizeQuestMedia(frame,localization));task.gallery=storyGallery(task);}return {media,story,conditions,patches,wiki,gunsmith,catalog,questMaps,choices,rewardSupport,questPatch,ticketMap,content};}).catch(error=>{loaded=null;throw error;});}

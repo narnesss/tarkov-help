@@ -1,4 +1,4 @@
-import {json,readStorage,writeStorage,el} from './guide-common.mjs?v=release-20261016';
+import {json,readStorage,writeStorage,el} from './guide-common.mjs?v=lazy-20261016';
 import {resolveGameMode} from './game-mode.mjs';
 import {normalize} from './model.mjs';
 import {siteHref,canonicalURL} from './site-routes.mjs?v=release-20261016';

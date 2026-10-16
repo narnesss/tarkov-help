@@ -14,6 +14,7 @@
     <file>tests/Feature/ApiProxyTest.php</file>
     <file>tests/Feature/ContentManagementTest.php</file>
     <file>tests/Feature/ContentCacheTest.php</file>
+    <file>tests/Feature/ContentViewsTest.php</file>
     <file>tests/Feature/ContentBundleTest.php</file>
     <file>tests/Feature/ContentReferencesTest.php</file>
   </testsuite></testsuites>

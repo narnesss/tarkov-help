@@ -1,5 +1,5 @@
 import {profileStore} from './profile-store.mjs';
-import {el, action} from './guide-common.mjs?v=release-20261016';
+import {el, action} from './guide-common.mjs?v=lazy-20261016';
 /** Reflect the adapter's real local/server result; retry sends the latest value. */
 export class QuestSaveFeedback {
   constructor(key) {

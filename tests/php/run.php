@@ -157,7 +157,7 @@ test('Login/logout rotate tokens, reject stale session and never copy guest prog
 });
 test('Five PHP pages and clean URL aliases share brand and fully wired entrypoints',function(){
  [$app]=appFixture();$logos=[];
- foreach(['index','raid','quests','quest','reference','boss','account']as $page){foreach(['/'.$page,'/'.$page.'.html']as $path){$r=req($app,'GET',$path);eq($r->status,200);ok(str_contains($r->body,'meta name="wiki-runtime" content="php"'));ok(str_contains($r->body,'id="profile-button"'));ok(str_contains($r->body,'src="bootstrap.mjs?v='.'legal-2'.'"'));ok(!str_contains($r->body,'Карты рейда'));preg_match('/<a class="brand".*?<\/a>/s',$r->body,$m);$logos[]=$m[0];}}
+ foreach(['index','raid','quests','quest','reference','boss','account']as $page){foreach(['/'.$page,'/'.$page.'.html']as $path){$r=req($app,'GET',$path);eq($r->status,200);ok(str_contains($r->body,'meta name="wiki-runtime" content="php"'));ok(str_contains($r->body,'id="profile-button"'));ok(str_contains($r->body,'src="bootstrap.mjs?v='.'lazy-1'.'"'));ok(!str_contains($r->body,'Карты рейда'));preg_match('/<a class="brand".*?<\/a>/s',$r->body,$m);$logos[]=$m[0];}}
  eq(count(array_unique($logos)),1);eq(req($app,'HEAD','/')->body,'');eq(req($app,'GET','/missing')->status,404);eq(req($app,'GET','/../../bootstrap.php')->status,404);
 });
 test('Static exports and PHP templates stay equivalent except runtime flag',function(){
