@@ -91,7 +91,7 @@ function renderCard(r){const card=el('article','','reference-card');card.append(
     const built=readStorage('kord-hideout-'+mode)||{};
     for(const level of r.levels||[]){
       const d=el('details','','hideout-level'),summary=el('summary');
-      summary.append(el('span',`Уровень ${level.level}`,'hideout-level-title'),el('span',duration(level.constructionTime),'hideout-level-time'));d.append(summary);
+      summary.append(el('span',`Уровень ${level.level}`,'hideout-level-title'),' ',el('span',duration(level.constructionTime),'hideout-level-time'));d.append(summary);
       if(level.description)d.append(el('p',level.description));
       for(const v of level.itemRequirements||[]){d.append(itemLink(v.item,v.count));if(v.attributes?.foundInRaid)d.append(el('small','Нужно найти в рейде'));}
       for(const req of level.stationLevelRequirements||[])d.append(el('p',`${stations.get(idOf(req.station))?.name||'Постройка'}: уровень ${req.level}`));
