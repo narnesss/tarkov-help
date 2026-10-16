@@ -5,7 +5,7 @@ import zlib from 'node:zlib';
 import {scopedRaidPoints} from '../../public/raid-scope.mjs';
 import {questMapForLocation,questMapFocusIndexes,questMapPlan} from '../../public/quest-map-model.mjs';
 import {applyQuestContent} from '../../public/quest-content-model.mjs';
-const data=name=>JSON.parse(zlib.gunzipSync(fs.readFileSync(new URL('../../public/data/'+name+'.json.gz',import.meta.url))));
+const data=name=>{const plain=new URL('../../public/data/'+name+'.json',import.meta.url),gzip=new URL(plain.href+'.gz');return JSON.parse(fs.existsSync(gzip)?zlib.gunzipSync(fs.readFileSync(gzip)):fs.readFileSync(plain));};
 
 test('карта отклоняет чужой набор, режим и архивные точки; переход на другую карту допустим',()=>{
  assert.throws(()=>scopedRaidPoints({mapId:'woods',pois:[]},'ground-zero','pve'),/другой карте/);
@@ -14,22 +14,22 @@ test('карта отклоняет чужой набор, режим и арх�
  assert.deepEqual(scopedRaidPoints({mapId:'ground-zero',pois:points},'ground-zero','pve').map(p=>p.id),['valid','transit']);
 });
 
-test('все 24 набора карт принадлежат своей локации и режиму; ошибочные лесные выходы Эпицентра архивированы',()=>{
- const names=fs.readdirSync(new URL('../../public/data/raid/',import.meta.url)).filter(name=>name.endsWith('.json.gz'));
+test('все 26 наборов карт принадлежат своей локации и режиму; ошибочные лесные выходы Эпицентра архивированы',()=>{
+ const names=JSON.parse(fs.readFileSync(new URL('../../public/data/raid/maps.json',import.meta.url))).map(map=>map.id+'.json.gz');
  let checked=0;for(const mode of ['regular','pve'])for(const name of names){const path='raid/'+(mode==='pve'?'pve/':'')+name.replace('.json.gz','');
-  if(!fs.existsSync(new URL('../../public/data/'+path+'.json.gz',import.meta.url)))continue;
+  if(!fs.existsSync(new URL('../../public/data/'+path+'.json.gz',import.meta.url))&&!fs.existsSync(new URL('../../public/data/'+path+'.json',import.meta.url)))continue;
   const payload=data(path);if(!payload.pois)continue;const map=name.replace('.json.gz','');assert.equal(payload.mapId,map);
   const scoped=scopedRaidPoints(payload,map,mode),kept=new Set(scoped.map(p=>p.id));
   for(const p of payload.pois.filter(p=>!p.cmsArchived&&!kept.has(p.id)))assert.ok(p.hiddenByDefault&&['supplemental','unverified-coordinates'].includes(p.sourceStatus),path+': '+p.id);checked++;
   if(map==='ground-zero')for(const source of ['UN Roadblock','East Gate'])assert.ok(payload.pois.filter(p=>p.sourceName===source).every(p=>p.cmsArchived));
  }
- assert.equal(checked,24);
+ assert.equal(checked,26);
 });
 
 test('все видимые контейнеры, предметы и двери лежат в пределах авторской карты с допуском 10 м',()=>{
  const maps=JSON.parse(fs.readFileSync(new URL('../../public/data/raid/maps.json',import.meta.url)));
  for(const mode of ['regular','pve'])for(const map of maps){
-  const path='raid/'+(mode==='pve'?'pve/':'')+map.id;if(!fs.existsSync(new URL('../../public/data/'+path+'.json.gz',import.meta.url)))continue;
+  const path='raid/'+(mode==='pve'?'pve/':'')+map.id;if(!fs.existsSync(new URL('../../public/data/'+path+'.json.gz',import.meta.url))&&!fs.existsSync(new URL('../../public/data/'+path+'.json',import.meta.url)))continue;
   const payload=data(path),[[x1,z1],[x2,z2]]=map.bounds;
   for(const point of scopedRaidPoints(payload,map.id,mode).filter(p=>!p.hiddenByDefault&&['loot','loose-loot','locked-door'].includes(p.kind))){
    const {x,z}=point.position,dx=Math.max(Math.min(x1,x2)-x,x-Math.max(x1,x2),0),dz=Math.max(Math.min(z1,z2)-z,z-Math.max(z1,z2),0);
