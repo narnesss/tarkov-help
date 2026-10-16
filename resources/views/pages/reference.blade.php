@@ -8,7 +8,7 @@
   <div class="reference-filters">
     <label class="reference-search-label">Поиск<input type="search" id="reference-search" placeholder="Найти предмет, босса или рецепт…" aria-label="Поиск в справочнике"></label>
     <label class="reference-mode">Режим<select id="reference-mode"><option value="pve" selected>PVE</option><option value="regular">PVP</option></select></label>
-    <label id="reference-filter-label">Категория<select id="reference-filter" aria-label="Категория"></select></label>
+    <label id="reference-filter-label"><span id="reference-filter-title">Категория</span><select id="reference-filter" aria-label="Категория"></select></label>
     <label id="reference-sort-label">Сортировка<select id="reference-sort" aria-label="Сортировка"></select></label>
   </div>
 </header>
@@ -18,5 +18,5 @@
   <p id="reference-data-date" class="reference-help" role="status"></p><div id="reference-content"></div><div class="reference-pager"><button class="button" id="reference-prev">← Назад</button><span id="reference-page"></span><button class="button" id="reference-next">Далее →</button></div>
 </section></main>
 <dialog class="dialog item-dialog" id="item-dialog"><div class="dialog-heading"><h2 id="item-title"></h2><button class="icon-button" id="item-close" aria-label="Закрыть предмет">×</button></div><div id="item-body" class="item-dialog-body"></div></dialog><div class="toast" id="guide-toast" role="status" hidden></div>
-  <script type="module" src="bootstrap.mjs?v=mobile-reference-20261016"></script>
+  <script type="module" src="bootstrap.mjs?v=mobile-hideout-20261017"></script>
 @endsection

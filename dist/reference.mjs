@@ -32,9 +32,11 @@ function configure(){
   if(tab==='ammo')filters=[['all','Все калибры'],...[...new Set([...items.values()].filter(i=>i.properties?.propertiesType==='ItemPropertiesAmmo').map(i=>i.properties.caliber))].filter(Boolean).sort().map(c=>[c,c.replace(/^Caliber/,'')])];
   if(tab==='barters')filters=[['all','Все торговцы'],...list(data.traders).map(t=>[t.id,t.name])];
   if(tab==='crafts')filters=[['all','Все станции'],...list(data.hideout).map(s=>[s.id,s.name])];
+  if(tab==='hideout')filters=[['all','Все модули'],...list(data.hideout).map(s=>[s.id,s.name]).sort((a,b)=>a[1].localeCompare(b[1],'ru'))];
   if(tab==='bosses'||tab==='btr')filters=[['all','Все локации'],...list(quests.maps).filter(m=>!['night-factory','ground-zero-21','ground-zero-tutorial','the-lab-dark'].includes(m.normalizedName)).map(m=>[m.normalizedName,m.name])];
   if(tab==='needed')filters=[['all','Все нужные предметы'],['fir','Найдено в рейде']];
   if(tab==='ammo')sorts.push(['penetration','По пробитию ↓'],['damage','По урону ↓']);
+  const filterTitle=['hideout','crafts'].includes(tab)?'Модуль':'Категория';$('reference-filter-title').textContent=filterTitle;$('reference-filter').setAttribute('aria-label',filterTitle);
   setOptions('reference-filter',filters);setOptions('reference-sort',sorts);$('reference-filter').hidden=filters.length===1;$('reference-sort').hidden=sorts.length===1;$('reference-filter-label').hidden=filters.length===1;$('reference-sort-label').hidden=sorts.length===1;
 }
 function sourceRows(){
@@ -49,6 +51,7 @@ function filtered(){const words=normalize($('reference-search').value).split(/\s
     if(filter!=='all'){
       if(tab==='items'&&!r.types?.includes(filter))return false;if(tab==='ammo'&&r.properties.caliber!==filter)return false;
       if(tab==='barters'&&idOf(r.trader)!==filter)return false;if(tab==='crafts'&&idOf(r.station)!==filter)return false;
+      if(tab==='hideout'&&r.id!==filter)return false;
       if(tab==='bosses'&&!bossSpawns(r,data).some(s=>s.map.normalizedName===filter)&&!r.canonicalMapSlugs?.includes(filter))return false;if(tab==='btr'&&r.map.mapId!==filter)return false;
       if(tab==='needed'&&filter==='fir'&&!r.foundInRaid)return false;
     }
@@ -80,11 +83,24 @@ function renderTable(root,rows){
   table.append(body);wrap.append(table);root.append(wrap);
 }
 function renderCard(r){const card=el('article','','reference-card');card.append(el('h3',r.name));
+  if(['hideout','crafts'].includes(tab))card.classList.add('reference-workshop-card');
   if(['barters','crafts'].includes(tab)){
     const offered=r.productItem||r.offeredItem;card.append(itemLink(offered.item,offered.count));card.append(el('p',tab==='barters'?`${nameTrader(r.trader)} · лояльность ${r.minTraderLevel}`:`${stations.get(idOf(r.station))?.name||'Убежище'} · уровень ${r.level} · ${duration(r.duration)}`));card.append(el('h4','Требуется'));for(const required of r.requiredItems||[]){card.append(itemLink(required.item,required.count));if(required.attributes?.tool)card.append(el('small','Инструмент: не расходуется'));}
     if(r.taskUnlock){const t=quests.tasks.find(t=>t.id===idOf(r.taskUnlock));if(t){const a=el('a','Открывает: '+t.name,'guide-link');a.href=siteHref(`quests.html?quest=${t.id}&mode=${mode}`);card.append(el('p'),a);}}
   }else if(tab==='hideout'){
-    const built=readStorage('kord-hideout-'+mode)||{};for(const level of r.levels||[]){const d=el('details');d.append(el('summary',`Уровень ${level.level} · ${duration(level.constructionTime)}`));if(level.description)d.append(el('p',level.description));for(const v of level.itemRequirements||[]){d.append(itemLink(v.item,v.count));if(v.attributes?.foundInRaid)d.append(el('small','Нужно найти в рейде'));}for(const req of level.stationLevelRequirements||[])d.append(el('p',`${stations.get(idOf(req.station))?.name||'Постройка'}: уровень ${req.level}`));for(const req of level.traderRequirements||[])d.append(el('p',`${nameTrader(req.trader)}: уровень лояльности ${req.level||req.value}`));for(const req of level.skillRequirements||[])d.append(el('p',`${req.skill}: уровень ${req.level}`));for(const bonus of level.bonuses||[])d.append(el('p',`${bonus.name}${bonus.skill?' · '+bonus.skill:''}: ${num(bonus.value)}`));const done=action(built[level.id]?'✓ Построено':'Отметить построенным',()=>{const current=readStorage('kord-hideout-'+mode)||{};current[level.id]=!current[level.id];writeStorage('kord-hideout-'+mode,current);done.textContent=current[level.id]?'✓ Построено':'Отметить построенным';done.setAttribute('aria-pressed',String(current[level.id]));});done.setAttribute('aria-pressed',String(!!built[level.id]));d.append(done);card.append(d);}
+    const built=readStorage('kord-hideout-'+mode)||{};
+    for(const level of r.levels||[]){
+      const d=el('details','','hideout-level'),summary=el('summary');
+      summary.append(el('span',`Уровень ${level.level}`,'hideout-level-title'),el('span',duration(level.constructionTime),'hideout-level-time'));d.append(summary);
+      if(level.description)d.append(el('p',level.description));
+      for(const v of level.itemRequirements||[]){d.append(itemLink(v.item,v.count));if(v.attributes?.foundInRaid)d.append(el('small','Нужно найти в рейде'));}
+      for(const req of level.stationLevelRequirements||[])d.append(el('p',`${stations.get(idOf(req.station))?.name||'Постройка'}: уровень ${req.level}`));
+      for(const req of level.traderRequirements||[])d.append(el('p',`${nameTrader(req.trader)}: уровень лояльности ${req.level||req.value}`));
+      for(const req of level.skillRequirements||[])d.append(el('p',`${req.skill}: уровень ${req.level}`));
+      for(const bonus of level.bonuses||[])d.append(el('p',`${bonus.name}${bonus.skill?' · '+bonus.skill:''}: ${num(bonus.value)}`));
+      const done=action(built[level.id]?'✓ Построено':'Отметить построенным',()=>{const current=readStorage('kord-hideout-'+mode)||{};current[level.id]=!current[level.id];writeStorage('kord-hideout-'+mode,current);done.textContent=current[level.id]?'✓ Построено':'Отметить построенным';done.setAttribute('aria-pressed',String(current[level.id]));});
+      done.setAttribute('aria-pressed',String(!!built[level.id]));d.append(done);card.append(d);
+    }
   }else if(tab==='bosses'){
     card.classList.add('reference-boss-card');if(r.imagePortraitLink)card.prepend(image(r.imagePortraitLink,r.name,'reference-boss-portrait'));
     card.append(el('p',r.description),el('strong',`Общее здоровье: ${num(r.healthTotal)}`,'reference-boss-health'));
