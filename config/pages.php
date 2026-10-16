@@ -68,7 +68,8 @@ return json_decode(<<<'JSON'
       "readability.css",
       "quest-ui.css",
       "site-ui.css",
-      "controls.css"
+      "controls.css",
+      "raid-responsive.css"
     ],
     "body_attributes": "class=\"raid-page\" data-page=\"raid\""
   },

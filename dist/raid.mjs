@@ -25,6 +25,7 @@ const prefsKey = 'kord-atlas-raid-view-v1';
 const original = read(progressKey) || {};
 let saved = { checked: Array.isArray(original.checked) ? original.checked.filter(x => typeof x === 'string') : [], notes: original.notes && typeof original.notes === 'object' && !Array.isArray(original.notes) ? original.notes : {} };
 const embedded=pageParams().get('embed')==='quest';if(embedded)document.body.classList.add('raid-embed');
+const compactRaid=()=>!embedded&&(innerWidth<=700||(innerWidth<=1000&&innerHeight<=520));
 const prefs = embedded?{}:read(prefsKey)||{};
 const loosePrefs=new LooseLootPreferences(prefs.looseLoot);
 let itemCatalog={},looseFilter;
@@ -62,7 +63,18 @@ function setUrl() {
   const aliases = {'streets-of-tarkov':'streets','ground-zero':'groundzero','the-lab':'lab','the-labyrinth':'labyrinth'};
   $('documents-link').href = siteHref(`documents.html?map=${aliases[definition.id] || definition.id}`);
 }
-function setSidebar(open) { $('raid-layout').classList.toggle('filters-open',open); $('raid-backdrop').hidden = !open; $('raid-menu').setAttribute('aria-expanded',String(open)); }
+function updateSidebarAccess() {
+  const open=$('raid-layout').classList.contains('filters-open'),compact=compactRaid();
+  document.querySelector('.raid-sidebar').inert=embedded||compact&&!open;
+  document.querySelector('.raid-main').inert=compact&&open;
+  $('raid-backdrop').hidden=!compact||!open;
+}
+function setSidebar(open) {
+  const restore=!open&&document.querySelector('.raid-sidebar').contains(document.activeElement);
+  $('raid-layout').classList.toggle('filters-open',open);$('raid-menu').setAttribute('aria-expanded',String(open));
+  $('raid-menu').setAttribute('aria-label',open?'Закрыть фильтры':'Открыть фильтры');updateSidebarAccess();
+  if(restore)$('raid-menu').focus({preventScroll:true});
+}
 function tab(name) {
   for (const key of ['filters','list']) { const active = key === name; $('raid-'+key+'-tab').setAttribute('aria-selected',String(active)); $('raid-'+key+'-tab').tabIndex = active ? 0 : -1; }
   $('raid-filters').hidden = name !== 'filters'; $('raid-results').hidden = name !== 'list';if(definition)savePrefs();
@@ -116,8 +128,11 @@ async function focusEmbeddedObjective(objectiveId){
  if(targets.length>1){for(const p of targets)if(markers.has(p.id))updateMarker(p,true);leaflet.fitBounds(L.latLngBounds(targets.map(pointLatLng)),{padding:[70,70],maxZoom:(definition.documentMap||sourcePixelMap())?1:5,animate:false});}
 }
 function closeDetail() {
+  const restore=$('raid-detail').contains(document.activeElement);
   if (selected && markers.has(selected.id)) updateMarker(selected,false);
   selected = null; $('raid-detail').hidden = true; outlineLayer?.clearLayers(); if (definition) setUrl();
+  document.querySelector('.raid-main').classList.remove('poi-open');
+  if(restore)$('raid-map').focus({preventScroll:true});
 }
 function looseView(p){
   if(p.id&&looseViews.has(p.id))return looseViews.get(p.id);
@@ -207,7 +222,7 @@ async function setLocation(id, {initial = false} = {}) {
   try {
     const dataKey=gameMode+':'+id; if (!dataCache.has(dataKey)) dataCache.set(dataKey, await json(gameMode==='pve'?`data/raid/pve/${id}.json`:next.poiPath));
     if (token !== requestId) return;
-    definition = next; selected = null; $('raid-detail').hidden = true;
+    definition = next; selected = null; $('raid-detail').hidden = true;document.querySelector('.raid-main').classList.remove('poi-open');
     const payload=localizeDisplay(dataCache.get(dataKey));next.mapInfo=payload.mapInfo;
     pois = scopedRaidPoints(payload,id,gameMode).filter(p => validPosition(p.position) && CATEGORIES[p.category]).map(p => ({...p,floor:poiFloor(next,p)}));
     for (const p of pois) if (p.lootType && !(p.lootType in LOOT_NAMES)) lootTypes.add(p.lootType);
@@ -288,7 +303,7 @@ function renderList() {
   $('raid-list').replaceChildren(...visible.slice(0,listLimit).map(p=>{
     const b=el('button','','raid-list-item');b.style.setProperty('--category',CATEGORIES[p.category][1]);b.classList.toggle('active',selected?.id===p.id);
     const text=el('div');text.append(el('strong',pointTitle(p)),el('small',`${CATEGORIES[p.category][0]} · ${floorName(p.floor)}${checked(p)?' · ✓':''}`));
-    b.append(iconImage(p,'list-icon'),text);b.onclick=()=>{showPoi(p,true);setSidebar(false);};return b;
+    b.append(iconImage(p,'list-icon'),text);b.onclick=()=>{setSidebar(false);showPoi(p,true);};return b;
   }));
   if (!visible.length) $('raid-list').append(el('p',questFilter?'У выбранной цели нет точных координат на этой локации или точки скрыты фильтрами. Условия задания доступны по ссылке выше.':'Нет подходящих объектов. Измените этаж, запрос или включённые слои.','raid-empty'));
   $('raid-more').hidden = visible.length<=listLimit;
@@ -312,6 +327,7 @@ async function loadPointMedia(p,root,description){
  }catch(error){if(request===requestId&&selected?.id===p.id&&root.isConnected)root.replaceChildren(el('p','Иллюстрации пока недоступны.'),link('Открыть задание',siteHref(`quests.html?quest=${encodeURIComponent(p.questId)}&mode=${mode}`)));}
 }
 async function showPoi(p, center = false) {
+  const focus=selected?.id!==p.id||$('raid-detail').hidden;
   if (selected && markers.has(selected.id)) updateMarker(selected,false);
   if (center && currentFloor !== 'all' && currentFloor !== p.floor) await changeFloor(p.floor);
   selected = p; outlineLayer.clearLayers();
@@ -321,6 +337,7 @@ async function showPoi(p, center = false) {
     L.polygon(vertices,{color:CATEGORIES[p.category][1],weight:2,fillOpacity:.16,interactive:false,pane:'zones'}).addTo(outlineLayer);
   }
   $('raid-detail').hidden=false;$('poi-category').textContent=CATEGORIES[p.category][0];$('poi-title').textContent=pointTitle(p);$('poi-floor').textContent=floorName(p.floor);
+  document.querySelector('.raid-main').classList.add('poi-open');
   const info=$('poi-info');info.replaceChildren();
   const description=el('p',p.description||'');if(p.description)info.append(description);
   if(p.displayPositionMeaning&&definition.documentMap)info.append(el('p',p.displayPositionMeaning));if(p.coordinateNote)info.append(el('p',p.coordinateNote));if(p.coordinateSource)info.append(link('Источник координат ↗',p.coordinateSource));else if(p.positionCorrectionSource?.url)info.append(link('Источник уточнения точки ↗',p.positionCorrectionSource.url));if(p.storySourceUrl)info.append(link('Источник сюжетной точки ↗',p.storySourceUrl));
@@ -349,6 +366,7 @@ async function showPoi(p, center = false) {
   if(neighbors.length){$('poi-overlap').append(el('span',`Метки рядом / под значком: ${neighbors.length}`));for(const other of neighbors){const b=el('button',`${pointTitle(other)} · ${floorName(other.floor)}`);b.prepend(iconImage(other));b.onclick=()=>showPoi(other,false);$('poi-overlap').append(b);}}
   if(center)focusPoint(p);
   setUrl();renderList();
+  if(focus){$('raid-detail').scrollTop=0;$('poi-close').focus({preventScroll:true});}
 }
 
 function drawRoute(){
@@ -361,6 +379,7 @@ function drawRoute(){
 }
 
 async function start() {
+  new ResizeObserver(()=>{updateSidebarAccess();leaflet?.invalidateSize({animate:false,pan:false});}).observe($('raid-map'));
   if(!globalThis.L)throw new Error('Не удалось загрузить модуль карты');
   const [sourceMaps,names,calibration,qIndex,btr,looseCatalog]=await loadContentBundle('raid-base');itemCatalog=looseCatalog.items;questIndex=qIndex;btrReference=btr;
   maps=localizeDisplay(sourceMaps).map(m=>({...m,documentMap:calibration[m.id]}));itemNames=names;
