@@ -5,7 +5,7 @@ import {resolveGameMode} from './game-mode.mjs';
 import {accountSummary} from './account-model.mjs';
 import {passwordError} from './password-policy.mjs';
 import {applyPlayerProfile} from './profile-identity.mjs';
-import {formFeedback,fieldError} from './form-feedback.mjs';
+import {formFeedback,fieldError} from './form-feedback.mjs?v=feedback-2';
 
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 let mode=resolveGameMode(params.get('mode'),profileStore.read('kord-atlas-game-mode')),view='login',busy=false,request=0;
