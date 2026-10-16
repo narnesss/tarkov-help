@@ -63,9 +63,10 @@ final readonly class AccountService
     public function register(string $name, string $password): Session
     {
         $name = mb_strtolower(trim($name));
-        if (!preg_match('/^[\p{L}\p{N}_-]{3,32}$/uD', $name) || strlen($password) < 12 || strlen($password) > 72) {
-            throw new HttpError(422, 'Логин: 3–32 буквы, цифры, дефис или _. Пароль: 12–72 байта.');
+        if (!preg_match('/^[\p{L}\p{N}_-]{3,32}$/uD', $name)) {
+            throw new HttpError(422, 'Логин: 3–32 буквы, цифры, дефис или _.');
         }
+        if(($error=PasswordPolicy::error($password,$name))!==null){throw new HttpError(422,$error);}
         $id = bin2hex(random_bytes(16));
         try {
             $this->db->prepare('INSERT INTO users VALUES(?,?,?,?)')->execute([$id, $name, password_hash($password, PASSWORD_DEFAULT), $this->clock->now()]);

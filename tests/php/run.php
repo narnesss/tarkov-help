@@ -70,9 +70,9 @@ test('Anonymous sessions are unique, hashed, revocable and renewed on use',funct
  $clock->time+=86400*40;eq($accounts->session($b->token),null);$accounts->cleanup();eq((int)$db->pdo->query('SELECT COUNT(*) FROM sessions')->fetchColumn(),0);
 });
 test('Registration and login preserve account identity without plaintext passwords',function(){
- [$db,,$accounts]=fixture();$a=$accounts->register('Игрок_01','correct horse battery');$b=$accounts->login('ИГРОК_01','correct horse battery');
- eq($a->userId,$b->userId);ok($a->token!==$b->token);ok($db->pdo->query('SELECT password_hash FROM users')->fetchColumn()!=='correct horse battery');
- error(409,fn()=>$accounts->register('игрок_01','correct horse battery'));error(422,fn()=>$accounts->register('x','short'));
+ [$db,,$accounts]=fixture();$a=$accounts->register('Игрок_01','Cedar!Kite9_Moon');$b=$accounts->login('ИГРОК_01','Cedar!Kite9_Moon');
+ eq($a->userId,$b->userId);ok($a->token!==$b->token);ok($db->pdo->query('SELECT password_hash FROM users')->fetchColumn()!=='Cedar!Kite9_Moon');
+ error(409,fn()=>$accounts->register('игрок_01','Cedar!Kite9_Moon'));error(422,fn()=>$accounts->register('x','short'));
  error(422,fn()=>$accounts->register('validname',str_repeat('x',73)));error(401,fn()=>$accounts->login('игрок_01','incorrect password'));
  error(401,fn()=>$accounts->login('unknown','incorrect password'));
 });
@@ -151,13 +151,13 @@ test('API never accepts an owner ID supplied by the client',function(){
  eq(json_decode(req($app,'GET','/api/state',$b)->body,true)['state'],[]);eq(json_decode(req($app,'GET','/api/state',$a)->body,true)['state']['kord-atlas-view-v1']['value']['query'],'private');
 });
 test('Login/logout rotate tokens, reject stale session and never copy guest progress',function(){
- [$app,$accounts]=appFixture();$guest=$accounts->guest();$registered=req($app,'POST','/api/auth/register',$guest,['username'=>'player','password'=>'correct horse battery']);eq($registered->status,200);eq($accounts->session($guest->token),null);
+ [$app,$accounts]=appFixture();$guest=$accounts->guest();$registered=req($app,'POST','/api/auth/register',$guest,['username'=>'player','password'=>'Cedar!Kite9_Moon']);eq($registered->status,200);eq($accounts->session($guest->token),null);
  preg_match('/eft_session=([a-f0-9]+)/',$registered->headers['Set-Cookie'],$m);$account=$accounts->session($m[1]);ok($account->username==='player');
  $logout=req($app,'POST','/api/auth/logout',$account);eq($logout->status,200);eq($accounts->session($account->token),null);eq(json_decode($logout->body,true)['profile']['authenticated'],false);
 });
 test('Five PHP pages and clean URL aliases share brand and fully wired entrypoints',function(){
  [$app]=appFixture();$logos=[];
- foreach(['index','raid','quests','quest','reference','boss','account']as $page){foreach(['/'.$page,'/'.$page.'.html']as $path){$r=req($app,'GET',$path);eq($r->status,200);ok(str_contains($r->body,'meta name="wiki-runtime" content="php"'));ok(str_contains($r->body,'id="profile-button"'));ok(str_contains($r->body,'src="bootstrap.mjs?v='.($page==='account'?'recovery-1':'account-1').'"'));ok(!str_contains($r->body,'Карты рейда'));preg_match('/<a class="brand".*?<\/a>/s',$r->body,$m);$logos[]=$m[0];}}
+ foreach(['index','raid','quests','quest','reference','boss','account']as $page){foreach(['/'.$page,'/'.$page.'.html']as $path){$r=req($app,'GET',$path);eq($r->status,200);ok(str_contains($r->body,'meta name="wiki-runtime" content="php"'));ok(str_contains($r->body,'id="profile-button"'));ok(str_contains($r->body,'src="bootstrap.mjs?v='.($page==='account'?'recovery-2':'account-1').'"'));ok(!str_contains($r->body,'Карты рейда'));preg_match('/<a class="brand".*?<\/a>/s',$r->body,$m);$logos[]=$m[0];}}
  eq(count(array_unique($logos)),1);eq(req($app,'HEAD','/')->body,'');eq(req($app,'GET','/missing')->status,404);eq(req($app,'GET','/../../bootstrap.php')->status,404);
 });
 test('Static exports and PHP templates stay equivalent except runtime flag',function(){

@@ -21,7 +21,7 @@ final class PlayerEmailsTest extends TestCase
     {
         $this->defaultCookies=[];$guest=$this->getJson('/api/session')->assertOk();
         $r=$this->withCookie('eft_session',$guest->headers->getCookies()[0]->getValue())->postJson('/api/auth/register',
-            ['username'=>$name,'password'=>'correct horse battery'],['Origin'=>'https://wiki.test','X-CSRF-Token'=>$guest->json('csrf')])->assertOk();
+            ['username'=>$name,'password'=>'Cedar!Kite9_Moon'],['Origin'=>'https://wiki.test','X-CSRF-Token'=>$guest->json('csrf')])->assertOk();
         return [$r->headers->getCookies()[0]->getValue(),$r->json('csrf'),$r->json('profile.id')];
     }
     private function emailPost(array $who,string $route,array $data)

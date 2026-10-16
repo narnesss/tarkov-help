@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Mail\ResetPlayerPassword;
 use EftWiki\Identity\Session;
+use EftWiki\Identity\PasswordPolicy;
 use Illuminate\Support\Facades\{DB, Mail, Log};
 use function Illuminate\Support\defer;
 
@@ -45,14 +46,14 @@ final readonly class PlayerPasswordRecovery
                 DB::table('player_password_resets')->updateOrInsert(['user_id'=>$contact->user_id],[
                     'challenge_id'=>$challenge,'email'=>$email,'email_verified_at'=>$contact->verified_at,'session_hash'=>$sessionHash,
                     'credential_hash'=>hash('sha256',(string)$contact->password_hash),'code_hash'=>$this->digest($contact->user_id,$challenge,$email,$sessionHash,$code),
-                    'attempts'=>0,'sent_at'=>$now,'expires_at'=>$now+1800]);
+                    'attempts'=>0,'sent_at'=>$now,'expires_at'=>$now+3600]);
             }
             return true;
         });
         abort_unless($accepted,429,'Новое письмо можно запросить через минуту. При частых запросах попробуй позже.');
         // Даже проверка наличия запроса и SMTP выполняются после HTTP-ответа.
         defer(fn()=>$this->deliver($challenge,$email,$code));
-        return ['challengeId'=>$challenge,'expiresAt'=>$now+1800,'resendAt'=>$now+60,
+        return ['challengeId'=>$challenge,'expiresAt'=>$now+3600,'resendAt'=>$now+60,
             'message'=>'Если эта почта подтверждена в аккаунте, мы отправим на неё код восстановления. Проверь также папку «Спам».'];
     }
 
@@ -75,7 +76,7 @@ final readonly class PlayerPasswordRecovery
 
     public function reset(Session $session,string $challenge,string $code,string $password): array
     {
-        abort_unless(strlen($password)>=12&&strlen($password)<=72&&!str_contains($password,"\0"),422,'Пароль: от 12 до 72 байт, без нулевых символов.');
+        if(($error=PasswordPolicy::error($password))!==null){abort(422,$error);}
         $username=DB::transaction(function()use($session,$challenge,$code,$password): ?string {
             DB::table('player_auth_locks')->where('id',1)->lockForUpdate()->first();
             $sessionHash=hash('sha256',$session->token);
@@ -89,6 +90,14 @@ final readonly class PlayerPasswordRecovery
             $owner=DB::table('users')->where('id',$pending->user_id)->lockForUpdate()->first();
             if(!$contact||!$owner||$owner->username===null||$contact->email!==$pending->email||(int)$contact->verified_at!==(int)$pending->email_verified_at
                 ||!hash_equals($pending->credential_hash,hash('sha256',(string)$owner->password_hash))){return null;}
+            if(($error=PasswordPolicy::error($password,$owner->username))!==null){abort(422,$error);}
+            $history=DB::table('player_password_history')->where('user_id',$owner->id)->pluck('password_hash')->all();
+            foreach([$owner->password_hash,...$history] as $hash){
+                abort_if(is_string($hash)&&password_verify($password,$hash),422,'Этот пароль уже использовался в аккаунте. Придумай новый.');
+            }
+            if(is_string($owner->password_hash)){
+                DB::table('player_password_history')->insert(['user_id'=>$owner->id,'password_hash'=>$owner->password_hash,'created_at'=>time()]);
+            }
             DB::table('users')->where('id',$pending->user_id)->update(['password_hash'=>password_hash($password,PASSWORD_DEFAULT)]);
             DB::table('sessions')->where('user_id',$pending->user_id)->delete();
             DB::table('player_oauth_states')->where('link_user_id',$pending->user_id)->delete();

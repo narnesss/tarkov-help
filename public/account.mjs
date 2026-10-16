@@ -3,6 +3,7 @@ import {json,el,action} from './guide-common.mjs';
 import {siteHref} from './site-routes.mjs';
 import {resolveGameMode} from './game-mode.mjs';
 import {accountSummary} from './account-model.mjs';
+import {passwordError} from './password-policy.mjs';
 
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 let mode=resolveGameMode(params.get('mode'),profileStore.read('kord-atlas-game-mode')),view='login',busy=false,request=0;
@@ -69,8 +70,7 @@ $('account-recovery-request').elements.email.addEventListener('input',()=>{
 $('account-recovery-reset').onsubmit=event=>{event.preventDefault();recover(async()=>{
   if(!recovery||recovery.expiresAt<=Date.now()/1000)throw new Error('Запроси новый код восстановления.');
   const form=$('account-recovery-reset'),password=form.elements.password.value,confirmation=form.elements.password_confirmation.value;
-  const bytes=new TextEncoder().encode(password).length;
-  if(bytes<12||bytes>72||password.includes('\0'))throw new Error('Пароль должен занимать от 12 до 72 байт, без нулевых символов.');
+  const policyError=passwordError(password);if(policyError)throw new Error(policyError);
   if(password!==confirmation)throw new Error('Пароли не совпадают.');
   try{
     const response=await profileStore.api('/api/auth/password/reset',{method:'POST',body:JSON.stringify({challenge_id:recovery.challengeId,
@@ -90,8 +90,7 @@ $('account-form').onsubmit=event=>{event.preventDefault();run(async()=>{
   const form=event.currentTarget??$('account-form'),username=form.elements.username.value.trim(),password=form.elements.password.value;
   if(view==='register'){
     if(!/^[\p{L}\p{N}_-]{3,32}$/u.test(username))throw new Error('Логин: 3–32 буквы, цифры, дефис или _.');
-    const bytes=new TextEncoder().encode(password).length;
-    if(bytes<12||bytes>72)throw new Error('Пароль должен занимать от 12 до 72 байт.');
+    const policyError=passwordError(password,username);if(policyError)throw new Error(policyError);
     if(password!==form.elements.confirmation.value)throw new Error('Пароли не совпадают.');
   }
   await profileStore.authenticate(view,{username,password});location.replace(siteHref('account.html?mode='+mode));

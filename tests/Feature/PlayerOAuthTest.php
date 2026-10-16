@@ -109,13 +109,13 @@ final class PlayerOAuthTest extends TestCase
 
     public function test_discord_can_be_linked_without_changing_existing_id_or_progress(): void
     {
-        $guest=$this->guest();$r=$this->authPost($guest,'/api/auth/register',['username'=>'старый_игрок','password'=>'correct horse battery'])->assertOk();
+        $guest=$this->guest();$r=$this->authPost($guest,'/api/auth/register',['username'=>'старый_игрок','password'=>'Cedar!Kite9_Moon'])->assertOk();
         $who=[$r->headers->getCookies()[0]->getValue(),$r->json('csrf'),$r->json('profile.id')];
         $state=$this->start($who,'discord');$r=$this->authPost($who,'/api/auth/oauth/discord/finish',['state'=>$state,'code'=>'discord-code'])->assertOk()->assertJsonPath('profile.id',$who[2]);
         $this->assertSame($who[2],DB::table('player_identities')->value('user_id'));
         $this->assertNotNull(DB::table('users')->where('id',$who[2])->value('password_hash'));
         $linked=$this->withCookie('eft_session',$r->headers->getCookies()[0]->getValue())->getJson('/api/auth/options')->assertOk()->assertJsonPath('providers.1.linked',true);
-        $other=$this->guest();$r=$this->authPost($other,'/api/auth/register',['username'=>'другой_игрок','password'=>'correct horse battery'])->assertOk();
+        $other=$this->guest();$r=$this->authPost($other,'/api/auth/register',['username'=>'другой_игрок','password'=>'Cedar!Kite9_Moon'])->assertOk();
         $other=[$r->headers->getCookies()[0]->getValue(),$r->json('csrf'),$r->json('profile.id')];$state=$this->start($other,'discord');
         $this->authPost($other,'/api/auth/oauth/discord/finish',['state'=>$state,'code'=>'taken'])->assertConflict();
         $this->assertSame($who[2],DB::table('player_identities')->value('user_id'));
@@ -204,7 +204,7 @@ final class PlayerOAuthTest extends TestCase
     public function test_old_password_account_confirmed_email_links_google_and_discord_without_losing_progress(): void
     {
         config(['player-auth.email.mailer'=>'array']);\Illuminate\Support\Facades\Mail::fake();
-        $guest=$this->guest();$old=$this->authPost($guest,'/api/auth/register',['username'=>'old_player','password'=>'correct horse battery'])->assertOk();
+        $guest=$this->guest();$old=$this->authPost($guest,'/api/auth/register',['username'=>'old_player','password'=>'Cedar!Kite9_Moon'])->assertOk();
         $who=[$old->headers->getCookies()[0]->getValue(),$old->json('csrf'),$old->json('profile.id')];
         DB::table('user_state')->insert(['user_id'=>$who[2],'state_key'=>'kord-achievements-pve','value'=>'["earned"]','version'=>9,'updated_at'=>time()]);
         $pending=$this->authPost($who,'/api/auth/email/send',['email'=>'player@gmail.com'])->assertOk();$code='';
@@ -214,6 +214,6 @@ final class PlayerOAuthTest extends TestCase
         $discord=$this->finishDiscord($this->guest(),['id'=>'888','username'=>'Discord','email'=>'player@gmail.com','verified'=>true])->assertOk()->assertJsonPath('profile.id',$who[2]);
         $this->withCookie('eft_session',$discord->headers->getCookies()[0]->getValue())->getJson('/api/state')->assertJsonPath('state.kord-achievements-pve.version',9);
         $this->assertSame('old_player',DB::table('users')->where('id',$who[2])->value('username'));
-        $this->assertTrue(password_verify('correct horse battery',DB::table('users')->where('id',$who[2])->value('password_hash')));
+        $this->assertTrue(password_verify('Cedar!Kite9_Moon',DB::table('users')->where('id',$who[2])->value('password_hash')));
     }
 }

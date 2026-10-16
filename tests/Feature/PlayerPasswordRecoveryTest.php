@@ -26,7 +26,7 @@ final class PlayerPasswordRecoveryTest extends TestCase
     private function owner(string $name='old_recovery_player',bool $confirmed=true): array
     {
         $guest=$this->guest();$r=$this->withCookie('eft_session',$guest[0])->postJson('/api/auth/register',
-            ['username'=>$name,'password'=>'old password 12345'],['Origin'=>'https://wiki.test','X-CSRF-Token'=>$guest[1]])->assertOk();
+            ['username'=>$name,'password'=>'Cedar!Kite9_Moon'],['Origin'=>'https://wiki.test','X-CSRF-Token'=>$guest[1]])->assertOk();
         $who=[$r->headers->getCookies()[0]->getValue(),$r->json('csrf'),$r->json('profile.id')];
         if($confirmed)DB::table('player_emails')->insert(['user_id'=>$who[2],'email'=>'old@example.test','verified_at'=>time()]);
         return $who;
@@ -38,7 +38,7 @@ final class PlayerPasswordRecoveryTest extends TestCase
         $r=$this->recoveryPost($guest,'request',['email'=>$email])->assertOk();$code='';
         Mail::assertSent(ResetPlayerPassword::class,function($mail)use(&$code){$code=$mail->code;return true;});
         $this->assertMatchesRegularExpression('/^[0-9]{8}$/D',$code);$this->assertStringNotContainsString($code,$r->getContent());
-        return ['challenge_id'=>$r->json('challengeId'),'code'=>$code,'password'=>'new password 67890','password_confirmation'=>'new password 67890'];
+        return ['challenge_id'=>$r->json('challengeId'),'code'=>$code,'password'=>'Birch#Fawn8_River','password_confirmation'=>'Birch#Fawn8_River'];
     }
     public function test_reset_preserves_everything_except_password_and_revokes_old_sessions(): void
     {
@@ -52,7 +52,7 @@ final class PlayerPasswordRecoveryTest extends TestCase
         $saved=[];foreach(['user_state','player_profiles','player_identities','player_emails'] as $table){$saved[$table]=DB::table($table)->where('user_id',$owner[2])->get()->toJson();}
         $code=$this->requestCode($guest,' Old@Example.Test ');
         $pending=DB::table('player_password_resets')->first();
-        $this->assertSame(1800,(int)$pending->expires_at-(int)$pending->sent_at);
+        $this->assertSame(3600,(int)$pending->expires_at-(int)$pending->sent_at);
         $this->assertNotSame($code['code'],$pending->code_hash);$this->assertSame(64,strlen($pending->code_hash));
         DB::table('player_oauth_states')->insert(['token_hash'=>str_repeat('f',64),'session_hash'=>hash('sha256',$owner[0]),'provider'=>'google','link_user_id'=>$owner[2],'expires_at'=>time()+600]);
         $this->recoveryPost($guest,'reset',$code)->assertOk()->assertJsonPath('username','old_recovery_player');
@@ -63,7 +63,7 @@ final class PlayerPasswordRecoveryTest extends TestCase
         $this->assertSame(0,DB::table('player_password_resets')->count());$this->assertSame(0,DB::table('player_oauth_states')->count());
         $this->withCookie('eft_session',$owner[0])->getJson('/api/state')->assertUnauthorized();
         $this->recoveryPost($guest,'reset',$code)->assertUnprocessable();
-        $this->withCookie('eft_session',$guest[0])->postJson('/api/auth/login',['username'=>'old_recovery_player','password'=>'old password 12345'],
+        $this->withCookie('eft_session',$guest[0])->postJson('/api/auth/login',['username'=>'old_recovery_player','password'=>'Cedar!Kite9_Moon'],
             ['Origin'=>'https://wiki.test','X-CSRF-Token'=>$guest[1]])->assertUnauthorized();
         $login=$this->withCookie('eft_session',$guest[0])->postJson('/api/auth/login',['username'=>'old_recovery_player','password'=>$code['password']],
             ['Origin'=>'https://wiki.test','X-CSRF-Token'=>$guest[1]])->assertOk()->assertJsonPath('profile.id',$owner[2]);
@@ -90,7 +90,7 @@ final class PlayerPasswordRecoveryTest extends TestCase
         $wrong=$code;$wrong['code']=$code['code']==='00000000'?'11111111':'00000000';
         for($i=0;$i<5;$i++){$this->recoveryPost($guest,'reset',$wrong)->assertUnprocessable()->assertJsonPath('message',PlayerPasswordRecovery::INVALID_CODE);}
         $this->recoveryPost($guest,'reset',$code)->assertUnprocessable()->assertJsonPath('message',PlayerPasswordRecovery::INVALID_CODE);
-        $this->assertTrue(password_verify('old password 12345',DB::table('users')->where('id',$owner[2])->value('password_hash')));
+        $this->assertTrue(password_verify('Cedar!Kite9_Moon',DB::table('users')->where('id',$owner[2])->value('password_hash')));
     }
     public function test_expired_replaced_and_contact_or_password_changed_codes_are_rejected(): void
     {
@@ -149,7 +149,38 @@ final class PlayerPasswordRecoveryTest extends TestCase
     {
         $mail=new ResetPlayerPassword('01234567');
         $this->assertSame('Tarkov Compass - Password reset code',$mail->envelope()->subject);
-        $body=$mail->render();$this->assertStringContainsString('Код: 01234567',$body);$this->assertStringContainsString('30 минут',$body);
+        $body=$mail->render();$this->assertStringContainsString('Код: 01234567',$body);$this->assertStringContainsString('1 час',$body);
+    }
+    public function test_old_and_current_passwords_cannot_be_reused_and_history_contains_only_hashes(): void
+    {
+        $owner=$this->owner();$guest=$this->guest();$first=$this->requestCode($guest);
+        $old=DB::table('users')->where('id',$owner[2])->value('password_hash');
+        $reuse=[...$first,'password'=>'Cedar!Kite9_Moon','password_confirmation'=>'Cedar!Kite9_Moon'];
+        $this->recoveryPost($guest,'reset',$reuse)->assertUnprocessable()->assertJsonPath('message','Этот пароль уже использовался в аккаунте. Придумай новый.');
+        $this->assertSame(0,(int)DB::table('player_password_resets')->value('attempts'));
+        $this->recoveryPost($guest,'reset',$first)->assertOk();
+        $this->assertSame($old,DB::table('player_password_history')->where('user_id',$owner[2])->value('password_hash'));
+        DB::table('rate_limits')->where('bucket','like','password-reset:cooldown:%')->update(['expires_at'=>time()-1]);
+        Mail::fake();$second=$this->requestCode($guest);
+        $this->recoveryPost($guest,'reset',[...$reuse,'challenge_id'=>$second['challenge_id'],'code'=>$second['code']])->assertUnprocessable();
+        $third=[...$second,'password'=>'Maple%Wren6_Stone','password_confirmation'=>'Maple%Wren6_Stone'];
+        $this->recoveryPost($guest,'reset',$third)->assertOk();
+        $this->assertSame(2,DB::table('player_password_history')->where('user_id',$owner[2])->count());
+        foreach(DB::table('player_password_history')->pluck('password_hash') as $hash){$this->assertStringStartsWith('$2y$',$hash);}
+    }
+    public function test_new_password_policy_is_enforced_but_legacy_passwords_can_still_log_in(): void
+    {
+        $owner=$this->owner();$guest=$this->guest();$code=$this->requestCode($guest);
+        foreach(['lowercase!only9','UPPERCASE!ONLY9','NoDigits!Here','NoSymbolsHere8','Password!Long8','Qwerty!Long89','Fence!123456x','Fence!01011990','Fence!AAAAAA8','old_recovery_player!8A'] as $weak){
+            $this->recoveryPost($guest,'reset',[...$code,'password'=>$weak,'password_confirmation'=>$weak])->assertUnprocessable();
+        }
+        $this->withCookie('eft_session',$guest[0])->postJson('/api/auth/register',['username'=>'weak_new_player','password'=>'lowercase!only9'],
+            ['Origin'=>'https://wiki.test','X-CSRF-Token'=>$guest[1]])->assertUnprocessable();
+        $this->assertFalse(DB::table('users')->where('username','weak_new_player')->exists());
+        $this->assertSame(0,(int)DB::table('player_password_resets')->value('attempts'));
+        DB::table('users')->where('id',$owner[2])->update(['password_hash'=>password_hash('legacy lowercase only',PASSWORD_DEFAULT)]);
+        $this->withCookie('eft_session',$guest[0])->postJson('/api/auth/login',['username'=>'old_recovery_player','password'=>'legacy lowercase only'],
+            ['Origin'=>'https://wiki.test','X-CSRF-Token'=>$guest[1]])->assertOk()->assertJsonPath('profile.id',$owner[2]);
     }
     public function test_revoked_session_cannot_finish_oauth_that_started_before_reset(): void
     {

@@ -2,7 +2,7 @@
 
 Миграция `2026_10_16_000009_add_player_password_recovery.php` добавляет `player_password_resets`:
 PK/FK user_id, unique challenge_id, email/email_verified_at, session_hash, credential_hash,
-code_hash HMAC-SHA256, attempts, sent_at, expires_at. TTL 30 минут, 5 попыток, одноразовый код.
+code_hash HMAC-SHA256, attempts, sent_at, expires_at. TTL 1 час, 5 попыток, одноразовый код.
 Запрос доступен гостю с прежним CSRF/Origin; контакт должен быть подтверждён в player_emails.
 Лимиты в rate_limits: повтор через 60 секунд, 3 запроса/час на адрес, 10 на IP; ключи хешированы
 и одинаковы для известных и неизвестных адресов. Никаких JSON или открытых паролей/кодов.
@@ -161,3 +161,9 @@ Rollback схемы намеренно запрещён, чтобы не уда�
 они выполняются через PDO соединения Laravel. Новые schema изменения — migrations.
 Публичный файловый Cache и скомпилированные Blade хранятся в storage/framework,
 вне web root. Ключи/БД/личные данные никогда не экспортируются в dist.
+
+Миграция `2026_10_16_000010_add_player_password_history.php`: `player_password_history`
+(id, user_id FK users ON DELETE CASCADE, password_hash, created_at, индекс user_id).
+При успешной смене сохраняется только прежний хеш. Текущий и все накопленные хеши
+проверяются password_verify; старые пароли до внедрения истории восстановить невозможно.
+Миграция не меняет users и не требует переустановки паролей; JSON/открытые пароли не хранятся.

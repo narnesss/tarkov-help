@@ -1,7 +1,7 @@
 # Карта классов Tarkov Wiki
 
 - PlayerPasswordRecovery / ResetPlayerPassword: восстановление через подтверждённый player_emails,
-  код на 30 минут с HMAC/5 попытками и привязкой к opaque-сессии запроса. Одинаковые ответы
+  код на 1 час с HMAC/5 попытками и привязкой к opaque-сессии запроса. Одинаковые ответы
   для неизвестных адресов; SMTP после HTTP-ответа под отдельной shared-блокировкой DatabaseAccess.
   Смена только users.password_hash, отзыв прежних sessions, OAuth-состояний и почтовых кодов.
   AccountService::login сериализует пароль/выдачу сессии с обновлением users; OAuth и PlayerEmails
@@ -131,3 +131,7 @@
 - src/Infrastructure/Database и Factory: совместимость автономных доменных тестов;
   production подключение и схема предоставляются Laravel DB/migrations.
 - scripts/build-pages.mjs: проверка свежести экспорта, упаковка dist без PHP/секретов.
+
+- PasswordPolicy: общие правила новых паролей в AccountService::register и PlayerPasswordRecovery;
+  public/password-policy.mjs проверяет форму до запроса. Вход с прежними паролями не меняется.
+  История проверяется только после правильного кода, в транзакции под player_auth_locks/users.

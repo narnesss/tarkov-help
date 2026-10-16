@@ -1,6 +1,6 @@
 import {profileStore} from './profile-store.mjs';
 import {serverProfiles} from './profile-runtime.mjs';
-import {mountProfile} from './profile-ui.mjs?v=account-1';
+import {mountProfile} from './profile-ui.mjs?v=password-1';
 import {observeHeader} from './layout.mjs';
 import {initializeSiteRoutes,siteHref} from './site-routes.mjs';
 
@@ -27,7 +27,7 @@ const entry = document.body.dataset.page;
 if (entry === 'index' && ['map','point'].some(key=>new URLSearchParams(location.search).has(key))) {
   location.replace(siteHref('documents.html'+location.search+location.hash));
 } else {
-const modules = {index: './home.mjs', documents: './app.mjs', raid: './raid.mjs', quests: './quests.mjs', reference: './reference.mjs', boss: './boss.mjs', account: './account.mjs?v=recovery-1'};
+const modules = {index: './home.mjs', documents: './app.mjs', raid: './raid.mjs', quests: './quests.mjs', reference: './reference.mjs', boss: './boss.mjs', account: './account.mjs?v=recovery-2'};
 if (modules[entry]) await import(modules[entry]);
 
 }

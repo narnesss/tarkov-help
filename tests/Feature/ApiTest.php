@@ -56,7 +56,7 @@ final class ApiTest extends TestCase
     {
         $guest = $this->identity();
         $registered = $this->withCookie('eft_session', $guest[0])->postJson('/api/auth/register',
-            ['username' => 'Игрок_01', 'password' => 'correct horse battery'], ['X-CSRF-Token' => $guest[1], 'Origin' => 'https://wiki.test'])->assertOk();
+            ['username' => 'Игрок_01', 'password' => 'Cedar!Kite9_Moon'], ['X-CSRF-Token' => $guest[1], 'Origin' => 'https://wiki.test'])->assertOk();
         $registered->assertJsonPath('profile.authenticated', true);
         $account = $registered->json('profile.id');
         $this->withCookie('eft_session', $guest[0])->getJson('/api/state')->assertUnauthorized();
@@ -66,7 +66,7 @@ final class ApiTest extends TestCase
         $this->withCookie('eft_session', $cookie)->getJson('/api/state')->assertUnauthorized();
         $next = $this->identity();
         $this->withCookie('eft_session', $next[0])->postJson('/api/auth/login',
-            ['username' => 'ИГРОК_01', 'password' => 'correct horse battery'], ['X-CSRF-Token' => $next[1], 'Origin' => 'https://wiki.test'])->assertOk()->assertJsonPath('profile.id', $account);
+            ['username' => 'ИГРОК_01', 'password' => 'Cedar!Kite9_Moon'], ['X-CSRF-Token' => $next[1], 'Origin' => 'https://wiki.test'])->assertOk()->assertJsonPath('profile.id', $account);
     }
 
     public function test_private_api_does_not_populate_public_cache_or_personalize_pages(): void

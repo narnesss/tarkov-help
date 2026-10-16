@@ -17,7 +17,7 @@ final class PlayerProfilesTest extends TestCase
         $this->encryptCookies=false; $this->withCredentials();
         $guest=$this->getJson('/api/session')->assertOk();
         $r=$this->withCookie('eft_session',$guest->headers->getCookies()[0]->getValue())->postJson('/api/auth/register',
-            ['username'=>'старый_логин','password'=>'correct horse battery'],['Origin'=>'https://wiki.test','X-CSRF-Token'=>$guest->json('csrf')])->assertOk();
+            ['username'=>'старый_логин','password'=>'Cedar!Kite9_Moon'],['Origin'=>'https://wiki.test','X-CSRF-Token'=>$guest->json('csrf')])->assertOk();
         $id=$r->json('profile.id');$cookie=$r->headers->getCookies()[0]->getValue();
         $headers=['Origin'=>'https://wiki.test','X-CSRF-Token'=>$r->json('csrf')];
         $hash=DB::table('users')->where('id',$id)->value('password_hash');
@@ -40,7 +40,7 @@ final class PlayerProfilesTest extends TestCase
         $guest=$this->getJson('/api/session')->assertOk();$cookie=$guest->headers->getCookies()[0]->getValue();
         $headers=['Origin'=>'https://wiki.test','X-CSRF-Token'=>$guest->json('csrf')];
         $this->withCookie('eft_session',$cookie)->postJson('/api/auth/profile',['display_name'=>'Test'],$headers)->assertForbidden();
-        $r=$this->withCookie('eft_session',$cookie)->postJson('/api/auth/register',['username'=>'normal','password'=>'correct horse battery'],$headers)->assertOk();
+        $r=$this->withCookie('eft_session',$cookie)->postJson('/api/auth/register',['username'=>'normal','password'=>'Cedar!Kite9_Moon'],$headers)->assertOk();
         $cookie=$r->headers->getCookies()[0]->getValue();$headers['X-CSRF-Token']=$r->json('csrf');
         $this->withCookie('eft_session',$cookie)->postJson('/api/auth/profile',['display_name'=>'New'],['Origin'=>'https://evil.test','X-CSRF-Token'=>$headers['X-CSRF-Token']])->assertForbidden();
         $this->withCookie('eft_session',$cookie)->postJson('/api/auth/profile',['display_name'=>'New'],['Origin'=>'https://wiki.test','X-CSRF-Token'=>'invalid'])->assertForbidden();
