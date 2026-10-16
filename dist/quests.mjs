@@ -218,7 +218,14 @@ function renderObjectives(root,t){
   if(gallery.archived?.length){const archive=el('details','','guide-section');archive.append(el('summary','Архивные места до переработки Маяка ('+gallery.archived.length+')'),el('p',gallery.archived[0].archiveReason),galleryBlock(gallery.archived,{title:'Архивные иллюстрации',contextTitle:t.name}));root.append(archive);}
   if(t.neededKeys?.length){const keys=section('Нужные ключи');for(const group of t.neededKeys){keys.append(el('p',maps.get(idOf(group.map))?.name||'Локация'));keys.append(keyGroups(group.keys));}root.append(keys);}
   if(t.failConditions?.length){const fail=section('Условия провала');for(const f of t.failConditions){const task=byId.get(idOf(f.task));if(task)fail.append(taskButton(task,`Может провалить текущее задание при статусе: ${(f.status||[]).map(s=>QUEST_STATES[s]||s).join(' / ')}`));else fail.append(el('p',f.description&&!/^[a-f0-9]{24}$/.test(f.description)?f.description:'Есть отдельное условие провала. Проверьте его в игре.'));}root.append(fail);}
-  const guides=section('Прохождение и материалы');guides.id='quest-materials-section';const own=el('p','Используйте цели выше как чек-лист. Подготовьте указанные предметы и ключи, затем откройте места задания на карте. Метки «Найдено в рейде» и особые условия снаряжения обязательны, если они указаны в цели.');guides.append(own);for(const line of t.storyGuide||[])if(hasQuestRoadmap(t)||!/схем/i.test(line))guides.append(el('p',line));const links=el('div','','guide-button-row');for(const source of t.storySources||[])links.append(external(source.label+' ↗',source.url));const help=data.guideLinks?.[t.id]?.tarkovHelpUrl;if(help)links.append(external('Прохождение на Tarkov.help ↗',help));if(t.wikiLink)links.append(external('Страница Wiki ↗',t.wikiLink));guides.append(links);root.append(guides);
+  const guides=section('Прохождение и материалы');guides.id='quest-materials-section';
+  const walkthrough=t.questContent?.walkthrough,paragraphs=Array.isArray(walkthrough?.paragraphs)?walkthrough.paragraphs.filter(line=>typeof line==='string'&&line.trim()):typeof walkthrough==='string'&&walkthrough.trim()?[walkthrough]:[];
+  if(paragraphs.length)for(const line of paragraphs)guides.append(el('p',line));
+  else guides.append(el('p','Используйте цели выше как чек-лист. Подготовьте указанные предметы и ключи, затем откройте места задания на карте. Метки «Найдено в рейде» и особые условия снаряжения обязательны, если они указаны в цели.'));
+  for(const line of t.storyGuide||[])if(hasQuestRoadmap(t)||!/схем/i.test(line))guides.append(el('p',line));
+  const links=el('div','','guide-button-row');
+  if(walkthrough?.sourceUrl)links.append(external('Источник прохождения ↗',walkthrough.sourceUrl));
+  for(const source of t.storySources||[])links.append(external(source.label+' ↗',source.url));const help=data.guideLinks?.[t.id]?.tarkovHelpUrl;if(help)links.append(external('Прохождение на Tarkov.help ↗',help));if(t.wikiLink)links.append(external('Страница Wiki ↗',t.wikiLink));guides.append(links);root.append(guides);
 }
 function renderTicketMap(root,t){
  if(!hasQuestRoadmap(t))return;
