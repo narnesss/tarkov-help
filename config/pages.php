@@ -141,7 +141,8 @@ return json_decode(<<<'JSON'
       "quest-ui.css",
       "boss.css",
       "site-ui.css",
-      "controls.css"
+      "controls.css",
+      "boss-responsive.css"
     ],
     "body_attributes": "class=\"guide-page\" data-page=\"boss\""
   },

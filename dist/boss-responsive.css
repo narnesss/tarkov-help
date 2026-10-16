@@ -1,0 +1,139 @@
+/* Каталог и профили боссов: переносы внутри карточек и доступные мобильные действия. */
+body[data-page="boss"] .boss-page,
+body[data-page="boss"] :is(.boss-heading, .boss-hero, .boss-health-grid, .boss-catalog, .boss-catalog-controls, .boss-stat) > * {
+  min-width: 0;
+}
+body[data-page="boss"] .boss-page {
+  overflow-wrap: anywhere;
+}
+body[data-page="boss"] .boss-catalog {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+}
+body[data-page="boss"] .boss-health-grid {
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+}
+body[data-page="boss"] .boss-stat {
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+body[data-page="boss"] .boss-links .button,
+body[data-page="boss"] .boss-spawn .button {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+}
+
+@media (max-width: 1000px) {
+  body[data-page="boss"] .topbar .header-right {
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+  body[data-page="boss"] .topbar .profile-trigger {
+    max-width: none;
+    min-width: 0;
+    white-space: normal;
+    overflow: visible;
+  }
+  body[data-page="boss"] .button {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  body[data-page="boss"] :is(#boss-search, #boss-mode) {
+    min-height: 46px;
+    font-size: 16px;
+  }
+  body[data-page="boss"] .boss-mode {
+    min-width: 110px;
+  }
+  body[data-page="boss"] .boss-page > .guide-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 800px) {
+  body[data-page="boss"] .boss-heading {
+    flex-wrap: wrap;
+  }
+  body[data-page="boss"] .boss-health-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  body[data-page="boss"] .boss-body {
+    max-width: 220px;
+    margin-inline: auto;
+  }
+  body[data-page="boss"] .boss-catalog-controls {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 760px) {
+  body[data-page="boss"] .topbar .header-right {
+    flex: 1 0 100%;
+    margin: 0;
+    gap: 8px;
+  }
+  body[data-page="boss"] .topbar .header-right > a {
+    flex: 1 1 auto;
+    justify-content: center;
+    text-align: center;
+  }
+  body[data-page="boss"] .topbar .atlas-modes a {
+    flex: 1 1 84px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 520px) {
+  body[data-page="boss"] .boss-mode,
+  body[data-page="boss"] #boss-search {
+    width: 100%;
+  }
+  body[data-page="boss"] .boss-heading h1,
+  body[data-page="boss"] .boss-hero h2 {
+    font-size: clamp(24px, 7vw, 28px);
+  }
+  body[data-page="boss"] .boss-card {
+    padding: 20px;
+  }
+  body[data-page="boss"] .boss-hero {
+    padding: 18px;
+  }
+  body[data-page="boss"] .boss-portrait {
+    margin-inline: auto;
+  }
+  body[data-page="boss"] .boss-hero p {
+    font-size: 16px;
+  }
+  body[data-page="boss"] .boss-page .guide-section h3 {
+    font-size: 22px;
+  }
+  body[data-page="boss"] .boss-health-table {
+    table-layout: fixed;
+    font-size: 15px;
+  }
+  body[data-page="boss"] .boss-health-table th,
+  body[data-page="boss"] .boss-health-table td {
+    padding: 12px 8px;
+  }
+  body[data-page="boss"] .boss-spawn {
+    padding: 16px 12px;
+  }
+  body[data-page="boss"] .boss-spawn .button,
+  body[data-page="boss"] .boss-links .button {
+    width: 100%;
+    justify-content: center;
+  }
+  body[data-page="boss"] .boss-links {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
