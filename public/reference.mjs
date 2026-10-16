@@ -36,7 +36,7 @@ function configure(){
   if(tab==='bosses'||tab==='btr')filters=[['all','Все локации'],...list(quests.maps).filter(m=>!['night-factory','ground-zero-21','ground-zero-tutorial','the-lab-dark'].includes(m.normalizedName)).map(m=>[m.normalizedName,m.name])];
   if(tab==='needed')filters=[['all','Все нужные предметы'],['fir','Найдено в рейде']];
   if(tab==='ammo')sorts.push(['penetration','По пробитию ↓'],['damage','По урону ↓']);
-  const filterTitle=['hideout','crafts'].includes(tab)?'Модуль':'Категория';$('reference-filter-title').textContent=filterTitle;$('reference-filter').setAttribute('aria-label',filterTitle);
+  const filterTitle=['hideout','crafts'].includes(tab)?'Модуль':tab==='barters'?'Торговец':'Категория';$('reference-filter-title').textContent=filterTitle;$('reference-filter').setAttribute('aria-label',filterTitle);
   setOptions('reference-filter',filters);setOptions('reference-sort',sorts);$('reference-filter').hidden=filters.length===1;$('reference-sort').hidden=sorts.length===1;$('reference-filter-label').hidden=filters.length===1;$('reference-sort-label').hidden=sorts.length===1;
 }
 function sourceRows(){
@@ -83,7 +83,7 @@ function renderTable(root,rows){
   table.append(body);wrap.append(table);root.append(wrap);
 }
 function renderCard(r){const card=el('article','','reference-card');card.append(el('h3',r.name));
-  if(['hideout','crafts'].includes(tab))card.classList.add('reference-workshop-card');
+  if(['hideout','crafts','barters'].includes(tab))card.classList.add('reference-workshop-card');
   if(['barters','crafts'].includes(tab)){
     const offered=r.productItem||r.offeredItem;card.append(itemLink(offered.item,offered.count));card.append(el('p',tab==='barters'?`${nameTrader(r.trader)} · лояльность ${r.minTraderLevel}`:`${stations.get(idOf(r.station))?.name||'Убежище'} · уровень ${r.level} · ${duration(r.duration)}`));card.append(el('h4','Требуется'));for(const required of r.requiredItems||[]){card.append(itemLink(required.item,required.count));if(required.attributes?.tool)card.append(el('small','Инструмент: не расходуется'));}
     if(r.taskUnlock){const t=quests.tasks.find(t=>t.id===idOf(r.taskUnlock));if(t){const a=el('a','Открывает: '+t.name,'guide-link');a.href=siteHref(`quests.html?quest=${t.id}&mode=${mode}`);card.append(el('p'),a);}}
@@ -106,7 +106,23 @@ function renderCard(r){const card=el('article','','reference-card');card.append(
     card.append(el('p',r.description),el('strong',`Общее здоровье: ${num(r.healthTotal)}`,'reference-boss-health'));
     const a=el('a','Описание и здоровье по частям тела →','button boss-detail-link');a.href=siteHref(`boss.html?boss=${encodeURIComponent(r.slug)}&mode=${mode}`);card.append(a);
   }else if(tab==='traders'){
-    if(r.imageLink)card.prepend(image(r.imageLink,'','trader-portrait'));if(r.description)card.append(el('p',r.description));const table=el('table');for(const level of r.levels||[]){const row=el('tr');for(const v of [`лояльность ${level.level}`,`Ур. ${level.requiredPlayerLevel}`,`Реп. ${num(level.requiredReputation)}`,`${num(level.requiredCommerce)} ${currencyLabel(r.currency||'')}`])row.append(el('td',v));table.append(row);}card.append(table);const a=el('a','Квесты торговца','button');a.href=siteHref(`quests.html?trader=${r.id}&mode=${mode}`);card.append(a);
+    card.classList.add('reference-trader-card');
+    const header=el('header','','trader-card-header');if(r.imageLink)header.append(image(r.imageLink,'','trader-portrait'));header.append(card.querySelector('h3'));card.prepend(header);
+    if(r.description)card.append(el('p',r.description));
+    if(r.levels?.length){
+      card.append(el('h4','Уровни лояльности','trader-levels-title'));
+      const levels=el('div','','trader-levels');
+      for(const level of r.levels){
+        const group=el('section','','trader-loyalty-level');group.append(el('h5',`Уровень ${level.level}`));
+        const requirements=el('dl','','trader-level-requirements');
+        for(const [label,value] of [['Уровень игрока',String(level.requiredPlayerLevel)],['Репутация',num(level.requiredReputation)],['Торговый оборот',`${num(level.requiredCommerce)} ${currencyLabel(r.currency||'')}`]]){
+          const pair=el('div');pair.append(el('dt',label),el('dd',value));requirements.append(pair);
+        }
+        group.append(requirements);levels.append(group);
+      }
+      card.append(levels);
+    }
+    const a=el('a','Квесты торговца','button');a.href=siteHref(`quests.html?trader=${r.id}&mode=${mode}`);card.append(a);
   }else if(tab==='achievements'){
     if(r.imageLink)card.prepend(image(r.imageLink,'','achievement-icon'));card.append(el('p',r.description));card.append(el('p',`Получили: ${num(r.playersCompletedPercent)}% игроков · ${r.hidden?'Скрытое':'Обычное'} достижение`));const key='kord-achievements-'+mode,state=readStorage(key)||[];const b=action(state.includes(r.id)?'✓ Получено':'Отметить полученным',()=>{let current=readStorage(key)||[];current=current.includes(r.id)?current.filter(x=>x!==r.id):[...current,r.id];writeStorage(key,current);b.textContent=current.includes(r.id)?'✓ Получено':'Отметить полученным';b.setAttribute('aria-pressed',String(current.includes(r.id)));});b.setAttribute('aria-pressed',String(state.includes(r.id)));card.append(b);
   }else if(tab==='btr'){
