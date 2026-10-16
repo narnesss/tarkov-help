@@ -52,7 +52,8 @@ return json_decode(<<<'JSON'
       "style.css",
       "readability.css",
       "site-ui.css",
-      "controls.css"
+      "controls.css",
+      "documents.css"
     ],
     "body_attributes": "class=\"\" data-page=\"documents\""
   },

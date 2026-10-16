@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="readability.css?v=release-20261016">
   <link rel="stylesheet" href="site-ui.css?v=release-20261016">
   <link rel="stylesheet" href="controls.css?v=release-20261016">
+  <link rel="stylesheet" href="documents.css?v=release-20261016">
   <link rel="modulepreload" href="profile-store.mjs">
   <meta name="wiki-routing" content="pages">
 <script type="application/json" id="wiki-page-params">{"map": "shoreline"}</script>
@@ -66,17 +67,16 @@
     <div class="sidebar-backdrop" id="sidebar-backdrop" hidden></div>
     <aside class="sidebar" id="sidebar" aria-label="Локация, фильтры и список документов">
       <div class="sidebar-top">
-        <label class="eyebrow" for="map-select">ЛОКАЦИЯ <span id="map-index">09 / 12</span></label>
+        <label class="eyebrow" for="map-select">ЛОКАЦИЯ <span id="map-index">— / —</span></label>
         <div class="location-select">
-          <img id="location-thumb" alt="" src="assets/maps/interchange.webp">
-          <div><select id="map-select" aria-label="Выбрать локацию"><option>Загрузка…</option></select><span id="location-en">МЕСТА ДОКУМЕНТОВ</span></div>
-          <svg><use href="#i-arrow"/></svg>
+          <img id="location-thumb" alt="" width="44" height="44" hidden>
+          <select id="map-select" aria-label="Выбрать локацию"><option value="" disabled selected>Локация</option></select>
         </div>
         <div class="search-box"><svg><use href="#i-search"/></svg><input id="search" type="search" placeholder="Документ, место, ориентир…" autocomplete="off" aria-label="Поиск документов"><kbd>/</kbd></div>
         <label class="scope-toggle"><input type="checkbox" id="all-maps"><span>Искать на всех локациях</span></label>
         <div class="sidebar-tabs" role="tablist" aria-label="Режим панели">
           <button id="filters-tab" role="tab" aria-selected="true" aria-controls="filters-panel" class="active">Фильтры</button>
-          <button id="points-tab" role="tab" aria-selected="false" aria-controls="points-panel">Точки <span id="list-count">32</span></button>
+          <button id="points-tab" role="tab" aria-selected="false" aria-controls="points-panel">Точки <span id="list-count">—</span></button>
         </div>
       </div>
       <div class="sidebar-scroll">
@@ -89,7 +89,7 @@
             <button data-status="all" class="active" aria-pressed="true">Все</button><button data-status="remaining" aria-pressed="false">Осталось</button><button data-status="found" aria-pressed="false">Найдено</button>
           </div>
           <div class="floor-select" id="floor-group" hidden><label for="floor-select">Уровень схемы</label><select id="floor-select"></select><small>Этаж здания уточняется в описании точки.</small></div>
-          <label class="alt-toggle" id="alt-group"><svg><use href="#i-layers"/></svg><span>Отметки на схемах<small>Связь с основной точкой</small></span><input type="checkbox" id="show-alts" checked></label>
+          <label class="alt-toggle" id="alt-group" hidden><svg><use href="#i-layers"/></svg><span>Отметки на схемах<small>Связь с основной точкой</small></span><input type="checkbox" id="show-alts" checked></label>
           <label class="document-size-label" for="document-icon-size">Размер значков <span><output id="document-icon-value" for="document-icon-size">24</output> px</span><input id="document-icon-size" type="range" min="16" max="36" step="2" value="24"></label>
           <button class="reset-filter" id="reset-filters">Сбросить фильтры</button>
         </section>
@@ -97,7 +97,7 @@
       </div>
       <button class="sidebar-progress" id="sidebar-progress" title="Открыть весь прогресс">
         <span class="progress-ring" id="map-ring"><svg><use href="#i-check"/></svg></span>
-        <span><strong id="map-progress-text">0 из 32 точек</strong><small>Отмечено на этой локации</small></span><svg class="progress-arrow"><use href="#i-arrow"/></svg>
+        <span><strong id="map-progress-text">Загрузка прогресса…</strong><small>Отмечено на этой локации</small></span><svg class="progress-arrow"><use href="#i-arrow"/></svg>
       </button>
       <div class="local-caption"><i></i> Прогресс сохраняется в этом браузере</div>
       <div class="map-legal-links"><nav class="legal-navigation" aria-label="Правовые документы"><a href="/terms">Условия использования</a><a href="/privacy">Политика конфиденциальности</a><a href="/personal-data">Согласие на обработку данных</a><a href="/cookies">Использование cookie</a></nav>
@@ -105,9 +105,9 @@
     </aside>
 
     <main class="map-area" id="map-area" aria-label="Интерактивная карта">
-      <div class="map-heading"><div><div class="eyebrow">СЕКРЕТНЫЕ ДОКУМЕНТЫ</div><h1 id="map-title">Развязка<span id="title-en">МЕСТА ДОКУМЕНТОВ</span></h1></div><div class="map-count"><span class="live-dot"></span><strong id="visible-count">32</strong><span>точки на карте</span></div></div>
+      <div class="map-heading"><div><div class="eyebrow">СЕКРЕТНЫЕ ДОКУМЕНТЫ</div><h1 id="map-title">Загрузка карты<span id="title-en">МЕСТА ДОКУМЕНТОВ</span></h1></div><div class="map-count"><span class="live-dot"></span><strong id="visible-count">—</strong><span>точки на карте</span></div></div>
       <div class="map-viewport" id="viewport" tabindex="0" aria-label="Карта. Масштаб: плюс и минус. Перемещение: стрелки. Сброс: ноль.">
-        <div class="map-stage" id="map-stage"><img id="map-image" src="assets/maps/interchange.webp" alt="Карта локации Развязка" draggable="false"></div>
+        <div class="map-stage" id="map-stage"><img id="map-image" alt="" draggable="false" hidden></div>
         <svg id="link-layer" class="link-layer" aria-hidden="true"></svg>
         <div id="marker-layer" class="marker-layer"></div>
         <div class="map-empty" id="map-empty" hidden><svg><use href="#i-search"/></svg><strong>Нет подходящих точек</strong><span id="map-empty-text">Попробуйте изменить запрос или фильтры.</span><button class="button" id="empty-reset">Сбросить фильтры</button></div>
@@ -115,7 +115,7 @@
       </div>
       <div class="map-tools" aria-label="Управление картой"><button class="icon-button" id="zoom-in" title="Приблизить (+)" aria-label="Приблизить">+</button><span id="zoom-level">100%</span><button class="icon-button" id="zoom-out" title="Отдалить (−)" aria-label="Отдалить">−</button><hr><button class="icon-button" id="fit-button" title="Вся карта (0)" aria-label="Показать всю карту"><svg><use href="#i-fit"/></svg></button><button class="icon-button" id="fullscreen-button" title="На весь экран" aria-label="На весь экран"><svg><use href="#i-expand"/></svg></button></div>
       <div class="map-bottom"><div class="map-hint"><svg><use href="#i-pin"/></svg><span>Нажмите на точку, чтобы увидеть документ</span></div><span class="mouse-hint">Колесо — масштаб · Перетаскивание — обзор</span></div>
-      <div class="minimap" id="minimap" role="button" tabindex="0" aria-label="Обзор карты: нажмите, чтобы переместиться"><img id="minimap-image" src="assets/maps/interchange.webp" alt="" draggable="false"><div id="minimap-view"></div><span>ОБЗОР</span></div>
+      <div class="minimap" id="minimap" role="button" tabindex="0" aria-label="Обзор карты: нажмите, чтобы переместиться" hidden><img id="minimap-image" alt="" draggable="false"><div id="minimap-view"></div><span>ОБЗОР</span></div>
       <div class="map-attribution"><button id="credits-button">Карты и авторы</button></div>
 
       <aside class="detail-panel" id="detail-panel" aria-label="Выбранный документ" hidden>
@@ -135,6 +135,6 @@
   <dialog class="dialog about-dialog" id="about-dialog"><div class="dialog-heading"><div><div class="eyebrow">О ПРОЕКТЕ</div><h2>Всё нужное — на карте.</h2></div><button class="icon-button dialog-close" aria-label="Закрыть"><svg><use href="#i-close"/></svg></button></div><p>Escape from Tarkov Wiki — личный справочник мест появления секретных документов для Kord Breach в Escape from Tarkov.</p><div class="about-stats"><div><strong id="about-maps">12</strong><span>локаций</span></div><div><strong id="about-spawns">355</strong><span>точек</span></div><div><strong>8</strong><span>типов документов</span></div></div><h3>Как пользоваться</h3><p>Выберите локацию и нужный тип документа. Нажмите на цветную метку, чтобы увидеть точное место на фотографии. Отмечайте найденные точки, добавляйте заметки и переключайтесь на «Осталось».</p><p>Колесо мыши или щипок меняют масштаб. Карту можно перетаскивать. Кнопка ⌖ возвращает общий вид. Уровни схемы переключаются в фильтрах и отображаются на одном плане. Точный этаж здания указан в описании точки.</p><h3>Справочные материалы</h3><ul class="source-list"><li><a href="https://kord-map-mtdv.ru/" target="_blank" rel="noopener noreferrer">Kord Breach — источник точек и схем ↗</a></li><li><a href="https://tarkov.help/ru" target="_blank" rel="noopener noreferrer">Tarkov.help — прохождения ↗</a></li><li><a href="https://escapefromtarkov.fandom.com/ru/wiki/Escape_from_Tarkov_Wiki" target="_blank" rel="noopener noreferrer">Русская Wiki ↗</a></li></ul><p class="muted">Авторы материалов: Metadvij community, Kalle Leskinen, Shebuka и RE3MR. Игровые материалы — Battlestate Games. Карты сохранены с исходными правами; CC BY-NC-SA 4.0.</p><div class="source-version" id="source-version"></div><p class="muted">Данные соответствуют указанной дате. Подложки могут содержать обозначения, не относящиеся к документам. Это неофициальный некоммерческий справочник.</p></dialog>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
   <div class="boot-error" id="boot-error" hidden><h1>Не удалось загрузить карту</h1><p>Проверьте соединение и обновите страницу.</p><button class="button primary" onclick="location.reload()">Попробовать снова</button></div>
-  <script type="module" src="bootstrap.mjs?v=levels-20261016"></script>
+  <script type="module" src="bootstrap.mjs?v=levels-ui-20261016"></script>
 </body>
 </html>

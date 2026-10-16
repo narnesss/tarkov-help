@@ -1,3 +1,9 @@
+// В список уровней попадают только действующие документы, а не пустые слои подложки.
+export function documentFloors(points) {
+  return [...new Set(points.filter(p=>!p.cmsArchived).map(p=>p.floor).filter(Boolean))]
+    .sort((a,b)=>Number(a.replace('floor-',''))-Number(b.replace('floor-',''))||a.localeCompare(b));
+}
+
 // SQL хранит исходные проценты атласа; представление переводит их в единую плоскость уровня.
 export function documentViewport(map) {
   const panel=map.documentPanels?.['floor-1']||Object.values(map.documentPanels||{})[0];

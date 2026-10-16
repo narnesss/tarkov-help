@@ -1,0 +1,53 @@
+/* Один нативный select: изображение слева, выбранное имя и один шеврон внутри поля. */
+body[data-page="documents"] .location-select {
+  display: block;
+  position: relative;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid #384235;
+  border-radius: 8px;
+  background: #20261e;
+  box-sizing: border-box;
+}
+body[data-page="documents"] .location-select:focus-within {
+  border-color: #9affbc;
+  box-shadow: 0 0 0 2px #9affbc;
+}
+body[data-page="documents"] .location-select > img {
+  position: absolute;
+  inset-inline-start: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  pointer-events: none;
+}
+body[data-page="documents"] .location-select select:not([multiple]):not([size]) {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 76px;
+  margin: 0;
+  padding-block: 16px;
+  padding-inline: 74px 48px !important;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: inherit;
+  outline: none;
+  background-color: transparent;
+  color: #f4f7f1;
+  font-size: 20px;
+  font-weight: 750;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+}
+body[data-page="documents"] .location-select select:has(option:checked[value=""]) {
+  color: #919c8e;
+  font-size: 16px;
+  font-weight: 400;
+}
+@media (forced-colors: active) {
+  body[data-page="documents"] .location-select:focus-within { outline: 2px solid Highlight; }
+  body[data-page="documents"] .location-select select:not([multiple]):not([size]) { padding-inline-start: 74px !important; }
+}

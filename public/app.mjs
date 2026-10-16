@@ -2,7 +2,7 @@ import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs
 import {readPersonal,writePersonal} from './profile-store.mjs';
 const storePersonal=(key,value)=>{if(!writePersonal(key,value))throw new Error('Локальное сохранение недоступно');};
 import { STORAGE_KEY, FLOOR_NAMES, filterSpawns, sanitizeProgress, fitTransform, zoomTransform, hasCoordinates } from './model.mjs?v=kord-20261016';
-import {documentViewport,documentPointPosition,documentLevelSvg} from './document-map.mjs?v=levels-20261016';
+import {documentViewport,documentPointPosition,documentLevelSvg,documentFloors} from './document-map.mjs?v=levels-ui-20261016';
 
 const $ = id => document.getElementById(id);
 const documentIconSize = value => typeof value === 'number' && Number.isFinite(value)
@@ -85,6 +85,8 @@ async function start() {
     if(key===artworkKey)return;artworkKey=key;const request=++artworkRequest;
     if(!map.documentPanels){$('map-image').src=map.file;$('minimap-image').src=map.file;return;}
     $('map-loading').hidden=false;
+    $('map-image').hidden=true;
+    $('minimap').hidden=true;
     try{
       const path=map.layeredFile||map.file;
       if(!artworkCache.has(path))artworkCache.set(path,fetch(path,{credentials:'omit'}).then(r=>{if(!r.ok)throw Error('Схема недоступна');return r.text();}).catch(error=>{artworkCache.delete(path);throw error;}));
@@ -165,15 +167,14 @@ async function start() {
   }
 
   function buildFloors() {
-    const map=mapById.get(state.mapId);
-    const values = [...new Set([...Object.keys(map.documentPanels||{}),...mapSpawns().map(s => s.floor).filter(Boolean)])].sort((a,b)=>Number(a.replace('floor-',''))-Number(b.replace('floor-',''))||a.localeCompare(b));
+    const values = documentFloors(mapSpawns());
     $('floor-group').hidden = !values.length || state.allMaps;
     const entries = [['all', 'Все этажи'], ...values.map(f => [f, FLOOR_NAMES[f] || f])];
     if (mapSpawns().some(s => !s.floor)) entries.push(['unknown', 'Этаж не указан']);
     $('floor-select').replaceChildren(...entries.map(([value, name]) => {
       const option = node('option', '', name); option.value = value; return option;
     }));
-    if(!entries.some(([id])=>id===state.floor))state.floor='all';
+    if(!entries.some(([id])=>id===state.floor))state.floor=values[0]||'all';
     $('floor-select').value = state.floor;
     $('floor-group').querySelector('small').textContent=state.floor==='all'?'Все точки на основном плане. Для просмотра отдельного уровня выбери его в списке.':'Этаж здания уточняется в описании точки.';
   }
@@ -187,8 +188,8 @@ async function start() {
     $('map-select').value = id;
     const raidAliases = { streets: 'streets-of-tarkov', groundzero: 'ground-zero', lab: 'the-lab', labyrinth: 'the-labyrinth' };
     $('raid-link').href = siteHref(`raid.html?map=${raidAliases[id] || id}`);
-    $('location-en').textContent = 'ЛОКАЦИЯ';
     $('location-thumb').src = map.layeredFile||map.file;
+    $('location-thumb').hidden = false;
     $('map-index').textContent = `${String(maps.indexOf(map) + 1).padStart(2, '0')} / ${maps.length}`;
     const titleEn = node('span', '', 'МЕСТА ДОКУМЕНТОВ'); titleEn.id = 'title-en';
     $('map-title').replaceChildren(document.createTextNode(map.name), titleEn);
@@ -199,13 +200,17 @@ async function start() {
     $('map-image').alt = 'Карта локации ' + map.name;
     $('map-loading').replaceChildren(node('span', 'spinner'), document.createTextNode('Загрузка карты'));
     $('map-loading').hidden = false;
-    $('map-image').onload = () => { $('map-loading').hidden = true; };
+    artworkKey = '';
+    $('map-image').removeAttribute('src');
+    $('minimap-image').removeAttribute('src');
+    $('map-image').hidden = true;
+    $('minimap').hidden = true;
+    $('map-image').onload = () => { $('map-loading').hidden = true; $('map-image').hidden = false; $('minimap').hidden = false; };
     $('map-image').onerror = () => {
       $('map-loading').replaceChildren(document.createTextNode('Карта не загрузилась. Обновите страницу.'));
       $('map-loading').hidden = false;
     };
     if(!map.documentPanels)$('map-image').src = map.file;
-    if ($('map-image').complete && $('map-image').naturalWidth) $('map-loading').hidden = true;
     if(!map.documentPanels)$('minimap-image').src = map.file;
     $('alt-group').hidden = !mapSpawns().some(s => hasCoordinates(s, true));
     $('show-alts').checked = state.showAlts;
