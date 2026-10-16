@@ -36,7 +36,7 @@ final readonly class PlayerOAuth
     {
         abort_unless($this->enabled($provider),503,'Этот способ входа пока недоступен.');
         $consents=app(LegalConsents::class);
-        $legalVersion=$session->username===null||!$consents->hasCurrent($session->userId)?$consents->accept($input):null;
+        $legalVersion=$session->username===null&&array_key_exists('legal',$input)?$consents->accept($input):null;
         DB::table('player_oauth_states')->where('expires_at','<=',time())->delete();
         $state=bin2hex(random_bytes(32));
         DB::table('player_oauth_states')->insert(['token_hash'=>hash('sha256',$state),'session_hash'=>hash('sha256',$session->token),'provider'=>$provider,
@@ -53,7 +53,7 @@ final readonly class PlayerOAuth
             ->where('provider',$provider)->where('expires_at','>',time());
         $challenge=(clone $query)->first();
         abort_unless($challenge && $query->delete()===1,403,'Ссылка входа истекла. Начните вход ещё раз.');
-        if($challenge->legal_version!==null||$challenge->link_user_id===null||!app(LegalConsents::class)->hasCurrent($challenge->link_user_id)){
+        if($challenge->legal_version!==null){
             app(LegalConsents::class)->checkVersion($challenge->legal_version);
         }
         try {
@@ -93,6 +93,9 @@ final readonly class PlayerOAuth
                         'Чтобы подключить этот способ входа, войдите в существующий аккаунт и подключите его в личном кабинете.');
                     $owner=$owners->first();
                     if($owner===null){
+                        if(config('legal.required')&&$challenge->legal_version===null){
+                            throw \Illuminate\Validation\ValidationException::withMessages(['legal.registration'=>'Аккаунт ещё не создан. Откройте регистрацию и самостоятельно отметьте обязательные согласия.']);
+                        }
                         $owner=bin2hex(random_bytes(16));
                         DB::table('users')->insert(['id'=>$owner,'username'=>$provider.'_'.bin2hex(random_bytes(6)),'password_hash'=>null,'created_at'=>time()]);
                         $created=true;
@@ -104,7 +107,7 @@ final readonly class PlayerOAuth
                 if(!$identity){DB::table('player_identities')->insert([...$values,'provider'=>$provider,'subject'=>$subject,'user_id'=>$owner,'created_at'=>time()]);}
                 else {DB::table('player_identities')->where('provider',$provider)->where('subject',$subject)->update($values);}
                 if($created){$this->profiles->initializeOAuth($owner,$display,$avatar);}
-                if($challenge->legal_version!==null){app(LegalConsents::class)->record($owner,$challenge->legal_version,$provider);}
+                if($created&&$challenge->legal_version!==null){app(LegalConsents::class)->record($owner,$challenge->legal_version,$provider);}
                 $next=$this->accounts->issueFor($owner); $this->accounts->revoke($session);
                 return $next;
             });

@@ -38,13 +38,16 @@ final class LegalConsentsTest extends TestCase
         $this->withCookie('eft_session',$who[0])->postJson('/api/auth/register',$data,['Origin'=>'https://wiki.test','X-CSRF-Token'=>'forged'])->assertForbidden();
         $this->postAs($who,'/api/auth/register',$data)->assertUnprocessable();$this->assertDatabaseCount('users',1);$this->assertDatabaseCount('player_legal_consents',0);
     }
-    public function test_oauth_requires_consent_before_contacting_provider_and_preserves_it_through_state(): void
+    public function test_oauth_registration_requires_consent_before_creating_account_and_preserves_it_through_state(): void
     {
         config(['player-auth.google'=>['client_id'=>'test-client','client_secret'=>'private-test']]);
         Http::preventStrayRequests();Http::fake(['oauth2.googleapis.com/token'=>Http::response(['access_token'=>'test']),
             'openidconnect.googleapis.com/v1/userinfo'=>Http::response(['sub'=>'legal-google-user','name'=>'Игрок','email'=>'legal@example.test','email_verified'=>true])]);
-        $who=$this->guest();$this->postAs($who,'/api/auth/oauth/google/start',[])->assertUnprocessable();
-        $this->assertDatabaseCount('player_oauth_states',0);Http::assertNothingSent();
+        $who=$this->guest();$r=$this->postAs($who,'/api/auth/oauth/google/start',[])->assertOk();
+        parse_str(parse_url($r->json('url'),PHP_URL_QUERY),$login);
+        Http::assertNothingSent();
+        $this->postAs($who,'/api/auth/oauth/google/finish',['state'=>$login['state'],'code'=>'valid'])->assertUnprocessable()->assertJsonValidationErrors('legal.registration');
+        $this->assertDatabaseCount('users',1);$this->assertDatabaseCount('player_identities',0);$this->assertDatabaseCount('player_legal_consents',0);
         $r=$this->postAs($who,'/api/auth/oauth/google/start',['legal'=>$this->accepted()])->assertOk();parse_str(parse_url($r->json('url'),PHP_URL_QUERY),$query);
         $this->assertDatabaseHas('player_oauth_states',['legal_version'=>$this->accepted()['version']]);
         $finished=$this->postAs($who,'/api/auth/oauth/google/finish',['state'=>$query['state'],'code'=>'valid'])->assertOk();
@@ -68,7 +71,7 @@ final class LegalConsentsTest extends TestCase
         $this->postAs($who,'/api/auth/oauth/google/finish',['state'=>$query['state'],'code'=>'valid'])->assertUnprocessable()->assertJsonValidationErrors('legal.version');
         Http::assertNothingSent();$this->assertDatabaseCount('player_identities',0);$this->assertDatabaseCount('player_legal_consents',0);$this->assertDatabaseCount('users',1);
     }
-    public function test_old_account_confirms_before_link_without_losing_progress_or_getting_fake_history(): void
+    public function test_old_account_links_and_logs_in_without_new_consents_or_losing_progress(): void
     {
         config(['legal.required'=>false]);$guest=$this->guest();$r=$this->postAs($guest,'/api/auth/register',['username'=>'old_legal_user','password'=>'Cedar!Kite9_Moon'])->assertOk();
         $who=[$r->headers->getCookies()[0]->getValue(),$r->json('csrf'),$r->json('profile.id')];$this->assertDatabaseCount('player_legal_consents',0);
@@ -76,12 +79,13 @@ final class LegalConsentsTest extends TestCase
         config(['legal.required'=>true,'player-auth.google'=>['client_id'=>'test-client','client_secret'=>'private-test']]);
         Http::preventStrayRequests();Http::fake(['oauth2.googleapis.com/token'=>Http::response(['access_token'=>'test']),
             'openidconnect.googleapis.com/v1/userinfo'=>Http::response(['sub'=>'old-google-user','name'=>'Игрок','email'=>'old@example.test'])]);
-        $this->postAs($who,'/api/auth/oauth/google/start',[])->assertUnprocessable();
-        $r=$this->postAs($who,'/api/auth/oauth/google/start',['legal'=>$this->accepted()])->assertOk();parse_str(parse_url($r->json('url'),PHP_URL_QUERY),$query);
+        $r=$this->postAs($who,'/api/auth/oauth/google/start',[])->assertOk();parse_str(parse_url($r->json('url'),PHP_URL_QUERY),$query);
         $this->assertDatabaseCount('player_legal_consents',0);
         $this->postAs($who,'/api/auth/oauth/google/finish',['state'=>$query['state'],'code'=>'valid'])->assertOk()->assertJsonPath('profile.id',$who[2]);
-        $this->assertDatabaseHas('user_state',['user_id'=>$who[2],'state_key'=>'old-progress','version'=>9]);$this->assertDatabaseCount('player_legal_consents',3);
-        $this->assertTrue(app(LegalConsents::class)->hasCurrent($who[2]));
+        $this->assertDatabaseHas('user_state',['user_id'=>$who[2],'state_key'=>'old-progress','version'=>9]);$this->assertDatabaseCount('player_legal_consents',0);
+        $guest=$this->guest();$r=$this->postAs($guest,'/api/auth/oauth/google/start',[])->assertOk();parse_str(parse_url($r->json('url'),PHP_URL_QUERY),$login);
+        $this->postAs($guest,'/api/auth/oauth/google/finish',['state'=>$login['state'],'code'=>'valid'])->assertOk()->assertJsonPath('profile.id',$who[2]);
+        $this->assertDatabaseCount('player_legal_consents',0);$this->assertDatabaseHas('user_state',['user_id'=>$who[2],'state_key'=>'old-progress','version'=>9]);
     }
     public function test_legal_pages_are_public_without_creating_accounts_and_checkboxes_are_not_preselected(): void
     {
@@ -89,7 +93,30 @@ final class LegalConsentsTest extends TestCase
             $r->assertDontSee('bootstrap.mjs',false);$this->assertSame([],$r->headers->getCookies());}
         $this->assertDatabaseCount('users',0);
         $html=$this->get('/account')->assertOk()->getContent();$dom=new \DOMDocument();@$dom->loadHTML($html);$xpath=new \DOMXPath($dom);
-        $this->assertSame(9,$xpath->query('//fieldset[contains(@class,"legal-checkboxes")]//input[@type="checkbox" and @required and not(@checked)]')->length);
-        $this->assertSame(3,$xpath->query('//fieldset[contains(@class,"legal-checkboxes") and @disabled and @hidden]')->length);
+        $this->assertSame(3,$xpath->query('//fieldset[contains(@class,"legal-checkboxes")]//input[@type="checkbox" and @required and not(@checked)]')->length);
+        $this->assertSame(1,$xpath->query('//fieldset[contains(@class,"legal-checkboxes") and @disabled and @hidden and @id="account-register-legal"]')->length);
+        $this->assertSame(0,$xpath->query('//*[@id="account-link-legal" or @id="account-oauth-legal" or @id="account-email" or @id="account-email-form"]')->length);
+    }
+
+    public function test_login_by_verified_email_links_another_provider_without_registration_checkboxes(): void
+    {
+        config(['player-auth.google'=>['client_id'=>'google-test','client_secret'=>'private-test'],
+            'player-auth.discord'=>['client_id'=>'discord-test','client_secret'=>'private-test']]);
+        Http::preventStrayRequests();Http::fake([
+            'oauth2.googleapis.com/token'=>Http::response(['access_token'=>'test']),
+            'openidconnect.googleapis.com/v1/userinfo'=>Http::response(['sub'=>'google-owner','name'=>'Первое имя','email'=>'owner@gmail.com','email_verified'=>true]),
+            'discord.com/api/oauth2/token'=>Http::response(['access_token'=>'test']),
+            'discord.com/api/users/@me'=>Http::response(['id'=>'12345','global_name'=>'Другое имя','email'=>' OWNER@gmail.com ','verified'=>true]),
+        ]);
+        $who=$this->guest();$r=$this->postAs($who,'/api/auth/oauth/google/start',['legal'=>$this->accepted()])->assertOk();
+        parse_str(parse_url($r->json('url'),PHP_URL_QUERY),$query);
+        $r=$this->postAs($who,'/api/auth/oauth/google/finish',['state'=>$query['state'],'code'=>'valid'])->assertOk();$owner=$r->json('profile.id');
+        DB::table('user_state')->insert(['user_id'=>$owner,'state_key'=>'saved-progress','value'=>'{"saved":true}','version'=>7,'updated_at'=>time()]);
+        $who=$this->guest();$r=$this->postAs($who,'/api/auth/oauth/discord/start',[])->assertOk();
+        parse_str(parse_url($r->json('url'),PHP_URL_QUERY),$query);
+        $this->postAs($who,'/api/auth/oauth/discord/finish',['state'=>$query['state'],'code'=>'valid'])->assertOk()
+            ->assertJsonPath('profile.id',$owner)->assertJsonPath('profile.name','Первое имя');
+        $this->assertDatabaseCount('player_identities',2);$this->assertDatabaseCount('player_legal_consents',3);
+        $this->assertDatabaseHas('user_state',['user_id'=>$owner,'state_key'=>'saved-progress','version'=>7]);
     }
 }

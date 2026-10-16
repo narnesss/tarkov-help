@@ -25,7 +25,6 @@ for(const button of document.querySelectorAll('[data-profile-tools]'))button.onc
 function renderIdentity(){
 $('account-name').textContent=profileStore.profile.name;
 $('account-settings').hidden=!profileStore.profile.authenticated;
-$('account-email').hidden=!profileStore.profile.authenticated;
 $('account-name-form').elements.display_name.value=profileStore.profile.name;
 $('account-avatar').textContent=profileStore.profile.name.slice(0,1).toUpperCase();
 const avatar=profileStore.profile.avatar;
@@ -57,7 +56,6 @@ function setView(next){
   form.elements.confirmation.required=view==='register';form.elements.confirmation.disabled=view!=='register';
   $('account-confirm-label').hidden=view!=='register';$('account-password-help').hidden=view!=='register';
   showLegal($('account-register-legal'),view==='register');
-  showLegal($('account-oauth-legal'),view==='login'&&!profileStore.profile.authenticated);
   const url=new URL(location.href);url.searchParams.set('view',view);history.replaceState(null,'',url);
 }
 for(const button of document.querySelectorAll('[data-auth-view]'))button.onclick=()=>setView(button.dataset.authView);
@@ -121,55 +119,18 @@ async function saveName(name){
   applyPlayerProfile(profileStore,response);renderIdentity();globalThis.dispatchEvent(new Event('wiki:profile'));notify('Имя сохранено.');
 }
 $('account-name-form').onsubmit=event=>{event.preventDefault();run(()=>saveName($('account-name-form').elements.display_name.value.trim()));};
-let emailState=null,emailLoaded=false;
-function renderEmail(state){
-  emailState=state;
-  const pending=state.pending,now=Math.floor(Date.now()/1000),cooldown=Math.max(0,(pending?.resendAt??0)-now);
-  $('account-email-status').textContent=(state.email?'Подтверждён: '+state.email+'. ':'Подтверждённая почта пока не указана. ')
-    +(pending?'Код отправлен на '+pending.email+'. Осталось попыток: '+pending.attemptsLeft+'.':'');
-  if(!state.enabled)$('account-email-status').textContent+=' Отправка писем временно недоступна.';
-  if(!emailLoaded){$('account-email-form').elements.email.value=pending?.email??state.email??'';emailLoaded=true;}
-  updateEmailSend();
-  $('account-email-send').disabled=!state.enabled||cooldown>0;
-  $('account-email-send').textContent=cooldown>0?'Повторить через '+cooldown+' с':pending?'Отправить новый код':'Отправить код';
-  $('account-email-code-form').hidden=!pending;
-  $('account-email-confirm').disabled=!pending||pending.attemptsLeft===0;
-}
-function updateEmailSend(){
-  const address=$('account-email-form').elements.email.value.trim().toLowerCase();
-  $('account-email-send').hidden=!!emailState?.email&&address===emailState.email;
-}
-$('account-email-form').elements.email.addEventListener('input',updateEmailSend);
-async function loadEmail(){
-  if(!profileStore.profile.authenticated||!profileStore.server)return;
-  try{renderEmail(await profileStore.api('/api/auth/email'));}
-  catch{$('account-email-status').textContent='Не удалось загрузить настройки почты. Обнови страницу позже.';}
-}
-$('account-email-form').onsubmit=event=>{event.preventDefault();run(async()=>{
-  renderEmail(await profileStore.api('/api/auth/email/send',{method:'POST',body:JSON.stringify({email:$('account-email-form').elements.email.value.trim()})}));
-  $('account-email-code-form').elements.code.value='';notify(emailState.sent?'Код отправлен. Введи его из письма.':'Этот e-mail уже подтверждён.');
-});};
-$('account-email-code-form').onsubmit=event=>{event.preventDefault();run(async()=>{
-  if(!emailState?.pending)throw new Error('Запроси новый код подтверждения.');
-  try{
-    renderEmail(await profileStore.api('/api/auth/email/verify',{method:'POST',body:JSON.stringify({challenge_id:emailState.pending.challengeId,code:$('account-email-code-form').elements.code.value.trim()})}));
-    $('account-email-code-form').elements.code.value='';notify('E-mail подтверждён. Аккаунт и прогресс сохранены.');
-  }finally{await loadEmail();}
-});};
-setInterval(()=>{if(emailState?.pending){if(emailState.pending.expiresAt<=Date.now()/1000)emailState={...emailState,pending:null};renderEmail(emailState);}},1000);
-loadEmail();
 for(const button of document.querySelectorAll('[data-oauth]'))button.onclick=()=>run(async()=>{
   if(!await profileStore.flush())throw new Error('Сначала сохрани последние изменения профиля.');
-  const consent=collectLegal($(profileStore.profile.authenticated?'account-link-legal':view==='register'?'account-register-legal':'account-oauth-legal'));
+  const consent=!profileStore.profile.authenticated&&view==='register'?collectLegal($('account-register-legal')):{};
   const result=await profileStore.api('/api/auth/oauth/'+button.dataset.oauth+'/start',{method:'POST',body:JSON.stringify(consent)});
   const target=new URL(result.url);if(target.protocol!=='https:'||!['accounts.google.com','discord.com'].includes(target.hostname))throw new Error('Не удалось открыть сервис входа.');
   location.assign(target.href);
-},error=>showLegalFailure($(profileStore.profile.authenticated?'account-link-legal':view==='register'?'account-register-legal':'account-oauth-legal'),error));
+},error=>!profileStore.profile.authenticated&&view==='register'&&showLegalFailure($('account-register-legal'),error));
 async function providers(){
   if(!profileStore.server){$('account-submit').disabled=true;$('account-provider-status').textContent='Вход в аккаунт сейчас недоступен. Можно продолжить с локальным профилем.';return;}
   try{
     const {providers,legal}=await profileStore.api('/api/auth/options');configureLegal(legal);
-    showLegal($('account-register-legal'),view==='register');showLegal($('account-oauth-legal'),view==='login'&&!profileStore.profile.authenticated);showLegal($('account-link-legal'),profileStore.profile.authenticated);
+    showLegal($('account-register-legal'),view==='register'&&!profileStore.profile.authenticated);
     for(const provider of providers)for(const button of document.querySelectorAll(`[data-oauth="${provider.id}"]`)){
       button.disabled=!provider.enabled;
       button.title=provider.linked?'Этот способ входа уже подключён':provider.enabled?'':'Этот способ входа пока недоступен';
@@ -218,7 +179,10 @@ if(oauth){
   history.replaceState(null,'',siteHref('account.html'));
   if(oauthError)notify('Вход отменён. Можно выбрать другой способ или попробовать снова.');
   else if(['google','discord'].includes(oauth)&&code&&state){
-    await run(async()=>{await profileStore.authenticate('oauth/'+oauth+'/finish',{code,state});location.replace(siteHref('account.html'));});
+    await run(async()=>{await profileStore.authenticate('oauth/'+oauth+'/finish',{code,state});location.replace(siteHref('account.html'));},error=>{
+      if(error.data?.errors?.['legal.registration']){setView('register');$('account-auth-feedback').textContent=error.message;return true;}
+      return false;
+    });
   }else notify('Не удалось завершить вход. Начни его ещё раз.');
 }else if(!profileStore.profile.authenticated)setView(params.get('view'));
 providers();render();
