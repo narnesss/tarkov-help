@@ -41,7 +41,8 @@ return json_decode(<<<'JSON'
       "style.css",
       "site-ui.css",
       "controls.css",
-      "home.css"
+      "home.css",
+      "home-responsive.css"
     ],
     "body_attributes": "class=\"home-page\" data-page=\"index\""
   },

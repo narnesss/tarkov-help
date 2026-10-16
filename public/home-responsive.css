@@ -1,0 +1,158 @@
+/* Главная: содержимое переносится внутри карточек, шапка не перекрывает мобильный поиск. */
+.home-page .home-shell,
+.home-page .home-shell :is(section, form),
+.home-page :is(.home-hero, .home-directory-grid, .home-traders, .home-location-list, .home-search-top, .home-section-heading, .home-footer) > * {
+  min-width: 0;
+}
+.home-page .home-shell {
+  overflow-wrap: anywhere;
+}
+.home-page .home-card-link {
+  max-width: 100%;
+}
+.home-page .home-footer img {
+  flex-shrink: 0;
+}
+
+@media (max-width: 1000px) {
+  .home-page .topbar {
+    position: relative;
+  }
+  .home-page .topbar .header-right {
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+  .home-page .topbar .profile-trigger {
+    max-width: none;
+    min-width: 0;
+    white-space: normal;
+    overflow: visible;
+  }
+  .home-page .button {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .home-page .home-search-form input[type=search] {
+    font-size: 16px;
+    min-height: 46px;
+    width: 100%;
+  }
+  .home-page :is(.home-search-hints a, .home-footer nav a, .home-section-heading > a) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .home-page .home-search-hints {
+    row-gap: 2px;
+  }
+  .home-page .home-footer nav {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 760px) {
+  .home-page .topbar .header-right {
+    flex: 1 0 100%;
+    margin: 0;
+    gap: 8px;
+  }
+  .home-page .topbar .header-right > a {
+    flex: 1 1 auto;
+    justify-content: center;
+    text-align: center;
+  }
+  .home-page .topbar .atlas-modes a {
+    flex: 1 1 84px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .home-page .home-hero-actions .button {
+    flex: 1 1 180px;
+  }
+  .home-page .home-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .home-page .home-stats span {
+    font-size: 11px;
+  }
+  .home-page .home-section-heading {
+    flex-wrap: wrap;
+  }
+  .home-page .home-section-heading > a {
+    font-size: 13px;
+  }
+  .home-page .home-trader strong {
+    font-size: 12px;
+  }
+  .home-page .home-trader > span {
+    font-size: 11px;
+  }
+  .home-page .home-trader {
+    overflow-wrap: anywhere;
+  }
+  .home-page .home-journal-meter {
+    flex-wrap: wrap;
+  }
+  .home-page .home-journal-meter progress {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .home-page .home-journal-strip > .button {
+    flex: 1 1 auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .home-page .home-search-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 10px;
+    gap: 8px;
+  }
+  .home-page .home-search-form > svg {
+    display: none;
+  }
+  .home-page .home-search-form input[type=search] {
+    padding: 10px 4px;
+  }
+  .home-page .home-search-form .button {
+    width: 100%;
+    font-size: 13px;
+  }
+  .home-page .home-search-hints {
+    font-size: 12px;
+  }
+  .home-page .home-search-results a {
+    padding-inline: 4px;
+    gap: 10px;
+  }
+  .home-page .home-directory-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .home-page .home-traders {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .home-page .home-trader {
+    padding: 16px 8px;
+    border-right: 1px solid #34422c;
+    border-bottom: 1px solid #34422c;
+  }
+  .home-page .home-trader:nth-child(2n) {
+    border-right: 0;
+  }
+  .home-page .home-trader:nth-last-child(-n+2) {
+    border-bottom: 0;
+  }
+  .home-page .home-location-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .home-page .home-location-list strong {
+    font-size: 14px;
+  }
+}
