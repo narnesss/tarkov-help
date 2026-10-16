@@ -1,5 +1,5 @@
 import {pageParams,initializeSiteRoutes} from './site-routes.mjs?v=release-20261016';
-import {json} from './guide-common.mjs?v=lazy-20261016';import {sourcePoint} from './quest-map-model.mjs?v=release-20261016';
+import {json,external} from './guide-common.mjs?v=guides-20261016b';import {sourcePoint} from './quest-map-model.mjs?v=guides-20261016b';
 import {QuestMapFocusReceiver} from './quest-map-messages.mjs';
 const $=id=>document.getElementById(id),textNode=text=>{const n=document.createElement('span');n.textContent=text;return n;};
 function showError(message){const root=$('qmap-loading');root.hidden=false;root.replaceChildren(textNode(message));const retry=document.createElement('button');retry.textContent='Повторить';retry.type='button';retry.onclick=()=>location.reload();root.append(retry);}
@@ -10,6 +10,7 @@ async function start(){
  const bounds=L.latLngBounds([-asset.height,0],[0,asset.width]);const image=L.imageOverlay(asset.src,bounds,{interactive:false,attribution:'Авторы исходной карты'}).addTo(map);
  image.on('error',()=>{showError('Не удалось загрузить схему.');});
  image.on('load',()=>{$('qmap-loading').hidden=true;});
+ if(asset.sourceUrl){const credit=external('Источник схемы ↗',asset.sourceUrl);$('qmap-title').after(credit);}
  $('qmap-title').textContent=asset.ru;$('qmap-count').textContent=points.length+' точек задания';
  if(typeof asset.sourceUrl==='string'&&/^https:\/\//.test(asset.sourceUrl))$('qmap-source').href=asset.sourceUrl;
  const positions=[],markers=[];

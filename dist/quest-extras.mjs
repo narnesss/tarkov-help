@@ -3,7 +3,7 @@ import {applyQuestPatch} from './quest-patch-update.mjs';
 import {loadContentBundle} from './content-bundles.mjs?v=lazy-20261016';
 import {localizeDisplay} from './ru-data.mjs';
 import {assemblyFrames} from './gunsmith-model.mjs';
-import {applyQuestContent} from './quest-content-model.mjs?v=guides-20261016';
+import {applyQuestContent} from './quest-content-model.mjs?v=guides-20261016b';
 let loaded;
 let uiLoaded;
 export function questUiExtras(){return uiLoaded||=loadContentBundle('quest-ui').then(([choices,questMaps,rewardSupport,ticketMap,conditions])=>({choices,questMaps,rewardSupport,ticketMap,conditions,uiReady:true})).catch(error=>{uiLoaded=null;throw error;});}

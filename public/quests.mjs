@@ -1,25 +1,25 @@
 import {siteHref,pageParams,canonicalURL} from './site-routes.mjs?v=release-20261016';
 import {questChoiceIndex,questChoicePlan} from './quest-choice-model.mjs';
-import {QuestMapView} from './quest-map-view.mjs?v=guides-20261016';
+import {QuestMapView} from './quest-map-view.mjs?v=guides-20261016b';
 import {questHref,catalogHref,catalogRoute,sectionTasks,catalogGroups,questPreview} from './quest-catalog-model.mjs?v=release-20261016';
 import {QuestObjectiveWorkspace} from './quest-objective-workspace.mjs?v=lazy-20261016';
 import {QuestSaveFeedback} from './quest-save-feedback.mjs?v=lazy-20261016';
 import {setObjective} from './quest-workspace-model.mjs';
 import {rewardLabels,resolveAchievement,rewardAchievementNames,groupRewardLines,rewardTradeUnlocks} from './quest-reward-model.mjs';
-import {hasQuestRoadmap,questGalleryPlan} from './quest-view-model.mjs';
+import {hasQuestRoadmap,questGalleryPlan} from './quest-view-model.mjs?v=guides-20261016b';
 import {resolveGameMode} from './game-mode.mjs';
 import {ruText} from './ru-data.mjs';
-import {questExtras,questUiExtras,enrichQuests} from './quest-extras.mjs?v=guides-20261016';
+import {questExtras,questUiExtras,enrichQuests} from './quest-extras.mjs?v=guides-20261016b';
 import {pageDataset} from './page-data.mjs?v=lazy-20261016';
-import {questBriefing} from './quest-briefing.mjs?v=guides-20261016';
-import {questMapForLocation,questMapURL} from './quest-map-model.mjs?v=guides-20261016';
-import {galleryBlock} from './gallery.mjs?v=lazy-20261016';
+import {questBriefing} from './quest-briefing.mjs?v=guides-20261016b';
+import {questMapForLocation,questMapURL} from './quest-map-model.mjs?v=guides-20261016b';
+import {galleryBlock} from './gallery.mjs?v=guides-20261016b';
 import {objectiveConditions,objectiveGuide,questOverview} from './quest-details.mjs';
 import {orderedObjectives} from './roadmap-model.mjs';
 import {TicketQuestMap} from './ticket-quest-map.mjs?v=lazy-20261016';
 import {GunsmithView} from './gunsmith-ui.mjs?v=lazy-20261016';
 import {itemReferences,resolveQuestItem} from './quest-items.mjs';
-import {$,el,num,image,external,json,readStorage,writeStorage,toast,download,apiDataset,cached,section,action,empty} from './guide-common.mjs?v=lazy-20261016';
+import {$,el,num,image,external,json,readStorage,writeStorage,toast,download,apiDataset,cached,section,action,empty} from './guide-common.mjs?v=guides-20261016b';
 import {QUEST_STATES,idOf,list,mapAlias,taskMaps,sanitizeQuestProgress,questState,availability,requirementStatus,followingTasks,filterQuests,chainColumns} from './quest-model.mjs';
 
 const params=pageParams();
@@ -210,10 +210,12 @@ function renderObjectives(root,t){
     if(o.requiredKeys?.length)body.append(el('p','Ключи для этой цели:','objective-subheading'),keyGroups(o.requiredKeys));
     if(o.requiredItems?.length){const needed=el('div','','objective-items');body.append(el('p','Потребуется:'));for(const item of o.requiredItems){for(const ref of itemReferences(item.ids||item.item||item.id))needed.append(itemChip(ref,item.count||1));if(item.foundInRaid)needed.append(el('span','Найдено в рейде','quest-tag'));if((item.ids||[]).length>1)needed.append(el('span','Подходят альтернативные предметы из списка.'));}body.append(needed);}const photos=gallery.byObjective.get(o.id);if(photos?.length)body.append(galleryBlock(photos,{title:'Место выполнения',compact:true,association:'objective',contextTitle:t.name,carousel:gallery.frames}));
     if(o.markerItem)body.append(el('p','Устройство для установки:'),itemChip(o.markerItem));
-    const mapIds=[...new Set([...(o.maps||[]).map(idOf),...(o.zones||[]).map(x=>idOf(x.map))])];const mapRows=el('div','','quest-map-links');const seen=new Set();for(const id of mapIds){const m=maps.get(id),alias=m&&mapAlias(m.normalizedName);if(alias&&!seen.has(alias)){seen.add(alias);const a=mapLink(id,t.id,o.noMapCoordinates?'Локация':'Места задания',o.noMapCoordinates?undefined:o.id);if(a&&o.noMapCoordinates){const url=new URL(a.href,location.href);if(/^\/raid(?:\/|\.html|$)/.test(url.pathname))url.searchParams.delete('quest');a.href=url.toString();}if(a)mapRows.append(a);}}body.append(mapRows);row.append(check,summary);objectiveWorkspace.register(o,row,body,check,doneNote);
+    const mapIds=[...new Set([...(o.maps||[]).map(idOf),...(o.zones||[]).map(x=>idOf(x.map))])];const mapRows=el('div','','quest-map-links');const seen=new Set();for(const id of mapIds){const m=maps.get(id),alias=m&&mapAlias(m.normalizedName);if(alias&&!seen.has(alias)){seen.add(alias);const known=(extras.questMaps?.modes?.[mode]?.[t.id]||[]).some(map=>(map.id===alias||map.locationId===alias)&&map.points.some(point=>point.objectiveId===o.id||point.objectiveIds?.includes(o.id))),locationOnly=o.noMapCoordinates&&!known;const a=mapLink(id,t.id,locationOnly?'Локация':'Места задания',locationOnly?undefined:o.id);if(a&&locationOnly){const url=new URL(a.href,location.href);if(/^\/raid(?:\/|\.html|$)/.test(url.pathname))url.searchParams.delete('quest');a.href=url.toString();}if(a)mapRows.append(a);}}body.append(mapRows);row.append(check,summary);objectiveWorkspace.register(o,row,body,check,doneNote);
   }objectiveWorkspace.refresh();
+  if(t.guideAdditions?.length){const hints=section('Ориентиры и уточнения');const seen=new Set();for(const note of t.guideAdditions)for(const line of note.paragraphs||[])if(!seen.has(line)){seen.add(line);hints.append(el('p',line));}const links=el('div','','guide-button-row');for(const link of [...(t.guideSources||[]),...(t.externalMaps||[])])if(!seen.has(link.url)){seen.add(link.url);links.append(external(link.label+' ↗',link.url));}hints.append(links);root.append(hints);}
   questMap=new QuestMapView(t,{mode,index:extras.questMaps,objectives});root.append(questMap.root);
   if(gallery.general.length)root.append(galleryBlock(gallery.general,{title:'Где выполнять задание',contextTitle:t.name,carousel:gallery.frames}));
+  if(gallery.archived?.length){const archive=el('details','','guide-section');archive.append(el('summary','Архивные места до переработки Маяка ('+gallery.archived.length+')'),el('p',gallery.archived[0].archiveReason),galleryBlock(gallery.archived,{title:'Архивные иллюстрации',contextTitle:t.name}));root.append(archive);}
   if(t.neededKeys?.length){const keys=section('Нужные ключи');for(const group of t.neededKeys){keys.append(el('p',maps.get(idOf(group.map))?.name||'Локация'));keys.append(keyGroups(group.keys));}root.append(keys);}
   if(t.failConditions?.length){const fail=section('Условия провала');for(const f of t.failConditions){const task=byId.get(idOf(f.task));if(task)fail.append(taskButton(task,`Может провалить текущее задание при статусе: ${(f.status||[]).map(s=>QUEST_STATES[s]||s).join(' / ')}`));else fail.append(el('p',f.description&&!/^[a-f0-9]{24}$/.test(f.description)?f.description:'Есть отдельное условие провала. Проверьте его в игре.'));}root.append(fail);}
   const guides=section('Прохождение и материалы');guides.id='quest-materials-section';const own=el('p','Используйте цели выше как чек-лист. Подготовьте указанные предметы и ключи, затем откройте места задания на карте. Метки «Найдено в рейде» и особые условия снаряжения обязательны, если они указаны в цели.');guides.append(own);for(const line of t.storyGuide||[])if(hasQuestRoadmap(t)||!/схем/i.test(line))guides.append(el('p',line));const links=el('div','','guide-button-row');for(const source of t.storySources||[])links.append(external(source.label+' ↗',source.url));const help=data.guideLinks?.[t.id]?.tarkovHelpUrl;if(help)links.append(external('Прохождение на Tarkov.help ↗',help));if(t.wikiLink)links.append(external('Страница Wiki ↗',t.wikiLink));guides.append(links);root.append(guides);

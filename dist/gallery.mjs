@@ -1,5 +1,5 @@
-import {publicAttribution} from './public-links.mjs';
-import {el,action,image,external,safeURL} from './guide-common.mjs?v=lazy-20261016';
+import {publicAttribution} from './public-links.mjs?v=quest-guides-20261016';
+import {el,action,image,external,safeURL} from './guide-common.mjs?v=quest-guides-20261016';
 let dialog,entries=[],position=0,previousFocus;
 function prepare(){
  if(dialog)return;

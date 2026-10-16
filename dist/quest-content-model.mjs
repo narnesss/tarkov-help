@@ -12,5 +12,9 @@ export function applyQuestContent(task, content, mode) {
    return {...goal,...(typeof guide.description==='string'?{description:guide.description}:{}),...(Array.isArray(guide.maps)?{maps:guide.maps}:{})};
   }),
   experience:task.story?task.experience:source.experience??task.experience,
+  galleryArchiveRules:[...(task.galleryArchiveRules||[]),...(source.galleryArchiveRules||[])],
+  guideAdditions:[...(task.guideAdditions||[]),...(source.guideAdditions||[])],
+  guideSources:[...(task.guideSources||[]),...(source.guideSources||[])],externalMaps:[...(task.externalMaps||[]),...(source.externalMaps||[])],
+  guideUpdates:{...(task.guideUpdates||{}),...(source.guideUpdates||{})},
   gallery:[...(task.gallery||[]),...(source.gallery||[])]};
 }

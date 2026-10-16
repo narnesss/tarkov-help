@@ -29,3 +29,10 @@ export function questMapFocusIndexes(map,objectiveId,objectives=[]){
  const label=key(objective?.description),labels=label?map.points.flatMap((point,index)=>key(point.name)===label?[index]:[]):[];
  return labels.length?labels:map.points.length===1?[0]:[];
 }
+
+/** Различает несколько схем одной локации и выбирает схему нужной цели. */
+export const questMapKey=map=>map.renderer+":"+(map.sourceKey||map.id);
+export function questMapForObjective(maps,mapId,objectiveId=""){
+ const matches=maps.filter(map=>map.id===mapId||map.locationId===mapId);
+ return matches.find(map=>objectiveId&&map.points.some(point=>point.objectiveId===objectiveId||point.objectiveIds?.includes(objectiveId)))||matches[0];
+}

@@ -13,7 +13,7 @@ final class SiteTest extends TestCase
     {
         $this->assertStringStartsWith('13.', $this->app->version());
         foreach (['/', '/account', '/documents', '/raid/interchange', '/quests/the-ticket', '/quests/trader/prapor',
-                  '/quests/story', '/reference/items/5447a9cd4bdc2dbd208b4567', '/boss/reshala', '/quest-map/customs'] as $url) {
+                  '/quests/story', '/reference/items/5447a9cd4bdc2dbd208b4567', '/boss/reshala', '/quest-map/customs', '/quest-map/guide-20261016-groundzero-terragroup'] as $url) {
             $response = $this->get($url);
             $response->assertOk()->assertSee('name="wiki-runtime" content="php"', false);
             $this->assertFalse($response->headers->has('Set-Cookie'));
@@ -21,7 +21,7 @@ final class SiteTest extends TestCase
         foreach (['/quests/unknown', '/raid/unknown', '/reference/items/invalid', '/%2e%2e/bootstrap'] as $url) {
             $this->get($url)->assertNotFound()->assertSee('name="wiki-runtime" content="php"', false);
         }
-        $this->assertCount(7006, $this->app->make(PageCatalog::class)->routes());
+        $this->assertCount(7041, $this->app->make(PageCatalog::class)->routes());
     }
 
     public function test_head_and_etag_revalidation_do_not_return_page_body(): void

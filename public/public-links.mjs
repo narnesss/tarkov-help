@@ -12,6 +12,7 @@ export function publicLinkURL(value,base=globalThis.location?.href||'https://wik
   if(url.protocol!=='https:'||url.username||url.password||url.port)return '';
   if(url.hostname==='tarkov.help')return /^\/ru(?:\/|$)/.test(url.pathname)?url.href:PUBLIC_HELP;
   if(url.hostname==='escapefromtarkov.fandom.com')return url.pathname.startsWith('/ru/wiki/')?url.href:PUBLIC_WIKI;
+  if(url.hostname==='www.tarkovhead.com'&&/^\/en\/quest\/(?:regular|pve)\/[a-z0-9-]+$/.test(url.pathname))return url.href;
   return '';
  }catch{return '';}
 }
