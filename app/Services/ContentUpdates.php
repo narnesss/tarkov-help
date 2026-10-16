@@ -84,7 +84,7 @@ final readonly class ContentUpdates
     private function records(array $data,array $patches,string $path): array
     {
         $indexes=[];foreach($data as $i=>$row){if(isset($indexes[$row['id']])){throw new RuntimeException('Повтор ID в наборе.');}$indexes[$row['id']]=$i;}
-        $allowed=$path==='maps.json'?['file','width','height','type','coordinateSource','coordinateDate','documentPanels']:
+        $allowed=$path==='maps.json'?['file','width','height','type','coordinateSource','coordinateDate','documentPanels','layeredFile']:
             ['map','mapName','doc','docName','caption','floor','x','y','x2','y2','images','originalImages','cmsArchived','cmsPositions','cmsMedia','cmsDocuments','archiveReason','sourcePointId','coordinateSource','coordinateDate','sourceCoordinates'];
         $seen=[];
         foreach($patches as $patch){

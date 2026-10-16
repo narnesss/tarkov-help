@@ -2,6 +2,7 @@ import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs
 import {readPersonal,writePersonal} from './profile-store.mjs';
 const storePersonal=(key,value)=>{if(!writePersonal(key,value))throw new Error('Локальное сохранение недоступно');};
 import { STORAGE_KEY, FLOOR_NAMES, filterSpawns, sanitizeProgress, fitTransform, zoomTransform, hasCoordinates } from './model.mjs?v=kord-20261016';
+import {documentViewport,documentPointPosition,documentLevelSvg} from './document-map.mjs?v=levels-20261016';
 
 const $ = id => document.getElementById(id);
 const documentIconSize = value => typeof value === 'number' && Number.isFinite(value)
@@ -77,6 +78,23 @@ async function start() {
   let results = [];
   let lastFocus = null;
   let storageWarningShown = false;
+  const artworkCache=new Map();let artworkKey='',artworkRequest=0,artworkUrl=null;
+
+  async function updateMapArtwork() {
+    const map=mapById.get(state.mapId),key=map.id+':'+state.floor+':'+(map.layeredFile||map.file);
+    if(key===artworkKey)return;artworkKey=key;const request=++artworkRequest;
+    if(!map.documentPanels){$('map-image').src=map.file;$('minimap-image').src=map.file;return;}
+    $('map-loading').hidden=false;
+    try{
+      const path=map.layeredFile||map.file;
+      if(!artworkCache.has(path))artworkCache.set(path,fetch(path,{credentials:'omit'}).then(r=>{if(!r.ok)throw Error('Схема недоступна');return r.text();}).catch(error=>{artworkCache.delete(path);throw error;}));
+      const source=await artworkCache.get(path);if(request!==artworkRequest)return;
+      const rendered=documentLevelSvg(source,map,state.floor),previous=artworkUrl;
+      artworkUrl=URL.createObjectURL(new Blob([rendered],{type:'image/svg+xml'}));
+      $('map-image').src=artworkUrl;$('minimap-image').src=artworkUrl;
+      if(previous)URL.revokeObjectURL(previous);
+    }catch(error){if(request!==artworkRequest)return;artworkKey='';$('map-loading').replaceChildren(document.createTextNode('Схема не загрузилась. Обновите страницу.'));$('map-loading').hidden=false;}
+  }
 
   function persist() {
     try {
@@ -90,7 +108,7 @@ async function start() {
     }
   }
   function persistPrefs() {
-    try { storePersonal(prefsKey, { map: state.mapId, showAlts: state.showAlts, query:state.query, status:state.status, floor:state.floor, allMaps:state.allMaps, types:[...state.types], tab:state.tab, iconSize:state.iconSize }); } catch { /* Progress export remains available. */ }
+    try { storePersonal(prefsKey, { map: state.mapId, showAlts: state.showAlts, query:state.query, status:state.status, floor:state.floor, allMaps:state.allMaps, types:[...state.types], tab:state.tab, iconSize:state.iconSize, artworkVersion:2 }); } catch { /* Progress export remains available. */ }
   }
   function applyIconSize() {
     $('document-icon-size').value = state.iconSize;
@@ -147,7 +165,8 @@ async function start() {
   }
 
   function buildFloors() {
-    const values = [...new Set(mapSpawns().map(s => s.floor).filter(Boolean))].sort();
+    const map=mapById.get(state.mapId);
+    const values = [...new Set([...Object.keys(map.documentPanels||{}),...mapSpawns().map(s => s.floor).filter(Boolean)])].sort((a,b)=>Number(a.replace('floor-',''))-Number(b.replace('floor-',''))||a.localeCompare(b));
     $('floor-group').hidden = !values.length || state.allMaps;
     const entries = [['all', 'Все этажи'], ...values.map(f => [f, FLOOR_NAMES[f] || f])];
     if (mapSpawns().some(s => !s.floor)) entries.push(['unknown', 'Этаж не указан']);
@@ -156,6 +175,7 @@ async function start() {
     }));
     if(!entries.some(([id])=>id===state.floor))state.floor='all';
     $('floor-select').value = state.floor;
+    $('floor-group').querySelector('small').textContent=state.floor==='all'?'Все точки на основном плане. Для просмотра отдельного уровня выбери его в списке.':'Этаж здания уточняется в описании точки.';
   }
 
   function setMap(id, { updateUrl = true, restoreFloor = false } = {}) {
@@ -163,17 +183,17 @@ async function start() {
     if (!map) return;
     closeDetails(false, false);
     state.mapId = id;
-    state.floor = restoreFloor&&typeof prefs.floor==='string'?prefs.floor:'all';
+    state.floor = restoreFloor&&prefs.artworkVersion===2&&typeof prefs.floor==='string'?prefs.floor:map.documentPanels?'floor-1':'all';
     $('map-select').value = id;
     const raidAliases = { streets: 'streets-of-tarkov', groundzero: 'ground-zero', lab: 'the-lab', labyrinth: 'the-labyrinth' };
     $('raid-link').href = siteHref(`raid.html?map=${raidAliases[id] || id}`);
     $('location-en').textContent = 'ЛОКАЦИЯ';
-    $('location-thumb').src = map.file;
+    $('location-thumb').src = map.layeredFile||map.file;
     $('map-index').textContent = `${String(maps.indexOf(map) + 1).padStart(2, '0')} / ${maps.length}`;
     const titleEn = node('span', '', 'МЕСТА ДОКУМЕНТОВ'); titleEn.id = 'title-en';
     $('map-title').replaceChildren(document.createTextNode(map.name), titleEn);
     document.title = `${map.name} — Escape from Tarkov Wiki`;
-    mapWidth = map.width; mapHeight = map.height;
+    const viewport=documentViewport(map);mapWidth = viewport.width; mapHeight = viewport.height;
     $('map-stage').style.width = mapWidth + 'px';
     $('map-stage').style.height = mapHeight + 'px';
     $('map-image').alt = 'Карта локации ' + map.name;
@@ -184,9 +204,9 @@ async function start() {
       $('map-loading').replaceChildren(document.createTextNode('Карта не загрузилась. Обновите страницу.'));
       $('map-loading').hidden = false;
     };
-    $('map-image').src = map.file;
+    if(!map.documentPanels)$('map-image').src = map.file;
     if ($('map-image').complete && $('map-image').naturalWidth) $('map-loading').hidden = true;
-    $('minimap-image').src = map.file;
+    if(!map.documentPanels)$('minimap-image').src = map.file;
     $('alt-group').hidden = !mapSpawns().some(s => hasCoordinates(s, true));
     $('show-alts').checked = state.showAlts;
     buildFloors();
@@ -198,6 +218,7 @@ async function start() {
 
   function render() {
     persistPrefs();
+    updateMapArtwork();
     results = filterSpawns(spawns, { ...state, found: state.found });
     visible = results.filter(s => s.map === state.mapId && hasCoordinates(s));
     $('visible-count').textContent = visible.length;
@@ -271,7 +292,7 @@ async function start() {
         button.addEventListener('focus', () => drawLink(spawn));
         button.addEventListener('blur', () => drawLink(state.selected));
         fragment.append(button);
-        markers.push({ element: button, spawn, x: alternate ? spawn.x2 : spawn.x, y: alternate ? spawn.y2 : spawn.y });
+        markers.push({ element: button, spawn, ...documentPointPosition(spawn,mapById.get(spawn.map),alternate) });
       }
     }
     $('marker-layer').replaceChildren(fragment);
@@ -282,7 +303,8 @@ async function start() {
     $('link-layer').replaceChildren();
     if (!spawn || !state.showAlts || !hasCoordinates(spawn, true) || !visible.some(s => s.id === spawn.id)) return;
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    for (const [key, value] of Object.entries({ x1: view.x + spawn.x / 100 * mapWidth * view.scale, y1: view.y + spawn.y / 100 * mapHeight * view.scale, x2: view.x + spawn.x2 / 100 * mapWidth * view.scale, y2: view.y + spawn.y2 / 100 * mapHeight * view.scale })) line.setAttribute(key, value);
+    const first=documentPointPosition(spawn,mapById.get(spawn.map)),second=documentPointPosition(spawn,mapById.get(spawn.map),true);
+    for (const [key, value] of Object.entries({ x1: view.x + first.x / 100 * mapWidth * view.scale, y1: view.y + first.y / 100 * mapHeight * view.scale, x2: view.x + second.x / 100 * mapWidth * view.scale, y2: view.y + second.y / 100 * mapHeight * view.scale })) line.setAttribute(key, value);
     line.setAttribute('stroke', docById.get(spawn.doc).color);
     $('link-layer').append(line);
   }
@@ -315,6 +337,7 @@ async function start() {
   function selectPoint(spawn, center = true, focus = true) {
     if (focus) lastFocus = document.activeElement;
     if (spawn.map !== state.mapId) setMap(spawn.map, { updateUrl: false });
+    if(state.floor!=='all'&&spawn.floor&&state.floor!==spawn.floor){state.floor=spawn.floor;buildFloors();render();}
     state.selected = spawn;
     state.photo = 0;
     const doc = docById.get(spawn.doc);
@@ -467,8 +490,9 @@ async function start() {
     if (!hasCoordinates(spawn)) return;
     const center = usableCenter();
     view.scale = clampScale(Math.max(view.scale, baseScale * 1.8));
-    view.x = center.x - spawn.x / 100 * mapWidth * view.scale;
-    view.y = center.y - spawn.y / 100 * mapHeight * view.scale;
+    const point=documentPointPosition(spawn,mapById.get(spawn.map));
+    view.x = center.x - point.x / 100 * mapWidth * view.scale;
+    view.y = center.y - point.y / 100 * mapHeight * view.scale;
     applyView();
   }
   function minimapGeometry() {
@@ -549,7 +573,7 @@ async function start() {
   $('map-select').addEventListener('change', event => { setMap(event.target.value); setSidebar(false); });
   $('search').addEventListener('input', event => { state.query = event.target.value; if (state.query) chooseTab('points'); render(); });
   $('all-maps').addEventListener('change', event => { state.allMaps = event.target.checked; state.floor = 'all'; buildFloors(); chooseTab('points'); render(); });
-  $('floor-select').addEventListener('change', event => { state.floor = event.target.value; render(); });
+  $('floor-select').addEventListener('change', event => { state.floor = event.target.value; closeDetails(false,false); buildFloors();render(); });
   $('show-alts').addEventListener('change', event => { state.showAlts = event.target.checked; persistPrefs(); renderMarkers(); });
   $('document-icon-size').addEventListener('input', event => {
     state.iconSize = documentIconSize(event.target.valueAsNumber);

@@ -103,6 +103,23 @@ final class ContentUpdatesTest extends TestCase
         $this->assertDatabaseMissing('wiki_projection_states',['owner_type'=>'content-update','owner_id'=>2026101602]);
     }
 
+    public function test_switchable_document_artwork_changes_only_file_metadata(): void
+    {
+        $this->fixtures();$this->dataset('spawns.json',[['id'=>'stable-document','map'=>'ground-zero','caption'=>'Документ','x'=>12.5,'y'=>34.5]]);
+        $spawns=ContentDataset::where('path','spawns.json')->firstOrFail();$pointRef=$spawns->getRawOriginal('payload');
+        $positions=DB::table('wiki_point_positions')->get()->all();$points=DB::table('wiki_map_points')->pluck('id','external_id')->all();$progress=DB::table('user_state')->first();
+        $old=$this->getJson('/api/content/data/maps.json')->assertOk()->headers->get('X-Wiki-Content-Revision');
+        $patch=['schemaVersion'=>1,'id'=>2026101603,'datasets'=>['maps.json'=>['records'=>[
+            ['id'=>'ground-zero','expected'=>['file'=>'map.webp'],'fields'=>['layeredFile'=>'assets/documents/ground-zero.svg']],
+        ]]]];app(ContentUpdates::class)->apply($patch);
+        $response=$this->getJson('/api/content/data/maps.json')->assertJsonPath('0.layeredFile','assets/documents/ground-zero.svg')->assertJsonPath('0.file','map.webp');
+        $this->assertNotSame($old,$response->headers->get('X-Wiki-Content-Revision'));
+        $this->assertSame($pointRef,$spawns->fresh()->getRawOriginal('payload'));
+        $this->assertEquals($positions,DB::table('wiki_point_positions')->get()->all());
+        $this->assertSame($points,DB::table('wiki_map_points')->pluck('id','external_id')->all());$this->assertEquals($progress,DB::table('user_state')->first());
+        $this->assertFalse(app(ContentUpdates::class)->apply($patch)['applied']);
+    }
+
     public function test_update_changes_only_reviewed_content_and_keeps_ids_relations_progress_and_files(): void
     {
         [$quest,$map]=$this->fixtures();$before=$quest->payload;$pointIds=DB::table('wiki_map_points')->pluck('id','external_id')->all();
