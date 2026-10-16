@@ -18,9 +18,16 @@ export function sourcePoint(point,asset) {return [-point.y*asset.height/100,poin
 
 export function questMapFocusIndexes(map,objectiveId,objectives=[]){
  if(!objectiveId)return [];
- const exact=map.points.flatMap((point,index)=>point.objectiveId===objectiveId?[index]:[]);if(exact.length)return exact;
+ const exact=map.points.flatMap((point,index)=>(point.objectiveId===objectiveId||point.objectiveIds?.includes(objectiveId))?[index]:[]);if(exact.length)return exact;
  const objective=objectives.find(o=>o.id===objectiveId);
  const key=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/ё/g,'е').replace(/[\s.,«»"“”]+/g,' ').trim();
  const label=key(objective?.description),labels=label?map.points.flatMap((point,index)=>key(point.name)===label?[index]:[]):[];
  return labels.length?labels:map.points.length===1?[0]:[];
+}
+
+/** Различает несколько схем одной локации и выбирает схему нужной цели. */
+export const questMapKey=map=>map.renderer+":"+(map.sourceKey||map.id);
+export function questMapForObjective(maps,mapId,objectiveId=""){
+ const matches=maps.filter(map=>map.id===mapId);
+ return matches.find(map=>objectiveId&&map.points.some(point=>point.objectiveId===objectiveId||point.objectiveIds?.includes(objectiveId)))||matches[0];
 }
