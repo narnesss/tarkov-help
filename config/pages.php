@@ -7,7 +7,7 @@ return json_decode(<<<'JSON'
   "account": {
     "title": "Личный кабинет — Escape from Tarkov Wiki",
     "description": "Твой прогресс квестов, убежища и достижений в PVE и PVP. Вход и регистрация.",
-    "styles": ["style.css", "site-ui.css", "controls.css", "account.css"],
+    "styles": ["style.css", "site-ui.css", "controls.css", "account.css", "account-responsive.css"],
     "body_attributes": "class=\"account-page\" data-page=\"account\""
   },
   "terms": {

@@ -1,0 +1,137 @@
+/* Мобильный кабинет и формы: размеры не зависят от длины текста и состояния входа. */
+.account-page .account-shell,
+.account-page .account-shell :is(form, fieldset, label, section),
+.account-page :is(.account-hero, .account-identity, .account-auth-panel, .account-summary, .account-detail-grid) > * {
+  min-width: 0;
+}
+.account-page .account-shell {
+  overflow-wrap: anywhere;
+}
+.account-page .profile-field :is(input, select) {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.account-page .account-stat-heading {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.account-page .account-stat-heading > span {
+  flex-shrink: 0;
+}
+.account-page .profile-dialog {
+  overflow-wrap: anywhere;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.account-page .profile-dialog .guide-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 1000px) {
+  .account-page .topbar .header-right {
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+  .account-page .topbar .profile-trigger {
+    max-width: none;
+    min-width: 0;
+    white-space: normal;
+    overflow: visible;
+  }
+  .account-page :is(.button, .account-auth-tabs button, .account-mode button, .account-forgot, .profile-dialog .icon-button) {
+    min-height: 44px;
+  }
+  .account-page .button {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+  }
+  .account-page .profile-field :is(input, select),
+  .account-page .profile-form input {
+    font-size: 16px;
+    min-height: 46px;
+    scroll-margin-block: 24px;
+  }
+  .account-page .account-summary {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .account-page .topbar .header-right {
+    flex: 1 0 100%;
+    margin: 0;
+    gap: 8px;
+  }
+  .account-page .topbar .header-right > a {
+    flex: 1 1 auto;
+    justify-content: center;
+    text-align: center;
+  }
+  .account-page .topbar .atlas-modes a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .account-page .account-auth-tabs button {
+    flex: 1;
+    min-width: 0;
+    padding-inline: 8px;
+  }
+  .account-page .account-shell :is(.account-auth-copy, .account-auth-form, .account-settings, .account-connections, .account-detail) {
+    padding: 20px;
+  }
+  .account-page .account-actions .button {
+    flex: 1 1 160px;
+    justify-content: center;
+  }
+  .account-page #account-recovery .button {
+    width: 100%;
+    justify-content: center;
+  }
+  .account-page .legal-checkboxes {
+    padding: 12px;
+    max-width: 100%;
+  }
+  .account-page .legal-checkboxes legend {
+    max-width: 100%;
+  }
+  .account-page .legal-checkboxes label > span {
+    min-width: 0;
+  }
+  .account-page .legal-checkboxes label {
+    min-height: 44px;
+    padding-block: 6px;
+  }
+  .account-page .profile-dialog {
+    max-width: calc(100vw - 24px);
+    max-height: calc(100dvh - 24px);
+    padding: 18px;
+  }
+  .account-page .profile-dialog .profile-actions > .button,
+  .account-page .profile-dialog .guide-button-row > .button {
+    flex: 1 1 160px;
+  }
+}
+
+@media (max-width: 360px) {
+  .account-page .account-shell {
+    padding-inline: 12px;
+  }
+  .account-page .account-hero h1 {
+    font-size: 30px;
+  }
+  .account-page .account-shell :is(.account-auth-copy, .account-auth-form, .account-settings, .account-connections, .account-detail) {
+    padding: 16px;
+  }
+  .account-page .account-identity {
+    gap: 12px;
+    padding: 16px;
+  }
+}
