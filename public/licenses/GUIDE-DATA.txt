@@ -102,3 +102,12 @@ Downloaded Wiki illustrations are encoded as WebP (quality 90) with unchanged di
 geometry and embedded author credits. Compression is the only image modification. Original and delivered SHA-256 hashes are recorded. Additional Ground Zero and Labyrinth map drawings retain exact geometry
 and all embedded credits. Exact source image URLs/hashes and match coverage are
 in research/quest-content-update/audit.json and the map index.
+
+16.10.2026 — Дополнение мест выполнения квестов
+Источники: TarkovHead / Escape from Tarkov Wiki и прохождения Tarkov.help.
+Адреса исходных изображений и их SHA-256: research/quest-guide-enrichment-20261016/audit.json.
+Игровые изображения принадлежат Battlestate Games. Сохранены подписи авторов схем, включая RE3MR, XTYCHO и Jindouz.
+Карты RE3MR/XTYCHO сохраняют встроенные уведомления CC BY-NC-SA 4.0; остальные права остаются у авторов.
+Изображения пропорционально уменьшены и сохранены в WebP; подписи авторов не удалены.
+Русские пояснения написаны самостоятельно по проверенным фактам. Полные статьи и код сторонних сайтов не копировались.
+Старые изображения мест V3 сохранены в отдельном архивном блоке; ID целей и прогресс не меняются.

@@ -1,0 +1,3622 @@
+{
+  "version": "quest-guides-20261016-v1",
+  "checkedAt": "2026-10-16",
+  "quests": {
+    "norvinsk-526": {
+      "slug": "unanswered-calls",
+      "name": "Звонки без ответа",
+      "expectedObjectiveIds": [
+        "norvinsk-526-goal-21209d471bfe",
+        "norvinsk-526-goal-aebf7ed1b28d"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-c07d6a26370c9ef8",
+          "url": "assets/quest-guides-20261016/c07d6a26370c9ef8-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/c07d6a26370c9ef8.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Saving_the_Mole_Map.png?preset=original",
+          "caption": "Эпицентр: офис TerraGroup на схеме",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/unanswered-calls",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-526-goal-21209d471bfe"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-df9ebc26a70b6b71",
+          "url": "assets/quest-guides-20261016/df9ebc26a70b6b71-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/df9ebc26a70b6b71.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Ground_Zero_TerraGroup_Building.png?preset=original",
+          "caption": "Здание TerraGroup",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/unanswered-calls",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-526-goal-21209d471bfe"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-e1f3f22ddc0d6050",
+          "url": "assets/quest-guides-20261016/e1f3f22ddc0d6050-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/e1f3f22ddc0d6050.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Unanswered_Calls_stash_position.png?preset=original",
+          "caption": "Ресепшен на втором этаже: место закладки послания",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/unanswered-calls",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-526-goal-21209d471bfe"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "norvinsk-526-goal-21209d471bfe"
+          ],
+          "paragraphs": [
+            "Послание нужно положить за стойкой ресепшена на втором этаже главного здания TerraGroup. Маркер схемы указывает здание; точное место за стойкой показано на скриншоте. После закладки выйдите через Nakatani Basement Stairs или Emercom Checkpoint в том же рейде."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [
+        {
+          "id": "ground-zero",
+          "name": "Эпицентр — TerraGroup, 2 этаж",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-groundzero-terragroup",
+          "points": [
+            {
+              "x": 84,
+              "y": 38.5,
+              "name": "Главное здание TerraGroup: ресепшен на втором этаже; точное место на фото",
+              "objectiveIds": [
+                "norvinsk-526-goal-21209d471bfe"
+              ],
+              "objectiveId": "norvinsk-526-goal-21209d471bfe",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/unanswered-calls",
+              "precision": "schematic"
+            }
+          ]
+        }
+      ],
+      "guideSources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/unanswered-calls"
+        }
+      ]
+    },
+    "norvinsk-n17": {
+      "slug": "make-amends",
+      "name": "Загладить вину",
+      "expectedObjectiveIds": [
+        "norvinsk-n17-goal-36b2741d2bfd",
+        "norvinsk-n17-goal-d789fd56beaa",
+        "norvinsk-n17-goal-9e19e5a36957",
+        "norvinsk-n17-goal-968c4c728339"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-5665befcbfe381b6",
+          "url": "assets/quest-guides-20261016/5665befcbfe381b6-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/5665befcbfe381b6.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/1/16/To_the_Light_Getting_Acquainted_Chalet_Map.png/revision/latest?cb=20260908214631",
+          "caption": "Шале с возможными местами флешки V3",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-n17-goal-36b2741d2bfd"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-90b0ba7a1aa0b3bb",
+          "url": "assets/quest-guides-20261016/90b0ba7a1aa0b3bb-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/90b0ba7a1aa0b3bb.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/8/87/To_the_Light_Getting_Acquainted_Spawn_3.png/revision/latest?cb=20260908224641",
+          "caption": "Флешка V3 в ноутбуке на обеденном столе",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-n17-goal-36b2741d2bfd"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-10ad49a94bb6bea4",
+          "url": "assets/quest-guides-20261016/10ad49a94bb6bea4-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/10ad49a94bb6bea4.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/4/48/To_the_Light_Getting_Acquainted_Spawn_2.png/revision/latest?cb=20260908213429",
+          "caption": "Флешка V3 в ноутбуке на столе",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-n17-goal-36b2741d2bfd"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-d1fc8972750f821c",
+          "url": "assets/quest-guides-20261016/d1fc8972750f821c-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/d1fc8972750f821c.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/5/51/LostContactMap.png/revision/latest?cb=20260127182820",
+          "caption": "Палатка у теннисного корта: возможное место флешки V3",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-n17-goal-36b2741d2bfd"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-dfd83537a11feb50",
+          "url": "assets/quest-guides-20261016/dfd83537a11feb50-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/dfd83537a11feb50.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/8/80/To_the_Light_Getting_Acquainted_Spawn_1.png/revision/latest?cb=20260908212928",
+          "caption": "Флешка V3 в ноутбуке в палатке",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-n17-goal-36b2741d2bfd"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "norvinsk-n17-goal-36b2741d2bfd"
+          ],
+          "paragraphs": [
+            "В актуальном прохождении флешку V3 ищут в ноутбуках в шале и в палатке у теннисного корта. Список мест после переработки Маяка продолжает уточняться; скриншоты показывают подтверждённые варианты, а не гарантированный спавн. Перепрошивку передатчика выполняют в Разведцентре второго уровня при работающем электричестве."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [
+        {
+          "id": "lighthouse",
+          "name": "Маяк — варианты V3 в шале",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-lighthouse-v3-chalet",
+          "points": [
+            {
+              "x": 60,
+              "y": 68,
+              "name": "Шале: ноутбуки с возможным спавном флешки V3",
+              "objectiveIds": [
+                "norvinsk-n17-goal-36b2741d2bfd"
+              ],
+              "objectiveId": "norvinsk-n17-goal-36b2741d2bfd",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/make-amends",
+              "precision": "schematic"
+            }
+          ]
+        },
+        {
+          "id": "lighthouse",
+          "name": "Маяк — вариант V3 у теннисного корта",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-lighthouse-v3-tent",
+          "points": [
+            {
+              "x": 55.2,
+              "y": 69.7,
+              "name": "Палатка у теннисного корта: ноутбук с возможным спавном V3",
+              "objectiveIds": [
+                "norvinsk-n17-goal-36b2741d2bfd"
+              ],
+              "objectiveId": "norvinsk-n17-goal-36b2741d2bfd",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/make-amends",
+              "precision": "schematic"
+            }
+          ]
+        },
+        {
+          "id": "lighthouse",
+          "name": "Маяк — здание Смотрителя",
+          "renderer": "source",
+          "sourceKey": "lighthouse",
+          "points": [
+            {
+              "x": 8.37,
+              "y": 87.25,
+              "name": "Здание маяка",
+              "manual": true,
+              "objectiveId": "norvinsk-n17-goal-968c4c728339",
+              "objectiveIds": [
+                "norvinsk-n17-goal-968c4c728339"
+              ],
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/make-amends"
+            }
+          ]
+        }
+      ],
+      "guideSources": [
+        {
+          "label": "Актуальные варианты флешки V3",
+          "url": "https://tarkov.help/ru/quest/make-amends"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Варианты флешки V3 на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1066"
+        }
+      ]
+    },
+    "norvinsk-524": {
+      "slug": "uninvited-guests-part-1",
+      "name": "Незваные гости. Часть 1",
+      "expectedObjectiveIds": [
+        "norvinsk-524-goal-8af43469acca",
+        "norvinsk-524-goal-ca882e6e4d3c",
+        "norvinsk-524-goal-38561ce316f7",
+        "norvinsk-524-goal-9c978a2642ba"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-ee47359c9bacd1fe",
+          "url": "assets/quest-guides-20261016/ee47359c9bacd1fe-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/ee47359c9bacd1fe.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Uninvited_Guests_-_Part_1_Map.png?preset=original",
+          "caption": "Три возможных места кейса на Берегу",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/uninvited-guests-part-1",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-524-goal-8af43469acca",
+            "norvinsk-524-goal-ca882e6e4d3c",
+            "norvinsk-524-goal-38561ce316f7",
+            "norvinsk-524-goal-9c978a2642ba"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-e7cbb0d4a3b64fd7",
+          "url": "assets/quest-guides-20261016/e7cbb0d4a3b64fd7-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/e7cbb0d4a3b64fd7.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Uninvited_Guests_-_Part_1_Spawn_1.png?preset=original",
+          "caption": "Кейс на полу в бытовке у вышки Sordi",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/uninvited-guests-part-1",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-524-goal-ca882e6e4d3c"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-e47c9beee8327083",
+          "url": "assets/quest-guides-20261016/e47c9beee8327083-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/e47c9beee8327083.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Uninvited_Guests_-_Part_1_Spawn_2.png?preset=original",
+          "caption": "Кейс на втором этаже метеостанции, в углу у картотеки",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/uninvited-guests-part-1",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-524-goal-38561ce316f7"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-130f30171add2fa5",
+          "url": "assets/quest-guides-20261016/130f30171add2fa5-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/130f30171add2fa5.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Uninvited_Guests_-_Part_1_Spawn_3.png?preset=original",
+          "caption": "Кейс в ГЭС, у двери складского помещения",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/uninvited-guests-part-1",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-524-goal-9c978a2642ba"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "norvinsk-524-goal-8af43469acca",
+            "norvinsk-524-goal-ca882e6e4d3c",
+            "norvinsk-524-goal-38561ce316f7",
+            "norvinsk-524-goal-9c978a2642ba"
+          ],
+          "paragraphs": [
+            "Кейс появляется в одном из трёх мест: на полу в бытовке у Sordi, в углу второго этажа метеостанции у картотеки или в ГЭС у двери склада. После находки нужно успешно выйти с кейсом."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [
+        {
+          "id": "shoreline",
+          "name": "Берег — три места кейса",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-shoreline-case",
+          "points": [
+            {
+              "x": 63.2,
+              "y": 61.8,
+              "name": "Бытовка у вышки Sordi",
+              "objectiveIds": [
+                "norvinsk-524-goal-ca882e6e4d3c"
+              ],
+              "objectiveId": "norvinsk-524-goal-ca882e6e4d3c",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/uninvited-guests-part-1",
+              "precision": "schematic"
+            },
+            {
+              "x": 53.2,
+              "y": 72.3,
+              "name": "Метеостанция, второй этаж",
+              "objectiveIds": [
+                "norvinsk-524-goal-38561ce316f7"
+              ],
+              "objectiveId": "norvinsk-524-goal-38561ce316f7",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/uninvited-guests-part-1",
+              "precision": "schematic"
+            },
+            {
+              "x": 38.8,
+              "y": 68.5,
+              "name": "ГЭС, у двери склада",
+              "objectiveIds": [
+                "norvinsk-524-goal-9c978a2642ba"
+              ],
+              "objectiveId": "norvinsk-524-goal-9c978a2642ba",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/uninvited-guests-part-1",
+              "precision": "schematic"
+            }
+          ]
+        }
+      ],
+      "guideSources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/uninvited-guests-part-1"
+        }
+      ]
+    },
+    "norvinsk-527": {
+      "slug": "cast-the-net",
+      "name": "Забросить невод",
+      "expectedObjectiveIds": [
+        "norvinsk-527-goal-8c656c43765d",
+        "norvinsk-527-goal-55c1afed5231",
+        "norvinsk-527-goal-2077de017d14",
+        "norvinsk-527-goal-b50859bf86a3",
+        "norvinsk-527-goal-bf809cdbab35",
+        "norvinsk-527-goal-722fdbbcd5d1"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-a04a9bcbeb7528c6",
+          "url": "assets/quest-guides-20261016/a04a9bcbeb7528c6-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/a04a9bcbeb7528c6.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Shoreline_Map.png?preset=original",
+          "caption": "Берег: места двух камер",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/cast-the-net",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-527-goal-8c656c43765d",
+            "norvinsk-527-goal-55c1afed5231"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-c75b3da530657c15",
+          "url": "assets/quest-guides-20261016/c75b3da530657c15-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/c75b3da530657c15.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Shoreline_Camera_1.png?preset=original",
+          "caption": "Берег: камера на экскаваторе у контрабандистов",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/cast-the-net",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-527-goal-55c1afed5231"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-3130595f14105048",
+          "url": "assets/quest-guides-20261016/3130595f14105048-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/3130595f14105048.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Shoreline_Camera_2.png?preset=original",
+          "caption": "Берег: камера на грузовике «Урал» у ГЭС",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/cast-the-net",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-527-goal-8c656c43765d"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-9a1b799363630550",
+          "url": "assets/quest-guides-20261016/9a1b799363630550-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/9a1b799363630550.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Streets_of_Tarkov_Map.png?preset=original",
+          "caption": "Улицы Таркова: места двух камер",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/cast-the-net",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-527-goal-2077de017d14",
+            "norvinsk-527-goal-b50859bf86a3"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-9aa03c426f44709b",
+          "url": "assets/quest-guides-20261016/9aa03c426f44709b-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/9aa03c426f44709b.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Streets_of_Tarkov_Camera_1.png?preset=original",
+          "caption": "Улицы Таркова: камера на бетономешалке у упавшего крана",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/cast-the-net",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-527-goal-2077de017d14"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-33d2b7d68ad112e9",
+          "url": "assets/quest-guides-20261016/33d2b7d68ad112e9-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/33d2b7d68ad112e9.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Streets_of_Tarkov_Camera_2.png?preset=original",
+          "caption": "Улицы Таркова: камера в биотуалете у кинотеатра «Родина»",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/cast-the-net",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-527-goal-b50859bf86a3"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-81e170c9cfdf8fc2",
+          "url": "assets/quest-guides-20261016/81e170c9cfdf8fc2-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/81e170c9cfdf8fc2.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Ground_Zero_Map.png?preset=original",
+          "caption": "Эпицентр: места двух камер",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/cast-the-net",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-527-goal-bf809cdbab35",
+            "norvinsk-527-goal-722fdbbcd5d1"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-73a4869761e55e3a",
+          "url": "assets/quest-guides-20261016/73a4869761e55e3a-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/73a4869761e55e3a.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Ground_Zero_Camera_1.png?preset=original",
+          "caption": "Эпицентр: камера на грузовике у спуска к переходу на Улицы",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/cast-the-net",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-527-goal-bf809cdbab35"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-f7c4317b44f5caab",
+          "url": "assets/quest-guides-20261016/f7c4317b44f5caab-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/f7c4317b44f5caab.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Ground_Zero_Camera_2.png?preset=original",
+          "caption": "Эпицентр: камера в жёлтом автобусе под землёй",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/cast-the-net",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-527-goal-722fdbbcd5d1"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "norvinsk-527-goal-8c656c43765d",
+            "norvinsk-527-goal-55c1afed5231",
+            "norvinsk-527-goal-2077de017d14",
+            "norvinsk-527-goal-b50859bf86a3",
+            "norvinsk-527-goal-bf809cdbab35",
+            "norvinsk-527-goal-722fdbbcd5d1"
+          ],
+          "paragraphs": [
+            "Принесите шесть WI-FI камер. На схемах отмечены конкретные грузовики, экскаватор, биотуалет и подземный автобус; скриншоты показывают подход к каждому месту."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [
+        {
+          "id": "shoreline",
+          "name": "Берег — камеры",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-shoreline-cameras",
+          "points": [
+            {
+              "x": 36.4,
+              "y": 64.9,
+              "name": "Грузовик «Урал» у ГЭС",
+              "objectiveIds": [
+                "norvinsk-527-goal-8c656c43765d"
+              ],
+              "objectiveId": "norvinsk-527-goal-8c656c43765d",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/cast-the-net",
+              "precision": "schematic"
+            },
+            {
+              "x": 57.3,
+              "y": 40.3,
+              "name": "Экскаватор у контрабандистов",
+              "objectiveIds": [
+                "norvinsk-527-goal-55c1afed5231"
+              ],
+              "objectiveId": "norvinsk-527-goal-55c1afed5231",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/cast-the-net",
+              "precision": "schematic"
+            }
+          ]
+        },
+        {
+          "id": "streets-of-tarkov",
+          "name": "Улицы Таркова — камеры",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-streets-cameras",
+          "points": [
+            {
+              "x": 38.7,
+              "y": 62.6,
+              "name": "Бетономешалка у упавшего крана",
+              "objectiveIds": [
+                "norvinsk-527-goal-2077de017d14"
+              ],
+              "objectiveId": "norvinsk-527-goal-2077de017d14",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/cast-the-net",
+              "precision": "schematic"
+            },
+            {
+              "x": 59,
+              "y": 75.4,
+              "name": "Биотуалет у кинотеатра «Родина»",
+              "objectiveIds": [
+                "norvinsk-527-goal-b50859bf86a3"
+              ],
+              "objectiveId": "norvinsk-527-goal-b50859bf86a3",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/cast-the-net",
+              "precision": "schematic"
+            }
+          ]
+        },
+        {
+          "id": "ground-zero",
+          "name": "Эпицентр — камеры",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-groundzero",
+          "points": [
+            {
+              "x": 32.1,
+              "y": 36.1,
+              "name": "Грузовик у спуска к переходу на Улицы",
+              "objectiveIds": [
+                "norvinsk-527-goal-bf809cdbab35"
+              ],
+              "objectiveId": "norvinsk-527-goal-bf809cdbab35",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/cast-the-net",
+              "precision": "schematic"
+            },
+            {
+              "x": 87.7,
+              "y": 44.6,
+              "name": "Жёлтый автобус в подземном тоннеле",
+              "objectiveIds": [
+                "norvinsk-527-goal-722fdbbcd5d1"
+              ],
+              "objectiveId": "norvinsk-527-goal-722fdbbcd5d1",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/cast-the-net",
+              "precision": "schematic"
+            }
+          ]
+        }
+      ],
+      "guideSources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/cast-the-net"
+        }
+      ]
+    },
+    "norvinsk-529": {
+      "slug": "reverse-gear",
+      "name": "Задняя передача",
+      "expectedObjectiveIds": [
+        "norvinsk-529-goal-07f549fa8912",
+        "norvinsk-529-goal-95906deff696",
+        "norvinsk-529-goal-33b6483e85d9",
+        "norvinsk-529-goal-1d1ab9fc2406",
+        "norvinsk-529-goal-e9d799722512",
+        "norvinsk-529-goal-48b6c8daab11"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-a04a9bcbeb7528c6",
+          "url": "assets/quest-guides-20261016/a04a9bcbeb7528c6-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/a04a9bcbeb7528c6.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Shoreline_Map.png?preset=original",
+          "caption": "Берег: места двух камер",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-529-goal-07f549fa8912",
+            "norvinsk-529-goal-95906deff696"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-c75b3da530657c15",
+          "url": "assets/quest-guides-20261016/c75b3da530657c15-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/c75b3da530657c15.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Shoreline_Camera_1.png?preset=original",
+          "caption": "Берег: камера на экскаваторе у контрабандистов",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-529-goal-95906deff696"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-34c01e9026423483",
+          "url": "assets/quest-guides-20261016/34c01e9026423483-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/34c01e9026423483.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Shoreline_Camera_1_close.png?preset=original",
+          "caption": "Берег: камера на экскаваторе у контрабандистов",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-529-goal-95906deff696"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-3130595f14105048",
+          "url": "assets/quest-guides-20261016/3130595f14105048-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/3130595f14105048.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Shoreline_Camera_2.png?preset=original",
+          "caption": "Берег: камера на грузовике «Урал» у ГЭС",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-529-goal-07f549fa8912"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-17cb1e242b61394a",
+          "url": "assets/quest-guides-20261016/17cb1e242b61394a-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/17cb1e242b61394a.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Shoreline_Camera_2_close.png?preset=original",
+          "caption": "Берег: камера на грузовике «Урал» у ГЭС",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-529-goal-07f549fa8912"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-9a1b799363630550",
+          "url": "assets/quest-guides-20261016/9a1b799363630550-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/9a1b799363630550.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Streets_of_Tarkov_Map.png?preset=original",
+          "caption": "Улицы Таркова: места двух камер",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-529-goal-33b6483e85d9",
+            "norvinsk-529-goal-1d1ab9fc2406"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-9aa03c426f44709b",
+          "url": "assets/quest-guides-20261016/9aa03c426f44709b-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/9aa03c426f44709b.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Streets_of_Tarkov_Camera_1.png?preset=original",
+          "caption": "Улицы Таркова: камера на бетономешалке у упавшего крана",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-529-goal-33b6483e85d9"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-ed51d92a7acd7e06",
+          "url": "assets/quest-guides-20261016/ed51d92a7acd7e06-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/ed51d92a7acd7e06.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_SOT_Camera_1_close.png?preset=original",
+          "caption": "Улицы Таркова: камера на бетономешалке у упавшего крана",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-529-goal-33b6483e85d9"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-33d2b7d68ad112e9",
+          "url": "assets/quest-guides-20261016/33d2b7d68ad112e9-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/33d2b7d68ad112e9.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Streets_of_Tarkov_Camera_2.png?preset=original",
+          "caption": "Улицы Таркова: камера в биотуалете у кинотеатра «Родина»",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-529-goal-1d1ab9fc2406"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-3225441f302a881d",
+          "url": "assets/quest-guides-20261016/3225441f302a881d-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/3225441f302a881d.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_SOT_Camera_2_close.png?preset=original",
+          "caption": "Улицы Таркова: камера в биотуалете у кинотеатра «Родина»",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-529-goal-1d1ab9fc2406"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-81e170c9cfdf8fc2",
+          "url": "assets/quest-guides-20261016/81e170c9cfdf8fc2-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/81e170c9cfdf8fc2.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Ground_Zero_Map.png?preset=original",
+          "caption": "Эпицентр: места двух камер",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-529-goal-e9d799722512",
+            "norvinsk-529-goal-48b6c8daab11"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-73a4869761e55e3a",
+          "url": "assets/quest-guides-20261016/73a4869761e55e3a-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/73a4869761e55e3a.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Ground_Zero_Camera_1.png?preset=original",
+          "caption": "Эпицентр: камера на грузовике у спуска к переходу на Улицы",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-529-goal-e9d799722512"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-5d13c889d236998f",
+          "url": "assets/quest-guides-20261016/5d13c889d236998f-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/5d13c889d236998f.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Reverse_Gear_GZ_Camera_1_close.png?preset=original",
+          "caption": "Эпицентр: камера на грузовике у спуска к переходу на Улицы",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-529-goal-e9d799722512"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-f7c4317b44f5caab",
+          "url": "assets/quest-guides-20261016/f7c4317b44f5caab-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/f7c4317b44f5caab.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Ground_Zero_Camera_2.png?preset=original",
+          "caption": "Эпицентр: камера в жёлтом автобусе под землёй",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-529-goal-48b6c8daab11"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-9e19b09db026f33f",
+          "url": "assets/quest-guides-20261016/9e19b09db026f33f-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/9e19b09db026f33f.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Reverse_Gear_GZ_Camera_2_close.png?preset=original",
+          "caption": "Эпицентр: камера в жёлтом автобусе под землёй",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-529-goal-48b6c8daab11"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "norvinsk-529-goal-07f549fa8912",
+            "norvinsk-529-goal-95906deff696",
+            "norvinsk-529-goal-33b6483e85d9",
+            "norvinsk-529-goal-1d1ab9fc2406",
+            "norvinsk-529-goal-e9d799722512",
+            "norvinsk-529-goal-48b6c8daab11"
+          ],
+          "paragraphs": [
+            "Камеры забираются там же, где устанавливались в «Забросить невод». На Берегу проверьте гусеницу экскаватора и задний бампер «Урала»; на Улицах — заднее колесо бетономешалки и открытую кабинку туалета; на Эпицентре — бак грузовика и заднее сиденье автобуса."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [
+        {
+          "id": "shoreline",
+          "name": "Берег — камеры",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-shoreline-cameras",
+          "points": [
+            {
+              "x": 36.4,
+              "y": 64.9,
+              "name": "Грузовик «Урал» у ГЭС",
+              "objectiveIds": [
+                "norvinsk-529-goal-07f549fa8912"
+              ],
+              "objectiveId": "norvinsk-529-goal-07f549fa8912",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+              "precision": "schematic"
+            },
+            {
+              "x": 57.3,
+              "y": 40.3,
+              "name": "Экскаватор у контрабандистов",
+              "objectiveIds": [
+                "norvinsk-529-goal-95906deff696"
+              ],
+              "objectiveId": "norvinsk-529-goal-95906deff696",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+              "precision": "schematic"
+            }
+          ]
+        },
+        {
+          "id": "streets-of-tarkov",
+          "name": "Улицы Таркова — камеры",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-streets-cameras",
+          "points": [
+            {
+              "x": 38.7,
+              "y": 62.6,
+              "name": "Бетономешалка у упавшего крана",
+              "objectiveIds": [
+                "norvinsk-529-goal-33b6483e85d9"
+              ],
+              "objectiveId": "norvinsk-529-goal-33b6483e85d9",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+              "precision": "schematic"
+            },
+            {
+              "x": 59,
+              "y": 75.4,
+              "name": "Биотуалет у кинотеатра «Родина»",
+              "objectiveIds": [
+                "norvinsk-529-goal-1d1ab9fc2406"
+              ],
+              "objectiveId": "norvinsk-529-goal-1d1ab9fc2406",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+              "precision": "schematic"
+            }
+          ]
+        },
+        {
+          "id": "ground-zero",
+          "name": "Эпицентр — камеры",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-groundzero",
+          "points": [
+            {
+              "x": 32.1,
+              "y": 36.1,
+              "name": "Грузовик у спуска к переходу на Улицы",
+              "objectiveIds": [
+                "norvinsk-529-goal-e9d799722512"
+              ],
+              "objectiveId": "norvinsk-529-goal-e9d799722512",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+              "precision": "schematic"
+            },
+            {
+              "x": 87.7,
+              "y": 44.6,
+              "name": "Жёлтый автобус в подземном тоннеле",
+              "objectiveIds": [
+                "norvinsk-529-goal-48b6c8daab11"
+              ],
+              "objectiveId": "norvinsk-529-goal-48b6c8daab11",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+              "precision": "schematic"
+            }
+          ]
+        }
+      ],
+      "guideSources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/reverse-gear"
+        }
+      ]
+    },
+    "norvinsk-535": {
+      "slug": "final-stretch",
+      "name": "Финишная прямая",
+      "expectedObjectiveIds": [
+        "norvinsk-535-goal-35130940ced8",
+        "norvinsk-535-goal-cab3a6a08904"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-41304f3af8c35444",
+          "url": "assets/quest-guides-20261016/41304f3af8c35444-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/41304f3af8c35444.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Final_Stretch_Map.png?preset=original",
+          "caption": "Ноутбук в переулке за закусочной на Никитской",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/final-stretch",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-535-goal-35130940ced8"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-008f3afc67a97751",
+          "url": "assets/quest-guides-20261016/008f3afc67a97751-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/008f3afc67a97751.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Final_Stretch_Diner.png?preset=original",
+          "caption": "Вход в закусочную, через которую можно пройти в переулок",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/final-stretch",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-535-goal-35130940ced8"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-209198db0c278bbb",
+          "url": "assets/quest-guides-20261016/209198db0c278bbb-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/209198db0c278bbb.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Final_Stretch_Ventilation.png?preset=original",
+          "caption": "Вентиляционная шахта с ноутбуком",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/final-stretch",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-535-goal-35130940ced8"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-693846d4d98c0d04",
+          "url": "assets/quest-guides-20261016/693846d4d98c0d04-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/693846d4d98c0d04.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Final_Stretch_Laptop_Spawn.png?preset=original",
+          "caption": "Точное место появления ноутбука",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/final-stretch",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-535-goal-35130940ced8"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "norvinsk-535-goal-35130940ced8"
+          ],
+          "paragraphs": [
+            "Войдите в закусочную на Никитской улице и пройдите в переулок за ней. Ноутбук лежит в небольшой вентиляционной шахте. Предмет появляется при активном задании; после находки его нужно вынести из рейда."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [
+        {
+          "id": "streets-of-tarkov",
+          "name": "Улицы Таркова — ноутбук",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-streets-laptop",
+          "points": [
+            {
+              "x": 62.2,
+              "y": 60.4,
+              "name": "Вентиляционная шахта в переулке за закусочной",
+              "objectiveIds": [
+                "norvinsk-535-goal-35130940ced8"
+              ],
+              "objectiveId": "norvinsk-535-goal-35130940ced8",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/final-stretch",
+              "precision": "schematic"
+            }
+          ]
+        }
+      ],
+      "guideSources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/final-stretch"
+        }
+      ]
+    },
+    "norvinsk-538": {
+      "slug": "stay-clear-of-blast-zone",
+      "name": "Капкан",
+      "expectedObjectiveIds": [
+        "norvinsk-538-goal-31209bb6e85e",
+        "norvinsk-538-goal-f0f930aed1fe",
+        "norvinsk-538-goal-a76b2120325a"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-d324abeec6bae42e",
+          "url": "assets/quest-guides-20261016/d324abeec6bae42e-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/d324abeec6bae42e.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Stay_Clear_of_Blast_Zone_Map.png?preset=original",
+          "caption": "Три пролома в заборе санатория",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/stay-clear-of-blast-zone",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-538-goal-31209bb6e85e",
+            "norvinsk-538-goal-f0f930aed1fe",
+            "norvinsk-538-goal-a76b2120325a"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-2ece4889b7f8e2d5",
+          "url": "assets/quest-guides-20261016/2ece4889b7f8e2d5-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/2ece4889b7f8e2d5.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Stay_Clear_of_Blast_Zone_West_Fence.png?preset=original",
+          "caption": "Первый пролом у западного крыла",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/stay-clear-of-blast-zone",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-538-goal-31209bb6e85e"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-8e602b74af1a35f8",
+          "url": "assets/quest-guides-20261016/8e602b74af1a35f8-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/8e602b74af1a35f8.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Stay_Clear_of_Blast_Zone_North_Fence.png?preset=original",
+          "caption": "Второй пролом у западного крыла",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/stay-clear-of-blast-zone",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-538-goal-f0f930aed1fe"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-aa69c84ba724fc7e",
+          "url": "assets/quest-guides-20261016/aa69c84ba724fc7e-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/aa69c84ba724fc7e.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Stay_Clear_of_Blast_Zone_East_Fence.png?preset=original",
+          "caption": "Пролом у восточного крыла",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/stay-clear-of-blast-zone",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-538-goal-a76b2120325a"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "norvinsk-538-goal-31209bb6e85e",
+            "norvinsk-538-goal-f0f930aed1fe",
+            "norvinsk-538-goal-a76b2120325a"
+          ],
+          "paragraphs": [
+            "Принесите три тротиловые шашки. Две закладки находятся у проломов рядом с западным крылом, третья — у восточного крыла санатория. Каждый пролом показан отдельно."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [
+        {
+          "id": "shoreline",
+          "name": "Берег — проломы санатория",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-shoreline-fence",
+          "points": [
+            {
+              "x": 33.6,
+              "y": 47.8,
+              "name": "Первый пролом у западного крыла",
+              "objectiveIds": [
+                "norvinsk-538-goal-31209bb6e85e"
+              ],
+              "objectiveId": "norvinsk-538-goal-31209bb6e85e",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/stay-clear-of-blast-zone",
+              "precision": "schematic"
+            },
+            {
+              "x": 33.7,
+              "y": 50.1,
+              "name": "Второй пролом у западного крыла",
+              "objectiveIds": [
+                "norvinsk-538-goal-f0f930aed1fe"
+              ],
+              "objectiveId": "norvinsk-538-goal-f0f930aed1fe",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/stay-clear-of-blast-zone",
+              "precision": "schematic"
+            },
+            {
+              "x": 46.7,
+              "y": 48.8,
+              "name": "Пролом у восточного крыла",
+              "objectiveIds": [
+                "norvinsk-538-goal-a76b2120325a"
+              ],
+              "objectiveId": "norvinsk-538-goal-a76b2120325a",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/stay-clear-of-blast-zone",
+              "precision": "schematic"
+            }
+          ]
+        }
+      ],
+      "guideSources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/stay-clear-of-blast-zone"
+        }
+      ]
+    },
+    "norvinsk-539": {
+      "slug": "break-the-chain",
+      "name": "Разрыв цепи",
+      "expectedObjectiveIds": [
+        "norvinsk-539-goal-9e4d96a5506f",
+        "norvinsk-539-goal-0e61023591cf",
+        "norvinsk-539-goal-c17926a86888",
+        "norvinsk-539-goal-ee1920d19e2d"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-bf312fc05cf13451",
+          "url": "assets/quest-guides-20261016/bf312fc05cf13451-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/bf312fc05cf13451.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Break_the_Chain_Customs_Map.jpg?preset=original",
+          "caption": "Таможня: расположение ретрансляторов",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/break-the-chain",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-539-goal-9e4d96a5506f",
+            "norvinsk-539-goal-0e61023591cf"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-9c7d18284547a097",
+          "url": "assets/quest-guides-20261016/9c7d18284547a097-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/9c7d18284547a097.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Break_the_Chain_Factory_Chimney_Repeater.png?preset=original",
+          "caption": "Таможня: ретранслятор на заводской трубе",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/break-the-chain",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-539-goal-9e4d96a5506f"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-e13a97e513c7ae95",
+          "url": "assets/quest-guides-20261016/e13a97e513c7ae95-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/e13a97e513c7ae95.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Break_the_Chain_Power_Line_Repeater.png?preset=original",
+          "caption": "Таможня: ретранслятор на вышке ЛЭП",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/break-the-chain",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-539-goal-0e61023591cf"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-30254377b366251f",
+          "url": "assets/quest-guides-20261016/30254377b366251f-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/30254377b366251f.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Break_the_Chain_Woods_Map.jpg?preset=original",
+          "caption": "Лес: расположение ретрансляторов",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/break-the-chain",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-539-goal-c17926a86888",
+            "norvinsk-539-goal-ee1920d19e2d"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-7055b80ab34cbcbd",
+          "url": "assets/quest-guides-20261016/7055b80ab34cbcbd-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/7055b80ab34cbcbd.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Break_the_Chain_Mountain_Repeater.png?preset=original",
+          "caption": "Лес: ретранслятор на скале снайпера",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/break-the-chain",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-539-goal-c17926a86888"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-4204031748920db5",
+          "url": "assets/quest-guides-20261016/4204031748920db5-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/4204031748920db5.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Break_the_Chain_Cell_Tower_Repeater.png?preset=original",
+          "caption": "Лес: ретранслятор на радиовышке у бункера Дикого",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/break-the-chain",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-539-goal-ee1920d19e2d"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "norvinsk-539-goal-9e4d96a5506f",
+            "norvinsk-539-goal-0e61023591cf",
+            "norvinsk-539-goal-c17926a86888",
+            "norvinsk-539-goal-ee1920d19e2d"
+          ],
+          "paragraphs": [
+            "Ретрансляторы нужно уничтожить выстрелами. На Таможне это труба котельной у стройки и вышка ЛЭП у выхода «Железная дорога на военную базу»; в Лесу — скала снайпера и радиовышка у бункера Дикого. Слово «заводской» в первой цели не означает локацию Завод."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [
+        {
+          "id": "customs",
+          "name": "Таможня — ретрансляторы",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-customs-repeaters",
+          "points": [
+            {
+              "x": 54.2,
+              "y": 37.2,
+              "name": "Труба котельной у стройки",
+              "objectiveIds": [
+                "norvinsk-539-goal-9e4d96a5506f"
+              ],
+              "objectiveId": "norvinsk-539-goal-9e4d96a5506f",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/break-the-chain",
+              "precision": "schematic"
+            },
+            {
+              "x": 28.3,
+              "y": 69.5,
+              "name": "Вышка ЛЭП у железной дороги на военную базу",
+              "objectiveIds": [
+                "norvinsk-539-goal-0e61023591cf"
+              ],
+              "objectiveId": "norvinsk-539-goal-0e61023591cf",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/break-the-chain",
+              "precision": "schematic"
+            }
+          ]
+        },
+        {
+          "id": "woods",
+          "name": "Лес — ретрансляторы",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-woods-repeaters",
+          "points": [
+            {
+              "x": 58.7,
+              "y": 34,
+              "name": "Скала снайпера",
+              "objectiveIds": [
+                "norvinsk-539-goal-c17926a86888"
+              ],
+              "objectiveId": "norvinsk-539-goal-c17926a86888",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/break-the-chain",
+              "precision": "schematic"
+            },
+            {
+              "x": 32,
+              "y": 9.5,
+              "name": "Радиовышка у бункера Дикого",
+              "objectiveIds": [
+                "norvinsk-539-goal-ee1920d19e2d"
+              ],
+              "objectiveId": "norvinsk-539-goal-ee1920d19e2d",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/break-the-chain",
+              "precision": "schematic"
+            }
+          ]
+        }
+      ],
+      "guideSources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/break-the-chain"
+        }
+      ]
+    },
+    "norvinsk-782": {
+      "slug": "honest-review",
+      "name": "Честный отзыв",
+      "expectedObjectiveIds": [
+        "norvinsk-782-goal-bd53572ab0aa",
+        "norvinsk-782-goal-12f64ccc08be",
+        "norvinsk-782-goal-fe618dedc688",
+        "norvinsk-782-goal-83a4a55ab42c"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-2ea69439b29da50f",
+          "url": "assets/quest-guides-20261016/2ea69439b29da50f-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/2ea69439b29da50f.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/44ee8d62-8d30-4ea1-8f4d-2406d646475b.jpg",
+          "caption": "Блокпост ООН на главной дороге",
+          "sourceUrl": "https://tarkov.help/ru/quest/honest-review",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [
+            "norvinsk-782-goal-12f64ccc08be"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-05e6af66a884a62c",
+          "url": "assets/quest-guides-20261016/05e6af66a884a62c-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/05e6af66a884a62c.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/f8188ef1-8692-494c-b3a3-1a2bcb92c276.jpg",
+          "caption": "Остановка БТР на парковке очистных сооружений",
+          "sourceUrl": "https://tarkov.help/ru/quest/honest-review",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [
+            "norvinsk-782-goal-fe618dedc688"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "norvinsk-782-goal-bd53572ab0aa",
+            "norvinsk-782-goal-12f64ccc08be",
+            "norvinsk-782-goal-fe618dedc688"
+          ],
+          "paragraphs": [
+            "Посетите перекрёсток сразу за мостом у деревни, новый блокпост ООН на главной дороге и парковку между корпусами очистных сооружений. Можно проехать маршрут на БТР."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [],
+      "guideSources": [
+        {
+          "label": "Актуальное прохождение на Tarkov.help",
+          "url": "https://tarkov.help/ru/quest/honest-review"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1046"
+        }
+      ]
+    },
+    "patch-1150-fog-of-war": {
+      "slug": "fog-of-war",
+      "name": "Туман войны",
+      "expectedObjectiveIds": [
+        "patch-1150-fog-of-war-goal-north-brdm",
+        "patch-1150-fog-of-war-goal-southwest-checkpoint",
+        "patch-1150-fog-of-war-goal-plant-roof"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-d8f0311f4a8dec7d",
+          "url": "assets/quest-guides-20261016/d8f0311f4a8dec7d-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/d8f0311f4a8dec7d.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/2dce1ff8-967a-43e4-872c-7c218af5ee00.jpg",
+          "caption": "БРДМ в северной части очистных сооружений",
+          "sourceUrl": "https://tarkov.help/ru/quest/fog-of-war",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [
+            "patch-1150-fog-of-war-goal-north-brdm"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-c8f5f16680de8c6e",
+          "url": "assets/quest-guides-20261016/c8f5f16680de8c6e-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/c8f5f16680de8c6e.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/7cf088b3-cd11-45de-a906-9eb9d4d9767e.jpg",
+          "caption": "Дозорная вышка юго-западного блокпоста",
+          "sourceUrl": "https://tarkov.help/ru/quest/fog-of-war",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [
+            "patch-1150-fog-of-war-goal-southwest-checkpoint"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "patch-1150-fog-of-war-goal-north-brdm",
+            "patch-1150-fog-of-war-goal-southwest-checkpoint",
+            "patch-1150-fog-of-war-goal-plant-roof"
+          ],
+          "paragraphs": [
+            "Два наземных ориентира — БРДМ на севере очистных сооружений и дозорная вышка юго-западного блокпоста. Для третьей цели подойдёт крыша любого корпуса завода."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [],
+      "guideSources": [
+        {
+          "label": "Актуальное прохождение на Tarkov.help",
+          "url": "https://tarkov.help/ru/quest/fog-of-war"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1043"
+        },
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/252"
+        }
+      ]
+    },
+    "patch-1150-number-temporarily-unavailable": {
+      "slug": "number-temporarily-unavailable",
+      "name": "Абонент временно недоступен",
+      "expectedObjectiveIds": [
+        "patch-1150-number-temporarily-unavailable-goal-electronic-components",
+        "patch-1150-number-temporarily-unavailable-goal-military-cable",
+        "patch-1150-number-temporarily-unavailable-goal-capacitors"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-39af6dd5358328f2",
+          "url": "assets/quest-guides-20261016/39af6dd5358328f2-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/39af6dd5358328f2.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/7e43509c-0cb2-4ff4-ad85-72929a5a96f6.png",
+          "caption": "Место закладки электроники в новом лагере Прапора",
+          "sourceUrl": "https://tarkov.help/ru/quest/subscriber-temporarily-unavailable",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [],
+          "association": "quest",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-b134b7d052de6e3b",
+          "url": "assets/quest-guides-20261016/b134b7d052de6e3b-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/b134b7d052de6e3b.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/953091f4-f0d7-4b89-a000-381cee9a126b.jpg",
+          "caption": "Новый лагерь Прапора в горах у Южной дороги",
+          "sourceUrl": "https://tarkov.help/ru/quest/subscriber-temporarily-unavailable",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [],
+          "association": "quest",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "patch-1150-number-temporarily-unavailable-goal-electronic-components",
+            "patch-1150-number-temporarily-unavailable-goal-military-cable",
+            "patch-1150-number-temporarily-unavailable-goal-capacitors"
+          ],
+          "paragraphs": [
+            "Используйте новый лагерь Прапора на скалах рядом с выходом «Южная дорога». Поднимитесь по деревянному настилу; место закладки показано на скриншоте. Всего нужны три компонента электроники, военный кабель и три конденсатора. Старый лагерь для этой цели не подходит."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [],
+      "guideSources": [
+        {
+          "label": "Актуальное прохождение на Tarkov.help",
+          "url": "https://tarkov.help/ru/quest/subscriber-temporarily-unavailable"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1047"
+        }
+      ]
+    },
+    "patch-1150-callsign-malachite": {
+      "slug": "callsign-malachite",
+      "name": "Позывной «Малахит»",
+      "expectedObjectiveIds": [
+        "patch-1150-callsign-malachite-goal-personnel-file",
+        "patch-1150-callsign-malachite-goal-handover-file",
+        "patch-1150-callsign-malachite-goal-read-file"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-e45e041b984104b1",
+          "url": "assets/quest-guides-20261016/e45e041b984104b1-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/e45e041b984104b1.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/4c32e34f-c67a-4811-8a6c-414f387c04cb.webp",
+          "caption": "Домик у горного озера севернее очистных сооружений",
+          "sourceUrl": "https://tarkov.help/ru/quest/call-sign-malachite",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [
+            "patch-1150-callsign-malachite-goal-personnel-file"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-9eb11cb654a18794",
+          "url": "assets/quest-guides-20261016/9eb11cb654a18794-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/9eb11cb654a18794.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/b6a6233f-5ec7-49e7-9900-60b2cdc15d5a.webp",
+          "caption": "Личное дело за матрасом в домике",
+          "sourceUrl": "https://tarkov.help/ru/quest/call-sign-malachite",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [
+            "patch-1150-callsign-malachite-goal-personnel-file"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "patch-1150-callsign-malachite-goal-personnel-file"
+          ],
+          "paragraphs": [
+            "Личное дело находится за матрасом внутри нового домика у горного озера восточнее третьего корпуса очистных сооружений. При гибели до выхода предмет придётся найти заново."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [],
+      "guideSources": [
+        {
+          "label": "Актуальное прохождение на Tarkov.help",
+          "url": "https://tarkov.help/ru/quest/call-sign-malachite"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1074"
+        }
+      ]
+    },
+    "norvinsk-801": {
+      "slug": "in-the-name-of-humanity",
+      "name": "Во имя человечества...",
+      "expectedObjectiveIds": [
+        "norvinsk-801-goal-8687988cbbe4",
+        "norvinsk-801-goal-ee770947a92a",
+        "norvinsk-801-goal-57f3f0b8c872",
+        "norvinsk-801-goal-1ea41c320061",
+        "norvinsk-801-goal-62aef5f425b1",
+        "norvinsk-801-goal-448c3e286a50",
+        "norvinsk-801-goal-9dc71e1a1c11",
+        "norvinsk-801-goal-b59640a8614d",
+        "norvinsk-801-goal-ee97107f1dac"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-fb33ca33ccb9b9fe",
+          "url": "assets/quest-guides-20261016/fb33ca33ccb9b9fe-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/fb33ca33ccb9b9fe.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/SafeRoomMap.png?preset=original",
+          "caption": "Безопасная комната в секции C подземной парковки",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-57f3f0b8c872"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-9c26e708387ce97c",
+          "url": "assets/quest-guides-20261016/9c26e708387ce97c-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/9c26e708387ce97c.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/IC-Saferoom_EXFIL.png?preset=original",
+          "caption": "Дверь безопасной комнаты",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-57f3f0b8c872"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-ba3c444250cd2f13",
+          "url": "assets/quest-guides-20261016/ba3c444250cd2f13-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/ba3c444250cd2f13.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Object14Lever.png?preset=original",
+          "caption": "Рычаг питания Контейнера 14 в безопасной комнате",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-57f3f0b8c872"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-266147bfa652049b",
+          "url": "assets/quest-guides-20261016/266147bfa652049b-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/266147bfa652049b.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Object14Map.png?preset=original",
+          "caption": "Рычаг питания Контейнера 14 — схема безопасной комнаты",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-57f3f0b8c872"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-d983c932fd2dc8b7",
+          "url": "assets/quest-guides-20261016/d983c932fd2dc8b7-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/d983c932fd2dc8b7.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Object_14_Container_Location_-_Interchange.png?preset=original",
+          "caption": "Контейнеры вокруг Контейнера 14",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-1ea41c320061",
+            "norvinsk-801-goal-62aef5f425b1"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-48b233c865bcdeaf",
+          "url": "assets/quest-guides-20261016/48b233c865bcdeaf-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/48b233c865bcdeaf.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Object_14.png?preset=original",
+          "caption": "Вход в Контейнер 14",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-1ea41c320061",
+            "norvinsk-801-goal-62aef5f425b1"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-9ea96fd658c9ef69",
+          "url": "assets/quest-guides-20261016/9ea96fd658c9ef69-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/9ea96fd658c9ef69.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/In_the_Name_of_Humanity_Location.png?preset=original",
+          "caption": "Карбоновый кейс под стеллажом в Контейнере 14",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-1ea41c320061",
+            "norvinsk-801-goal-62aef5f425b1"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-d9db6eec92029027",
+          "url": "assets/quest-guides-20261016/d9db6eec92029027-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/d9db6eec92029027.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/InterchangeTransitToStreetsOfTarkov2.jpg?preset=original",
+          "caption": "Переход с Развязки на Улицы Таркова",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-448c3e286a50"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-5986a02e7928668d",
+          "url": "assets/quest-guides-20261016/5986a02e7928668d-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/5986a02e7928668d.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/InterchangeTransitToStreetsOfTarkov.png?preset=original",
+          "caption": "Вход в переход на Улицы Таркова",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-448c3e286a50"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-750aa29437bf4a96",
+          "url": "assets/quest-guides-20261016/750aa29437bf4a96-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/750aa29437bf4a96.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/In_the_Name_of_Humanity_Stashing_Location_Map.png?preset=original",
+          "caption": "Pinewood: здание с балконом для закладки кейса",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-b59640a8614d"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-8ce3cea59e1f7acd",
+          "url": "assets/quest-guides-20261016/8ce3cea59e1f7acd-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/8ce3cea59e1f7acd.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/In_the_Name_of_Humanity_Stashing_Location_Way_1.png?preset=original",
+          "caption": "Pinewood: вход в здание",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-b59640a8614d"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-2af429cbbc24a9b4",
+          "url": "assets/quest-guides-20261016/2af429cbbc24a9b4-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/2af429cbbc24a9b4.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/In_the_Name_of_Humanity_Stashing_Location_Way_2.png?preset=original",
+          "caption": "Pinewood: путь к лестнице",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-b59640a8614d"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-91369d39afd61c5d",
+          "url": "assets/quest-guides-20261016/91369d39afd61c5d-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/91369d39afd61c5d.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/In_the_Name_of_Humanity_Stashing_Location_Way_3.png?preset=original",
+          "caption": "Pinewood: путь на третий этаж",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-b59640a8614d"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-50623500552bd772",
+          "url": "assets/quest-guides-20261016/50623500552bd772-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/50623500552bd772.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/In_the_Name_of_Humanity_Stashing_Location_Way_4.png?preset=original",
+          "caption": "Pinewood: дверь на балкон",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-b59640a8614d"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-4d84d66b3ee51426",
+          "url": "assets/quest-guides-20261016/4d84d66b3ee51426-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/4d84d66b3ee51426.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/In_the_Name_of_Humanity_Stashing_Location.png?preset=original",
+          "caption": "Место закладки карбонового кейса на балконе",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-b59640a8614d"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-c921e813f2ba2452",
+          "url": "assets/quest-guides-20261016/c921e813f2ba2452-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/c921e813f2ba2452.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/ITARPizzaLoverMap.png?preset=original",
+          "caption": "Трамвай у провала канализации: место запуска жёлтой ракеты",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-ee97107f1dac"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-cf915a5b79f1122c",
+          "url": "assets/quest-guides-20261016/cf915a5b79f1122c-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/cf915a5b79f1122c.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Streets_of_Tarkov_Showcase_13.png?preset=original",
+          "caption": "Трамвай у провала канализации",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-801-goal-ee97107f1dac"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "norvinsk-801-goal-ee770947a92a",
+            "norvinsk-801-goal-57f3f0b8c872",
+            "norvinsk-801-goal-1ea41c320061",
+            "norvinsk-801-goal-62aef5f425b1",
+            "norvinsk-801-goal-b59640a8614d",
+            "norvinsk-801-goal-ee97107f1dac"
+          ],
+          "paragraphs": [
+            "Сначала включите питание Развязки и используйте ключ-карту 11SR в скрытом считывателе туалета Burger Spot. В безопасной комнате секции C включите питание Контейнера 14. Кейс лежит под стеллажом контейнера. После перехода на Улицы оставьте его на балконе третьего этажа Pinewood и запустите жёлтую ракету у провалившегося трамвая."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [
+        {
+          "id": "interchange",
+          "name": "Развязка — безопасная комната",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-interchange-saferoom",
+          "points": [
+            {
+              "x": 61.2,
+              "y": 68.1,
+              "name": "Безопасная комната секции C; внутри рычаг питания Контейнера 14",
+              "objectiveIds": [
+                "norvinsk-801-goal-57f3f0b8c872"
+              ],
+              "objectiveId": "norvinsk-801-goal-57f3f0b8c872",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+              "precision": "schematic"
+            }
+          ]
+        },
+        {
+          "id": "streets-of-tarkov",
+          "name": "Улицы Таркова — балкон Pinewood",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-streets-balcony",
+          "points": [
+            {
+              "x": 63.8,
+              "y": 46.8,
+              "name": "Здание Pinewood: закладка на балконе третьего этажа",
+              "objectiveIds": [
+                "norvinsk-801-goal-b59640a8614d"
+              ],
+              "objectiveId": "norvinsk-801-goal-b59640a8614d",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+              "precision": "schematic"
+            }
+          ]
+        },
+        {
+          "id": "streets-of-tarkov",
+          "name": "Улицы Таркова — жёлтая ракета",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-streets-tram",
+          "points": [
+            {
+              "x": 74.3,
+              "y": 57.2,
+              "name": "Провалившийся трамвай: запустить жёлтую ракету",
+              "objectiveIds": [
+                "norvinsk-801-goal-ee97107f1dac"
+              ],
+              "objectiveId": "norvinsk-801-goal-ee97107f1dac",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+              "precision": "schematic"
+            }
+          ]
+        }
+      ],
+      "guideSources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity"
+        }
+      ]
+    },
+    "norvinsk-803": {
+      "slug": "historical-prospects",
+      "name": "Исторические перспективы",
+      "expectedObjectiveIds": [
+        "norvinsk-803-goal-7565b32407be",
+        "norvinsk-803-goal-24bb8701e9ff",
+        "norvinsk-803-goal-14eddd86c4a4",
+        "norvinsk-803-goal-2ef7c288dd0c",
+        "norvinsk-803-goal-18bcb7295b87",
+        "norvinsk-803-goal-55baa15706a5"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-6fefe82534da072e",
+          "url": "assets/quest-guides-20261016/6fefe82534da072e-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/6fefe82534da072e.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/TheCultPart2DormsMap.png?preset=original",
+          "caption": "Меченая комната 314 в трёхэтажном общежитии",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/historical-prospects",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-803-goal-24bb8701e9ff"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-c97718c6287c19ea",
+          "url": "assets/quest-guides-20261016/c97718c6287c19ea-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/c97718c6287c19ea.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Marked_Room_Door.png?preset=original",
+          "caption": "Дверь меченой комнаты 314",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/historical-prospects",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-803-goal-24bb8701e9ff"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-816b9a1e4a0644d5",
+          "url": "assets/quest-guides-20261016/816b9a1e4a0644d5-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/816b9a1e4a0644d5.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Marked_Room_Room.png?preset=original",
+          "caption": "Ритуальный круг в меченой комнате 314",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/historical-prospects",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-803-goal-24bb8701e9ff"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-495ffb0fa0c92fed",
+          "url": "assets/quest-guides-20261016/495ffb0fa0c92fed-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/495ffb0fa0c92fed.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/1/15/EFT_TAAH_Woods_House_Map.png/revision/latest?cb=20260217151051",
+          "caption": "Дом с ритуальным кругом в заброшенной деревне",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/historical-prospects",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-803-goal-2ef7c288dd0c"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-89851c400e826a93",
+          "url": "assets/quest-guides-20261016/89851c400e826a93-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/89851c400e826a93.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/5/52/EFT_TAAH_Woods_House.png/revision/latest?cb=20260217150816",
+          "caption": "Дом в Лесу: вход",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/historical-prospects",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-803-goal-2ef7c288dd0c"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-00187bb4f6ebb262",
+          "url": "assets/quest-guides-20261016/00187bb4f6ebb262-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/00187bb4f6ebb262.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/e/ef/Historical_Prospects_Woods_Circle.png/revision/latest?cb=20260915055318",
+          "caption": "Ритуальный круг в доме: место закладки жетонов",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/historical-prospects",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-803-goal-2ef7c288dd0c"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-b54935e677883065",
+          "url": "assets/quest-guides-20261016/b54935e677883065-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/b54935e677883065.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/b/be/Nikitskaya_Street_8_Map.png/revision/latest?cb=20260914015113",
+          "caption": "Никитская, 8: расположение здания",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/historical-prospects",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-803-goal-55baa15706a5"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-cae522fd6c27d9df",
+          "url": "assets/quest-guides-20261016/cae522fd6c27d9df-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/cae522fd6c27d9df.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/4/4c/Nikitskaya_Street_Second_Floor_Cultist_Apartment_Entrance.png/revision/latest?cb=20260914015711",
+          "caption": "Вход в здание на Никитской, 8",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/historical-prospects",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-803-goal-55baa15706a5"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-de8b56366426e57a",
+          "url": "assets/quest-guides-20261016/de8b56366426e57a-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/de8b56366426e57a.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/b/bb/Nikitskaya_Street_Second_Floor_Cultist_Apartment_Door.png/revision/latest?cb=20260914014054",
+          "caption": "Дверь квартиры на втором этаже",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/historical-prospects",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-803-goal-55baa15706a5"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-670f850246022b55",
+          "url": "assets/quest-guides-20261016/670f850246022b55-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/670f850246022b55.webp",
+          "originalUrl": "https://www.tarkovhead.com/api/media/file/Nikitskaya_Street_Second_Floor_Cultist_Apartment.png?preset=original",
+          "caption": "Ритуальный круг в квартире на Никитской, 8",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/historical-prospects",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-803-goal-55baa15706a5"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "norvinsk-803-goal-2ef7c288dd0c",
+            "norvinsk-803-goal-55baa15706a5"
+          ],
+          "paragraphs": [
+            "В Лесу круг находится внутри дома в заброшенной деревне. На Улицах — в квартире второго этажа по адресу Никитская, 8. Для каждого места приведены схема, вход и сам круг; жетоны закладываются именно в круг."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [
+        {
+          "id": "woods",
+          "name": "Лес — дом с ритуальным кругом",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-woods-circle",
+          "points": [
+            {
+              "x": 55.6,
+              "y": 18,
+              "name": "Дом с ритуальным кругом в заброшенной деревне",
+              "objectiveIds": [
+                "norvinsk-803-goal-2ef7c288dd0c"
+              ],
+              "objectiveId": "norvinsk-803-goal-2ef7c288dd0c",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/historical-prospects",
+              "precision": "schematic"
+            }
+          ]
+        },
+        {
+          "id": "streets-of-tarkov",
+          "name": "Улицы Таркова — Никитская, 8",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-streets-circle",
+          "points": [
+            {
+              "x": 67.3,
+              "y": 63.2,
+              "name": "Никитская, 8: квартира второго этажа",
+              "objectiveIds": [
+                "norvinsk-803-goal-55baa15706a5"
+              ],
+              "objectiveId": "norvinsk-803-goal-55baa15706a5",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/historical-prospects",
+              "precision": "schematic"
+            }
+          ]
+        }
+      ],
+      "guideSources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/historical-prospects"
+        }
+      ]
+    },
+    "patch-1150-all-inclusive-support": {
+      "slug": "all-inclusive-support",
+      "name": "Поддержка «всё включено»",
+      "expectedObjectiveIds": [
+        "patch-1150-all-inclusive-support-goal-eliminate-any",
+        "patch-1150-all-inclusive-support-goal-red-flare",
+        "patch-1150-all-inclusive-support-goal-reserve-transit"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-3ae9029f3e04a9b1",
+          "url": "assets/quest-guides-20261016/3ae9029f3e04a9b1-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/3ae9029f3e04a9b1.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/4ee2954f-464d-4e21-9f07-a4137d3b44fe.jpg",
+          "caption": "Заброшенный дом у горного озера: место запуска красной ракеты",
+          "sourceUrl": "https://tarkov.help/ru/quest/all-inclusive-support",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [
+            "patch-1150-all-inclusive-support-goal-red-flare"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "patch-1150-all-inclusive-support-goal-red-flare"
+          ],
+          "paragraphs": [
+            "Красную сигнальную ракету запускайте у нового заброшенного домика возле горного озера. Это отдельная точка от перехода на Резерв; ориентир показан на скриншоте."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [],
+      "guideSources": [
+        {
+          "label": "Актуальное прохождение на Tarkov.help",
+          "url": "https://tarkov.help/ru/quest/all-inclusive-support"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1050"
+        },
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/markers/13619"
+        }
+      ]
+    },
+    "patch-1150-scope-the-clearing": {
+      "slug": "scope-the-clearing",
+      "name": "Сечь поляну",
+      "expectedObjectiveIds": [
+        "patch-1150-scope-the-clearing-goal-platform-camera-1",
+        "patch-1150-scope-the-clearing-goal-platform-camera-2",
+        "patch-1150-scope-the-clearing-goal-woods-transit-camera"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-18668cc78b3cbd6d",
+          "url": "assets/quest-guides-20261016/18668cc78b3cbd6d-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/18668cc78b3cbd6d.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/2ce988f3-bafd-4f71-9ceb-06a189b3d22a.webp",
+          "caption": "Первая камера у железнодорожной платформы",
+          "sourceUrl": "https://tarkov.help/ru/quest/clear-the-field",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [
+            "patch-1150-scope-the-clearing-goal-platform-camera-1"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-20b91d959e42f54f",
+          "url": "assets/quest-guides-20261016/20b91d959e42f54f-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/20b91d959e42f54f.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/daf3f88f-c4a8-4568-ae05-b0b961184e84.webp",
+          "caption": "Третья камера у перехода в Лес",
+          "sourceUrl": "https://tarkov.help/ru/quest/clear-the-field",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [
+            "patch-1150-scope-the-clearing-goal-woods-transit-camera"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-5e6dca33fa7f9adf",
+          "url": "assets/quest-guides-20261016/5e6dca33fa7f9adf-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/5e6dca33fa7f9adf.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/863b6420-c75d-4a53-82d9-b39b158b46ba.webp",
+          "caption": "Вторая камера у железнодорожной платформы",
+          "sourceUrl": "https://tarkov.help/ru/quest/clear-the-field",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [
+            "patch-1150-scope-the-clearing-goal-platform-camera-2"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "patch-1150-scope-the-clearing-goal-platform-camera-1",
+            "patch-1150-scope-the-clearing-goal-platform-camera-2",
+            "patch-1150-scope-the-clearing-goal-woods-transit-camera"
+          ],
+          "paragraphs": [
+            "Первые две камеры устанавливаются у железнодорожной платформы контрабандистов на севере Маяка: одна у ближнего к ангару входа, вторая дальше по платформе. Третья — у перевёрнутой машины рядом с переходом в Лес."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [],
+      "guideSources": [
+        {
+          "label": "Актуальное прохождение на Tarkov.help",
+          "url": "https://tarkov.help/ru/quest/clear-the-field"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1057"
+        }
+      ]
+    },
+    "patch-1150-ease-the-move": {
+      "slug": "ease-the-move",
+      "name": "Облегчить переезд",
+      "expectedObjectiveIds": [
+        "patch-1150-ease-the-move-goal-island-stash-1",
+        "patch-1150-ease-the-move-goal-island-stash-2",
+        "patch-1150-ease-the-move-goal-grotto-stash"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-f86ecb31ae5e626b",
+          "url": "assets/quest-guides-20261016/f86ecb31ae5e626b-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/f86ecb31ae5e626b.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/13eb07ee-db3c-4c26-be0f-cac24ae094b7.webp",
+          "caption": "Схрон в гроте рядом с ящиком",
+          "sourceUrl": "https://tarkov.help/ru/quest/make-the-move-easier",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [
+            "patch-1150-ease-the-move-goal-grotto-stash"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-dcf9679803dc2f97",
+          "url": "assets/quest-guides-20261016/dcf9679803dc2f97-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/dcf9679803dc2f97.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/7808d2a1-77b2-4945-8ea8-b3081e970c05.jpg",
+          "caption": "Один из схронов отступников: ориентиры лагеря",
+          "sourceUrl": "https://tarkov.help/ru/quest/make-the-move-easier",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [],
+          "association": "quest",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-be6b87fc2ca12da7",
+          "url": "assets/quest-guides-20261016/be6b87fc2ca12da7-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/be6b87fc2ca12da7.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/000bd480-4adf-4c94-9da5-32c857eddc96.jpg",
+          "caption": "Один из схронов отступников: ориентиры",
+          "sourceUrl": "https://tarkov.help/ru/quest/make-the-move-easier",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [],
+          "association": "quest",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-3cfd978d6ddc6438",
+          "url": "assets/quest-guides-20261016/3cfd978d6ddc6438-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/3cfd978d6ddc6438.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/54f9142c-f0be-4d73-87f0-9c5a9c260211.jpg",
+          "caption": "Дополнительный вариант схрона отступников",
+          "sourceUrl": "https://tarkov.help/ru/quest/make-the-move-easier",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [],
+          "association": "quest",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-67c5ae028d11dd9e",
+          "url": "assets/quest-guides-20261016/67c5ae028d11dd9e-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/67c5ae028d11dd9e.webp",
+          "originalUrl": "https://minio.tarkov.help/production/img/articles/98f4872d-f69f-41f1-a984-567522b76348.jpg",
+          "caption": "Схрон за островом и затопленной деревней",
+          "sourceUrl": "https://tarkov.help/ru/quest/make-the-move-easier",
+          "attribution": "Tarkov.help; игровые изображения © Battlestate Games",
+          "rights": "Скриншот прохождения Tarkov.help; права авторов сохранены.",
+          "objectiveIds": [],
+          "association": "quest",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "patch-1150-ease-the-move-goal-island-stash-1",
+            "patch-1150-ease-the-move-goal-island-stash-2",
+            "patch-1150-ease-the-move-goal-grotto-stash"
+          ],
+          "paragraphs": [
+            "Схроны выглядят как лагеря с припасами и баррикадами. В источнике отмечены разные наборы точек для BEAR и USEC: выбирайте карту своей фракции. Не ориентируйтесь только на слово «остров» в описании — среди актуальных вариантов есть лагеря за затопленной деревней."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [],
+      "guideSources": [
+        {
+          "label": "Актуальное прохождение на Tarkov.help",
+          "url": "https://tarkov.help/ru/quest/make-the-move-easier"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Тайники BEAR на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/markers/15853,15855,15856"
+        },
+        {
+          "label": "Тайники USEC на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/markers/15853,15854,15861"
+        }
+      ]
+    },
+    "69e5583240c3e6c8ba0edbd5": {
+      "slug": "wiring-the-vessel",
+      "name": "Судовая электрика",
+      "expectedObjectiveIds": [
+        "69e5593e3f425636f1d762d9",
+        "69e5594c6dd4d9e12fa3de0d",
+        "69e559525afcf4e746e98e33",
+        "69e559bf4b53b554a2779130"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-f7a5934ea344f421",
+          "url": "assets/quest-guides-20261016/f7a5934ea344f421-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/f7a5934ea344f421.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/9/9b/Wiring_the_Vessel_Leading_to_engine_Map.jpg/revision/latest?cb=20260623190507",
+          "caption": "Расположение на схеме: автоматика перед машинным отделением, уровень 0",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "69e5593e3f425636f1d762d9"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-c150f95f94c14c6e",
+          "url": "assets/quest-guides-20261016/c150f95f94c14c6e-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/c150f95f94c14c6e.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/2/2a/Wiring_the_Vessel_Leading_to_engine_Equipment.png/revision/latest?cb=20260623181802",
+          "caption": "автоматика перед машинным отделением, уровень 0",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "69e5593e3f425636f1d762d9"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-65019aa266aaf03a",
+          "url": "assets/quest-guides-20261016/65019aa266aaf03a-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/65019aa266aaf03a.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/f/f4/Wiring_the_Vessel_Near_the_storage_Map.jpg/revision/latest?cb=20260623190518",
+          "caption": "Расположение на схеме: автоматика у кладовой, уровень 0",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "69e559525afcf4e746e98e33"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-30e20ca372be8b69",
+          "url": "assets/quest-guides-20261016/30e20ca372be8b69-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/30e20ca372be8b69.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/1/15/Wiring_the_Vessel_Near_the_storage_Equipment.png/revision/latest?cb=20260623181942",
+          "caption": "автоматика у кладовой, уровень 0",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "69e559525afcf4e746e98e33"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-e27a326c550a8230",
+          "url": "assets/quest-guides-20261016/e27a326c550a8230-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/e27a326c550a8230.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/3/3b/Peaceful_Atom_Automation_Room_Map.jpg/revision/latest?cb=20260531213318",
+          "caption": "Расположение на схеме: автоматика под машинным отделением, уровень −3",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "69e5594c6dd4d9e12fa3de0d"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-5ab755c166652300",
+          "url": "assets/quest-guides-20261016/5ab755c166652300-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/5ab755c166652300.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/4/43/Peaceful_Atom_Automation_Room_Code_Room.png/revision/latest?cb=20260623175848",
+          "caption": "автоматика под машинным отделением, уровень −3",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "69e5594c6dd4d9e12fa3de0d"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-ffa94113e4a35951",
+          "url": "assets/quest-guides-20261016/ffa94113e4a35951-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/ffa94113e4a35951.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/2/23/Peaceful_Atom_Automation_Room_Code.png/revision/latest?cb=20260528223758",
+          "caption": "автоматика под машинным отделением, уровень −3",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "69e5594c6dd4d9e12fa3de0d"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-a09250e02526b8a3",
+          "url": "assets/quest-guides-20261016/a09250e02526b8a3-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/a09250e02526b8a3.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/7/7e/Wiring_the_Vessel_Under_engine_Entry.png/revision/latest?cb=20260623175943",
+          "caption": "автоматика под машинным отделением, уровень −3",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "69e5594c6dd4d9e12fa3de0d"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-30257f1c55b3f18c",
+          "url": "assets/quest-guides-20261016/30257f1c55b3f18c-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/30257f1c55b3f18c.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/b/b5/Wiring_the_Vessel_Under_engine_Equipment.png/revision/latest?cb=20260623182600",
+          "caption": "автоматика под машинным отделением, уровень −3",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "69e5594c6dd4d9e12fa3de0d"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-c9de46aa6e68af8c",
+          "url": "assets/quest-guides-20261016/c9de46aa6e68af8c-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/c9de46aa6e68af8c.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/7/70/Peaceful_Atom_Control_Room_Map.jpg/revision/latest?cb=20260531214136",
+          "caption": "Расположение на схеме: центральный пост управления, уровень 0",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "69e559bf4b53b554a2779130"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-ffe6059246f6d6c6",
+          "url": "assets/quest-guides-20261016/ffe6059246f6d6c6-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/ffe6059246f6d6c6.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/9/96/Wiring_the_Vessel_Control_Room.png/revision/latest?cb=20260528234739",
+          "caption": "центральный пост управления, уровень 0",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "69e559bf4b53b554a2779130"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-01de98b679ecfeba",
+          "url": "assets/quest-guides-20261016/01de98b679ecfeba-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/01de98b679ecfeba.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/8/8c/Wiring_the_Vessel_Control_Room_Placement.png/revision/latest?cb=20260623183114",
+          "caption": "центральный пост управления, уровень 0",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "69e559bf4b53b554a2779130"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "69e5593e3f425636f1d762d9",
+            "69e5594c6dd4d9e12fa3de0d",
+            "69e559525afcf4e746e98e33",
+            "69e559bf4b53b554a2779130"
+          ],
+          "paragraphs": [
+            "Перед ремонтом возьмите набор инструментов. Автоматика перед машинным отделением и рядом с кладовой расположена на уровне 0, нижняя — на уровне −3; взломщик ставится в центральном посту управления на уровне 0. По прохождению Wiki сообщения о зачёте автоматики у кладовой и под машинным отделением могут быть перепутаны игрой — проверьте обе точки."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [
+        {
+          "id": "icebreaker",
+          "name": "Ледокол — автоматика перед машинным отделением",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-icebreaker-before-engine",
+          "points": [
+            {
+              "x": 77.2,
+              "y": 36.1,
+              "name": "Автоматика перед машинным отделением, уровень 0",
+              "objectiveIds": [
+                "69e5593e3f425636f1d762d9"
+              ],
+              "objectiveId": "69e5593e3f425636f1d762d9",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+              "precision": "schematic"
+            }
+          ]
+        },
+        {
+          "id": "icebreaker",
+          "name": "Ледокол — автоматика у кладовой",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-icebreaker-storage",
+          "points": [
+            {
+              "x": 72.4,
+              "y": 35.9,
+              "name": "Автоматика у кладовой, уровень 0",
+              "objectiveIds": [
+                "69e559525afcf4e746e98e33"
+              ],
+              "objectiveId": "69e559525afcf4e746e98e33",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+              "precision": "schematic"
+            }
+          ]
+        },
+        {
+          "id": "icebreaker",
+          "name": "Ледокол — центральный пост управления",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-icebreaker-control",
+          "points": [
+            {
+              "x": 74.9,
+              "y": 42.6,
+              "name": "Место установки взломщика, уровень 0",
+              "objectiveIds": [
+                "69e559bf4b53b554a2779130"
+              ],
+              "objectiveId": "69e559bf4b53b554a2779130",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+              "precision": "schematic"
+            }
+          ]
+        }
+      ],
+      "guideSources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel"
+        }
+      ]
+    },
+    "norvinsk-403": {
+      "slug": "getting-acquainted",
+      "name": "Новое знакомство",
+      "expectedObjectiveIds": [
+        "norvinsk-403-goal-46697c739597",
+        "norvinsk-403-goal-d789fd56beaa",
+        "norvinsk-403-goal-9e19e5a36957",
+        "norvinsk-403-goal-968c4c728339"
+      ],
+      "gallery": [
+        {
+          "id": "guide-20261016-5665befcbfe381b6",
+          "url": "assets/quest-guides-20261016/5665befcbfe381b6-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/5665befcbfe381b6.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/1/16/To_the_Light_Getting_Acquainted_Chalet_Map.png/revision/latest?cb=20260908214631",
+          "caption": "Шале с возможными местами флешки V3",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-403-goal-46697c739597"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-90b0ba7a1aa0b3bb",
+          "url": "assets/quest-guides-20261016/90b0ba7a1aa0b3bb-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/90b0ba7a1aa0b3bb.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/8/87/To_the_Light_Getting_Acquainted_Spawn_3.png/revision/latest?cb=20260908224641",
+          "caption": "Флешка V3 в ноутбуке на обеденном столе",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-403-goal-46697c739597"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-10ad49a94bb6bea4",
+          "url": "assets/quest-guides-20261016/10ad49a94bb6bea4-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/10ad49a94bb6bea4.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/4/48/To_the_Light_Getting_Acquainted_Spawn_2.png/revision/latest?cb=20260908213429",
+          "caption": "Флешка V3 в ноутбуке на столе",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-403-goal-46697c739597"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-d1fc8972750f821c",
+          "url": "assets/quest-guides-20261016/d1fc8972750f821c-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/d1fc8972750f821c.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/5/51/LostContactMap.png/revision/latest?cb=20260127182820",
+          "caption": "Палатка у теннисного корта: возможное место флешки V3",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-403-goal-46697c739597"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        },
+        {
+          "id": "guide-20261016-dfd83537a11feb50",
+          "url": "assets/quest-guides-20261016/dfd83537a11feb50-thumb.webp",
+          "fullUrl": "assets/quest-guides-20261016/dfd83537a11feb50.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/8/80/To_the_Light_Getting_Acquainted_Spawn_1.png/revision/latest?cb=20260908212928",
+          "caption": "Флешка V3 в ноутбуке в палатке",
+          "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
+          "attribution": "Escape from Tarkov Wiki / TarkovHead; авторы исходной схемы указаны на изображении; игровые изображения © Battlestate Games",
+          "rights": "Права на игровые материалы принадлежат Battlestate Games; права авторов схем сохранены.",
+          "objectiveIds": [
+            "norvinsk-403-goal-46697c739597"
+          ],
+          "association": "objective",
+          "verification": "http200-visual-reviewed",
+          "verifiedAt": "2026-10-16"
+        }
+      ],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [
+            "norvinsk-403-goal-46697c739597"
+          ],
+          "paragraphs": [
+            "В актуальном прохождении флешку V3 ищут в ноутбуках в шале и в палатке у теннисного корта. Список мест после переработки Маяка продолжает уточняться; скриншоты показывают подтверждённые варианты, а не гарантированный спавн. Перепрошивку передатчика выполняют в Разведцентре второго уровня при работающем электричестве."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [
+        {
+          "id": "lighthouse",
+          "name": "Маяк — варианты V3 в шале",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-lighthouse-v3-chalet",
+          "points": [
+            {
+              "x": 60,
+              "y": 68,
+              "name": "Шале: ноутбуки с возможным спавном флешки V3",
+              "objectiveIds": [
+                "norvinsk-403-goal-46697c739597"
+              ],
+              "objectiveId": "norvinsk-403-goal-46697c739597",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
+              "precision": "schematic"
+            }
+          ]
+        },
+        {
+          "id": "lighthouse",
+          "name": "Маяк — вариант V3 у теннисного корта",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-lighthouse-v3-tent",
+          "points": [
+            {
+              "x": 55.2,
+              "y": 69.7,
+              "name": "Палатка у теннисного корта: ноутбук с возможным спавном V3",
+              "objectiveIds": [
+                "norvinsk-403-goal-46697c739597"
+              ],
+              "objectiveId": "norvinsk-403-goal-46697c739597",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
+              "precision": "schematic"
+            }
+          ]
+        }
+      ],
+      "guideSources": [
+        {
+          "label": "Актуальные варианты флешки V3",
+          "url": "https://tarkov.help/ru/quest/make-amends"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Варианты флешки V3 на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1066"
+        }
+      ],
+      "galleryArchiveRules": [
+        {
+          "id": "v3-before-lighthouse-rework-20261016",
+          "urls": [
+            "https://norvinsk-sys.ru/img/wiki/getting_acquainted_quest_item_spawn_map.jpg",
+            "https://norvinsk-sys.ru/img/wiki/gatentedmap.png",
+            "https://norvinsk-sys.ru/img/wiki/gatented.png",
+            "https://norvinsk-sys.ru/img/wiki/v3wtptent.png",
+            "https://norvinsk-sys.ru/img/wiki/ktttower.png",
+            "https://norvinsk-sys.ru/img/wiki/bodyspawnwtptower2.png",
+            "https://norvinsk-sys.ru/img/wiki/gasoutherntower.png",
+            "https://norvinsk-sys.ru/img/wiki/kttsoutheasternwaterbasintentmap.png",
+            "https://norvinsk-sys.ru/img/wiki/gasoutheasternwaterbasintent.png",
+            "https://norvinsk-sys.ru/img/wiki/gasoutheasternshackmap.png",
+            "https://norvinsk-sys.ru/img/wiki/gasoutheasternshack1.png",
+            "https://norvinsk-sys.ru/img/wiki/gasoutheasternshack2.png",
+            "https://norvinsk-sys.ru/img/wiki/barrackskeyfar.png",
+            "https://norvinsk-sys.ru/img/wiki/barrackskeyclose.png",
+            "https://norvinsk-sys.ru/img/wiki/v3flashusecbarrackdesk.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding3upstairsstorage1.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding3upstairsstorage2.png",
+            "https://norvinsk-sys.ru/img/wiki/wtpflashbuilding32.png",
+            "https://norvinsk-sys.ru/img/wiki/wtpflashbuilding3.png",
+            "https://norvinsk-sys.ru/img/wiki/gaeasttarpshack.png",
+            "https://norvinsk-sys.ru/img/wiki/wtpshackflash.png",
+            "https://norvinsk-sys.ru/img/wiki/wtpshackflash2.png",
+            "https://norvinsk-sys.ru/img/wiki/kttnetablemap.png",
+            "https://norvinsk-sys.ru/img/wiki/ganetable1.png",
+            "https://norvinsk-sys.ru/img/wiki/ganetable2.png",
+            "https://norvinsk-sys.ru/img/wiki/outside_storage_room.png",
+            "https://norvinsk-sys.ru/img/wiki/storage_room_close.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding2storage2.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding2storage1.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding2upstairsofficeshelf4.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding2upstairsofficeshelf3.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding2upstairsofficeshelf2.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding2upstairsofficeshelf.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding2officemap.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding2office.png",
+            "https://norvinsk-sys.ru/img/wiki/v3wtpbuilding2.png",
+            "https://norvinsk-sys.ru/img/wiki/kttnortherntentmap.png",
+            "https://norvinsk-sys.ru/img/wiki/wtpvehicletent.png",
+            "https://norvinsk-sys.ru/img/wiki/ganortherntenttable.png",
+            "https://norvinsk-sys.ru/img/wiki/ganortherntentbarrel.png",
+            "https://norvinsk-sys.ru/img/wiki/gantentmap.png",
+            "https://norvinsk-sys.ru/img/wiki/gantent2.png",
+            "https://norvinsk-sys.ru/img/wiki/gantent1.png",
+            "https://norvinsk-sys.ru/img/wiki/gawatchtowermap.png",
+            "https://norvinsk-sys.ru/img/wiki/gawatchtower2.png",
+            "https://norvinsk-sys.ru/img/wiki/gawatchtower1.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding1desk2.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding1desk3.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding1shelf3.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding1shelf.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding1desk4.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding1desk1.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding1shelf1.png",
+            "https://norvinsk-sys.ru/img/wiki/gabuilding1shelf2.png",
+            "https://norvinsk-sys.ru/img/wiki/gawshackmap.png",
+            "https://norvinsk-sys.ru/img/wiki/gawshack1.png",
+            "https://norvinsk-sys.ru/img/wiki/gawshack2.png"
+          ],
+          "reason": "Старые места V3 на очистных сооружениях до переработки Маяка. Актуальные варианты в шале и у теннисного корта показаны выше."
+        }
+      ]
+    },
+    "68e3a35002661eb2d30ce387": {
+      "slug": "the-labyrinth",
+      "name": "Лабиринт",
+      "expectedObjectiveIds": [
+        "story-6ab88f0e513e44b59fc83401",
+        "story-6ab88f0e454727100f277402",
+        "story-6ab88f0eca4953da69d73f03",
+        "story-6ab88f0e513b875fb92e0b04",
+        "story-6ab88f0ed83887a5a18abc05",
+        "story-6ab88f0efcd069bedb125606",
+        "story-6ab88f0ef3a28e8e056bd907",
+        "story-6ab88f0e42e8169093448008",
+        "story-6ab88f0efe034d2473ae1f09",
+        "story-6ab88f0e3b2393003232030a",
+        "story-6ab88f0e39ce25826cc0be0b",
+        "story-6ab88f0e506eeeed4b40a80c",
+        "story-6ab88f0e21b45c1126a52d0d",
+        "story-6ab88f0edf068bad7913a50e"
+      ],
+      "gallery": [],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [],
+          "paragraphs": [
+            "Добавлена отдельная схема внутренних помещений с пронумерованными местами записей и ключа. Номера относятся к схеме источника; порядок сюжетных целей и их отметки на сайте сохранены."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [
+        {
+          "id": "the-labyrinth",
+          "name": "Лабиринт — записи и помещения на схеме",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-labyrinth-notes",
+          "points": [
+            {
+              "x": 73.5,
+              "y": 39.2,
+              "name": "Место 1 на схеме источника",
+              "objectiveIds": [],
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/the-labyrinth",
+              "precision": "schematic"
+            },
+            {
+              "x": 78.6,
+              "y": 42,
+              "name": "Место 2 у изделия 1156",
+              "objectiveIds": [],
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/the-labyrinth",
+              "precision": "schematic"
+            },
+            {
+              "x": 67.7,
+              "y": 42.2,
+              "name": "Место 3 на схеме источника",
+              "objectiveIds": [],
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/the-labyrinth",
+              "precision": "schematic"
+            },
+            {
+              "x": 73.6,
+              "y": 62.2,
+              "name": "Место 4 на схеме источника",
+              "objectiveIds": [],
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/the-labyrinth",
+              "precision": "schematic"
+            },
+            {
+              "x": 64.8,
+              "y": 59.4,
+              "name": "Место 5 на схеме источника",
+              "objectiveIds": [],
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/the-labyrinth",
+              "precision": "schematic"
+            },
+            {
+              "x": 64.5,
+              "y": 54.6,
+              "name": "Место 6: комната на схеме источника",
+              "objectiveIds": [],
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/the-labyrinth",
+              "precision": "schematic"
+            },
+            {
+              "x": 50.4,
+              "y": 38.4,
+              "name": "Место 7 на схеме источника",
+              "objectiveIds": [],
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/the-labyrinth",
+              "precision": "schematic"
+            }
+          ]
+        }
+      ],
+      "guideSources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/the-labyrinth"
+        }
+      ]
+    },
+    "68da33fe00868edcb6025ac4": {
+      "slug": "the-ticket",
+      "name": "Билет",
+      "expectedObjectiveIds": [
+        "story-6ab925ce1100cc35cd200601",
+        "story-6ab925ce981457527b518702",
+        "story-6ab925ce6400941e617ed303",
+        "story-6ab925cef4918aab4dd90c04",
+        "story-6ab925ce0bd86f22350adc05",
+        "story-6ab925ce86f120536df66506",
+        "story-6ab9262edfa390c25e921b01",
+        "story-6ab9286235a294dc59b9dc01",
+        "story-6ab92862cdf716fdf48c3402",
+        "story-6ab928623439844b1d89db03",
+        "story-6ab928626bf7236f5a3e2d04",
+        "story-6ab9286293c2c2d224663305",
+        "story-6ab92862eea835f0f2841606",
+        "story-6ab928629d5ce3d3e1c80507",
+        "story-6ab9a0c3a1d588baf2fab301",
+        "story-6ab9a0c3e8e7d406d8c0bc02",
+        "story-6ab9a0c35b1e8f639d76a603",
+        "story-6ab9a1caafcb1d39d1745b01",
+        "story-6ab9a1caa6d874e03235a002",
+        "story-6ab9a1cad6274ca8f5e8e003",
+        "story-6ab9a1ca76b269193c9f1f04",
+        "story-6ab9f6cd56c3095e21cc4201",
+        "story-6ab9f985ebfbb3fc8e966302",
+        "story-6ab9fa9a79cc71150e43bb01",
+        "story-6ab9fa9a5d0b509de76d9004",
+        "story-6aba06ce0f6620bb9cdad201",
+        "story-6aba06ceea65fd1474203f02",
+        "story-6aba06cea0d20eb5de55d703",
+        "story-6aba06cec469d563f9c88504",
+        "story-6aba06ce26135ade761d7305",
+        "story-6aba06cee5f628d09036ba06",
+        "story-6aba06cebaa99776b651b407",
+        "story-6aba06ce1014303c9a258b08",
+        "story-6aba07dcc0e63a7021082c01",
+        "story-6aba0b9ea9ff29804f16ac01",
+        "story-6aba0b9e394dfc1d5dac3c02",
+        "story-6aba0b9e8f7de6d27c8a7003",
+        "story-6aba0b9ee8ee4348e6045104",
+        "story-6aba0d2e45af11975b833c01",
+        "story-6aba0b9ed2e597dd5aaa2206",
+        "story-6aba0b9e1c5dbe84c688a907",
+        "story-6aba0b9e19bc3e1f9e9c5608",
+        "story-6aba0b9efcb443534f60c009",
+        "story-6aba0b9e036ee010333a7f0a",
+        "story-6aba0b9eb077da185bb9ab0b",
+        "story-6aba0b9e2f00e58fb67da60c",
+        "story-6aba18445b9c0d65686ca401",
+        "story-6aba1844881cd2044a207802",
+        "story-6aba1844e0e190e2723aec03",
+        "story-6aba184485e238968ddf4604",
+        "story-6aba184432f39ec4c4984d06",
+        "story-6aba1844ca8d2ef9e7ea8608",
+        "story-6aba184491954c1c6d70320a",
+        "story-6aba1844df2180b49568850b",
+        "story-6aba1a8c62333d33fb0b5601",
+        "story-6aba1a8c6686dca2a1a5db02",
+        "story-6aba1a8c074b705581ea7c03",
+        "story-6aba1a8cc1c8aeb3c49bf604",
+        "story-6aba321197c78f943c173701",
+        "story-6aba3211add13a00882caf02",
+        "story-6aba34cb39153392a244d201",
+        "story-6aba34cbaab0d6a3b1cff402",
+        "story-6aba365a20599eb74845c101",
+        "story-6aba365a8ef4a27b790a2502",
+        "story-6aba365aafc837f32b7b8e03",
+        "story-6aba365aa755905baccddd04",
+        "story-6aba365a262ef12b8fcd5905",
+        "story-6aba365a427429bd96a07506",
+        "story-6aba365a90de27d56d72a707",
+        "story-6aba365a61afef3225e12008",
+        "story-6aba365a6bb29d42f6415b0a",
+        "story-6aba3f565c68017c8ee07601",
+        "story-6aba3f568bfeba029b95f202",
+        "story-6aba3f561138111ee0b40403",
+        "story-6aba3f56f65bbde72420f104",
+        "story-6aba3f562a854bb391899d05",
+        "story-6aba3f568d1c5710b5ca9706",
+        "story-6aba3f56fe14e6b936c46e0c",
+        "story-6aba47f29d0dc1cfb02cd501",
+        "story-6aba47f2297b665ed6839902",
+        "story-6aba47f219138d9d4b759503",
+        "story-6aba513332b9d49a8adc4c01",
+        "story-6aba513329d44d4f18ba2f02",
+        "story-6aba51339b17d1b2e77d2303",
+        "story-6aba51339ce2558457c28704",
+        "story-6aba51334d015a7fce3d4105",
+        "story-6aba51338ab33e21a0581c06",
+        "story-6aba51335528585e1a4c6807",
+        "story-6aba5133a6d7b34d412c4608",
+        "story-6aba5133ab7bbb4d633eb609",
+        "story-6aba5133436f41905203a80a",
+        "story-6aba5133f181916386a05b0b",
+        "story-6aba513320715b4a802ddf0c",
+        "story-6aba51331f08a8bafe6e690d",
+        "story-6aba513388dcab8367be0a0e",
+        "story-ticket-kappa-timeout",
+        "story-ticket-terminal-pass-survivor",
+        "story-ticket-terminal-pass-debtor",
+        "story-ticket-terminal-pass-savior",
+        "story-ticket-terminal-pass-fallen",
+        "story-ticket-terminal-admission",
+        "story-ticket-terminal-armory",
+        "story-ticket-terminal-marine-station",
+        "story-ticket-terminal-fuel-gate",
+        "story-ticket-terminal-power",
+        "story-ticket-terminal-pier-key",
+        "story-ticket-terminal-evacuation",
+        "story-ticket-terminal-ending-survivor",
+        "story-ticket-terminal-ending-debtor",
+        "story-ticket-terminal-ending-savior",
+        "story-ticket-terminal-ending-fallen"
+      ],
+      "gallery": [],
+      "guideAdditions": [
+        {
+          "id": "guide-20261016-0",
+          "objectiveIds": [],
+          "paragraphs": [
+            "Добавлена схема арсенала Терминала: отдельно отмечены тело с ключом и помещение возврата снаряжения. Остальные этапы Терминала сохраняют имеющиеся инструкции и скриншоты; координаты насосной, ворот и эвакуации требуют отдельной сверки."
+          ],
+          "links": []
+        }
+      ],
+      "maps": [
+        {
+          "id": "terminal",
+          "name": "Терминал — ключ и арсенал",
+          "renderer": "source",
+          "sourceKey": "guide-20261016-terminal-armory",
+          "points": [
+            {
+              "x": 73.2,
+              "y": 39.3,
+              "name": "Тело с ключом от арсенала",
+              "objectiveIds": [
+                "story-ticket-terminal-armory"
+              ],
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/the-ticket",
+              "precision": "schematic",
+              "objectiveId": "story-ticket-terminal-armory"
+            },
+            {
+              "x": 70.7,
+              "y": 40.2,
+              "name": "Арсенал: возврат снаряжения",
+              "objectiveIds": [
+                "story-ticket-terminal-armory"
+              ],
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/the-ticket",
+              "precision": "schematic",
+              "objectiveId": "story-ticket-terminal-armory"
+            }
+          ]
+        }
+      ],
+      "guideSources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/the-ticket"
+        }
+      ]
+    }
+  },
+  "sourceMaps": {
+    "guide-20261016-groundzero-terragroup": {
+      "ru": "Эпицентр — TerraGroup, 2 этаж",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/unanswered-calls",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/c07d6a26370c9ef8.webp",
+      "width": 2656,
+      "height": 2160
+    },
+    "guide-20261016-shoreline-case": {
+      "ru": "Берег — три места кейса",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/uninvited-guests-part-1",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/ee47359c9bacd1fe.webp",
+      "width": 3200,
+      "height": 2192
+    },
+    "guide-20261016-shoreline-cameras": {
+      "ru": "Берег — камеры",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/a04a9bcbeb7528c6.webp",
+      "width": 3200,
+      "height": 2192
+    },
+    "guide-20261016-streets-cameras": {
+      "ru": "Улицы Таркова — камеры",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/9a1b799363630550.webp",
+      "width": 3200,
+      "height": 2468
+    },
+    "guide-20261016-groundzero": {
+      "ru": "Эпицентр — камеры",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/reverse-gear",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/81e170c9cfdf8fc2.webp",
+      "width": 3200,
+      "height": 3200
+    },
+    "guide-20261016-streets-laptop": {
+      "ru": "Улицы Таркова — ноутбук",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/final-stretch",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/41304f3af8c35444.webp",
+      "width": 3200,
+      "height": 2468
+    },
+    "guide-20261016-shoreline-fence": {
+      "ru": "Берег — проломы санатория",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/stay-clear-of-blast-zone",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/d324abeec6bae42e.webp",
+      "width": 3200,
+      "height": 2192
+    },
+    "guide-20261016-customs-repeaters": {
+      "ru": "Таможня — ретрансляторы",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/break-the-chain",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/bf312fc05cf13451.webp",
+      "width": 3200,
+      "height": 2049
+    },
+    "guide-20261016-woods-repeaters": {
+      "ru": "Лес — ретрансляторы",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/break-the-chain",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/30254377b366251f.webp",
+      "width": 3200,
+      "height": 2153
+    },
+    "guide-20261016-woods-circle": {
+      "ru": "Лес — дом с ритуальным кругом",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/historical-prospects",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/495ffb0fa0c92fed.webp",
+      "width": 3200,
+      "height": 3131
+    },
+    "guide-20261016-streets-circle": {
+      "ru": "Улицы Таркова — Никитская, 8",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/historical-prospects",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/b54935e677883065.webp",
+      "width": 3200,
+      "height": 2438
+    },
+    "guide-20261016-lighthouse-v3-chalet": {
+      "ru": "Маяк — варианты V3 в шале",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/make-amends",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/5665befcbfe381b6.webp",
+      "width": 1843,
+      "height": 3200
+    },
+    "guide-20261016-lighthouse-v3-tent": {
+      "ru": "Маяк — вариант V3 у теннисного корта",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/make-amends",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/d1fc8972750f821c.webp",
+      "width": 1843,
+      "height": 3200
+    },
+    "guide-20261016-icebreaker-before-engine": {
+      "ru": "Ледокол — автоматика перед машинным отделением",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/f7a5934ea344f421.webp",
+      "width": 3200,
+      "height": 1800
+    },
+    "guide-20261016-icebreaker-storage": {
+      "ru": "Ледокол — автоматика у кладовой",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/65019aa266aaf03a.webp",
+      "width": 3200,
+      "height": 1800
+    },
+    "guide-20261016-icebreaker-control": {
+      "ru": "Ледокол — центральный пост управления",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/c9de46aa6e68af8c.webp",
+      "width": 3200,
+      "height": 1800
+    },
+    "guide-20261016-interchange-saferoom": {
+      "ru": "Развязка — безопасная комната",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/fb33ca33ccb9b9fe.webp",
+      "width": 2344,
+      "height": 3200
+    },
+    "guide-20261016-streets-balcony": {
+      "ru": "Улицы Таркова — балкон Pinewood",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/750aa29437bf4a96.webp",
+      "width": 3200,
+      "height": 2450
+    },
+    "guide-20261016-streets-tram": {
+      "ru": "Улицы Таркова — жёлтая ракета",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/c921e813f2ba2452.webp",
+      "width": 3200,
+      "height": 2453
+    },
+    "guide-20261016-labyrinth-notes": {
+      "ru": "Лабиринт — записи и помещения на схеме",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/the-labyrinth",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/map-guide-20261016-labyrinth-notes.webp",
+      "width": 1280,
+      "height": 804
+    },
+    "guide-20261016-terminal-armory": {
+      "ru": "Терминал — ключ и арсенал",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/the-ticket",
+      "coordinateSystem": "image-percent",
+      "verification": "annotated-source-visual-reviewed",
+      "src": "assets/quest-guides-20261016/map-guide-20261016-terminal-armory.webp",
+      "width": 3200,
+      "height": 2264
+    }
+  }
+}

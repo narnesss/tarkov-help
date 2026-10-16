@@ -1,0 +1,974 @@
+{
+  "checkedAt": "2026-10-16",
+  "version": "quest-guides-20261016-v1",
+  "quests": [
+    {
+      "id": "norvinsk-526",
+      "slug": "unanswered-calls",
+      "name": "Звонки без ответа",
+      "frames": 3,
+      "schematicPoints": 1,
+      "sources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/unanswered-calls"
+        }
+      ],
+      "externalMaps": [],
+      "remaining": null
+    },
+    {
+      "id": "norvinsk-n17",
+      "slug": "make-amends",
+      "name": "Загладить вину",
+      "frames": 5,
+      "schematicPoints": 3,
+      "sources": [
+        {
+          "label": "Актуальные варианты флешки V3",
+          "url": "https://tarkov.help/ru/quest/make-amends"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Варианты флешки V3 на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1066"
+        }
+      ],
+      "remaining": "Схемы и фотографии подтверждённых вариантов V3; список новых спавнов Маяка ещё уточняется источником."
+    },
+    {
+      "id": "norvinsk-524",
+      "slug": "uninvited-guests-part-1",
+      "name": "Незваные гости. Часть 1",
+      "frames": 4,
+      "schematicPoints": 3,
+      "sources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/uninvited-guests-part-1"
+        }
+      ],
+      "externalMaps": [],
+      "remaining": null
+    },
+    {
+      "id": "norvinsk-527",
+      "slug": "cast-the-net",
+      "name": "Забросить невод",
+      "frames": 9,
+      "schematicPoints": 6,
+      "sources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/cast-the-net"
+        }
+      ],
+      "externalMaps": [],
+      "remaining": null
+    },
+    {
+      "id": "norvinsk-529",
+      "slug": "reverse-gear",
+      "name": "Задняя передача",
+      "frames": 15,
+      "schematicPoints": 6,
+      "sources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/reverse-gear"
+        }
+      ],
+      "externalMaps": [],
+      "remaining": null
+    },
+    {
+      "id": "norvinsk-535",
+      "slug": "final-stretch",
+      "name": "Финишная прямая",
+      "frames": 4,
+      "schematicPoints": 1,
+      "sources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/final-stretch"
+        }
+      ],
+      "externalMaps": [],
+      "remaining": null
+    },
+    {
+      "id": "norvinsk-538",
+      "slug": "stay-clear-of-blast-zone",
+      "name": "Капкан",
+      "frames": 4,
+      "schematicPoints": 3,
+      "sources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/stay-clear-of-blast-zone"
+        }
+      ],
+      "externalMaps": [],
+      "remaining": null
+    },
+    {
+      "id": "norvinsk-539",
+      "slug": "break-the-chain",
+      "name": "Разрыв цепи",
+      "frames": 6,
+      "schematicPoints": 4,
+      "sources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/break-the-chain"
+        }
+      ],
+      "externalMaps": [],
+      "remaining": null
+    },
+    {
+      "id": "norvinsk-782",
+      "slug": "honest-review",
+      "name": "Честный отзыв",
+      "frames": 2,
+      "schematicPoints": 0,
+      "sources": [
+        {
+          "label": "Актуальное прохождение на Tarkov.help",
+          "url": "https://tarkov.help/ru/quest/honest-review"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1046"
+        }
+      ],
+      "remaining": "Нет подтверждённых координат трёх новых остановок БТР; добавлены фотографии, описание и ссылка на отмеченные места источника."
+    },
+    {
+      "id": "patch-1150-fog-of-war",
+      "slug": "fog-of-war",
+      "name": "Туман войны",
+      "frames": 2,
+      "schematicPoints": 0,
+      "sources": [
+        {
+          "label": "Актуальное прохождение на Tarkov.help",
+          "url": "https://tarkov.help/ru/quest/fog-of-war"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1043"
+        },
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/252"
+        }
+      ],
+      "remaining": "Нет подтверждённых XYZ новых зон; добавлены фотографии и карты источника."
+    },
+    {
+      "id": "patch-1150-number-temporarily-unavailable",
+      "slug": "number-temporarily-unavailable",
+      "name": "Абонент временно недоступен",
+      "frames": 2,
+      "schematicPoints": 0,
+      "sources": [
+        {
+          "label": "Актуальное прохождение на Tarkov.help",
+          "url": "https://tarkov.help/ru/quest/subscriber-temporarily-unavailable"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1047"
+        }
+      ],
+      "remaining": "Нет подтверждённых координат нового лагеря; добавлены фотографии и актуальное описание."
+    },
+    {
+      "id": "patch-1150-callsign-malachite",
+      "slug": "callsign-malachite",
+      "name": "Позывной «Малахит»",
+      "frames": 2,
+      "schematicPoints": 0,
+      "sources": [
+        {
+          "label": "Актуальное прохождение на Tarkov.help",
+          "url": "https://tarkov.help/ru/quest/call-sign-malachite"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1074"
+        }
+      ],
+      "remaining": "Нет подтверждённых координат нового домика; добавлены фотографии и карта источника."
+    },
+    {
+      "id": "norvinsk-801",
+      "slug": "in-the-name-of-humanity",
+      "name": "Во имя человечества...",
+      "frames": 17,
+      "schematicPoints": 3,
+      "sources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/in-the-name-of-humanity"
+        }
+      ],
+      "externalMaps": [],
+      "remaining": "Новые схемы безопасной комнаты, Pinewood и трамвая; считыватель Burger Spot и наружный Контейнер 14 требуют собственной точной привязки."
+    },
+    {
+      "id": "norvinsk-803",
+      "slug": "historical-prospects",
+      "name": "Исторические перспективы",
+      "frames": 10,
+      "schematicPoints": 2,
+      "sources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/historical-prospects"
+        }
+      ],
+      "externalMaps": [],
+      "remaining": null
+    },
+    {
+      "id": "patch-1150-all-inclusive-support",
+      "slug": "all-inclusive-support",
+      "name": "Поддержка «всё включено»",
+      "frames": 1,
+      "schematicPoints": 0,
+      "sources": [
+        {
+          "label": "Актуальное прохождение на Tarkov.help",
+          "url": "https://tarkov.help/ru/quest/all-inclusive-support"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1050"
+        },
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/markers/13619"
+        }
+      ],
+      "remaining": "Не добавлен собственный маркер нового домика у озера; добавлены фотография и карта источника."
+    },
+    {
+      "id": "patch-1150-scope-the-clearing",
+      "slug": "scope-the-clearing",
+      "name": "Сечь поляну",
+      "frames": 3,
+      "schematicPoints": 0,
+      "sources": [
+        {
+          "label": "Актуальное прохождение на Tarkov.help",
+          "url": "https://tarkov.help/ru/quest/clear-the-field"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Места задания на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1057"
+        }
+      ],
+      "remaining": "Первые две камеры показаны на фото и карте источника; собственных проверенных координат нет."
+    },
+    {
+      "id": "patch-1150-ease-the-move",
+      "slug": "ease-the-move",
+      "name": "Облегчить переезд",
+      "frames": 5,
+      "schematicPoints": 0,
+      "sources": [
+        {
+          "label": "Актуальное прохождение на Tarkov.help",
+          "url": "https://tarkov.help/ru/quest/make-the-move-easier"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Тайники BEAR на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/markers/15853,15855,15856"
+        },
+        {
+          "label": "Тайники USEC на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/markers/15853,15854,15861"
+        }
+      ],
+      "remaining": "Не импортированы непроверенные координаты разных фракций; добавлены фотографии и раздельные карты BEAR/USEC."
+    },
+    {
+      "id": "69e5583240c3e6c8ba0edbd5",
+      "slug": "wiring-the-vessel",
+      "name": "Судовая электрика",
+      "frames": 12,
+      "schematicPoints": 3,
+      "sources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/wiring-the-vessel"
+        }
+      ],
+      "externalMaps": [],
+      "remaining": null
+    },
+    {
+      "id": "norvinsk-403",
+      "slug": "getting-acquainted",
+      "name": "Новое знакомство",
+      "frames": 5,
+      "schematicPoints": 2,
+      "sources": [
+        {
+          "label": "Актуальные варианты флешки V3",
+          "url": "https://tarkov.help/ru/quest/make-amends"
+        }
+      ],
+      "externalMaps": [
+        {
+          "label": "Варианты флешки V3 на карте источника",
+          "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1066"
+        }
+      ],
+      "remaining": "Схемы и фотографии подтверждённых вариантов V3; список новых спавнов Маяка ещё уточняется источником."
+    },
+    {
+      "id": "68e3a35002661eb2d30ce387",
+      "slug": "the-labyrinth",
+      "name": "Лабиринт",
+      "frames": 0,
+      "schematicPoints": 7,
+      "sources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/the-labyrinth"
+        }
+      ],
+      "externalMaps": [],
+      "remaining": "Добавлена схема с 7 номерами источника без выдуманной привязки каждого номера к сюжетной цели."
+    },
+    {
+      "id": "68da33fe00868edcb6025ac4",
+      "slug": "the-ticket",
+      "name": "Билет",
+      "frames": 0,
+      "schematicPoints": 2,
+      "sources": [
+        {
+          "label": "Прохождение и иллюстрации TarkovHead / Wiki",
+          "url": "https://www.tarkovhead.com/en/quest/regular/the-ticket"
+        }
+      ],
+      "externalMaps": [],
+      "remaining": "Добавлены арсенал и ключ. Насосная, D3, топливные ворота, пирс и эвакуация требуют отдельной сверки."
+    }
+  ],
+  "assets": [
+    {
+      "file": "Saving_the_Mole_Map.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Saving_the_Mole_Map.png?preset=original",
+      "sha256": "9764c0a27909740cf71e678b536c0a276b3e7c38897f1a61724f5897ff5432eb",
+      "delivered": "quest-guides-20261016/c07d6a26370c9ef8.webp"
+    },
+    {
+      "file": "Ground_Zero_TerraGroup_Building.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Ground_Zero_TerraGroup_Building.png?preset=original",
+      "sha256": "22e0f715afe91f3988fe8b90b58124439ec1ef67532b69897dfda68ba1891008",
+      "delivered": "quest-guides-20261016/df9ebc26a70b6b71.webp"
+    },
+    {
+      "file": "Unanswered_Calls_stash_position.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Unanswered_Calls_stash_position.png?preset=original",
+      "sha256": "d636a8fd48d513c512e6757bfb8956fd7a072f02db4487e4c20b9f2bf9ec0071",
+      "delivered": "quest-guides-20261016/e1f3f22ddc0d6050.webp"
+    },
+    {
+      "file": "Uninvited_Guests_-_Part_1_Map.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Uninvited_Guests_-_Part_1_Map.png?preset=original",
+      "sha256": "8a6ab5c038dba0ae28ac30dab905585d5469f86397c81ee692b7f593593239c7",
+      "delivered": "quest-guides-20261016/ee47359c9bacd1fe.webp"
+    },
+    {
+      "file": "Uninvited_Guests_-_Part_1_Spawn_1.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Uninvited_Guests_-_Part_1_Spawn_1.png?preset=original",
+      "sha256": "60208b24c44d3cacac0b31a843c112bf7d1905fc6472e8e694d0ba94cd4c6fb6",
+      "delivered": "quest-guides-20261016/e7cbb0d4a3b64fd7.webp"
+    },
+    {
+      "file": "Uninvited_Guests_-_Part_1_Spawn_2.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Uninvited_Guests_-_Part_1_Spawn_2.png?preset=original",
+      "sha256": "fc2112215c882f20f6b575cb7875a5bb5db2a3fe0e93ac369052b85c441c7ca4",
+      "delivered": "quest-guides-20261016/e47c9beee8327083.webp"
+    },
+    {
+      "file": "Uninvited_Guests_-_Part_1_Spawn_3.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Uninvited_Guests_-_Part_1_Spawn_3.png?preset=original",
+      "sha256": "084a527ebeae1d8a37f7a1e72304883dbf332e780f1532ba74bca04d22e8ba8b",
+      "delivered": "quest-guides-20261016/130f30171add2fa5.webp"
+    },
+    {
+      "file": "Cast_the_Net_Shoreline_Map.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Shoreline_Map.png?preset=original",
+      "sha256": "d27a3fc09547a0e18a9ffeb7fd9b4d1ddca66f5c18645dfe241c47ab92e6c08b",
+      "delivered": "quest-guides-20261016/a04a9bcbeb7528c6.webp"
+    },
+    {
+      "file": "Cast_the_Net_Shoreline_Camera_1.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Shoreline_Camera_1.png?preset=original",
+      "sha256": "acf451a33c894c9de08f5560095cb53406878f303d45a56f9129b82523d045cd",
+      "delivered": "quest-guides-20261016/c75b3da530657c15.webp"
+    },
+    {
+      "file": "Cast_the_Net_Shoreline_Camera_2.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Shoreline_Camera_2.png?preset=original",
+      "sha256": "51fd8f44f0eb438403a9532244e985f19772ec293eb26232ea52d30d1b22fca2",
+      "delivered": "quest-guides-20261016/3130595f14105048.webp"
+    },
+    {
+      "file": "Cast_the_Net_Streets_of_Tarkov_Map.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Streets_of_Tarkov_Map.png?preset=original",
+      "sha256": "11026073ceaa926b253c57cb654b073f9f1dc10b2fef628337575294799c9f7d",
+      "delivered": "quest-guides-20261016/9a1b799363630550.webp"
+    },
+    {
+      "file": "Cast_the_Net_Streets_of_Tarkov_Camera_1.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Streets_of_Tarkov_Camera_1.png?preset=original",
+      "sha256": "44fc9720b1392aeadec719d7b18517dc3e0e099cef20f533abfb1593b9661fc2",
+      "delivered": "quest-guides-20261016/9aa03c426f44709b.webp"
+    },
+    {
+      "file": "Cast_the_Net_Streets_of_Tarkov_Camera_2.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Streets_of_Tarkov_Camera_2.png?preset=original",
+      "sha256": "9412adcca8d561da916304fb3b8585d18e81f41fbdcd3e1af017675f85dc4a0d",
+      "delivered": "quest-guides-20261016/33d2b7d68ad112e9.webp"
+    },
+    {
+      "file": "Cast_the_Net_Ground_Zero_Map.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Ground_Zero_Map.png?preset=original",
+      "sha256": "7c8aa831e15af88710202073c513832c4927867e799b8f1f846f5c29f99b60c6",
+      "delivered": "quest-guides-20261016/81e170c9cfdf8fc2.webp"
+    },
+    {
+      "file": "Cast_the_Net_Ground_Zero_Camera_1.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Ground_Zero_Camera_1.png?preset=original",
+      "sha256": "424dd99e6dba11b9ff5955d60776a3c37a054b764b72eabf2b2936a1899c2e03",
+      "delivered": "quest-guides-20261016/73a4869761e55e3a.webp"
+    },
+    {
+      "file": "Cast_the_Net_Ground_Zero_Camera_2.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Ground_Zero_Camera_2.png?preset=original",
+      "sha256": "3f7efb1cc6abb0adea78118bce3168785785b37b01ca93b4e98d83f6889ed977",
+      "delivered": "quest-guides-20261016/f7c4317b44f5caab.webp"
+    },
+    {
+      "file": "Cast_the_Net_Shoreline_Camera_1_close.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Shoreline_Camera_1_close.png?preset=original",
+      "sha256": "e01f3d5541c7f3f7c5d1527585f18a0792df5ddcbcaddb5b0a1e1fdd801b4e57",
+      "delivered": "quest-guides-20261016/34c01e9026423483.webp"
+    },
+    {
+      "file": "Cast_the_Net_Shoreline_Camera_2_close.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_Shoreline_Camera_2_close.png?preset=original",
+      "sha256": "c519dbb803218af7373569c71e245cc7d2d8a0cc0392e8065b9a9d6143bdd7da",
+      "delivered": "quest-guides-20261016/17cb1e242b61394a.webp"
+    },
+    {
+      "file": "Cast_the_Net_SOT_Camera_1_close.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_SOT_Camera_1_close.png?preset=original",
+      "sha256": "934b9e73eca9dee60c37f93d09ea5420cb8a67a72b50296dd72234bd1f16abd6",
+      "delivered": "quest-guides-20261016/ed51d92a7acd7e06.webp"
+    },
+    {
+      "file": "Cast_the_Net_SOT_Camera_2_close.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Cast_the_Net_SOT_Camera_2_close.png?preset=original",
+      "sha256": "fc3ad82d65540dfc0b19e692605add8ef573e252d4c008a701d2f59a2eda418b",
+      "delivered": "quest-guides-20261016/3225441f302a881d.webp"
+    },
+    {
+      "file": "Reverse_Gear_GZ_Camera_1_close.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Reverse_Gear_GZ_Camera_1_close.png?preset=original",
+      "sha256": "f40195fb645a7106ea8b78c3ead41f52809c3941ab2e01970a0dd64427f91ccd",
+      "delivered": "quest-guides-20261016/5d13c889d236998f.webp"
+    },
+    {
+      "file": "Reverse_Gear_GZ_Camera_2_close.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Reverse_Gear_GZ_Camera_2_close.png?preset=original",
+      "sha256": "c643bd78236adba046f3f1b9dae4248be2f987b161d69da582819a9df85ea61e",
+      "delivered": "quest-guides-20261016/9e19b09db026f33f.webp"
+    },
+    {
+      "file": "Final_Stretch_Map.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Final_Stretch_Map.png?preset=original",
+      "sha256": "c3ca419471be883a82c1a9d1fb965d931525abecc9b19b62064e0c30ca9b1d9d",
+      "delivered": "quest-guides-20261016/41304f3af8c35444.webp"
+    },
+    {
+      "file": "Final_Stretch_Diner.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Final_Stretch_Diner.png?preset=original",
+      "sha256": "0a5a8d7d9bdbbb90b2802d5d75f38521b24c0bcfe32fcd368920cc976e291859",
+      "delivered": "quest-guides-20261016/008f3afc67a97751.webp"
+    },
+    {
+      "file": "Final_Stretch_Ventilation.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Final_Stretch_Ventilation.png?preset=original",
+      "sha256": "4dcff9b690d3453d992840d19607bf3f30803775ec53503d9cd899a55d5a8797",
+      "delivered": "quest-guides-20261016/209198db0c278bbb.webp"
+    },
+    {
+      "file": "Final_Stretch_Laptop_Spawn.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Final_Stretch_Laptop_Spawn.png?preset=original",
+      "sha256": "448a9052c0a91ea0880a921feec3b391ac12ded779002dd4080f2ed71c663c13",
+      "delivered": "quest-guides-20261016/693846d4d98c0d04.webp"
+    },
+    {
+      "file": "Stay_Clear_of_Blast_Zone_Map.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Stay_Clear_of_Blast_Zone_Map.png?preset=original",
+      "sha256": "9c4756dbedb6fc8a3fda079c676ef6fc8d08e921cd12997c10b6aff1480fcaea",
+      "delivered": "quest-guides-20261016/d324abeec6bae42e.webp"
+    },
+    {
+      "file": "Stay_Clear_of_Blast_Zone_West_Fence.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Stay_Clear_of_Blast_Zone_West_Fence.png?preset=original",
+      "sha256": "538acd1fb42a9cceba1a192be20611d90365f3a2967a2c8edb80033714d74223",
+      "delivered": "quest-guides-20261016/2ece4889b7f8e2d5.webp"
+    },
+    {
+      "file": "Stay_Clear_of_Blast_Zone_North_Fence.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Stay_Clear_of_Blast_Zone_North_Fence.png?preset=original",
+      "sha256": "5d9ca1d2aeb86a3469455bde0e73d1f1640a5e6dadb28dec9e6b7ade9d937b1a",
+      "delivered": "quest-guides-20261016/8e602b74af1a35f8.webp"
+    },
+    {
+      "file": "Stay_Clear_of_Blast_Zone_East_Fence.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Stay_Clear_of_Blast_Zone_East_Fence.png?preset=original",
+      "sha256": "aaa06d07f729d72baccdb11a6359d844bf54103c0eb7ee9a425180c15cb5f030",
+      "delivered": "quest-guides-20261016/aa69c84ba724fc7e.webp"
+    },
+    {
+      "file": "Break_the_Chain_Customs_Map.jpg",
+      "source": "https://www.tarkovhead.com/api/media/file/Break_the_Chain_Customs_Map.jpg?preset=original",
+      "sha256": "9cc09b95ea3293235ea46b201c33bd4ef2acff9e932f30c5c5a9ae7abc91726e",
+      "delivered": "quest-guides-20261016/bf312fc05cf13451.webp"
+    },
+    {
+      "file": "Break_the_Chain_Factory_Chimney_Repeater.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Break_the_Chain_Factory_Chimney_Repeater.png?preset=original",
+      "sha256": "76d6d6ca9450dfc9ef108fedc93bd60bb7e9369df93c99c746c6f4ff192ab439",
+      "delivered": "quest-guides-20261016/9c7d18284547a097.webp"
+    },
+    {
+      "file": "Break_the_Chain_Power_Line_Repeater.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Break_the_Chain_Power_Line_Repeater.png?preset=original",
+      "sha256": "445b08dc207c5724fe9950e82f15a34eb75f84f51f0cee1e2bec8fb1d2ab72f7",
+      "delivered": "quest-guides-20261016/e13a97e513c7ae95.webp"
+    },
+    {
+      "file": "Break_the_Chain_Woods_Map.jpg",
+      "source": "https://www.tarkovhead.com/api/media/file/Break_the_Chain_Woods_Map.jpg?preset=original",
+      "sha256": "ec54b554052d51fdc43135f0c1d24ffa2d5fdcc589eb3f1877d831d9bb77b8f4",
+      "delivered": "quest-guides-20261016/30254377b366251f.webp"
+    },
+    {
+      "file": "Break_the_Chain_Mountain_Repeater.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Break_the_Chain_Mountain_Repeater.png?preset=original",
+      "sha256": "39821a037e9a205ce2d1747e94a45a3cbded415566e3228e127351efb0203f8e",
+      "delivered": "quest-guides-20261016/7055b80ab34cbcbd.webp"
+    },
+    {
+      "file": "Break_the_Chain_Cell_Tower_Repeater.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Break_the_Chain_Cell_Tower_Repeater.png?preset=original",
+      "sha256": "ddf0d81a1c65d456f003fd3907f6485d0b61c8bcb93621739038b23dbd78e1d6",
+      "delivered": "quest-guides-20261016/4204031748920db5.webp"
+    },
+    {
+      "file": "TheCultPart2DormsMap.png",
+      "source": "https://www.tarkovhead.com/api/media/file/TheCultPart2DormsMap.png?preset=original",
+      "sha256": "9ef7851dc03c573b08edbdb9f3b0ca5f1efd9efbf257e3e532c95b694bb7a22e",
+      "delivered": "quest-guides-20261016/6fefe82534da072e.webp"
+    },
+    {
+      "file": "Marked_Room_Door.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Marked_Room_Door.png?preset=original",
+      "sha256": "52c067a2ea7526f2634b8537f59c9fca95edd08c67ec7cf8e49bcb8ce45d3bf0",
+      "delivered": "quest-guides-20261016/c97718c6287c19ea.webp"
+    },
+    {
+      "file": "Marked_Room_Room.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Marked_Room_Room.png?preset=original",
+      "sha256": "3be45d2b27b85e83745c6b1fb1230741590606ccc5d237b70341c5735ee87632",
+      "delivered": "quest-guides-20261016/816b9a1e4a0644d5.webp"
+    },
+    {
+      "file": "EFT_TAAH_Woods_House_Map.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/1/15/EFT_TAAH_Woods_House_Map.png/revision/latest?cb=20260217151051",
+      "sha256": "776c47a281db90a8353f44bb4eed65b6b6b3832c8fda10fa8dfd2936ec0d8e89",
+      "delivered": "quest-guides-20261016/495ffb0fa0c92fed.webp"
+    },
+    {
+      "file": "EFT_TAAH_Woods_House.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/5/52/EFT_TAAH_Woods_House.png/revision/latest?cb=20260217150816",
+      "sha256": "8c482658ed7b56572bcdb13d9a7f9d3d7cac048496342a05fb72297bf506befc",
+      "delivered": "quest-guides-20261016/89851c400e826a93.webp"
+    },
+    {
+      "file": "Historical_Prospects_Woods_Circle.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/e/ef/Historical_Prospects_Woods_Circle.png/revision/latest?cb=20260915055318",
+      "sha256": "ad33e90799a7e8ed677f6072a0dc28affb9a15ed9ba6c11778ff872a0a071df6",
+      "delivered": "quest-guides-20261016/00187bb4f6ebb262.webp"
+    },
+    {
+      "file": "Nikitskaya_Street_8_Map.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/b/be/Nikitskaya_Street_8_Map.png/revision/latest?cb=20260914015113",
+      "sha256": "91e88e51b62f1b5ed623eb944f87993c8c5f7f9584d01fd8ab480f76cf1f5c7b",
+      "delivered": "quest-guides-20261016/b54935e677883065.webp"
+    },
+    {
+      "file": "Nikitskaya_Street_Second_Floor_Cultist_Apartment_Entrance.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/4/4c/Nikitskaya_Street_Second_Floor_Cultist_Apartment_Entrance.png/revision/latest?cb=20260914015711",
+      "sha256": "840797ce732b6d13f7e19db3e9e44b6024e6d16073b663af3664ad1c309b3f6d",
+      "delivered": "quest-guides-20261016/cae522fd6c27d9df.webp"
+    },
+    {
+      "file": "Nikitskaya_Street_Second_Floor_Cultist_Apartment_Door.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/b/bb/Nikitskaya_Street_Second_Floor_Cultist_Apartment_Door.png/revision/latest?cb=20260914014054",
+      "sha256": "d9b9b2fb0b4c1c1f0dbbb324932bae1c37eaf52a36eb325a142b1c54842d30f0",
+      "delivered": "quest-guides-20261016/de8b56366426e57a.webp"
+    },
+    {
+      "file": "Nikitskaya_Street_Second_Floor_Cultist_Apartment.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Nikitskaya_Street_Second_Floor_Cultist_Apartment.png?preset=original",
+      "sha256": "d4dc1a207c8fedbbb0795f68d8ff49363414279ee2c3f66bbd8f12f769f34bb6",
+      "delivered": "quest-guides-20261016/670f850246022b55.webp"
+    },
+    {
+      "file": "SafeRoomMap.png",
+      "source": "https://www.tarkovhead.com/api/media/file/SafeRoomMap.png?preset=original",
+      "sha256": "70dfd687ab8498f915093751c0c419725c4d4d6ace00ec02b044d3546893b2bc",
+      "delivered": "quest-guides-20261016/fb33ca33ccb9b9fe.webp"
+    },
+    {
+      "file": "IC-Saferoom_EXFIL.png",
+      "source": "https://www.tarkovhead.com/api/media/file/IC-Saferoom_EXFIL.png?preset=original",
+      "sha256": "962a63a6a2655e8ef0d9963f9d385510622fe5d8290af4459fc5e5483d6126b4",
+      "delivered": "quest-guides-20261016/9c26e708387ce97c.webp"
+    },
+    {
+      "file": "Object14Lever.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Object14Lever.png?preset=original",
+      "sha256": "8a2525eaa5f0355ef2f247f729ec90109ce1466d3e88818d149837f227c208a3",
+      "delivered": "quest-guides-20261016/ba3c444250cd2f13.webp"
+    },
+    {
+      "file": "Object14Map.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Object14Map.png?preset=original",
+      "sha256": "e4da1de1dc886c0f948db58071efb8895f839036df729130d602d891065d8811",
+      "delivered": "quest-guides-20261016/266147bfa652049b.webp"
+    },
+    {
+      "file": "Object_14_Container_Location_-_Interchange.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Object_14_Container_Location_-_Interchange.png?preset=original",
+      "sha256": "a69be6947605e1dcedc9680577350a3546786e1a3df6af32e43b662741fb691b",
+      "delivered": "quest-guides-20261016/d983c932fd2dc8b7.webp"
+    },
+    {
+      "file": "Object_14.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Object_14.png?preset=original",
+      "sha256": "102bb00767e06a59aa2797f12aa5657d951d5c0a5829314e78bdf58d1147e3df",
+      "delivered": "quest-guides-20261016/48b233c865bcdeaf.webp"
+    },
+    {
+      "file": "In_the_Name_of_Humanity_Location.png",
+      "source": "https://www.tarkovhead.com/api/media/file/In_the_Name_of_Humanity_Location.png?preset=original",
+      "sha256": "b2a29918c0fabf0d2c032283048175b7c9aa492b3594b0e13681be7d171b7213",
+      "delivered": "quest-guides-20261016/9ea96fd658c9ef69.webp"
+    },
+    {
+      "file": "InterchangeTransitToStreetsOfTarkov2.jpg",
+      "source": "https://www.tarkovhead.com/api/media/file/InterchangeTransitToStreetsOfTarkov2.jpg?preset=original",
+      "sha256": "109b8bbe8f8349e18b1b18db703cde880ab7f2cb95027fbe1c1f836d2ed690e5",
+      "delivered": "quest-guides-20261016/d9db6eec92029027.webp"
+    },
+    {
+      "file": "InterchangeTransitToStreetsOfTarkov.png",
+      "source": "https://www.tarkovhead.com/api/media/file/InterchangeTransitToStreetsOfTarkov.png?preset=original",
+      "sha256": "311ea65bcabe7dd762b3fb69d0a61986f1f9b9408760b5e451e302b79e0cd761",
+      "delivered": "quest-guides-20261016/5986a02e7928668d.webp"
+    },
+    {
+      "file": "In_the_Name_of_Humanity_Stashing_Location_Map.png",
+      "source": "https://www.tarkovhead.com/api/media/file/In_the_Name_of_Humanity_Stashing_Location_Map.png?preset=original",
+      "sha256": "626ebe2dacc0943db382b7f9b266b045aa2c7e7884017ac3d50b05f1091b678b",
+      "delivered": "quest-guides-20261016/750aa29437bf4a96.webp"
+    },
+    {
+      "file": "In_the_Name_of_Humanity_Stashing_Location_Way_1.png",
+      "source": "https://www.tarkovhead.com/api/media/file/In_the_Name_of_Humanity_Stashing_Location_Way_1.png?preset=original",
+      "sha256": "804e8f79b6c2b6c37a703f0db69dee0e1ac7a99ace5150520805b281e771d3d0",
+      "delivered": "quest-guides-20261016/8ce3cea59e1f7acd.webp"
+    },
+    {
+      "file": "In_the_Name_of_Humanity_Stashing_Location_Way_2.png",
+      "source": "https://www.tarkovhead.com/api/media/file/In_the_Name_of_Humanity_Stashing_Location_Way_2.png?preset=original",
+      "sha256": "602ad141f9d867d042a3c638c4b245a8d03140495a6d61657652b2c5768eaf5b",
+      "delivered": "quest-guides-20261016/2af429cbbc24a9b4.webp"
+    },
+    {
+      "file": "In_the_Name_of_Humanity_Stashing_Location_Way_3.png",
+      "source": "https://www.tarkovhead.com/api/media/file/In_the_Name_of_Humanity_Stashing_Location_Way_3.png?preset=original",
+      "sha256": "605560582d802a745c20431f177c552fd1b0356c0c54f100ff9fe385a20de9b6",
+      "delivered": "quest-guides-20261016/91369d39afd61c5d.webp"
+    },
+    {
+      "file": "In_the_Name_of_Humanity_Stashing_Location_Way_4.png",
+      "source": "https://www.tarkovhead.com/api/media/file/In_the_Name_of_Humanity_Stashing_Location_Way_4.png?preset=original",
+      "sha256": "68137bc1bd4b5f0199d5f8ecb5e04e03dbd4f414feef7c6497b4199203f2a778",
+      "delivered": "quest-guides-20261016/50623500552bd772.webp"
+    },
+    {
+      "file": "In_the_Name_of_Humanity_Stashing_Location.png",
+      "source": "https://www.tarkovhead.com/api/media/file/In_the_Name_of_Humanity_Stashing_Location.png?preset=original",
+      "sha256": "4b5ff8453d344fdb8e5fcc95d21990a9997b776cf99457e5437e96714ee76a92",
+      "delivered": "quest-guides-20261016/4d84d66b3ee51426.webp"
+    },
+    {
+      "file": "ITARPizzaLoverMap.png",
+      "source": "https://www.tarkovhead.com/api/media/file/ITARPizzaLoverMap.png?preset=original",
+      "sha256": "8127a3fd93c16986ad2de02a8aae0beecb0223f5db97aa27a89a1ff21d033f60",
+      "delivered": "quest-guides-20261016/c921e813f2ba2452.webp"
+    },
+    {
+      "file": "Streets_of_Tarkov_Showcase_13.png",
+      "source": "https://www.tarkovhead.com/api/media/file/Streets_of_Tarkov_Showcase_13.png?preset=original",
+      "sha256": "eaeffceb40ec272c1b45b9bf69fcc8045f86142ad7dfd4e9b4166dc403b935be",
+      "delivered": "quest-guides-20261016/cf915a5b79f1122c.webp"
+    },
+    {
+      "file": "To_the_Light_Getting_Acquainted_Chalet_Map.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/1/16/To_the_Light_Getting_Acquainted_Chalet_Map.png/revision/latest?cb=20260908214631",
+      "sha256": "877ee0ce1d35fb21bd3f041976827e465a2482cfa9e3dc33a54373a38ec94245",
+      "delivered": "quest-guides-20261016/5665befcbfe381b6.webp"
+    },
+    {
+      "file": "To_the_Light_Getting_Acquainted_Spawn_3.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/8/87/To_the_Light_Getting_Acquainted_Spawn_3.png/revision/latest?cb=20260908224641",
+      "sha256": "ba51cad5da7cfcd6e1dad6e91cd2a9742c365840bd836ec788e93cbfbbddff33",
+      "delivered": "quest-guides-20261016/90b0ba7a1aa0b3bb.webp"
+    },
+    {
+      "file": "To_the_Light_Getting_Acquainted_Spawn_2.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/4/48/To_the_Light_Getting_Acquainted_Spawn_2.png/revision/latest?cb=20260908213429",
+      "sha256": "6257d44a2fc9207994a49f157ad5324253a199b532ce4583a275d9c890ff33ff",
+      "delivered": "quest-guides-20261016/10ad49a94bb6bea4.webp"
+    },
+    {
+      "file": "LostContactMap.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/5/51/LostContactMap.png/revision/latest?cb=20260127182820",
+      "sha256": "5a5df099b9a2baa762ac763b2c34a8d16eb306265d73730ad3d08bff58703573",
+      "delivered": "quest-guides-20261016/d1fc8972750f821c.webp"
+    },
+    {
+      "file": "To_the_Light_Getting_Acquainted_Spawn_1.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/8/80/To_the_Light_Getting_Acquainted_Spawn_1.png/revision/latest?cb=20260908212928",
+      "sha256": "b823d965adeb6ce9f224d58f99fbf8341cf8fdd65542318afcbb77bcce3f37a6",
+      "delivered": "quest-guides-20261016/dfd83537a11feb50.webp"
+    },
+    {
+      "file": "Wiring_the_Vessel_Leading_to_engine_Map.jpg",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/9/9b/Wiring_the_Vessel_Leading_to_engine_Map.jpg/revision/latest?cb=20260623190507",
+      "sha256": "c2e315aa8894158500f14da41caf9741da12c2b65f3e6bc55a491c0c0b9dc618",
+      "delivered": "quest-guides-20261016/f7a5934ea344f421.webp"
+    },
+    {
+      "file": "Wiring_the_Vessel_Leading_to_engine_Equipment.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/2/2a/Wiring_the_Vessel_Leading_to_engine_Equipment.png/revision/latest?cb=20260623181802",
+      "sha256": "1e392e5719268e7dc12adaf41310112d7774650f64bbc90577ccaa06074daf63",
+      "delivered": "quest-guides-20261016/c150f95f94c14c6e.webp"
+    },
+    {
+      "file": "Wiring_the_Vessel_Near_the_storage_Map.jpg",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/f/f4/Wiring_the_Vessel_Near_the_storage_Map.jpg/revision/latest?cb=20260623190518",
+      "sha256": "bbf7373779c35f06259dacc159f9b0765e213946ff838fe707162e61a98a36f8",
+      "delivered": "quest-guides-20261016/65019aa266aaf03a.webp"
+    },
+    {
+      "file": "Wiring_the_Vessel_Near_the_storage_Equipment.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/1/15/Wiring_the_Vessel_Near_the_storage_Equipment.png/revision/latest?cb=20260623181942",
+      "sha256": "32f0c1a642eb13da3615b9035d1f3de48d657897e40cdd5ff34014c11114553f",
+      "delivered": "quest-guides-20261016/30e20ca372be8b69.webp"
+    },
+    {
+      "file": "Peaceful_Atom_Automation_Room_Map.jpg",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/3/3b/Peaceful_Atom_Automation_Room_Map.jpg/revision/latest?cb=20260531213318",
+      "sha256": "7d87cae2558216909721ca99850efab5d2deac288daaa75c14becd97615e86fd",
+      "delivered": "quest-guides-20261016/e27a326c550a8230.webp"
+    },
+    {
+      "file": "Peaceful_Atom_Automation_Room_Code_Room.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/4/43/Peaceful_Atom_Automation_Room_Code_Room.png/revision/latest?cb=20260623175848",
+      "sha256": "3fc364b57c859f13e2499dcc51119003d16c5b1a215955155abe2922a3f49cd9",
+      "delivered": "quest-guides-20261016/5ab755c166652300.webp"
+    },
+    {
+      "file": "Peaceful_Atom_Automation_Room_Code.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/2/23/Peaceful_Atom_Automation_Room_Code.png/revision/latest?cb=20260528223758",
+      "sha256": "48a8fd50958ee01470b03a031612cbe465e5971efe75355963faba35cf050536",
+      "delivered": "quest-guides-20261016/ffa94113e4a35951.webp"
+    },
+    {
+      "file": "Wiring_the_Vessel_Under_engine_Entry.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/7/7e/Wiring_the_Vessel_Under_engine_Entry.png/revision/latest?cb=20260623175943",
+      "sha256": "499fd9aec608edee16e00a50abfe6e0f30f7e768b6e16002312fafa801340807",
+      "delivered": "quest-guides-20261016/a09250e02526b8a3.webp"
+    },
+    {
+      "file": "Wiring_the_Vessel_Under_engine_Equipment.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/b/b5/Wiring_the_Vessel_Under_engine_Equipment.png/revision/latest?cb=20260623182600",
+      "sha256": "aa421630863de776fceeb513c681cd4ece7f8fb390a7abbf52cce48f5bd7ae16",
+      "delivered": "quest-guides-20261016/30257f1c55b3f18c.webp"
+    },
+    {
+      "file": "Peaceful_Atom_Control_Room_Map.jpg",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/7/70/Peaceful_Atom_Control_Room_Map.jpg/revision/latest?cb=20260531214136",
+      "sha256": "cfc89b071a65d3c0e18779c284935ba1ca30dcf01084f25f51639bea2788942e",
+      "delivered": "quest-guides-20261016/c9de46aa6e68af8c.webp"
+    },
+    {
+      "file": "Wiring_the_Vessel_Control_Room.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/9/96/Wiring_the_Vessel_Control_Room.png/revision/latest?cb=20260528234739",
+      "sha256": "7f5e65ec09a2796883ef2bafbe5212b9c2207a8f4466f0f9451a78ba545d3a4d",
+      "delivered": "quest-guides-20261016/ffe6059246f6d6c6.webp"
+    },
+    {
+      "file": "Wiring_the_Vessel_Control_Room_Placement.png",
+      "source": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/8/8c/Wiring_the_Vessel_Control_Room_Placement.png/revision/latest?cb=20260623183114",
+      "sha256": "68a67d41c3a60824cd581b44ac66232f003d4b38e959af0c45cd81fa9abf2448",
+      "delivered": "quest-guides-20261016/01de98b679ecfeba.webp"
+    },
+    {
+      "file": "44ee8d62-8d30-4ea1-8f4d-2406d646475b.jpg",
+      "source": "https://minio.tarkov.help/production/img/articles/44ee8d62-8d30-4ea1-8f4d-2406d646475b.jpg",
+      "sha256": "4a130aea95738ff0c2a20549a4c1ca0aedb204aceb57626f71db1b78dd41f9d9",
+      "delivered": "quest-guides-20261016/2ea69439b29da50f.webp"
+    },
+    {
+      "file": "f8188ef1-8692-494c-b3a3-1a2bcb92c276.jpg",
+      "source": "https://minio.tarkov.help/production/img/articles/f8188ef1-8692-494c-b3a3-1a2bcb92c276.jpg",
+      "sha256": "46efe2c8d70608cdfa12730b290138ec02701fd1c4ad1043ef55e8e567be2663",
+      "delivered": "quest-guides-20261016/05e6af66a884a62c.webp"
+    },
+    {
+      "file": "2dce1ff8-967a-43e4-872c-7c218af5ee00.jpg",
+      "source": "https://minio.tarkov.help/production/img/articles/2dce1ff8-967a-43e4-872c-7c218af5ee00.jpg",
+      "sha256": "856e5fd035358fb5272e90f9b577ec1dd692c8d4da3754e5d1215bc801536b66",
+      "delivered": "quest-guides-20261016/d8f0311f4a8dec7d.webp"
+    },
+    {
+      "file": "7cf088b3-cd11-45de-a906-9eb9d4d9767e.jpg",
+      "source": "https://minio.tarkov.help/production/img/articles/7cf088b3-cd11-45de-a906-9eb9d4d9767e.jpg",
+      "sha256": "b43aeff0831f74d897435b48d5207e71ad4158ec223e826af7a19fdfc52381d9",
+      "delivered": "quest-guides-20261016/c8f5f16680de8c6e.webp"
+    },
+    {
+      "file": "7e43509c-0cb2-4ff4-ad85-72929a5a96f6.png",
+      "source": "https://minio.tarkov.help/production/img/articles/7e43509c-0cb2-4ff4-ad85-72929a5a96f6.png",
+      "sha256": "3891928045c1c693cff691519d4ca1a55529dbfea9846c6ea92f5effb9f34e4c",
+      "delivered": "quest-guides-20261016/39af6dd5358328f2.webp"
+    },
+    {
+      "file": "953091f4-f0d7-4b89-a000-381cee9a126b.jpg",
+      "source": "https://minio.tarkov.help/production/img/articles/953091f4-f0d7-4b89-a000-381cee9a126b.jpg",
+      "sha256": "ba9322330cdf7560a1f3605ea281be4a6d779ed0c66b73d9e3b7f1225054fee5",
+      "delivered": "quest-guides-20261016/b134b7d052de6e3b.webp"
+    },
+    {
+      "file": "4c32e34f-c67a-4811-8a6c-414f387c04cb.webp",
+      "source": "https://minio.tarkov.help/production/img/articles/4c32e34f-c67a-4811-8a6c-414f387c04cb.webp",
+      "sha256": "9d7dabcf1138a6b358dd40f3c561306c4bf4c0f4eccb96d4b3eac74c3a0ae2cd",
+      "delivered": "quest-guides-20261016/e45e041b984104b1.webp"
+    },
+    {
+      "file": "b6a6233f-5ec7-49e7-9900-60b2cdc15d5a.webp",
+      "source": "https://minio.tarkov.help/production/img/articles/b6a6233f-5ec7-49e7-9900-60b2cdc15d5a.webp",
+      "sha256": "1deafff81bf32bc1a74560e7d4fa73d2d20e1eb922eb9267b2e9dbf8e2196086",
+      "delivered": "quest-guides-20261016/9eb11cb654a18794.webp"
+    },
+    {
+      "file": "4ee2954f-464d-4e21-9f07-a4137d3b44fe.jpg",
+      "source": "https://minio.tarkov.help/production/img/articles/4ee2954f-464d-4e21-9f07-a4137d3b44fe.jpg",
+      "sha256": "68fe46c21ea2d91202a72b30d12a64a3fad6e49dcc0d68e95967f0f8ecff864b",
+      "delivered": "quest-guides-20261016/3ae9029f3e04a9b1.webp"
+    },
+    {
+      "file": "2ce988f3-bafd-4f71-9ceb-06a189b3d22a.webp",
+      "source": "https://minio.tarkov.help/production/img/articles/2ce988f3-bafd-4f71-9ceb-06a189b3d22a.webp",
+      "sha256": "78f484cd780b5800814d5552a4d7aa23d492247154b8de4ed632fc72ac89408a",
+      "delivered": "quest-guides-20261016/18668cc78b3cbd6d.webp"
+    },
+    {
+      "file": "daf3f88f-c4a8-4568-ae05-b0b961184e84.webp",
+      "source": "https://minio.tarkov.help/production/img/articles/daf3f88f-c4a8-4568-ae05-b0b961184e84.webp",
+      "sha256": "8fda3bbc4a1716ffed6fbb1ffb6443aede7c6213d70867591f8c683ac18cd836",
+      "delivered": "quest-guides-20261016/20b91d959e42f54f.webp"
+    },
+    {
+      "file": "863b6420-c75d-4a53-82d9-b39b158b46ba.webp",
+      "source": "https://minio.tarkov.help/production/img/articles/863b6420-c75d-4a53-82d9-b39b158b46ba.webp",
+      "sha256": "964f318b789de0ea8e5e161edab3860ecdef2c9af1097f806131192915dae5d9",
+      "delivered": "quest-guides-20261016/5e6dca33fa7f9adf.webp"
+    },
+    {
+      "file": "13eb07ee-db3c-4c26-be0f-cac24ae094b7.webp",
+      "source": "https://minio.tarkov.help/production/img/articles/13eb07ee-db3c-4c26-be0f-cac24ae094b7.webp",
+      "sha256": "3dafec72c6e04f741d63a2cc9453f226e419b2fab582b1c806dc9ebe259e1dcd",
+      "delivered": "quest-guides-20261016/f86ecb31ae5e626b.webp"
+    },
+    {
+      "file": "7808d2a1-77b2-4945-8ea8-b3081e970c05.jpg",
+      "source": "https://minio.tarkov.help/production/img/articles/7808d2a1-77b2-4945-8ea8-b3081e970c05.jpg",
+      "sha256": "39b2eb61543ced0e41a2abfa27104437c38ba0c835dedde2293ded51ddd709aa",
+      "delivered": "quest-guides-20261016/dcf9679803dc2f97.webp"
+    },
+    {
+      "file": "000bd480-4adf-4c94-9da5-32c857eddc96.jpg",
+      "source": "https://minio.tarkov.help/production/img/articles/000bd480-4adf-4c94-9da5-32c857eddc96.jpg",
+      "sha256": "41a2e199b7f5fec3d2fc259bfa268c40ee9098397a5ac55dc3c2e13e6a9e53a4",
+      "delivered": "quest-guides-20261016/be6b87fc2ca12da7.webp"
+    },
+    {
+      "file": "54f9142c-f0be-4d73-87f0-9c5a9c260211.jpg",
+      "source": "https://minio.tarkov.help/production/img/articles/54f9142c-f0be-4d73-87f0-9c5a9c260211.jpg",
+      "sha256": "7d61148310fc73dd1bfb5366100ee25b902fc73227de6ed5c4751fb74a0896c8",
+      "delivered": "quest-guides-20261016/3cfd978d6ddc6438.webp"
+    },
+    {
+      "file": "98f4872d-f69f-41f1-a984-567522b76348.jpg",
+      "source": "https://minio.tarkov.help/production/img/articles/98f4872d-f69f-41f1-a984-567522b76348.jpg",
+      "sha256": "59dcc5db1913e7a7ec1e38eecd4cf653645951c6c76bd7656c8472393090b678",
+      "delivered": "quest-guides-20261016/67c5ae028d11dd9e.webp"
+    },
+    {
+      "file": "labirint-11.jpg",
+      "source": "https://www.tarkovhead.com/api/media/file/labirint-11.jpg?preset=original",
+      "sha256": "6f2d0561ce4e5d39eb006c6966ea86c447ccdbc85875e621228fc024b4a329ac",
+      "delivered": "quest-guides-20261016/map-guide-20261016-labyrinth-notes.webp"
+    },
+    {
+      "file": "the-ticket-terminal-arsenal.jpg",
+      "source": "https://www.tarkovhead.com/api/media/file/the-ticket-terminal-arsenal.jpg?preset=original",
+      "sha256": "7cea2a46a5e6b8abfd5e0f674f7836093694075b2a84881affcdd0cf41f54f91",
+      "delivered": "quest-guides-20261016/map-guide-20261016-terminal-armory.webp"
+    }
+  ]
+}

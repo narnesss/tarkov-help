@@ -8,5 +8,9 @@ export function applyQuestContent(task, content, mode) {
  }):task.storyBranches;
  return {...task,questContent:source,storyBranches,
   experience:task.story?task.experience:source.experience??task.experience,
+  galleryArchiveRules:[...(task.galleryArchiveRules||[]),...(source.galleryArchiveRules||[])],
+  guideAdditions:[...(task.guideAdditions||[]),...(source.guideAdditions||[])],
+  guideSources:[...(task.guideSources||[]),...(source.guideSources||[])],externalMaps:[...(task.externalMaps||[]),...(source.externalMaps||[])],
+  guideUpdates:{...(task.guideUpdates||{}),...(source.guideUpdates||{})},
   gallery:[...(task.gallery||[]),...(source.gallery||[])]};
 }

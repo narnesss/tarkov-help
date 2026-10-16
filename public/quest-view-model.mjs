@@ -25,14 +25,15 @@ export function questGalleryPlan(task,objectives=task.objectives||[]){
   for(const frame of [...(task.media?.gallery||[]),...(task.gallery||[])])add(frame);
   for(const objective of task.objectives||[])for(const frame of objective.media||[])add(frame,objective.id);
   const reserved=new Set(assemblyFrames(task.gunsmith).map(questMediaKey));
-  const byObjective=new Map(objectives.map(o=>[o.id,[]])),general=[];
+  const byObjective=new Map(objectives.map(o=>[o.id,[]])),general=[],archived=[],archive=new Map((task.galleryArchiveRules||[]).flatMap(rule=>(rule.urls||[]).map(url=>[questMediaKey({url}),rule.reason])));
   for(const [key,frame] of bySource){
     // Weapon examples already have their three-view presentation inside the task.
     if(reserved.has(key))continue;
+    if(archive.has(key)){archived.push({...frame,archived:true,archiveReason:archive.get(key)});continue;}
     const target=objectives.find(o=>frame.objectiveIds.includes(o.id));
     if(target)byObjective.get(target.id).push(frame);
     else if(!frame.objectiveIds.some(id=>known.has(id)))general.push(frame);
   }
   const frames=[...byObjective.values()].flat().concat(general);
-  return {byObjective,general,frames};
+  return {byObjective,general,frames,archived};
 }
