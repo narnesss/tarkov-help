@@ -328,6 +328,7 @@ async function loadPointMedia(p,root,description){
 }
 async function showPoi(p, center = false) {
   const focus=selected?.id!==p.id||$('raid-detail').hidden;
+  markers.get(p.id)?.closeTooltip();
   if (selected && markers.has(selected.id)) updateMarker(selected,false);
   if (center && currentFloor !== 'all' && currentFloor !== p.floor) await changeFloor(p.floor);
   selected = p; outlineLayer.clearLayers();

@@ -53,7 +53,9 @@
   .raid-page:not(.raid-embed) .raid-detail-heading .eyebrow { min-width: 0; overflow-wrap: anywhere; }
   .raid-page:not(.raid-embed) .raid-detail h2 { font-size: 19px; }
   .raid-page:not(.raid-embed) .poi-open .leaflet-control-zoom,
-  .raid-page:not(.raid-embed) .poi-open .raid-map-status { display: none; }
+  .raid-page:not(.raid-embed) .poi-open .raid-map-status,
+  .raid-page:not(.raid-embed) .poi-open .leaflet-tooltip-pane { display: none; }
+  .raid-page:not(.raid-embed) .raid-tooltip { pointer-events: none; }
   .raid-page:not(.raid-embed) .raid-footer { padding: 6px 10px; overflow-wrap: anywhere; }
 }
 @media (max-width: 540px) {
