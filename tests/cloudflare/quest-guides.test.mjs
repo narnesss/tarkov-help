@@ -15,7 +15,7 @@ test('дополнены только проверенные цели; все л
  assert.equal(Object.keys(patch.quests).length,21);
  for(const [id,quest] of Object.entries(patch.quests)){
   const valid=new Set(quest.expectedObjectiveIds);
-  for(const frame of quest.gallery){for(const goal of frame.objectiveIds)assert.ok(valid.has(goal),id+': '+goal);for(const field of ['url','fullUrl'])assert.ok(fs.existsSync(new URL('../../public/'+frame[field],import.meta.url)),frame[field]);}
+  for(const frame of quest.gallery){for(const goal of frame.objectiveIds)assert.ok(valid.has(goal),id+': '+goal);for(const field of ['url','fullUrl']){assert.ok(new URL(frame[field],'https://wiki.test/quests/unanswered-calls').pathname.startsWith('/assets/'));}for(const field of ['url','fullUrl'])assert.ok(fs.existsSync(new URL('../../public/'+frame[field],import.meta.url)),frame[field]);}
   for(const map of quest.maps){const asset=patch.sourceMaps[map.sourceKey]||index.sourceMaps[map.sourceKey];assert.ok(asset?.width>0&&asset.height>0,map.sourceKey);assert.ok(fs.existsSync(new URL('../../public/'+asset.src,import.meta.url)),asset.src);
    for(const point of map.points){assert.ok(point.x>=0&&point.x<=100&&point.y>=0&&point.y<=100);for(const goal of point.objectiveIds||[])assert.ok(valid.has(goal),goal);}
    for(const mode of ['pve','regular']){assert.ok(index.modes[mode][id].some(row=>row.sourceKey===map.sourceKey));assert.deepEqual(index.sourceQuests[id][map.sourceKey],map.points);}
