@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:ns1="http://ns.adobe.com/SaveForWeb/1.0/" viewBox="0 0 2000 2239.2135638826458" width="2000" height="2239.2135638826458"><rect width="100%" height="100%" fill="#10171c" /><text x="20" y="28.0" fill="#e2d8bd" font-size="24" font-family="sans-serif">Уровень схемы -1</text><svg id="p0-svg176" version="1.1" viewBox="0 0 130.818 141.232" x="0" y="40.0" width="1000" height="1079.6067819413229">
-  
+
   <defs>
     <style>
       .st0 {
@@ -470,7 +470,7 @@
 #p0-floor-1{display:none!important;filter:none!important}
 #p0-floor-2{display:none!important;filter:none!important}
 #p0-floor-3{display:none!important;filter:none!important}</style></svg><text x="1020" y="28.0" fill="#e2d8bd" font-size="24" font-family="sans-serif">Уровень схемы 1</text><svg id="p1-svg176" version="1.1" viewBox="0 0 130.818 141.232" x="1000" y="40.0" width="1000" height="1079.6067819413229">
-  
+
   <defs>
     <style>
       .st0 {
@@ -940,7 +940,7 @@
 #p1-floor-1{display:inline!important;filter:none!important}
 #p1-floor-2{display:none!important;filter:none!important}
 #p1-floor-3{display:none!important;filter:none!important}</style></svg><text x="20" y="1147.6067819413229" fill="#e2d8bd" font-size="24" font-family="sans-serif">Уровень схемы 2</text><svg id="p2-svg176" version="1.1" viewBox="0 0 130.818 141.232" x="0" y="1159.6067819413229" width="1000" height="1079.6067819413229">
-  
+
   <defs>
     <style>
       .st0 {
@@ -1410,7 +1410,7 @@
 #p2-floor-1{display:inline!important;filter:brightness(.35)!important}
 #p2-floor-2{display:inline!important;filter:none!important}
 #p2-floor-3{display:none!important;filter:none!important}</style></svg><text x="1020" y="1147.6067819413229" fill="#e2d8bd" font-size="24" font-family="sans-serif">Уровень схемы 3</text><svg id="p3-svg176" version="1.1" viewBox="0 0 130.818 141.232" x="1000" y="1159.6067819413229" width="1000" height="1079.6067819413229">
-  
+
   <defs>
     <style>
       .st0 {

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1759.592795892488" width="2000" height="1759.592795892488"><rect width="100%" height="100%" fill="#10171c" /><text x="20" y="28.0" fill="#e2d8bd" font-size="24" font-family="sans-serif">Уровень схемы -1</text><svg id="p0-svg235" version="1.1" viewBox="0 0 1127.69 947.03" x="0" y="40.0" width="1000" height="839.796397946244">
-  
+
   <defs>
     <style>
       .st0 {
@@ -674,7 +674,7 @@
 <style>#p0-floor--1{display:inline!important;filter:none!important}
 #p0-floor-1{display:none!important;filter:none!important}
 #p0-floor-2{display:none!important;filter:none!important}</style></svg><text x="1020" y="28.0" fill="#e2d8bd" font-size="24" font-family="sans-serif">Уровень схемы 1</text><svg id="p1-svg235" version="1.1" viewBox="0 0 1127.69 947.03" x="1000" y="40.0" width="1000" height="839.796397946244">
-  
+
   <defs>
     <style>
       .st0 {
@@ -1348,7 +1348,7 @@
 <style>#p1-floor--1{display:inline!important;filter:brightness(.35)!important}
 #p1-floor-1{display:inline!important;filter:none!important}
 #p1-floor-2{display:none!important;filter:none!important}</style></svg><text x="20" y="907.796397946244" fill="#e2d8bd" font-size="24" font-family="sans-serif">Уровень схемы 2</text><svg id="p2-svg235" version="1.1" viewBox="0 0 1127.69 947.03" x="0" y="919.796397946244" width="1000" height="839.796397946244">
-  
+
   <defs>
     <style>
       .st0 {
