@@ -38,7 +38,7 @@ export class ProfileStore {
   constructor({storage = browserStorage(), request = globalThis.fetch?.bind(globalThis), notify = () => {}, delay = 500} = {}) {
     this.storage = storage; this.request = request; this.notify = notify; this.delay = delay;
     this.listeners = new Set(); this.saveStates = new Map();
-    this.memory = new Map(); this.pending = new Set(); this.server = false; this.csrf = ''; this.syncing = null;
+    this.memory = new Map(); this.pending = new Set(); this.server = false; this.csrf = ''; this.syncing = null; this.sessionConfirmed=false;
     const stored = this.raw(META);
     this.meta = stored && typeof stored === 'object' && !Array.isArray(stored) ? stored : {profiles: [], active: null, migrated: false};
     this.meta.profiles = Array.isArray(this.meta.profiles) ? this.meta.profiles.filter(p => p && typeof p.id === 'string' && /^[a-zA-Z0-9-]+$/.test(p.id) && typeof p.name === 'string') : [];
@@ -123,12 +123,13 @@ export class ProfileStore {
   async initialize(runtime = 'static') {
     if (runtime !== 'php') return;
     this.server = true;
-    const session = await this.api('/api/session'); this.csrf = session.csrf;
+    this.sessionConfirmed=false;
+    const session = await this.api('/api/session'); this.csrf = session.csrf; this.sessionConfirmed=true;
     const previousGuest = this.meta.serverProfile && !this.meta.serverProfile.authenticated ? this.meta.serverProfile : null;
     const localGuest = previousGuest && previousGuest.id !== session.profile.id && !session.profile.authenticated
       ? {state: Object.fromEntries(this.keys(previousGuest.id).map(k => [k, this.raw(this.key(k, previousGuest.id))?.value]))}
       : this.export();
-    this.profile = session.profile; this.memory.clear();
+    this.profile = session.profile; this.meta.serverProfile=this.profile; this.persistMeta(); this.memory.clear();
     const {state} = await this.api('/api/state');
     // Only the first anonymous server profile imports the existing browser profile.
     if (!session.profile.authenticated && (!this.meta.serverMigrated || previousGuest && previousGuest.id !== session.profile.id) && !Object.keys(state).length) {

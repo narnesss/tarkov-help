@@ -69,6 +69,7 @@ final readonly class PlayerOAuth
         } catch(\Throwable) { throw new HttpException(502,'Не удалось подтвердить вход. Попробуйте ещё раз.'); }
         try {
             return DB::transaction(function() use($provider,$subject,$display,$avatar,$email,$autoLink,$session,$challenge): Session {
+                $created=false;
                 // Сериализует также случай, когда совпадающей почты ещё нет: два первых входа не создадут дубликат.
                 DB::table('player_auth_locks')->where('id',1)->lockForUpdate()->first();
                 abort_unless(DB::table('sessions')->where('token_hash',hash('sha256',$session->token))->where('user_id',$session->userId)
@@ -89,6 +90,7 @@ final readonly class PlayerOAuth
                     if($owner===null){
                         $owner=bin2hex(random_bytes(16));
                         DB::table('users')->insert(['id'=>$owner,'username'=>$provider.'_'.bin2hex(random_bytes(6)),'password_hash'=>null,'created_at'=>time()]);
+                        $created=true;
                     }
                 }
                 abort_if(!$identity && DB::table('player_identities')->where('user_id',$owner)->where('provider',$provider)->exists(),409,
@@ -96,7 +98,7 @@ final readonly class PlayerOAuth
                 $values=['display_name'=>$display??ucfirst($provider),'verified_email'=>$email,'email_auto_link'=>$autoLink];
                 if(!$identity){DB::table('player_identities')->insert([...$values,'provider'=>$provider,'subject'=>$subject,'user_id'=>$owner,'created_at'=>time()]);}
                 else {DB::table('player_identities')->where('provider',$provider)->where('subject',$subject)->update($values);}
-                $this->profiles->refresh($owner,$display,$avatar);
+                if($created){$this->profiles->initializeOAuth($owner,$display,$avatar);}
                 $next=$this->accounts->issueFor($owner); $this->accounts->revoke($session);
                 return $next;
             });

@@ -4,6 +4,10 @@ declare(strict_types=1);
 use App\Orchid\Screens\{QuestListScreen, QuestEditScreen, QuestFieldsScreen, DatasetListScreen, DatasetEditScreen};
 use Illuminate\Support\Facades\Route;
 
+Route::screen('players/create',\App\Orchid\Screens\PlayerEditScreen::class)->name('platform.players.create');
+Route::screen('players/{player}/edit',\App\Orchid\Screens\PlayerEditScreen::class)->where('player','[a-f0-9]{32}')->name('platform.players.edit');
+Route::screen('players',\App\Orchid\Screens\PlayerListScreen::class)->name('platform.players');
+
 Route::screen('wiki', \App\Orchid\Screens\WikiHomeScreen::class)->name('platform.wiki');
 Route::screen('wiki/{type}/create', \App\Orchid\Screens\WikiEditScreen::class)->name('platform.wiki.create');
 Route::screen('wiki/{type}/{record}/edit', \App\Orchid\Screens\WikiEditScreen::class)->where('record','[0-9]+')->name('platform.wiki.edit');

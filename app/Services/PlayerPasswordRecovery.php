@@ -12,7 +12,7 @@ use function Illuminate\Support\defer;
 final readonly class PlayerPasswordRecovery
 {
     public const INVALID_CODE='Код неверен, истёк или уже использован. При необходимости запроси новый код.';
-    public function __construct(private PlayerEmails $emails) {}
+    public function __construct(private PlayerEmails $emails,private PlayerCredentials $credentials) {}
 
     private function digest(string $owner,string $challenge,string $email,string $sessionHash,string $code): string
     { return hash_hmac('sha256','password-reset|'.$owner.'|'.$challenge.'|'.$email.'|'.$sessionHash.'|'.$code,(string)config('app.key')); }
@@ -90,19 +90,7 @@ final readonly class PlayerPasswordRecovery
             $owner=DB::table('users')->where('id',$pending->user_id)->lockForUpdate()->first();
             if(!$contact||!$owner||$owner->username===null||$contact->email!==$pending->email||(int)$contact->verified_at!==(int)$pending->email_verified_at
                 ||!hash_equals($pending->credential_hash,hash('sha256',(string)$owner->password_hash))){return null;}
-            if(($error=PasswordPolicy::error($password,$owner->username))!==null){abort(422,$error);}
-            $history=DB::table('player_password_history')->where('user_id',$owner->id)->pluck('password_hash')->all();
-            foreach([$owner->password_hash,...$history] as $hash){
-                abort_if(is_string($hash)&&password_verify($password,$hash),422,'Этот пароль уже использовался в аккаунте. Придумай новый.');
-            }
-            if(is_string($owner->password_hash)){
-                DB::table('player_password_history')->insert(['user_id'=>$owner->id,'password_hash'=>$owner->password_hash,'created_at'=>time()]);
-            }
-            DB::table('users')->where('id',$pending->user_id)->update(['password_hash'=>password_hash($password,PASSWORD_DEFAULT)]);
-            DB::table('sessions')->where('user_id',$pending->user_id)->delete();
-            DB::table('player_oauth_states')->where('link_user_id',$pending->user_id)->delete();
-            DB::table('player_email_challenges')->where('user_id',$pending->user_id)->delete();
-            DB::table('player_password_resets')->where('user_id',$pending->user_id)->delete();
+            $this->credentials->replace($owner,$password);
             return $owner->username;
         });
         abort_if($username===null,422,self::INVALID_CODE);

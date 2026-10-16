@@ -12,7 +12,7 @@ final class PlayerProfilesTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_name_can_be_changed_and_reset_without_changing_login_or_progress(): void
+    public function test_name_can_be_changed_without_changing_session_login_or_progress(): void
     {
         $this->encryptCookies=false; $this->withCredentials();
         $guest=$this->getJson('/api/session')->assertOk();
@@ -28,9 +28,9 @@ final class PlayerProfilesTest extends TestCase
         $this->assertSame('старый_логин',DB::table('users')->where('id',$id)->value('username'));
         $this->assertSame($hash,DB::table('users')->where('id',$id)->value('password_hash'));
         $this->assertSame(3,(int)DB::table('user_state')->where('user_id',$id)->value('version'));
-        app(PlayerProfiles::class)->refresh($id,'Имя провайдера',null);
-        $this->withCookie('eft_session',$cookie)->postJson('/api/auth/profile',['display_name'=>null],$headers)->assertOk()
-            ->assertJsonPath('profile.name','Имя провайдера')->assertJsonPath('profile.customName',false);
+        app(PlayerProfiles::class)->initializeOAuth($id,'Имя провайдера',null);
+        $this->withCookie('eft_session',$cookie)->postJson('/api/auth/profile',['display_name'=>null],$headers)->assertUnprocessable();
+        $this->withCookie('eft_session',$cookie)->getJson('/api/session')->assertOk()->assertJsonPath('profile.name','Позывной')->assertJsonPath('profile.authenticated',true);
     }
 
     public function test_guests_csrf_and_invalid_names_are_rejected(): void

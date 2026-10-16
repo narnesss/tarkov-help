@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="style.css?v=account-1">
   <link rel="stylesheet" href="site-ui.css?v=account-1">
   <link rel="stylesheet" href="controls.css?v=account-1">
-  <link rel="stylesheet" href="account.css?v=recovery-2">
+  <link rel="stylesheet" href="account.css?v=profile-3">
   <link rel="modulepreload" href="profile-store.mjs">
   <meta name="wiki-routing" content="pages">
 </head>
@@ -28,8 +28,8 @@
     <a href="index.html">Главная</a><a href="raid.html">Карты</a><a href="quests.html">Квесты</a><a href="reference.html">Справочник</a><a href="documents.html">Документы</a>
   </nav>
   <div class="header-right"><a class="button profile-trigger" id="profile-button" href="account.html">Мой прогресс</a>
-<a class="button player-login" href="account.html?view=login" data-player-guest>Войти</a>
-<a class="button primary player-register" href="account.html?view=register" data-player-guest>Регистрация</a>
+<a class="button player-login" href="account.html?view=login" data-player-guest hidden>Войти</a>
+<a class="button primary player-register" href="account.html?view=register" data-player-guest hidden>Регистрация</a>
 </div>
 </header>
 <main class="account-shell">
@@ -39,8 +39,8 @@
     <div class="account-identity"><span class="account-avatar" id="account-avatar" aria-hidden="true">◈</span><div><strong id="account-name">Мой профиль</strong><p id="account-storage">Загружаем профиль…</p></div></div>
   </section>
   <p id="account-status" role="status" aria-live="polite"></p>
-  <section class="account-settings" id="account-settings" hidden aria-labelledby="account-settings-title"><h2 id="account-settings-title">Твой профиль</h2><p class="profile-help">Имя и аватар загружаются из Google или Discord при входе. Можно выбрать своё отображаемое имя — оно сохранится при следующих входах.</p><form id="account-name-form" method="post" action="/api/auth/profile"><label class="profile-field">Отображаемое имя<input name="display_name" required maxlength="64" autocomplete="nickname" aria-describedby="account-name-help"></label><p class="profile-help" id="account-name-help">От 1 до 64 символов. Это имя профиля; логин для входа не меняется.</p><div class="account-actions"><button class="button primary" type="submit">Сохранить имя</button><button class="button" type="button" id="account-name-reset">Использовать имя Google/Discord</button></div></form></section>
-  <section class="account-auth-panel" id="account-auth" aria-labelledby="account-auth-title">
+  <section class="account-settings" id="account-settings" hidden aria-labelledby="account-settings-title"><h2 id="account-settings-title">Твой профиль</h2><p class="profile-help">Имя и аватар принадлежат профилю и не меняются при выборе способа входа. При первой регистрации через Google или Discord они берутся из этого сервиса. Отображаемое имя можно изменить здесь.</p><form id="account-name-form" method="post" action="/api/auth/profile"><label class="profile-field">Отображаемое имя<input name="display_name" required maxlength="64" autocomplete="nickname" aria-describedby="account-name-help"></label><p class="profile-help" id="account-name-help">От 1 до 64 символов. Это имя профиля; логин для входа не меняется.</p><div class="account-actions"><button class="button primary" type="submit">Сохранить имя</button></div></form></section>
+  <section class="account-auth-panel" id="account-auth" hidden aria-labelledby="account-auth-title">
     <div class="account-auth-copy"><span class="account-kicker">СОХРАНИ СВОЙ ПУТЬ</span><h2 id="account-auth-title">Продолжай с любого устройства</h2><p>Войди в аккаунт, чтобы твои отметки и заметки всегда были под рукой.</p><p class="profile-help">Прогресс гостя остаётся в его профиле. Перед созданием нового аккаунта скачай его, а после входа загрузи в свой аккаунт.</p><button class="button" type="button" data-profile-tools>Скачать или перенести профиль</button></div>
     <div class="account-auth-form">
       <div class="account-auth-tabs" role="group" aria-label="Вход или регистрация"><button type="button" data-auth-view="login" aria-pressed="true">Вход</button><button type="button" data-auth-view="register" aria-pressed="false">Регистрация</button></div>
@@ -49,20 +49,20 @@
       <div class="account-social" id="account-providers"><button class="button social-google" type="button" data-oauth="google" disabled>Продолжить с Google</button><button class="button social-discord" type="button" data-oauth="discord" disabled>Продолжить с Discord</button></div>
       <p class="profile-help" id="account-provider-status">Проверяем доступные способы входа…</p>
       <div class="account-divider"><span>или по логину и паролю</span></div>
-      <form id="account-form" method="post" action="/api/auth/login"><label class="profile-field">Логин<input name="username" autocomplete="username" required minlength="3" maxlength="32" aria-describedby="account-username-help"></label><p class="profile-help" id="account-username-help">От 3 до 32 букв или цифр, также можно использовать _ и дефис.</p><label class="profile-field">Пароль<input name="password" type="password" autocomplete="current-password" required aria-describedby="account-password-help"></label><p class="profile-help" id="account-password-help" hidden>Минимум 12 символов (лучше 16 и больше), максимум 72 байта. Нужны заглавная и строчная латинские буквы, цифра и спецсимвол. Используй отдельный пароль для этого сайта, без популярных слов, дат, последовательностей и прежних паролей.</p><label class="profile-field" id="account-confirm-label" hidden>Повтори пароль<input name="confirmation" type="password" autocomplete="new-password"></label><button class="button primary" id="account-submit" type="submit">Войти</button></form>
+      <form id="account-form" method="post" action="/api/auth/login"><p id="account-username-error" class="profile-field-error" role="alert" hidden></p><label class="profile-field">Логин<input name="username" autocomplete="username" required minlength="3" maxlength="32" aria-describedby="account-username-help"></label><p class="profile-help" id="account-username-help">От 3 до 32 букв или цифр, также можно использовать _ и дефис.</p><p id="account-password-error" class="profile-field-error" role="alert" hidden></p><label class="profile-field">Пароль<input name="password" type="password" autocomplete="current-password" required aria-describedby="account-password-help"></label><p class="profile-help" id="account-password-help" hidden>Минимум 12 символов (лучше 16 и больше), максимум 72 байта. Нужны заглавная и строчная латинские буквы, цифра и спецсимвол. Используй отдельный пароль для этого сайта, без популярных слов, дат, последовательностей и прежних паролей.</p><label class="profile-field" id="account-confirm-label" hidden>Повтори пароль<input name="confirmation" type="password" autocomplete="new-password"></label><button class="button primary" id="account-submit" type="submit">Войти</button></form>
       <button class="account-link account-forgot" type="button" id="account-forgot">Забыли пароль?</button>
       </div>
       <section id="account-recovery" hidden aria-labelledby="account-recovery-title">
         <h3 id="account-recovery-title">Восстановление пароля</h3>
         <p class="profile-help">Укажи почту, которую подтвердил в личном кабинете. Восстановление сохранит твой прежний аккаунт и прогресс.</p>
         <form id="account-recovery-request" method="post" action="/api/auth/password/request">
-          <label class="profile-field">Подтверждённый e-mail<input type="email" name="email" required maxlength="254" autocomplete="email"></label>
+          <p id="account-recovery-email-error" class="profile-field-error" role="alert" hidden></p><label class="profile-field">Подтверждённый e-mail<input type="email" name="email" required maxlength="254" autocomplete="email"></label>
           <button class="button" id="account-recovery-send" type="submit" disabled>Получить код восстановления</button>
         </form>
         <form id="account-recovery-reset" method="post" action="/api/auth/password/reset" hidden>
-          <label class="profile-field">Код восстановления<input name="code" required inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{8}" minlength="8" maxlength="8" aria-describedby="account-recovery-code-help"></label>
+          <p id="account-recovery-code-error" class="profile-field-error" role="alert" hidden></p><label class="profile-field">Код восстановления<input name="code" required inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{8}" minlength="8" maxlength="8" aria-describedby="account-recovery-code-help"></label>
           <p class="profile-help" id="account-recovery-code-help">8 цифр, срок действия — 1 час. Введи код в том же браузере, где запросил письмо.</p>
-          <label class="profile-field">Новый пароль<input name="password" type="password" autocomplete="new-password" required aria-describedby="account-recovery-password-help"></label>
+          <p id="account-recovery-password-error" class="profile-field-error" role="alert" hidden></p><label class="profile-field">Новый пароль<input name="password" type="password" autocomplete="new-password" required aria-describedby="account-recovery-password-help"></label>
           <p class="profile-help" id="account-recovery-password-help">Минимум 12 символов (лучше 16 и больше), максимум 72 байта. Нужны заглавная и строчная латинские буквы, цифра и спецсимвол. Используй отдельный пароль для этого сайта, без популярных слов, дат, последовательностей и прежних паролей.</p>
           <label class="profile-field">Повтори новый пароль<input name="password_confirmation" type="password" autocomplete="new-password" required></label>
           <button class="button primary" id="account-recovery-confirm" type="submit">Сохранить новый пароль</button>
@@ -80,6 +80,6 @@
   <noscript><p>Для входа и отображения личного прогресса включи JavaScript.</p></noscript>
   <p class="profile-help"><a class="account-link" href="privacy.html">Как используются данные профиля</a></p>
 </main>
-<script type="module" src="bootstrap.mjs?v=recovery-2"></script>
+<script type="module" src="bootstrap.mjs?v=profile-3"></script>
 </body>
 </html>

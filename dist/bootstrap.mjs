@@ -1,15 +1,16 @@
 import {profileStore} from './profile-store.mjs';
 import {serverProfiles} from './profile-runtime.mjs';
-import {mountProfile} from './profile-ui.mjs?v=password-1';
+import {mountProfile} from './profile-ui.mjs?v=profile-3';
 import {observeHeader} from './layout.mjs';
 import {initializeSiteRoutes,siteHref} from './site-routes.mjs';
 
 await initializeSiteRoutes();
 
 const runtime = serverProfiles ? 'php' : document.querySelector('meta[name="wiki-runtime"]')?.content || 'static';
+const previousProfile=profileStore.profile;
 try { await profileStore.initialize(runtime); }
 catch (error) {
-  if (profileStore.meta.serverProfile) { profileStore.profile = profileStore.meta.serverProfile; profileStore.memory.clear(); }
+  if (profileStore.profile===previousProfile && profileStore.meta.serverProfile) { profileStore.profile = profileStore.meta.serverProfile; profileStore.memory.clear(); }
   const notice = document.createElement('p'); notice.className = 'profile-offline'; notice.setAttribute('role', 'status');
   notice.textContent = 'Синхронизация временно недоступна. Изменения будут сохранены в этом браузере.';
   document.body.prepend(notice);
@@ -27,7 +28,7 @@ const entry = document.body.dataset.page;
 if (entry === 'index' && ['map','point'].some(key=>new URLSearchParams(location.search).has(key))) {
   location.replace(siteHref('documents.html'+location.search+location.hash));
 } else {
-const modules = {index: './home.mjs', documents: './app.mjs', raid: './raid.mjs', quests: './quests.mjs', reference: './reference.mjs', boss: './boss.mjs', account: './account.mjs?v=recovery-2'};
+const modules = {index: './home.mjs', documents: './app.mjs', raid: './raid.mjs', quests: './quests.mjs', reference: './reference.mjs', boss: './boss.mjs', account: './account.mjs?v=profile-3'};
 if (modules[entry]) await import(modules[entry]);
 
 }

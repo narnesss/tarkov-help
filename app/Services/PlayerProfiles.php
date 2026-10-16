@@ -45,18 +45,23 @@ final class PlayerProfiles
         return $data;
     }
 
-    public function rename(Session $session, ?string $name): void
+    public function rename(Session $session, string $name): void
     {
         abort_unless($session->username!==null,403,'Сначала войдите в аккаунт.');
-        $name=$name===null?null:trim($name);
-        if($name!==null && ($name===''||mb_strlen($name)>64||preg_match('/[\p{C}<>]/u',$name))){
+        $name=trim($name);
+        if($name===''||mb_strlen($name)>64||preg_match('/[\p{C}<>]/u',$name)){
             throw ValidationException::withMessages(['display_name'=>'Имя: от 1 до 64 символов, без управляющих знаков и < >.']);
         }
-        DB::table('player_profiles')->upsert([['user_id'=>$session->userId,'display_name'=>$name,'updated_at'=>time()]],['user_id'],['display_name','updated_at']);
+        DB::transaction(function()use($session,$name):void{
+            DB::table('player_auth_locks')->where('id',1)->lockForUpdate()->first();
+            abort_unless(DB::table('sessions')->where('token_hash',hash('sha256',$session->token))->where('user_id',$session->userId)->where('expires_at','>',time())->exists(),401,'Сессия завершена. Войдите снова.');
+            abort_unless(DB::table('users')->where('id',$session->userId)->whereNotNull('username')->lockForUpdate()->first(),401);
+            DB::table('player_profiles')->upsert([['user_id'=>$session->userId,'display_name'=>$name,'updated_at'=>time()]],['user_id'],['display_name','updated_at']);
+        });
     }
 
-    public function refresh(string $owner, ?string $name, ?string $avatar): void
+    public function initializeOAuth(string $owner, ?string $name, ?string $avatar): void
     {
-        DB::table('player_profiles')->upsert([['user_id'=>$owner,'provider_name'=>$name,'avatar_url'=>$avatar,'updated_at'=>time()]],['user_id'],['provider_name','avatar_url','updated_at']);
+        DB::table('player_profiles')->insertOrIgnore(['user_id'=>$owner,'display_name'=>$name,'provider_name'=>$name,'avatar_url'=>$avatar,'updated_at'=>time()]);
     }
 }

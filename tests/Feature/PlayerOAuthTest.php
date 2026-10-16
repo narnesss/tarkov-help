@@ -78,8 +78,10 @@ final class PlayerOAuthTest extends TestCase
         $this->withCookie('eft_session',$guest[0])->getJson('/api/state')->assertUnauthorized();
         $this->withCookie('eft_session',$who[0])->putJson('/api/state/kord-achievements-pve',['value'=>['award-1'],'version'=>0],['Origin'=>'https://wiki.test','X-CSRF-Token'=>$who[1]])->assertOk();
         $this->authPost($who,'/api/auth/logout')->assertOk();
+        $this->googleUser['name']='Изменённое внешнее имя';$this->googleUser['picture']='https://lh3.googleusercontent.com/changed-avatar';
         $next=$this->guest();$state=$this->start($next);
-        $login=$this->authPost($next,'/api/auth/oauth/google/finish',['state'=>$state,'code'=>'second-code'])->assertOk()->assertJsonPath('profile.id',$id);
+        $login=$this->authPost($next,'/api/auth/oauth/google/finish',['state'=>$state,'code'=>'second-code'])->assertOk()->assertJsonPath('profile.id',$id)
+            ->assertJsonPath('profile.name','Игрок Google')->assertJsonPath('profile.avatar','https://lh3.googleusercontent.com/avatar');
         $this->withCookie('eft_session',$login->headers->getCookies()[0]->getValue())->getJson('/api/state')->assertJsonPath('state.kord-achievements-pve.value.0','award-1');
         $this->assertSame(1,DB::table('player_identities')->count());
         $this->assertNull(DB::table('users')->where('id',$id)->value('password_hash'));
@@ -111,7 +113,8 @@ final class PlayerOAuthTest extends TestCase
     {
         $guest=$this->guest();$r=$this->authPost($guest,'/api/auth/register',['username'=>'старый_игрок','password'=>'Cedar!Kite9_Moon'])->assertOk();
         $who=[$r->headers->getCookies()[0]->getValue(),$r->json('csrf'),$r->json('profile.id')];
-        $state=$this->start($who,'discord');$r=$this->authPost($who,'/api/auth/oauth/discord/finish',['state'=>$state,'code'=>'discord-code'])->assertOk()->assertJsonPath('profile.id',$who[2]);
+        $this->discordUser['avatar']=str_repeat('a',32);
+        $state=$this->start($who,'discord');$r=$this->authPost($who,'/api/auth/oauth/discord/finish',['state'=>$state,'code'=>'discord-code'])->assertOk()->assertJsonPath('profile.id',$who[2])->assertJsonPath('profile.name','старый_игрок')->assertJsonPath('profile.avatar',null);
         $this->assertSame($who[2],DB::table('player_identities')->value('user_id'));
         $this->assertNotNull(DB::table('users')->where('id',$who[2])->value('password_hash'));
         $linked=$this->withCookie('eft_session',$r->headers->getCookies()[0]->getValue())->getJson('/api/auth/options')->assertOk()->assertJsonPath('providers.1.linked',true);
@@ -147,8 +150,8 @@ final class PlayerOAuthTest extends TestCase
         $id=$first->json('profile.id');
         DB::table('user_state')->insert(['user_id'=>$id,'state_key'=>'kord-achievements-pve','value'=>'["award-1"]','version'=>7,'updated_at'=>time()]);
         $second=$this->finishDiscord($this->guest(),['id'=>'987654321','username'=>'discord-user','global_name'=>'Имя Discord','email'=>'player@gmail.com','verified'=>true,'avatar'=>str_repeat('a',32)])
-            ->assertOk()->assertJsonPath('profile.id',$id)->assertJsonPath('profile.name','Имя Discord')
-            ->assertJsonPath('profile.avatar','https://cdn.discordapp.com/avatars/987654321/'.str_repeat('a',32).'.png?size=128');
+            ->assertOk()->assertJsonPath('profile.id',$id)->assertJsonPath('profile.name','Имя Google')
+            ->assertJsonPath('profile.avatar',null);
         $this->assertSame(2,DB::table('player_identities')->where('user_id',$id)->count());
         $this->withCookie('eft_session',$second->headers->getCookies()[0]->getValue())->getJson('/api/state')->assertJsonPath('state.kord-achievements-pve.version',7);
         // Email остаётся приватным атрибутом сервера и не попадает в session response.
@@ -198,7 +201,7 @@ final class PlayerOAuthTest extends TestCase
         $this->authPost($who,'/api/auth/profile',['display_name'=>'Мой позывной'])->assertOk()->assertJsonPath('profile.name','Мой позывной');
         $this->finishGoogle($this->guest(),['sub'=>'google-a','name'=>'Новое имя','picture'=>'https://evil.test/avatar'])->assertOk()
             ->assertJsonPath('profile.name','Мой позывной')->assertJsonPath('profile.customName',true)->assertJsonPath('profile.avatar',null);
-        $this->assertSame('Новое имя',DB::table('player_profiles')->where('user_id',$who[2])->value('provider_name'));
+        $this->assertSame('Имя Google',DB::table('player_profiles')->where('user_id',$who[2])->value('provider_name'));
     }
 
     public function test_old_password_account_confirmed_email_links_google_and_discord_without_losing_progress(): void

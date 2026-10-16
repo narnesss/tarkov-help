@@ -135,3 +135,14 @@
 - PasswordPolicy: общие правила новых паролей в AccountService::register и PlayerPasswordRecovery;
   public/password-policy.mjs проверяет форму до запроса. Вход с прежними паролями не меняется.
   История проверяется только после правильного кода, в транзакции под player_auth_locks/users.
+
+- PlayerProfiles закрепляет имя и аватар аккаунта. PlayerOAuth::finish вызывает initializeOAuth
+  только для впервые созданного внешнего аккаунта; привязка и повторный вход не меняют профиль.
+  Переименование выполняется под блокировкой авторизации, проверяет актуальную opaque-сессию.
+- PlayerAdmin / PlayerCredentials, модель Player и Orchid PlayerListScreen/PlayerEditScreen:
+  право wiki.users, CRUD игроков с CAS, безопасная смена пароля и отзыв сессий.
+  Аккаунты admin_users изолированы; публичный API управления игроками не добавляется.
+- profile-identity.mjs обновляет тот же профиль после сохранения имени без reload.
+  Bootstrap сохраняет подтверждённую личность при сбое загрузки прогресса; hidden имеет приоритет CSS.
+
+- form-feedback.mjs связывает локальные и серверные ошибки с полями, фокусом и доступными сообщениями.

@@ -4,36 +4,50 @@ import {siteHref} from './site-routes.mjs';
 import {resolveGameMode} from './game-mode.mjs';
 import {accountSummary} from './account-model.mjs';
 import {passwordError} from './password-policy.mjs';
+import {applyPlayerProfile} from './profile-identity.mjs';
+import {formFeedback,fieldError} from './form-feedback.mjs';
 
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 let mode=resolveGameMode(params.get('mode'),profileStore.read('kord-atlas-game-mode')),view='login',busy=false,request=0;
 const data=new Map();
+const authFeedback=formFeedback($('account-form'),{username:$('account-username-error'),password:$('account-password-error'),confirmation:$('account-password-error')});
+const resetFeedback=formFeedback($('account-recovery-reset'),{code:$('account-recovery-code-error'),password:$('account-recovery-password-error'),password_confirmation:$('account-recovery-password-error')});
+const emailFeedback=formFeedback($('account-recovery-request'),{email:$('account-recovery-email-error')});
+function showFormError(feedback,error,fallback){
+  const names=error.fields??Object.keys(error.data?.errors??{});
+  return feedback.show(error.message,names.length?names:fallback);
+}
 const notify=text=>{$('account-status').textContent=text;};
-async function run(callback){if(busy)return;busy=true;document.body.setAttribute('aria-busy','true');$('account-submit').disabled=true;notify('');try{await callback();}catch(error){notify(error.message);}finally{busy=false;document.body.removeAttribute('aria-busy');$('account-submit').disabled=!profileStore.server;}}
+async function run(callback,onError){if(busy)return;busy=true;document.body.setAttribute('aria-busy','true');$('account-submit').disabled=true;notify('');try{await callback();}catch(error){if(!onError?.(error))notify(error.message);}finally{busy=false;document.body.removeAttribute('aria-busy');$('account-submit').disabled=!profileStore.server;}}
 function tools(){globalThis.dispatchEvent(new CustomEvent('wiki:open-profile'));}
 for(const button of document.querySelectorAll('[data-profile-tools]'))button.onclick=tools;
+function renderIdentity(){
 $('account-name').textContent=profileStore.profile.name;
 $('account-settings').hidden=!profileStore.profile.authenticated;
 $('account-email').hidden=!profileStore.profile.authenticated;
 $('account-name-form').elements.display_name.value=profileStore.profile.name;
-$('account-name-reset').disabled=!profileStore.profile.customName;
+$('account-avatar').textContent=profileStore.profile.name.slice(0,1).toUpperCase();
 const avatar=profileStore.profile.avatar;
-if(typeof avatar==='string'){
+if(typeof avatar==='string'&&avatar){try{
   const url=new URL(avatar);
-  if(url.protocol==='https:'&&(url.hostname==='cdn.discordapp.com'||url.hostname.endsWith('.googleusercontent.com'))){
+  if(url.protocol==='https:'&&(url.hostname==='cdn.discordapp.com'||url.hostname==='googleusercontent.com'||url.hostname.endsWith('.googleusercontent.com'))){
     const image=el('img');image.alt='';image.width=64;image.height=64;image.referrerPolicy='no-referrer';
     image.onerror=()=>{$('account-avatar').textContent=profileStore.profile.name.slice(0,1).toUpperCase();};
     image.src=url.href;$('account-avatar').replaceChildren(image);
   }
-}
+}catch{/* Показываем инициалы, если сохранённый адрес больше не подходит. */}}
 $('account-auth').hidden=!!profileStore.profile.authenticated;
 $('account-connections').hidden=!profileStore.profile.authenticated;
 $('account-logout').hidden=!profileStore.profile.authenticated;
 $('account-sync').hidden=!profileStore.server;
 $('account-storage').textContent=profileStore.server?(profileStore.profile.authenticated?'Аккаунт · прогресс на сервере':'Гостевой профиль · прогресс на сервере'):'Локальный профиль · в этом браузере';
 
+}
+renderIdentity();
+
 function setView(next){
   view=['register','reset'].includes(next)?next:'login';
+  authFeedback.clear();resetFeedback.clear();emailFeedback.clear();
   $('account-auth-login').hidden=view==='reset';$('account-recovery').hidden=view!=='reset';
   $('account-forgot').hidden=view!=='login';$('account-auth-feedback').textContent='';
   for(const button of document.querySelectorAll('[data-auth-view]'))button.setAttribute('aria-pressed',String(button.dataset.authView===view));
@@ -55,23 +69,23 @@ function renderRecovery(){
   $('account-recovery-reset').hidden=!recovery;
   $('account-recovery-confirm').disabled=busy||recoveryAttempts>=5;
 }
-async function recover(callback){
-  await run(async()=>{try{$('account-auth-feedback').textContent='';await callback();}catch(error){$('account-auth-feedback').textContent=error.message;}});
+async function recover(callback,feedback,fallback){
+  await run(async()=>{try{$('account-auth-feedback').textContent='';await callback();}catch(error){if(!showFormError(feedback,error,fallback))$('account-auth-feedback').textContent=error.message;}});
   renderRecovery();
 }
 $('account-recovery-request').onsubmit=event=>{event.preventDefault();recover(async()=>{
   const response=await profileStore.api('/api/auth/password/request',{method:'POST',body:JSON.stringify({email:$('account-recovery-request').elements.email.value.trim()})});
   recovery=response;recoveryAttempts=0;$('account-recovery-reset').reset();$('account-auth-feedback').textContent=response.message;renderRecovery();
   $('account-recovery-reset').elements.code.focus();
-});};
+},emailFeedback,['email']);};
 $('account-recovery-request').elements.email.addEventListener('input',()=>{
   if(recovery){recovery=null;$('account-recovery-reset').reset();$('account-auth-feedback').textContent='';renderRecovery();}
 });
 $('account-recovery-reset').onsubmit=event=>{event.preventDefault();recover(async()=>{
-  if(!recovery||recovery.expiresAt<=Date.now()/1000)throw new Error('Запроси новый код восстановления.');
+  if(!recovery||recovery.expiresAt<=Date.now()/1000)throw fieldError('Запроси новый код восстановления.','code');
   const form=$('account-recovery-reset'),password=form.elements.password.value,confirmation=form.elements.password_confirmation.value;
-  const policyError=passwordError(password);if(policyError)throw new Error(policyError);
-  if(password!==confirmation)throw new Error('Пароли не совпадают.');
+  const policyError=passwordError(password);if(policyError)throw fieldError(policyError,'password');
+  if(password!==confirmation)throw fieldError('Пароли не совпадают.','password','password_confirmation');
   try{
     const response=await profileStore.api('/api/auth/password/reset',{method:'POST',body:JSON.stringify({challenge_id:recovery.challengeId,
       code:form.elements.code.value.trim(),password,password_confirmation:confirmation})});
@@ -84,26 +98,25 @@ $('account-recovery-reset').onsubmit=event=>{event.preventDefault();recover(asyn
     }
     throw error;
   }
-});};
+},resetFeedback,['code']);};
 setInterval(renderRecovery,1000);renderRecovery();
 $('account-form').onsubmit=event=>{event.preventDefault();run(async()=>{
   const form=event.currentTarget??$('account-form'),username=form.elements.username.value.trim(),password=form.elements.password.value;
   if(view==='register'){
-    if(!/^[\p{L}\p{N}_-]{3,32}$/u.test(username))throw new Error('Логин: 3–32 буквы, цифры, дефис или _.');
-    const policyError=passwordError(password,username);if(policyError)throw new Error(policyError);
-    if(password!==form.elements.confirmation.value)throw new Error('Пароли не совпадают.');
+    if(!/^[\p{L}\p{N}_-]{3,32}$/u.test(username))throw fieldError('Логин: 3–32 буквы, цифры, дефис или _.','username');
+    const policyError=passwordError(password,username);if(policyError)throw fieldError(policyError,'password');
+    if(password!==form.elements.confirmation.value)throw fieldError('Пароли не совпадают.','password','confirmation');
   }
   await profileStore.authenticate(view,{username,password});location.replace(siteHref('account.html?mode='+mode));
-});};
+},error=>showFormError(authFeedback,error,view==='register'?['password']:['password','username']));};
 $('account-logout').onclick=()=>run(async()=>{await profileStore.authenticate('logout');location.replace(siteHref('account.html?view=login'));});
 $('account-sync').onclick=()=>run(async()=>{if(!await profileStore.flush())throw new Error('Не удалось сохранить изменения. Повтори синхронизацию позже.');notify('Прогресс сохранён на сервере.');});
 async function saveName(name){
   if(!await profileStore.flush())throw new Error('Сначала сохрани последние изменения профиля.');
-  await profileStore.api('/api/auth/profile',{method:'POST',body:JSON.stringify({display_name:name})});
-  location.replace(siteHref('account.html?mode='+mode));
+  const response=await profileStore.api('/api/auth/profile',{method:'POST',body:JSON.stringify({display_name:name})});
+  applyPlayerProfile(profileStore,response);renderIdentity();globalThis.dispatchEvent(new Event('wiki:profile'));notify('Имя сохранено.');
 }
 $('account-name-form').onsubmit=event=>{event.preventDefault();run(()=>saveName($('account-name-form').elements.display_name.value.trim()));};
-$('account-name-reset').onclick=()=>run(()=>saveName(null));
 let emailState=null,emailLoaded=false;
 function renderEmail(state){
   emailState=state;
@@ -153,8 +166,8 @@ async function providers(){
     const {providers}=await profileStore.api('/api/auth/options');
     for(const provider of providers)for(const button of document.querySelectorAll(`[data-oauth="${provider.id}"]`)){
       button.disabled=!provider.enabled;
-      button.title=provider.linked?'Обновить имя и аватар подключённого профиля':provider.enabled?'':'Этот способ входа пока недоступен';
-      if(provider.linked)button.textContent=(provider.id==='google'?'Google':'Discord')+' подключён · обновить профиль';
+      button.title=provider.linked?'Этот способ входа уже подключён':provider.enabled?'':'Этот способ входа пока недоступен';
+      if(provider.linked&&button.closest('#account-connections')){button.textContent=(provider.id==='google'?'Google':'Discord')+' подключён';button.disabled=true;}
     }
     const unavailable=providers.filter(p=>!p.enabled).map(p=>p.id==='google'?'Google':'Discord');
     const text=unavailable.length?'Вход через '+unavailable.join(' и ')+' пока недоступен.':'';

@@ -15,3 +15,7 @@
 
 #account-email-form>.button,#account-email-code-form>.button{margin-top:12px}#account-email-code-form{margin-top:24px}#account-email-status{font-size:14px;line-height:1.7;overflow-wrap:anywhere}#account-email-code-form input{letter-spacing:.2em;max-width:220px}
 .account-forgot{display:inline-block;margin-top:18px;padding:4px 0;text-align:left}#account-recovery h3{font-size:20px;margin:0 0 12px}#account-recovery-reset{margin-top:24px}#account-recovery .button{margin-top:12px}#account-auth-feedback{color:#dfc48c;line-height:1.7;overflow-wrap:anywhere}#account-auth-feedback:empty{display:none}
+
+.account-page [hidden]{display:none!important}
+
+.account-page .profile-field-error{padding:12px 14px;margin:12px 0 8px;border:1px solid #ed8585;border-radius:8px;background:#3b2024;color:#ffd1d1;font-size:14px;line-height:1.6;overflow-wrap:anywhere}.account-page input[aria-invalid="true"]{border:2px solid #ef8888;background:#352126;box-shadow:0 0 0 2px #ef888826}.account-page input[aria-invalid="true"]:focus{outline:2px solid #ffb1b1;outline-offset:2px}

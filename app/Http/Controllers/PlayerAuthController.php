@@ -36,7 +36,7 @@ final readonly class PlayerAuthController
     public function profile(Request $request): JsonResponse
     {
         $session=$this->session($request,true);
-        $data=$request->validate(['display_name'=>'present|nullable|string|max:64']);
+        $data=$request->validate(['display_name'=>'required|string|max:64']);
         $this->profiles->rename($session,$data['display_name']);
         return response()->json($this->profiles->publicData($session))->header('Cache-Control','private, no-store');
     }

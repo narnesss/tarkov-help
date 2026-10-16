@@ -42,5 +42,6 @@ export function mountProfile() {
     content.append(actions);
     if (profileStore.server) content.append(button('Синхронизировать сейчас', () => run(async () => {const saved=await profileStore.flush();if(saved){delete trigger.dataset.unsynced;trigger.removeAttribute('title');}notify(saved ? 'Изменения сохранены на сервере.' : 'Есть несинхронизированные изменения.');})));
   }
+  globalThis.addEventListener('wiki:profile',render);
   globalThis.addEventListener('wiki:open-profile', () => { render(); if(!dialog.open)dialog.showModal(); }); render();
 }

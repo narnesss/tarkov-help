@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->remove([\Illuminate\Foundation\Http\Middleware\TrimStrings::class, \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->dontFlash(['player.password']);
         $exceptions->respond(function (\Symfony\Component\HttpFoundation\Response $response) {
             if (request()->is('api', 'api/*', 'admin', 'admin/*')) { $response->headers->set('Cache-Control', 'private, no-store'); }
             return $response;

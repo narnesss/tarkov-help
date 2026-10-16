@@ -25,11 +25,12 @@ final class PlatformProvider extends OrchidServiceProvider
             Menu::make('Ключи')->icon('bs.key')->route('platform.wiki.list','keys')->permission('wiki.content'),
             Menu::make('Точки карты')->icon('bs.geo-alt')->route('platform.wiki.list','map_points')->permission('wiki.content'),
             Menu::make('Данные сайта')->icon('bs.database')->route('platform.datasets')->permission('wiki.content'),
+            Menu::make('Пользователи')->icon('bs.people')->route('platform.players')->permission('wiki.users'),
         ];
     }
 
     public function permissions(): array
     {
-        return [ItemPermission::group('Tarkov Wiki')->addPermission('wiki.content', 'Редактирование данных сайта')];
+        return [ItemPermission::group('Tarkov Wiki')->addPermission('wiki.content', 'Редактирование данных сайта')->addPermission('wiki.users','Управление пользователями сайта')];
     }
 }
