@@ -699,8 +699,7 @@ async function start() {
   chooseTab(state.tab);
   setMap(state.mapId, { updateUrl: !initialPoint,restoreFloor:!initialPoint&&(!params.has('map')||params.get('map')===prefs.map) });
   if (initialPoint) selectPoint(initialPoint);
-  // Fail early if storage is blocked, while export remains fully usable.
-  persist();
+  // Открытие карты и изменение размера значков не записывают игровой прогресс.
 }
 
 start().catch(error => {
