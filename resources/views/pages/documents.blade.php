@@ -40,6 +40,7 @@
       </div>
       <div class="sidebar-scroll">
         <section id="filters-panel" role="tabpanel" aria-labelledby="filters-tab">
+          <div class="floor-select" id="floor-group" hidden><label for="floor-select">Уровень схемы</label><select id="floor-select"></select><small>Этаж здания уточняется в описании точки.</small></div>
           <div class="section-heading"><h2>Тип документа</h2><button class="text-button" id="all-types">Все типы</button></div>
           <div id="type-filters" class="type-filters"></div>
           <div class="filter-divider"></div>
@@ -47,7 +48,6 @@
           <div class="segments" id="status-filters" aria-label="Статус точки">
             <button data-status="all" class="active" aria-pressed="true">Все</button><button data-status="remaining" aria-pressed="false">Осталось</button><button data-status="found" aria-pressed="false">Найдено</button>
           </div>
-          <div class="floor-select" id="floor-group" hidden><label for="floor-select">Уровень схемы</label><select id="floor-select"></select><small>Этаж здания уточняется в описании точки.</small></div>
           <label class="alt-toggle" id="alt-group" hidden><svg><use href="#i-layers"/></svg><span>Отметки на схемах<small>Связь с основной точкой</small></span><input type="checkbox" id="show-alts" checked></label>
           <label class="document-size-label" for="document-icon-size">Размер значков <span><output id="document-icon-value" for="document-icon-size">24</output> px</span><input id="document-icon-size" type="range" min="16" max="36" step="2" value="24"></label>
           <button class="reset-filter" id="reset-filters">Сбросить фильтры</button>
@@ -93,5 +93,5 @@
   <dialog class="dialog about-dialog" id="about-dialog"><div class="dialog-heading"><div><div class="eyebrow">О ПРОЕКТЕ</div><h2>Всё нужное — на карте.</h2></div><button class="icon-button dialog-close" aria-label="Закрыть"><svg><use href="#i-close"/></svg></button></div><p>Escape from Tarkov Wiki — личный справочник мест появления секретных документов для Kord Breach в Escape from Tarkov.</p><div class="about-stats"><div><strong id="about-maps">12</strong><span>локаций</span></div><div><strong id="about-spawns">355</strong><span>точек</span></div><div><strong>8</strong><span>типов документов</span></div></div><h3>Как пользоваться</h3><p>Выберите локацию и нужный тип документа. Нажмите на цветную метку, чтобы увидеть точное место на фотографии. Отмечайте найденные точки, добавляйте заметки и переключайтесь на «Осталось».</p><p>Колесо мыши или щипок меняют масштаб. Карту можно перетаскивать. Кнопка ⌖ возвращает общий вид. Уровни схемы переключаются в фильтрах и отображаются на одном плане. Точный этаж здания указан в описании точки.</p><h3>Справочные материалы</h3><ul class="source-list"><li><a href="https://kord-map-mtdv.ru/" target="_blank" rel="noopener noreferrer">Kord Breach — источник точек и схем ↗</a></li><li><a href="https://tarkov.help/ru" target="_blank" rel="noopener noreferrer">Tarkov.help — прохождения ↗</a></li><li><a href="https://escapefromtarkov.fandom.com/ru/wiki/Escape_from_Tarkov_Wiki" target="_blank" rel="noopener noreferrer">Русская Wiki ↗</a></li></ul><p class="muted">Авторы материалов: Metadvij community, Kalle Leskinen, Shebuka и RE3MR. Игровые материалы — Battlestate Games. Карты сохранены с исходными правами; CC BY-NC-SA 4.0.</p><div class="source-version" id="source-version"></div><p class="muted">Данные соответствуют указанной дате. Подложки могут содержать обозначения, не относящиеся к документам. Это неофициальный некоммерческий справочник.</p></dialog>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
   <div class="boot-error" id="boot-error" hidden><h1>Не удалось загрузить карту</h1><p>Проверьте соединение и обновите страницу.</p><button class="button primary" onclick="location.reload()">Попробовать снова</button></div>
-  <script type="module" src="bootstrap.mjs?v=levels-ui-20261016"></script>
+  <script type="module" src="bootstrap.mjs?v=mobile-documents-20261016"></script>
 @endsection

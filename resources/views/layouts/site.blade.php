@@ -15,7 +15,7 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="legal.css?v=legal-1">
 @foreach ($meta['styles'] as $style)
-  <link rel="stylesheet" href="{{ $style }}?v={{ $style === 'account.css' ? 'profile-3' : 'release-20261016' }}">
+  <link rel="stylesheet" href="{{ $style }}?v={{ $style === 'account.css' ? 'profile-3' : ($style === 'documents.css' ? 'mobile-20261016' : 'release-20261016') }}">
 @endforeach
   <link rel="modulepreload" href="profile-store.mjs">
   <meta name="wiki-routing" content="pages">

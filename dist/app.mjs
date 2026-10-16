@@ -5,6 +5,7 @@ import { STORAGE_KEY, FLOOR_NAMES, filterSpawns, sanitizeProgress, fitTransform,
 import {documentViewport,documentPointPosition,documentLevelSvg,documentFloors} from './document-map.mjs?v=levels-ui-20261016';
 
 const $ = id => document.getElementById(id);
+const compactViewport = () => innerWidth <= 700 || (innerWidth <= 1000 && innerHeight <= 520);
 const documentIconSize = value => typeof value === 'number' && Number.isFinite(value)
   ? Math.max(16, Math.min(36, Math.round(value / 2) * 2)) : 24;
 const node = (tag, className = '', text = '') => {
@@ -135,10 +136,19 @@ async function start() {
     }
   }
   function setSidebar(open) {
+    const restoreFocus=!open&&$('sidebar').contains(document.activeElement);
     $('app-layout').classList.toggle('sidebar-open', open);
     $('sidebar-backdrop').hidden = !open;
     $('menu-button').setAttribute('aria-expanded', String(open));
     $('menu-button').setAttribute('aria-label', open ? 'Закрыть фильтры' : 'Открыть фильтры и список точек');
+    updateSidebarAccess();
+    if (restoreFocus) $('menu-button').focus({preventScroll:true});
+  }
+  function updateSidebarAccess() {
+    const mobile=compactViewport(),open=$('app-layout').classList.contains('sidebar-open');
+    $('sidebar').inert=mobile&&!open;
+    $('map-area').inert=mobile&&open;
+    $('sidebar-backdrop').hidden=!mobile||!open;
   }
   function mapSpawns() { return spawns.filter(s => s.map === state.mapId); }
 
@@ -264,7 +274,7 @@ async function start() {
       text.append(node('strong', '', spawn.caption || doc.name), node('small', '', doc.name));
       if (state.allMaps) text.append(node('span', 'card-map', mapById.get(spawn.map).name));
       button.append(node('span', 'list-number', state.found.has(spawn.id) ? '✓' : number(spawn)), text);
-      button.addEventListener('click', () => { selectPoint(spawn); setSidebar(false); });
+      button.addEventListener('click', () => { setSidebar(false); selectPoint(spawn); });
       fragment.append(button);
     }
     if (!results.length) {
@@ -459,7 +469,7 @@ async function start() {
 
   function fitMap() {
     const rect = $('viewport').getBoundingClientRect();
-    view = fitTransform(rect.width, rect.height, mapWidth, mapHeight, innerWidth <= 700 ? 18 : 30);
+    view = fitTransform(rect.width, rect.height, mapWidth, mapHeight, compactViewport() ? 18 : 30);
     baseScale = view.scale;
     applyView();
   }
@@ -486,7 +496,7 @@ async function start() {
     let width = rect.width, height = rect.height;
     if (state.selected && !$('detail-panel').hidden) {
       const panel = $('detail-panel').getBoundingClientRect();
-      if (innerWidth <= 700) height = Math.max(70, panel.top - rect.top);
+      if (compactViewport()) height = Math.max(70, panel.top - rect.top);
       else width = Math.max(75, panel.left - rect.left);
     }
     return { x: width / 2, y: height / 2 };
@@ -570,6 +580,7 @@ async function start() {
     if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); fitMap(); }
   });
   const resize = new ResizeObserver(() => {
+    updateSidebarAccess();
     fitMap();
     if (state.selected) centerOn(state.selected);
   });
@@ -713,7 +724,7 @@ async function start() {
       return;
     }
     if (event.target.closest('input,textarea,select,[contenteditable=true]') || event.ctrlKey || event.metaKey || event.altKey) return;
-    if (event.key === '/') { event.preventDefault(); if (innerWidth <= 700) setSidebar(true); $('search').focus(); }
+    if (event.key === '/') { event.preventDefault(); if (compactViewport()) setSidebar(true); $('search').focus(); }
     else if (['+', '=', '-'].includes(event.key)) {
       event.preventDefault(); const c = usableCenter(); zoomAt(c.x, c.y, event.key === '-' ? 1 / 1.3 : 1.3);
     } else if (event.key === '0') { event.preventDefault(); fitMap(); }
