@@ -110,7 +110,7 @@ final class AdminContentSecurityTest extends TestCase
         $this->fixtures();$xss='</textarea><img src=x onerror=alert(1)>';
         foreach(['items','keys','map_points','quests'] as $type){
             [$id]=$this->input($type);$query=app(WikiSchema::class)->record($type,$id);$query->update(['display_name'=>$xss]);
-            $this->get('/admin/wiki/'.$type)->assertOk()->assertSee(e($xss),false)->assertDontSee($xss,false);
+            $this->get('/admin/wiki/'.$type.($type==='map_points'?'?point_kind=documents':''))->assertOk()->assertSee(e($xss),false)->assertDontSee($xss,false);
         }
         [$id]=$this->input('items');app(WikiSchema::class)->record('items',$id)->update(['description'=>$xss]);
         $this->get('/admin/wiki/items/'.$id.'/edit')->assertOk()->assertSee(e($xss),false)->assertDontSee($xss,false)->assertSee('data-admin-text',false);

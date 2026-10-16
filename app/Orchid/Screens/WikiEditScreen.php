@@ -28,11 +28,12 @@ final class WikiEditScreen extends Screen
             $values[$field]=$value;
         }
         if(($context=WikiListScreen::context($type))&&$record===null){$values[$context['field']]=request()->query('parent');}
+        $filters=WikiListScreen::filters($type);if($record===null&&$type==='quests'){$values['mode']=$filters['mode'];}
         $this->values=$values;
         return ['row'=>[...$values,'revision'=>$row?->revision??0]];
     }
     public function commandBar(): array
-    { return [Button::make('Сохранить')->method('save',request()->only(['filter','parent'])),Link::make('К списку')->route('platform.wiki.list',['type'=>$this->type,...request()->only(['filter','parent'])])]; }
+    { return [Button::make('Сохранить')->method('save',WikiListScreen::parameters($this->type)),Link::make('К списку')->route('platform.wiki.list',['type'=>$this->type,...WikiListScreen::parameters($this->type)])]; }
     public function layout(): array
     {
         $schema=app(WikiSchema::class);$fields=[Input::make('row.revision')->type('hidden')];
@@ -62,6 +63,6 @@ final class WikiEditScreen extends Screen
         $input=$request->validate(['row'=>['required','array']])['row'];
         if(($context=WikiListScreen::context($type))&&$record===null){$input[$context['field']]=$request->query('parent');}
         $id=app(WikiEditor::class)->save($type,$record,$input);Toast::info('Сущность и связи сохранены. Данные сайта обновлены.');
-        return redirect()->route('platform.wiki.edit',['type'=>$type,'record'=>$id,...$request->only(['filter','parent'])]);
+        return redirect()->route('platform.wiki.edit',['type'=>$type,'record'=>$id,...WikiListScreen::parameters($type)]);
     }
 }

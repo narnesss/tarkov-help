@@ -10,7 +10,7 @@ use Illuminate\Validation\ValidationException;
 final class DatasetEditScreen extends ContentFieldsScreen
 {
     protected ?ContentDataset $record = null;
-    public function name(): string { return 'Данные сайта: '.$this->record->path; }
+    public function name(): string { $meta=\App\Services\DatasetCatalog::metadata($this->record->path);return $meta['title'].' · '.$meta['mode']; }
     public function query(ContentDataset $dataset): array
     {
         $this->record = $dataset;

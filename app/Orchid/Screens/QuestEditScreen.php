@@ -21,7 +21,7 @@ final class QuestEditScreen extends Screen
     {
         $this->record = $quest; $payload = $quest->payload;
         return ['quest' => ['revision' => $quest->revision(),
-            'quest_id' => $quest->quest_id, 'mode' => $quest->mode ?? 'pve', 'name' => $quest->name,
+            'quest_id' => $quest->quest_id, 'mode' => $quest->mode ?? \App\Services\AdminNavigation::choice('mode',\App\Services\AdminNavigation::MODES,'pve'), 'name' => $quest->name,
             'trader_id' => $quest->trader_id,
             'min_player_level' => $payload['minPlayerLevel'] ?? 1, 'experience' => $payload['experience'] ?? 0,
             'description' => $payload['description'] ?? '', 'published' => $quest->published ?? false,
