@@ -54,6 +54,8 @@ if [[ $mode = backup ]]; then
   ssh "${ssh_options[@]}" "$target" 'sh /home/narnes/tarkov-api/deployment/alwaysdata/backup.sh'
   exit
 fi
+# Освобождаем место до загрузки/копирования vendor. Тот же flock исключает чужой текущий релиз.
+ssh "${ssh_options[@]}" "$target" 'if test -d "$HOME/tarkov-releases"; then flock -w 600 "$HOME/tarkov-deploy.lock" php /dev/stdin "$HOME/tarkov-releases" "$HOME/tarkov-api" "$HOME/tarkov-api"; fi' < deployment/alwaysdata/prune-releases.php
 ssh "${ssh_options[@]}" "$target" 'umask 077; mkdir -p "$HOME/tarkov-incoming"'
 scp "${ssh_options[@]}" build/alwaysdata-api.tar.gz "$target:tarkov-incoming/$release_id.tar.gz"
 ssh "${ssh_options[@]}" "$target" "bash -s -- '$release_id'" < deployment/alwaysdata/release.sh
