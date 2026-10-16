@@ -14,21 +14,22 @@ final class WikiEditor
     {
         return $this->sync->run(fn()=>DB::transaction(function () use($type,$id,$input): int {
             $table=$this->schema->table($type);$old=$id===null?null:$this->schema->record($type,$id)->firstOrFail();
+            Validator::make(['row'=>$input],['row.revision'=>['sometimes','integer','min:0']])->validate();
             if($old!==null&&(string)$old->revision!==(string)($input['revision']??'')){$this->error('revision','Запись уже изменилась. Обновите страницу.');}
             $fields=$this->schema->fields($type);$foreigns=$this->schema->foreigns($type);$rules=[];
             if(array_diff_key($input,$fields+['revision'=>true])){$this->error('row','Недопустимые поля формы.');}
             foreach($fields as $name=>$column){
                 $required=$column->notnull&&$column->dflt_value===null;
-                $base=[$required?'required':'nullable'];
+                $base=['bail',$required?'required':'nullable'];
                 if(isset($foreigns[$name])){$base[]='integer';}
                 elseif(in_array($name,['active','archived','published','is_story','kappa_required','optional','found_in_raid','consumed','hard_requirement'],true)){$base[]='boolean';}
-                elseif(($choices=$this->schema->choices($type,$name))!==null){$base[]=Rule::in(array_keys($choices));}
+                elseif(($choices=$this->schema->choices($type,$name))!==null){$base[]='string';$base[]=Rule::in(array_keys($choices));}
                 elseif(str_contains(strtoupper($column->type),'INT')){$base[]='integer';}
-                elseif(preg_match('/REAL|FLOAT|DOUBLE/i',$column->type)){$base[]='numeric';}
-                else{$base[]='string';$base[]='max:100000';}
-                $rules[$name]=$base;
+                elseif(preg_match('/REAL|FLOAT|DOUBLE/i',$column->type)){$base[]='numeric';$base[]=AdminInput::finite();}
+                else{if(array_key_exists($name,$input)){$input[$name]=AdminInput::trim($input[$name]);}$base=[...$base,...AdminInput::rules($name,$this->schema->textLimit($name))];}
+                $rules['row.'.$name]=$base;
             }
-            $values=Validator::make($input,$rules)->validate();
+            $values=Validator::make(['row'=>$input],$rules,AdminInput::messages())->validate()['row'];
             foreach($values as $field=>&$value){$column=$fields[$field];
                 if(isset($foreigns[$field])){
                     if($value===null||$value===''){$value=null;continue;}

@@ -20,9 +20,9 @@ final class ReferenceOptions extends ContentReference
             return $this->options($query->whereIn('id', $this->value)->get()
                 ->sortBy(fn (ContentReference $record) => $order[(string) $record->id])->values());
         }
-        $search = mb_strtolower(preg_replace('/[\s_-]+/u', ' ', trim((string) request()->input('search', ''))));
+        $search = \App\Services\WikiSchema::search(\App\Services\AdminInput::search(request()->input('search')));
         return $this->options($query->where('active', true)->when($search !== '', fn ($q) => $q->whereRaw('instr(search_text, ?) > 0', [$search]))
-            ->orderBy('label')->limit(min(30, max(1, (int) request()->input('chunk', 20))))->get());
+            ->orderBy('label')->limit(20)->get());
     }
 
     private function options(Collection $records): Collection

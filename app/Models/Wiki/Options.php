@@ -19,7 +19,7 @@ final class Options extends Record
             $order = array_flip(array_map('strval',$this->value));
             $rows = $query->whereIn(app(WikiSchema::class)->identity($type),$this->value)->get()->sortBy(fn ($row)=>$order[(string)$row->rowid]);
         } else {
-            $search = WikiSchema::search((string)request()->input('search',''));
+            $search = WikiSchema::search(\App\Services\AdminInput::search(request()->input('search')));
             if(isset(app(WikiSchema::class)->columns($type)['active'])){$query->where('active',1);}
             $rows = $query->where('archived',0)->when($search !== '',fn ($q)=>$q->whereRaw('instr(search_text,?)>0',[$search]))
                 ->orderBy('display_name')->limit(20)->get();

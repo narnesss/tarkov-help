@@ -103,7 +103,10 @@ final class WikiSchema
         return mb_substr($label,0,500);
     }
     public static function search(string $text): string
-    { return mb_strtolower(preg_replace('/[\s_-]+/u',' ',trim($text))); }
+    { return mb_strtolower(preg_replace('/[\s_-]+/u',' ',trim($text))??''); }
+
+    public function textLimit(string $field): int
+    { return AdminInput::urlField($field)?2048:(in_array($field,['category','type','purpose'],true)?191:(in_array($field,['name','title','caption','author'],true)?255:100000)); }
     public function title(string $field): string
     {
         return ['name'=>'Название','title'=>'Название','description'=>'Описание','location_id'=>'Локация','map_id'=>'Изображение карты','layer_id'=>'Этаж',

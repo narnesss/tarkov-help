@@ -149,3 +149,10 @@
 
 - admin-user-validation.mjs: предварительная проверка формы Orchid и общий PasswordPolicy в браузере;
   серверные PlayerEditScreen/PlayerAdmin повторяют проверку структуры и значений каждого POST.
+
+- AdminInput: нормализация обычного текста и поиска, проверка текста/URL и конечности чисел.
+  WikiEditor, QuestEditor и ContentFields применяют её до записи, независимо от браузера.
+  admin-content-validation.mjs показывает ошибки рядом с полями; схемы и ограничения задаются формой.
+  Нормализация не затрагивает API/HMAC, пароли, CAS-подписи и стабильные ID.
+  ProtectAdminRoute запрещает подмену route ID через query; AdminRelationRequest проверяет
+  типы, размер и целостность зашифрованных параметров выбора по названию до контроллера Orchid.

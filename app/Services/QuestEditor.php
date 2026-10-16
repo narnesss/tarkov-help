@@ -14,26 +14,30 @@ final class QuestEditor
     public function save(Quest $quest, array $input): Quest
     {
         $traders = app(TraderCatalog::class);
+        Validator::make($input,['goals'=>['present','array','max:100'],'mode'=>['bail','required','string',Rule::in(['pve','regular'])]],AdminInput::messages())->validate();
+        foreach(['name','description'] as $field){$input[$field]=AdminInput::trim($input[$field]??null);}
         $input['quest_id'] ??= $quest->exists ? $quest->quest_id : null;
         if (!$quest->exists && empty($input['quest_id'])) { $input['quest_id'] = 'custom-'.bin2hex(random_bytes(12)); }
         foreach ($input['goals'] ?? [] as $key => $goal) {
             if (is_array($goal) && empty($goal['id'])) { $input['goals'][$key]['id'] = 'custom-'.bin2hex(random_bytes(12)); }
+            if(is_array($goal)){$input['goals'][$key]['description']=AdminInput::trim($goal['description']??null);}
         }
         $data = Validator::make($input, [
             'revision' => ['nullable', 'string'],
-            'quest_id' => ['required', 'string', 'max:128', 'regex:/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/',
+            'quest_id' => ['bail', 'required', 'string', 'max:128', 'regex:/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/',
                 Rule::notIn(['all', 'story', 'archive', 'trader']),
                 Rule::unique('quests')->where('mode', $input['mode'] ?? '')->ignore($quest->id)],
             'mode' => ['required', Rule::in(['pve', 'regular'])],
-            'name' => ['required', 'string', 'max:255'], 'trader_id' => ['required', Rule::in(array_keys($traders->options()))],
+            'name' => ['required', ...AdminInput::rules('name',255)], 'trader_id' => ['bail','required','string', Rule::in(array_keys($traders->options()))],
             'min_player_level' => ['required', 'integer', 'between:0,100'],
-            'experience' => ['required', 'integer', 'min:0'], 'description' => ['nullable', 'string', 'max:100000'],
+            'experience' => ['required', 'integer', 'min:0'], 'description' => ['nullable', ...AdminInput::rules('description')],
             'published' => ['required', 'boolean'], 'goals' => ['present', 'array', 'max:100'],
             'goals.*.id' => ['required', 'string', 'max:128', 'distinct'],
-            'goals.*.description' => ['required', 'string', 'max:10000'],
-            'goals.*.type' => ['required', 'string', 'max:128'],
+            'goals.*' => ['array:id,description,type,count'],
+            'goals.*.description' => ['required', ...AdminInput::rules('description',10000)],
+            'goals.*.type' => ['required', ...AdminInput::rules('type',128)],
             'goals.*.count' => ['nullable', 'integer', 'between:0,1000000'],
-        ])->validate();
+        ],AdminInput::messages())->validate();
         if ($quest->exists && ($quest->quest_id !== $data['quest_id'] || $quest->mode !== $data['mode'])) {
             throw ValidationException::withMessages(['quest.quest_id' => 'ID и режим существующего квеста нельзя менять: они связаны с прогрессом.']);
         }

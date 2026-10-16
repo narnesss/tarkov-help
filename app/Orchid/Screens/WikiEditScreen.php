@@ -3,7 +3,7 @@ declare(strict_types=1);
 namespace App\Orchid\Screens;
 
 use App\Models\Wiki\Options;
-use App\Services\{WikiSchema,WikiEditor};
+use App\Services\{AdminInput,WikiSchema,WikiEditor};
 use Illuminate\Http\Request;
 use Orchid\Screen\Screen;
 use Orchid\Screen\Fields\{Input,TextArea,Select,CheckBox,Relation};
@@ -41,7 +41,12 @@ final class WikiEditScreen extends Screen
             elseif(($options=$schema->choices($this->type,$field))!==null){$control=Select::make($name)->options($options);}
             elseif(in_array($field,['active','archived','published','is_story','kappa_required','optional','found_in_raid','consumed','hard_requirement'],true)){$control=CheckBox::make($name)->sendTrueOrFalse();}
             elseif(preg_match('/INT|REAL|FLOAT|DOUBLE/i',$column->type)){$control=Input::make($name)->type('number')->step(str_contains(strtoupper($column->type),'INT')?'1':'any');}
-            else{$control=in_array($field,['name','title','image_url','wiki_url','icon_url','url','patch','valid_from','caption','source_url','author'],true)?Input::make($name):TextArea::make($name)->rows(3);}
+            else{$control=in_array($field,['name','title','image_url','wiki_url','icon_url','url','patch','valid_from','caption','source_url','author'],true)?Input::make($name):TextArea::make($name)->rows(3);
+                $control->set('data-admin-text','1')->set('data-admin-url',AdminInput::urlField($field)?'1':'0')->maxlength($schema->textLimit($field));}
+            if(in_array($field,['amount','width','height','grid_width','grid_height','max_uses'],true)){$control->min($this->type==='objectives'&&$field==='amount'?0:1);}
+            if(in_array($field,['order_index','level','loyalty_level','level_req','duration_seconds','cost_rub','weight','experience','spawn_chance','x_percent','y_percent'],true)){$control->min(0);}
+            if(in_array($field,['x_percent','y_percent'],true)){$control->max(100);}
+            if($field==='spawn_chance'){$control->max(1);}
             $control->title($schema->title($field));if($column->notnull&&$column->dflt_value===null){$control->required();}$fields[]=$control;
         }
         $layouts=[Layout::rows($fields)->title('Данные')];
@@ -50,7 +55,7 @@ final class WikiEditScreen extends Screen
                 $links[]=Link::make($child['title'].' · '.$count)->route('platform.wiki.list',['type'=>$child['child'],'filter'=>$child['field'],'parent'=>$this->recordId]);}
             if($links!==[]){$layouts[]=Layout::rows($links)->title('Связанные записи — откройте нужный раздел для добавления');}
         }
-        return $layouts;
+        return [...$layouts,Layout::view('platform.content-validation')];
     }
     public function save(Request $request,string $type,?int $record=null)
     {

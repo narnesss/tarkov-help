@@ -70,11 +70,14 @@ final class ContentFields
                 }
                 continue;
             }
+            if(!is_bool($original)&&!is_int($original)&&!is_float($original)){$input=AdminInput::trim($input);}
             $rules = is_bool($original) ? ['required', 'boolean'] : (is_int($original)
                 ? ['required', 'integer'] : (is_float($original) ? ['required', 'numeric'] : ['nullable', 'string', 'max:1000000']));
+            if(is_float($original)){$rules[]=AdminInput::finite();}
+            elseif(!is_bool($original)&&!is_int($original)){$rules=['nullable',...AdminInput::rules($entry['path'],AdminInput::urlField($entry['path'])?2048:1000000)];}
             $coordinate = ($context['source'] ?? '') === 'spawns.json' && preg_match('~^/\d+/(x|y|x2|y2)$~', $entry['path']);
             if ($coordinate) { $rules = [$original === null ? 'nullable' : 'required', 'numeric', 'between:0,100']; }
-            Validator::make(['fields' => [$key => $input]], ['fields.'.$key => $rules])->validate();
+            Validator::make(['fields' => [$key => $input]], ['fields.'.$key => ['bail',...$rules]],AdminInput::messages())->validate();
             $value = match (true) { $coordinate => $input === null || $input === '' ? null : (float) $input,
                 is_bool($original) => (bool) $input, is_int($original) => (int) $input,
                 is_float($original) => (float) $input, $original === null && ($input === '' || $input === null) => null,
@@ -103,8 +106,9 @@ final class ContentFields
             return $this->replace($document, $path, $section);
         }
         $options = $this->additions($document, $path, $context);
-        $data = Validator::make($input, ['preset' => ['required', \Illuminate\Validation\Rule::in(array_keys($options))],
-            'value' => ['nullable', 'string', 'max:100000']])->validate();
+        $input['value']=AdminInput::trim($input['value']??null);
+        $data = Validator::make($input, ['preset' => ['bail','required','string', \Illuminate\Validation\Rule::in(array_keys($options))],
+            'value' => ['nullable', ...AdminInput::rules($path.'/0')]],AdminInput::messages())->validate();
         $preset = $options[$data['preset']]; $value = $preset['value'];
         if ($data['preset'] === 'record') { $value = $this->blank($value); $section[] = is_string($value) ? ($data['value'] ?? '') : $value; }
         elseif ($data['preset'] === 'dictionary') {

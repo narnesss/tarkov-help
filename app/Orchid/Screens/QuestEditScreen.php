@@ -53,25 +53,25 @@ final class QuestEditScreen extends Screen
             Input::make('quest.revision')->type('hidden'),
             Input::make('quest.quest_id')->type('hidden'),
             Select::make('quest.mode')->title('Режим')->options(['pve' => 'PVE', 'regular' => 'PVP'])->disabled($this->record->exists),
-            Input::make('quest.name')->title('Название')->required(),
+            Input::make('quest.name')->title('Название')->required()->maxlength(255)->set('data-admin-text','1'),
             Select::make('quest.trader_id')->title('Торговец')->options(app(TraderCatalog::class)->options())->empty('Выберите торговца')->required(),
             Input::make('quest.min_player_level')->title('Минимальный уровень')->type('number')->min(0)->max(100)->required(),
             Input::make('quest.experience')->title('Опыт')->type('number')->min(0)->required(),
-            TextArea::make('quest.description')->title('Описание')->rows(5),
+            TextArea::make('quest.description')->title('Описание')->rows(5)->maxlength(100000)->set('data-admin-text','1'),
             CheckBox::make('quest.published')->title('Опубликован')->sendTrueOrFalse(),
         ])->title('Основные данные'), Layout::rows([
             Matrix::make('quest.goals')->title('Цели задания')->columns(['' => 'id', 'Описание' => 'description', 'Действие' => 'type', 'Количество' => 'count'])
-                ->fields(['id' => Input::make()->type('hidden'), 'description' => TextArea::make()->rows(4)->required(),
-                    'type' => Select::make()->options($types), 'count' => Input::make()->type('number')->min(0)])
+                ->fields(['id' => Input::make()->type('hidden'), 'description' => TextArea::make()->rows(4)->required()->maxlength(10000)->set('data-admin-text','1'),
+                    'type' => Select::make()->options($types), 'count' => Input::make()->type('number')->min(0)->max(1000000)->step(1)])
                 ->addRowLabel('Добавить цель')->removableRows(false)->maxRows(100)
                 ->help('Идентификаторы создаются автоматически. После сохранения откройте «Подробные условия целей», чтобы выбрать предметы, локации и ключи по названиям.'),
             ...$sections,
-        ])->title('Цели, награды и прохождение')];
+        ])->title('Цели, награды и прохождение'),Layout::view('platform.content-validation')];
     }
 
     public function save(Request $request, Quest $quest, QuestEditor $editor)
     {
-        $input = $request->input('quest', []); $input['goals'] ??= [];
+        $input = $request->validate(['quest'=>['required','array']])['quest']; $input['goals'] ??= [];
         if ($quest->exists) { $input['mode'] = $quest->mode; }
         try { $editor->save($quest, $input); }
         catch (\Illuminate\Validation\ValidationException $error) {

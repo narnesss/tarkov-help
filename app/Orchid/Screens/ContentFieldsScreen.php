@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace App\Orchid\Screens;
 
-use App\Services\{ContentFields, ContentLinks};
+use App\Services\{AdminInput, ContentFields, ContentLinks};
 use Illuminate\Http\Request;
 use Orchid\Screen\Screen;
 use Orchid\Screen\Actions\{Button, Link};
@@ -28,7 +28,8 @@ abstract class ContentFieldsScreen extends Screen
     protected function loadFields(array $document, string $revision): array
     {
         $this->document = $document; $this->revision = $revision;
-        $this->section = (string) request()->query('section', ''); $this->page = max(1, (int) request()->query('page', 1));
+        $query=\Illuminate\Support\Facades\Validator::make(request()->query(),['section'=>['sometimes','string','max:2000'],'page'=>['sometimes','integer','min:1','max:1000000']])->validate();
+        $this->section = $query['section']??''; $this->page = (int)($query['page']??1);
         $values = [];
         foreach (app(ContentFields::class)->entries($document, $this->section, $this->page, $this->context) as $entry) {
             if ($entry['readonly']) { continue; }
@@ -66,6 +67,7 @@ abstract class ContentFieldsScreen extends Screen
                 : (is_int($value) || is_float($value) ? Input::make($name)->type('number')->step(is_int($value) ? '1' : 'any')
                     : TextArea::make($name)->rows(is_string($value) && mb_strlen($value) > 150 ? 5 : 2)));
             $field->title($entry['label']);
+            if(!$coordinate&&!is_bool($value)&&!is_int($value)&&!is_float($value)){$field->set('data-admin-text','1')->set('data-admin-url',AdminInput::urlField($entry['path'])?'1':'0')->maxlength(AdminInput::urlField($entry['path'])?2048:1000000);}
             if ($entry['readonly']) { $field->readonly()->disabled()->help('Стабильный идентификатор.'); }
             $fields[] = $field;
         }
@@ -83,11 +85,11 @@ abstract class ContentFieldsScreen extends Screen
         } elseif ($additions !== [] && $sectionLink === null) {
             $layouts[] = Layout::rows([
                 Select::make('addition.preset')->title('Что добавить')->options(array_map(fn ($preset) => $preset['label'], $additions)),
-                TextArea::make('addition.value')->title('Текст новой записи')->rows(2)->help('Для текстовых списков и названий новых записей справочника.'),
+                TextArea::make('addition.value')->title('Текст новой записи')->rows(2)->maxlength(100000)->set('data-admin-text','1')->set('data-admin-url',AdminInput::urlField($this->section.'/0')?'1':'0')->help('Для текстовых списков и названий новых записей справочника.'),
                 Button::make('Добавить')->method('add', ['section' => $this->section, 'page' => $this->page]),
             ])->title('Добавление данных');
         }
-        return $layouts;
+        return [...$layouts,Layout::view('platform.content-validation')];
     }
 
     public function save(Request $request)
@@ -102,7 +104,7 @@ abstract class ContentFieldsScreen extends Screen
     public function add(Request $request)
     {
         $this->reloadRecord($request);
-        $request->validate(['revision' => ['required', 'string'], 'addition' => ['required', 'array']]);
+        $request->validate(['revision' => ['required', 'string'], 'fields'=>['sometimes','array'], 'addition' => ['required', 'array']]);
         $document = app(ContentFields::class)->apply($this->document, $this->section, $this->page, $this->submittedFields($request), $this->context);
         $document = app(ContentFields::class)->append($document, $this->section, $request->input('addition'), $this->context);
         $this->persist($request, $document); Toast::info('Запись добавлена.');

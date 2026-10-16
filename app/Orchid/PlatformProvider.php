@@ -13,6 +13,7 @@ final class PlatformProvider extends OrchidServiceProvider
     public function boot(Dashboard $dashboard): void
     {
         Dashboard::useModel(\Orchid\Platform\Models\User::class, \App\Models\User::class);
+        $this->app->bind(\Orchid\Platform\Http\Requests\RelationRequest::class,\App\Http\Requests\AdminRelationRequest::class);
         parent::boot($dashboard);
     }
 

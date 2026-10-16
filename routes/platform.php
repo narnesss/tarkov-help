@@ -4,6 +4,7 @@ declare(strict_types=1);
 use App\Orchid\Screens\{QuestListScreen, QuestEditScreen, QuestFieldsScreen, DatasetListScreen, DatasetEditScreen};
 use Illuminate\Support\Facades\Route;
 
+Route::middleware(\App\Http\Middleware\ProtectAdminRoute::class)->group(function (): void {
 Route::screen('players/create',\App\Orchid\Screens\PlayerEditScreen::class)->name('platform.players.create');
 Route::screen('players/{player}/edit',\App\Orchid\Screens\PlayerEditScreen::class)->where('player','[a-f0-9]{32}')->name('platform.players.edit');
 Route::screen('players',\App\Orchid\Screens\PlayerListScreen::class)->name('platform.players');
@@ -19,3 +20,4 @@ Route::screen('quests/{quest}/fields', QuestFieldsScreen::class)->name('platform
 Route::screen('quests', QuestListScreen::class)->name('platform.quests');
 Route::screen('datasets/{dataset}/edit', DatasetEditScreen::class)->name('platform.datasets.edit');
 Route::screen('datasets', DatasetListScreen::class)->name('platform.datasets');
+});
