@@ -92,4 +92,10 @@ final class AdminNavigationTest extends TestCase
             '/admin/wiki?group=%3Cscript%3E'] as $url){$this->getJson($url)->assertUnprocessable();}
         $this->assertSame($before,$this->snapshot());
     }
+    public function test_filters_do_not_block_navigation_but_edit_forms_keep_abandonment_protection(): void
+    {
+        $this->fixtures();
+        foreach(['/admin/quests','/admin/wiki/map_points','/admin/datasets'] as $url){$this->get($url)->assertOk()->assertSee('data-form-need-prevents-form-abandonment-value="false"',false);}
+        $this->get('/admin/wiki/items/create')->assertOk()->assertSee('data-form-need-prevents-form-abandonment-value="true"',false);
+    }
 }

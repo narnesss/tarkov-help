@@ -15,6 +15,7 @@ final class DatasetListScreen extends Screen
     public function name(): string { return 'Данные сайта'; }
     public function description(): string { return 'Выберите раздел и режим. Названия файлов и технические пути не нужны для заполнения данных.'; }
     public function permission(): array { return ['wiki.content']; }
+    public function needPreventsAbandonment(): bool { return false; }
     public function query(): array
     {
         $group=AdminNavigation::choice('group',DatasetCatalog::GROUPS,'all');$mode=AdminNavigation::choice('mode',['all'=>'Все режимы','common'=>'Общие',...AdminNavigation::MODES],'all');

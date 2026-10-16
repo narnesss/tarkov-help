@@ -15,6 +15,7 @@ final class WikiListScreen extends Screen
     protected array $filters=[];
     public function name(): string { return WikiSchema::TYPES[$this->type]; }
     public function permission(): array { return ['wiki.content']; }
+    public function needPreventsAbandonment(): bool { return false; }
     public function query(string $type): array
     {
         $this->type=$type;$schema=app(WikiSchema::class);$query=$schema->query($type);

@@ -15,6 +15,7 @@ final class QuestListScreen extends Screen
 {
     public function name(): string { return 'Квесты'; }
     public function permission(): array { return ['wiki.content']; }
+    public function needPreventsAbandonment(): bool { return false; }
 
     public function query(): array
     {
