@@ -217,7 +217,7 @@
                 "norvinsk-n17-goal-36b2741d2bfd"
               ],
               "objectiveId": "norvinsk-n17-goal-36b2741d2bfd",
-              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/make-amends",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
               "precision": "schematic"
             }
           ]
@@ -236,7 +236,7 @@
                 "norvinsk-n17-goal-36b2741d2bfd"
               ],
               "objectiveId": "norvinsk-n17-goal-36b2741d2bfd",
-              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/make-amends",
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
               "precision": "schematic"
             }
           ]
@@ -256,7 +256,7 @@
               "objectiveIds": [
                 "norvinsk-n17-goal-968c4c728339"
               ],
-              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/make-amends"
+              "coordinateSource": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted"
             }
           ]
         }
@@ -269,7 +269,7 @@
       ],
       "externalMaps": [
         {
-          "label": "Варианты флешки V3 на карте источника",
+          "label": "Варианты флешки V3 на карте источника (нужен вход на Tarkov.help)",
           "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1066"
         }
       ]
@@ -1577,7 +1577,7 @@
       ],
       "externalMaps": [
         {
-          "label": "Места задания на карте источника",
+          "label": "Места задания на карте источника (нужен вход на Tarkov.help)",
           "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1046"
         }
       ]
@@ -1647,11 +1647,11 @@
       ],
       "externalMaps": [
         {
-          "label": "Места задания на карте источника",
+          "label": "Места задания на карте источника (нужен вход на Tarkov.help)",
           "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1043"
         },
         {
-          "label": "Места задания на карте источника",
+          "label": "Места задания на карте источника (нужен вход на Tarkov.help)",
           "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/252"
         }
       ]
@@ -1717,7 +1717,7 @@
       ],
       "externalMaps": [
         {
-          "label": "Места задания на карте источника",
+          "label": "Места задания на карте источника (нужен вход на Tarkov.help)",
           "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1047"
         }
       ]
@@ -1785,7 +1785,7 @@
       ],
       "externalMaps": [
         {
-          "label": "Места задания на карте источника",
+          "label": "Места задания на карте источника (нужен вход на Tarkov.help)",
           "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1074"
         }
       ]
@@ -2444,11 +2444,11 @@
       ],
       "externalMaps": [
         {
-          "label": "Места задания на карте источника",
+          "label": "Места задания на карте источника (нужен вход на Tarkov.help)",
           "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1050"
         },
         {
-          "label": "Места задания на карте источника",
+          "label": "Места задания на карте источника (нужен вход на Tarkov.help)",
           "url": "https://tarkov.help/ru/map/lighthouse/filter/markers/13619"
         }
       ]
@@ -2534,7 +2534,7 @@
       ],
       "externalMaps": [
         {
-          "label": "Места задания на карте источника",
+          "label": "Места задания на карте источника (нужен вход на Tarkov.help)",
           "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1057"
         }
       ]
@@ -2644,11 +2644,11 @@
       ],
       "externalMaps": [
         {
-          "label": "Тайники BEAR на карте источника",
+          "label": "Тайники BEAR на карте источника (нужен вход на Tarkov.help)",
           "url": "https://tarkov.help/ru/map/lighthouse/filter/markers/15853,15855,15856"
         },
         {
-          "label": "Тайники USEC на карте источника",
+          "label": "Тайники USEC на карте источника (нужен вход на Tarkov.help)",
           "url": "https://tarkov.help/ru/map/lighthouse/filter/markers/15853,15854,15861"
         }
       ]
@@ -3088,7 +3088,7 @@
       ],
       "externalMaps": [
         {
-          "label": "Варианты флешки V3 на карте источника",
+          "label": "Варианты флешки V3 на карте источника (нужен вход на Tarkov.help)",
           "url": "https://tarkov.help/ru/map/lighthouse/filter/quest/1066"
         }
       ],
@@ -3530,7 +3530,7 @@
     },
     "guide-20261016-lighthouse-v3-chalet": {
       "ru": "Маяк — варианты V3 в шале",
-      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/make-amends",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
       "coordinateSystem": "image-percent",
       "verification": "annotated-source-visual-reviewed",
       "src": "/assets/quest-guides-20261016/5665befcbfe381b6.webp",
@@ -3539,7 +3539,7 @@
     },
     "guide-20261016-lighthouse-v3-tent": {
       "ru": "Маяк — вариант V3 у теннисного корта",
-      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/make-amends",
+      "sourceUrl": "https://www.tarkovhead.com/en/quest/regular/getting-acquainted",
       "coordinateSystem": "image-percent",
       "verification": "annotated-source-visual-reviewed",
       "src": "/assets/quest-guides-20261016/d1fc8972750f821c.webp",
