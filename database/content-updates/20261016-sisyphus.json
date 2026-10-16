@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "id": 2026101604,
+  "quests": [
+    {
+      "id": "6a7b0df31ea00c9a980e2742",
+      "modes": [
+        "pve",
+        "regular"
+      ],
+      "expectedObjectiveIds": [
+        "6a7b0e6d485bcb39de7288de",
+        "6a7b0ea2a83358328235f137",
+        "6a7b0e38c6bb6d4b1474bf8a",
+        "6a7b0e8a60e1bf7f0ccd78cf",
+        "6a7b0f2bd9debb2dc2a4841f"
+      ],
+      "walkthrough": {
+        "paragraphs": [
+          "Задание Барахольщика проходит на Лесу, Резерве и Маяке: нужно найти два кейса с бронеплитами, доставить каждый в своё место и после обеих закладок воспользоваться Бронепоездом на Резерве или Маяке. Цель выхода появится только после выполнения обеих закладок.",
+          "Первый кейс подбирается внутри бункера ЗБ-014 на Лесу. Доставь его на Резерв и спрячь за деревянными досками у сторожевой будки к западу от депо обслуживания и ремонта подвижного состава «Белая ладья», возле перехода на Лес. В галерее этой цели показаны расположение будки и точное место закладки.",
+          "Второй кейс находится на заброшенном КПП USEC на Лесу: ищи его за времянкой рядом с биотуалетами. Его нужно отвезти на Маяк и заложить в вагоне с грузовиком «Урал» на железнодорожной платформе на севере локации, рядом с очистными сооружениями.",
+          "Кейсы появляются только при активном задании и попадают в отдельный инвентарь квестовых предметов. При гибели не вынесенный кейс теряется. Сверяй номер кейса с целью: первый предназначен для Резерва, второй — для Маяка.",
+          "Когда обе закладки засчитаны, дождись доступности выхода «Бронепоезд» на Резерве либо Маяке и эвакуируйся им. Схемы и фотографии в карточках целей показывают места подбора и закладки каждого кейса."
+        ],
+        "sourceUrl": "https://escapefromtarkov.fandom.com/ru/wiki/%D0%A1%D0%B8%D0%B7%D0%B8%D1%84"
+      },
+      "gallery": [
+        {
+          "url": "/assets/sisyphus-guide/97d65cdc8344cf90267c.webp",
+          "fullUrl": "/assets/sisyphus-guide/97d65cdc8344cf90267c.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/d/df/Sisyphus_Case_1_Spawn_Map.png/revision/latest?cb=20260913211738",
+          "sourceUrl": "https://escapefromtarkov.fandom.com/ru/wiki/%D0%A1%D0%B8%D0%B7%D0%B8%D1%84",
+          "caption": "Расположение бункера ЗБ-014 на локации Лес",
+          "objectiveIds": [
+            "6a7b0e38c6bb6d4b1474bf8a"
+          ],
+          "attribution": "Escape from Tarkov Wiki; авторы исходных иллюстраций указаны на странице файла. Игровые материалы — Battlestate Games.",
+          "license": "CC BY-NC-SA; условия конкретной иллюстрации — на странице источника"
+        },
+        {
+          "url": "/assets/sisyphus-guide/89ace65f38b8564461eb.webp",
+          "fullUrl": "/assets/sisyphus-guide/89ace65f38b8564461eb.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/2/29/ZB-014-Bunker.png/revision/latest?cb=20250816204007",
+          "sourceUrl": "https://escapefromtarkov.fandom.com/ru/wiki/%D0%A1%D0%B8%D0%B7%D0%B8%D1%84",
+          "caption": "Вход в бункер ЗБ-014",
+          "objectiveIds": [
+            "6a7b0e38c6bb6d4b1474bf8a"
+          ],
+          "attribution": "Escape from Tarkov Wiki; авторы исходных иллюстраций указаны на странице файла. Игровые материалы — Battlestate Games.",
+          "license": "CC BY-NC-SA; условия конкретной иллюстрации — на странице источника"
+        },
+        {
+          "url": "/assets/sisyphus-guide/b6084e708e3678cbf549.webp",
+          "fullUrl": "/assets/sisyphus-guide/b6084e708e3678cbf549.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/c/cf/Sisyphus_Case_1_Spawn.png/revision/latest?cb=20260913153017",
+          "sourceUrl": "https://escapefromtarkov.fandom.com/ru/wiki/%D0%A1%D0%B8%D0%B7%D0%B8%D1%84",
+          "caption": "Местонахождение кейса внутри бункера",
+          "objectiveIds": [
+            "6a7b0e38c6bb6d4b1474bf8a"
+          ],
+          "attribution": "Escape from Tarkov Wiki; авторы исходных иллюстраций указаны на странице файла. Игровые материалы — Battlestate Games.",
+          "license": "CC BY-NC-SA; условия конкретной иллюстрации — на странице источника"
+        },
+        {
+          "url": "/assets/sisyphus-guide/0925bcb29a9eb78f1189.webp",
+          "fullUrl": "/assets/sisyphus-guide/0925bcb29a9eb78f1189.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/7/71/Sisyphus_Case_1_Stashing_Map.png/revision/latest?cb=20260913210657",
+          "sourceUrl": "https://escapefromtarkov.fandom.com/ru/wiki/%D0%A1%D0%B8%D0%B7%D0%B8%D1%84",
+          "caption": "Расположение будки охраны на локации Резерв",
+          "objectiveIds": [
+            "6a7b0e6d485bcb39de7288de"
+          ],
+          "attribution": "Escape from Tarkov Wiki; авторы исходных иллюстраций указаны на странице файла. Игровые материалы — Battlestate Games.",
+          "license": "CC BY-NC-SA; условия конкретной иллюстрации — на странице источника"
+        },
+        {
+          "url": "/assets/sisyphus-guide/a83a58923fc1615726f3.webp",
+          "fullUrl": "/assets/sisyphus-guide/a83a58923fc1615726f3.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/0/09/Sisyphus_Case_1_Stashing.png/revision/latest?cb=20260917204933",
+          "sourceUrl": "https://escapefromtarkov.fandom.com/ru/wiki/%D0%A1%D0%B8%D0%B7%D0%B8%D1%84",
+          "caption": "Деревянные доски у будки",
+          "objectiveIds": [
+            "6a7b0e6d485bcb39de7288de"
+          ],
+          "attribution": "Escape from Tarkov Wiki; авторы исходных иллюстраций указаны на странице файла. Игровые материалы — Battlestate Games.",
+          "license": "CC BY-NC-SA; условия конкретной иллюстрации — на странице источника"
+        },
+        {
+          "url": "/assets/sisyphus-guide/5a7fd3e588aadbc59279.webp",
+          "fullUrl": "/assets/sisyphus-guide/5a7fd3e588aadbc59279.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/3/3c/Sisyphus_Case_2_Spawn_Map.png/revision/latest?cb=20260913211537",
+          "sourceUrl": "https://escapefromtarkov.fandom.com/ru/wiki/%D0%A1%D0%B8%D0%B7%D0%B8%D1%84",
+          "caption": "Расположение КПП USEC на локации Лес",
+          "objectiveIds": [
+            "6a7b0e8a60e1bf7f0ccd78cf"
+          ],
+          "attribution": "Escape from Tarkov Wiki; авторы исходных иллюстраций указаны на странице файла. Игровые материалы — Battlestate Games.",
+          "license": "CC BY-NC-SA; условия конкретной иллюстрации — на странице источника"
+        },
+        {
+          "url": "/assets/sisyphus-guide/2e042c493a3f8976d0fb.webp",
+          "fullUrl": "/assets/sisyphus-guide/2e042c493a3f8976d0fb.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/d/d4/Sisyphus_Case_2_Spawn.png/revision/latest?cb=20260913150657",
+          "sourceUrl": "https://escapefromtarkov.fandom.com/ru/wiki/%D0%A1%D0%B8%D0%B7%D0%B8%D1%84",
+          "caption": "Местонахождение кейса рядом с туалетами",
+          "objectiveIds": [
+            "6a7b0e8a60e1bf7f0ccd78cf"
+          ],
+          "attribution": "Escape from Tarkov Wiki; авторы исходных иллюстраций указаны на странице файла. Игровые материалы — Battlestate Games.",
+          "license": "CC BY-NC-SA; условия конкретной иллюстрации — на странице источника"
+        },
+        {
+          "url": "/assets/sisyphus-guide/cf249555b34063ed25ed.webp",
+          "fullUrl": "/assets/sisyphus-guide/cf249555b34063ed25ed.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/f/f2/Sisyphus_Case_2_Stashing_Map.jpg/revision/latest?cb=20260913211017",
+          "sourceUrl": "https://escapefromtarkov.fandom.com/ru/wiki/%D0%A1%D0%B8%D0%B7%D0%B8%D1%84",
+          "caption": "Расположение вагона на локации Маяк",
+          "objectiveIds": [
+            "6a7b0ea2a83358328235f137"
+          ],
+          "attribution": "Escape from Tarkov Wiki; авторы исходных иллюстраций указаны на странице файла. Игровые материалы — Battlestate Games.",
+          "license": "CC BY-NC-SA; условия конкретной иллюстрации — на странице источника"
+        },
+        {
+          "url": "/assets/sisyphus-guide/91114c5dc7c197bb71e8.webp",
+          "fullUrl": "/assets/sisyphus-guide/91114c5dc7c197bb71e8.webp",
+          "originalUrl": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/6/68/Sisyphus_Case_2_Stashing.png/revision/latest?cb=20260913210410",
+          "sourceUrl": "https://escapefromtarkov.fandom.com/ru/wiki/%D0%A1%D0%B8%D0%B7%D0%B8%D1%84",
+          "caption": "Нужный вагон",
+          "objectiveIds": [
+            "6a7b0ea2a83358328235f137"
+          ],
+          "attribution": "Escape from Tarkov Wiki; авторы исходных иллюстраций указаны на странице файла. Игровые материалы — Battlestate Games.",
+          "license": "CC BY-NC-SA; условия конкретной иллюстрации — на странице источника"
+        }
+      ],
+      "objectiveGuides": {
+        "6a7b0f2bd9debb2dc2a4841f": {
+          "maps": [
+            "5704e4dad2720bb55b8b4567",
+            "5704e5fad2720bc05b8b4567"
+          ]
+        }
+      }
+    }
+  ]
+}
