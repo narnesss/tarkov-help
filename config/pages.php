@@ -89,7 +89,8 @@ return json_decode(<<<'JSON'
       "quest-card.css",
       "story-quests.css",
       "ticket-quest-map.css",
-      "controls.css"
+      "controls.css",
+      "quests-responsive.css"
     ],
     "body_attributes": "class=\"guide-page\" data-page=\"quests\""
   },
@@ -109,7 +110,8 @@ return json_decode(<<<'JSON'
       "quest-card.css",
       "story-quests.css",
       "ticket-quest-map.css",
-      "controls.css"
+      "controls.css",
+      "quests-responsive.css"
     ],
     "body_attributes": "class=\"guide-page\" data-page=\"quests\""
   },
