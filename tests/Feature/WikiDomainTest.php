@@ -61,6 +61,7 @@ final class WikiDomainTest extends TestCase
         foreach(WikiSchema::TYPES as $type=>$title){
             $this->get('/admin/wiki/'.$type)->assertOk();$html=$this->get('/admin/wiki/'.$type.'/create')->assertOk()->getContent();
             $dom=new \DOMDocument();@$dom->loadHTML('<?xml encoding="utf-8" ?>'.$html);$xpath=new \DOMXPath($dom);
+            $this->assertSame(1,$xpath->query('//head/meta[@name="turbo-visit-control" and @content="reload"]')->length,$type);
             $this->assertSame(0,$xpath->query('//input[contains(@name,"_id]") and @type!="hidden"]')->length,$type);
             $this->assertSame(0,$xpath->query('//textarea[contains(@name,"json")]')->length,$type);
             $this->assertSame(0,$xpath->query('//input[@value="NULL"]')->length,$type);
