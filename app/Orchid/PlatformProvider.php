@@ -29,6 +29,11 @@ final class PlatformProvider extends OrchidServiceProvider
         ];
     }
 
+    public function stylesheets(): array
+    {
+        return ['/admin-responsive.css?v=mobile-orchid-20261016'];
+    }
+
     public function permissions(): array
     {
         return [ItemPermission::group('Tarkov Wiki')->addPermission('wiki.content', 'Редактирование данных сайта')->addPermission('wiki.users','Управление пользователями сайта')];

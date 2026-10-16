@@ -1,0 +1,208 @@
+/* Дополнения к Orchid: данные и действия остаются доступны на узких экранах. */
+.workspace,
+.workspace > *,
+#post-form,
+#post-form .row > *,
+#post-form .form-group {
+  min-width: 0;
+}
+.wiki-matrix-scroll {
+  max-width: 100%;
+  overscroll-behavior-inline: contain;
+}
+.wiki-catalog-tabs .nav-link {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 991.98px) {
+  .aside {
+    height: auto;
+    min-height: 64px;
+  }
+  body:not(.menu-open) .aside-collapse {
+    display: none !important;
+  }
+  body.menu-open .aside-collapse {
+    min-height: calc(100dvh - 72px);
+  }
+  .aside .header-toggler {
+    min-width: 0;
+    min-height: 44px;
+    overflow-wrap: anywhere;
+  }
+  .aside .header-toggler > span {
+    min-width: 0;
+  }
+  .aside .nav-link,
+  .wiki-catalog-tabs .nav-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .command-bar-wrapper {
+    position: static;
+    order: -1 !important;
+    backdrop-filter: none;
+  }
+  .command-bar-wrapper .layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px !important;
+  }
+  .command-bar-wrapper .layout > header,
+  .command-bar-wrapper .layout > nav {
+    flex: 1 0 100%;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0 !important;
+  }
+  .command-bar-wrapper .command-bar {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 8px;
+    white-space: normal;
+    overflow: visible;
+  }
+  .command-bar-wrapper .command-bar > li {
+    flex: 1 1 140px;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .command-bar .form-group {
+    height: 100%;
+  }
+  .command-bar .btn {
+    width: 100%;
+    height: 100%;
+    min-height: 44px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    justify-content: center;
+    text-align: center;
+  }
+  #post-form :is(.form-control, .form-select),
+  #post-form .ts-control,
+  #post-form .ts-control input {
+    font-size: 16px;
+  }
+  #post-form :is(input.form-control, select.form-control, .form-select),
+  #post-form .ts-control {
+    min-height: 46px;
+  }
+  #post-form .form-control {
+    max-width: 100%;
+  }
+  #post-form textarea {
+    resize: vertical;
+  }
+  #post-form :is(.form-label, .form-text, .invalid-feedback, legend) {
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+  .ts-wrapper {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .ts-control .item,
+  .ts-dropdown .option {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .ts-dropdown {
+    max-width: 100%;
+  }
+  .ts-dropdown .option {
+    min-height: 44px;
+  }
+  .wiki-matrix-scroll .matrix {
+    min-width: 42rem;
+    margin-bottom: 0;
+  }
+  .wiki-matrix-scroll textarea {
+    min-width: 16rem;
+    min-height: 7rem;
+  }
+  .wiki-matrix-scroll th:has(select) {
+    min-width: 12rem;
+  }
+  #post-form .wiki-matrix-scroll .ts-wrapper {
+    max-width: 12rem;
+  }
+  .wiki-matrix-scroll .ts-control input {
+    scroll-margin-inline: 24px;
+  }
+  .wiki-matrix-scroll input[type=number] {
+    min-width: 6rem;
+  }
+  .wiki-matrix-scroll .ts-dropdown-content {
+    max-height: 18rem;
+    max-height: min(18rem, 50dvh);
+  }
+  /* Иначе фокус Tom Select на скрытом поле слева сбрасывает прокрутку таблицы. */
+  .wiki-matrix-scroll .input-hidden .ts-control > input {
+    left: 0;
+    width: 1px !important;
+    min-width: 0 !important;
+    pointer-events: none;
+  }
+  .wiki-matrix-scroll:has(.dropdown-active) {
+    padding-bottom: 20rem;
+  }
+  .table-responsive {
+    max-width: 100%;
+    overscroll-behavior-inline: contain;
+  }
+  .table-responsive .table :is(th, td) {
+    overflow-wrap: anywhere;
+  }
+  .toast-wrapper {
+    width: min(20rem, calc(100% - 24px));
+    max-width: calc(100% - 24px);
+    left: auto;
+    right: 12px;
+  }
+  .toast-wrapper .toast {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .workspace {
+    padding-inline: 10px;
+  }
+  .wiki-catalog-tabs .nav {
+    gap: 6px !important;
+  }
+  .wiki-catalog-tabs .nav-item {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .wiki-catalog-tabs .nav-link {
+    padding: 10px 12px;
+  }
+  [data-controller~="table"] > footer {
+    padding-inline: 14px !important;
+    gap: 12px;
+  }
+  [data-controller~="table"] > footer > div {
+    max-width: 100%;
+    flex-basis: 100%;
+    min-width: 0;
+  }
+  [data-controller~="table"] .pagination {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  [data-controller~="table"] .page-link {
+    min-width: 40px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

@@ -6,6 +6,10 @@ $root = dirname(__DIR__);
 $package = $root.'/build/alwaysdata-api';
 $database = $root.'/build/alwaysdata-test-data-'.bin2hex(random_bytes(6)).'/wiki.sqlite';
 if (!is_dir($package) || file_exists($package.'/.env')) { throw new RuntimeException('Нужен свежий npm run package:alwaysdata.'); }
+if (!is_file($package.'/public/admin-responsive.css')
+    || hash_file('sha256',$package.'/public/admin-responsive.css') !== hash_file('sha256',$root.'/public/admin-responsive.css')) {
+    throw new RuntimeException('Мобильные стили Orchid не попали в API-пакет.');
+}
 $run = function (array $command) use ($package): string {
     $process = proc_open($command, [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['file', 'php://stderr', 'w']], $pipes, $package);
     if (!is_resource($process)) { throw new RuntimeException('Не удалось запустить проверку.'); }

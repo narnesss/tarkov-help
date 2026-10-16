@@ -1,5 +1,5 @@
 @foreach($catalogTabs ?? [] as $title => $tabs)
-<nav class="bg-white rounded shadow-sm p-3 mb-3" aria-label="{{ $title }}">
+<nav class="wiki-catalog-tabs bg-white rounded shadow-sm p-3 mb-3" aria-label="{{ $title }}">
     <div class="small text-muted mb-2">{{ $title }}</div>
     <ul class="nav nav-pills flex-wrap gap-2">
         @foreach($tabs as $tab)

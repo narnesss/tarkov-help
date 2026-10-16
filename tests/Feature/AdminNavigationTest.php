@@ -122,4 +122,25 @@ final class AdminNavigationTest extends TestCase
         }
         $this->get('/admin/wiki/items/create')->assertOk()->assertSee('data-form-need-prevents-form-abandonment-value="true"',false);
     }
+
+    public function test_mobile_matrix_preserves_field_names_ids_and_read_only_navigation(): void
+    {
+        $this->fixtures();
+        $quest=Quest::where('mode','pve')->firstOrFail();
+        $payload=$quest->payload;
+        $payload['objectives']=[['id'=>'stable-mobile-goal','description'=>'Длинное описание цели для мобильной формы','type'=>'visit','count'=>2]];
+        $quest->payload=$payload;$quest->save();$before=$this->snapshot();
+        $html=$this->get('/admin/quests/'.$quest->id.'/edit')->assertOk()
+            ->assertSee('/admin-responsive.css?v=mobile-orchid-20261016',false)->getContent();
+        $dom=new \DOMDocument();@$dom->loadHTML($html);$xpath=new \DOMXPath($dom);
+        $this->assertSame(1,$xpath->query('//div[@role="region" and @aria-label="Цели задания" and @tabindex="0"]/table[@data-controller="matrix"]')->length);
+        $this->assertSame(1,$xpath->query('//input[@name="quest[goals][0][id]" and @value="stable-mobile-goal"]')->length);
+        $this->assertSame(1,$xpath->query('//textarea[@name="quest[goals][0][description]"]')->length);
+        $this->assertSame(1,$xpath->query('//select[@name="quest[goals][0][type]"]')->length);
+        $this->assertSame(1,$xpath->query('//input[@name="quest[goals][0][count]" and @value="2"]')->length);
+        foreach(['/admin/quests','/admin/wiki/items/create','/admin/datasets'] as $url){
+            $this->get($url)->assertOk()->assertSee('/admin-responsive.css?v=mobile-orchid-20261016',false);
+        }
+        $this->assertSame($before,$this->snapshot());
+    }
 }

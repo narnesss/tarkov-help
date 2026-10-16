@@ -16,6 +16,7 @@ const copy = name => {
 for (const name of ['app', 'config', 'routes', 'src', 'resources/views', 'database/migrations', 'database/content-updates',
   'bootstrap/app.php', 'bootstrap/providers.php', 'public/index.php', 'public/.htaccess',
   'public/admin-user-validation.mjs', 'public/admin-content-validation.mjs', 'public/password-policy.mjs',
+  'public/admin-responsive.css',
   'artisan', 'composer.json', 'composer.lock', 'deployment/alwaysdata']) copy(name);
 fs.cpSync(prepareContentSeed(), path.join(output, 'database/content-seed'), {recursive: true});
 // Архив собирают и на Windows; Linux sh не принимает CRLF.
