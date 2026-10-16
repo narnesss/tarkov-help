@@ -1,4 +1,4 @@
-import {siteHref} from './site-routes.mjs';
+import {siteHref} from './site-routes.mjs?v=release-20261016';
 export function questMapPlan(task,mode,index,objectives=task.objectives||[]) {
  const valid=new Set(objectives.map(o=>o.id));
  return (index?.modes?.[mode]?.[task.id]||[]).map(map=>{

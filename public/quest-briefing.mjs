@@ -1,4 +1,4 @@
-import {el} from './guide-common.mjs';
+import {el} from './guide-common.mjs?v=release-20261016';
 
 export function questBriefing(task){
  const briefing=task.questContent?.briefing;

@@ -10,6 +10,24 @@ return json_decode(<<<'JSON'
     "styles": ["style.css", "site-ui.css", "controls.css", "account.css"],
     "body_attributes": "class=\"account-page\" data-page=\"account\""
   },
+  "terms": {
+    "title": "Условия использования — Tarkov Compass",
+    "description": "Условия использования справочника и личного журнала Tarkov Compass.",
+    "styles": ["style.css", "site-ui.css"],
+    "body_attributes": "class=\"legal-page\" data-page=\"terms\""
+  },
+  "personal-data": {
+    "title": "Согласие на обработку персональных данных — Tarkov Compass",
+    "description": "Отдельное согласие, цели обработки данных аккаунта и порядок отзыва.",
+    "styles": ["style.css", "site-ui.css"],
+    "body_attributes": "class=\"legal-page\" data-page=\"personal-data\""
+  },
+  "cookies": {
+    "title": "Использование cookie — Tarkov Compass",
+    "description": "Служебные cookie, локальное хранение и управление данными браузера.",
+    "styles": ["style.css", "site-ui.css"],
+    "body_attributes": "class=\"legal-page\" data-page=\"cookies\""
+  },
   "privacy": {
     "title": "Конфиденциальность — Tarkov Compass",
     "description": "Как Tarkov Compass использует данные аккаунтов и сохраняет личный прогресс.",

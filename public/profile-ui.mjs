@@ -1,5 +1,5 @@
 import {profileStore} from './profile-store.mjs';
-import {passwordError} from './password-policy.mjs';
+import {siteHref} from './site-routes.mjs?v=release-20261016';
 
 const node = (tag, text, className = '') => { const n = document.createElement(tag); if (text) n.textContent = text; n.className = className; return n; };
 function button(text, handler, className = 'button') { const b = node('button', text, className); b.type = 'button'; b.onclick = handler; return b; }
@@ -31,7 +31,7 @@ export function mountProfile() {
       const form = node('form', null, 'profile-auth'), userLabel = node('label', 'Логин', 'profile-field'), user = node('input'); user.name = 'username'; user.autocomplete = 'username'; user.required = true; user.maxLength = 32; userLabel.append(user);
       const passwordLabel = node('label', 'Пароль', 'profile-field'), password = node('input'); password.type = 'password'; password.name = 'password'; password.autocomplete = 'current-password'; password.required = true; passwordLabel.append(password);
       const actions = node('div', null, 'guide-button-row'), login = node('button', 'Войти', 'button primary'); login.type = 'submit';
-      const register = button('Создать аккаунт', () => { if (form.reportValidity()) run(async () => { const error=passwordError(password.value,user.value.trim());if(error)throw new Error(error);await profileStore.authenticate('register', {username: user.value, password: password.value}); reload(); }); });
+      const register = button('Создать аккаунт', () => { location.assign(siteHref('account.html?view=register')); });
       form.append(node('p','Для нового аккаунта: минимум 12 символов (лучше 16+), заглавная и строчная латинские буквы, цифра и спецсимвол. Придумай отдельный пароль без популярных слов, дат и последовательностей.','profile-help'));
       actions.append(login, register); form.append(userLabel, passwordLabel, node('p', 'Новый аккаунт создаётся с пустым прогрессом. Чтобы перенести отметки гостя, сначала скачайте профиль и затем загрузите его после входа.', 'profile-help'), actions);
       form.onsubmit = e => { e.preventDefault(); run(async () => { await profileStore.authenticate('login', {username: user.value, password: password.value}); reload(); }); }; content.append(form);

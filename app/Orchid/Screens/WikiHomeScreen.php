@@ -20,7 +20,7 @@ final class WikiHomeScreen extends Screen
     public function layout(): array
     {
         $groups=[
-            'catalogs'=>['items','keys','traders','locations','documents','skills','stations','achievements'],
+            'catalogs'=>['items','traders','locations','documents','skills','stations','achievements'],
             'maps'=>['maps','map_layers','map_points','point_categories','point_category_links','point_positions','point_world_positions','point_documents','item_spawns','key_usages','extractions'],
             'quests'=>['quests','objectives','objective_types','objective_groups','objective_items','objective_locations','objective_points','objective_keys','prerequisite_groups','quest_prerequisites','quest_trader_requirements','quest_skill_requirements','quest_station_requirements'],
             'rewards'=>['reward_sets','reward_items','reward_standing','reward_skills','reward_unlocks','crafts','craft_ingredients','offers'],

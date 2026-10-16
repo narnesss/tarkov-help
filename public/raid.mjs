@@ -1,14 +1,15 @@
-import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs';
+import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs?v=release-20261016';
 import {publicLinkURL,publicAttribution} from './public-links.mjs';
-import {LooseLootFilter} from './loose-loot-ui.mjs';
+import {LooseLootFilter} from './loose-loot-ui.mjs?v=release-20261016';
 import {LooseLootPreferences,loosePresentation,looseItemRecord,looseItemIds,LOOSE_FALLBACK_ICON} from './loose-loot-model.mjs';
 import {resolveGameMode} from './game-mode.mjs';
 import {readPersonal,writePersonal} from './profile-store.mjs';
 const storePersonal=(key,value)=>{if(!writePersonal(key,value))throw new Error('Локальное сохранение недоступно');};
 import {ruText,localizeDisplay} from './ru-data.mjs';
-import {questExtras,mediaFor} from './quest-extras.mjs';
-import {galleryBlock} from './gallery.mjs';
-import {json} from './guide-common.mjs';
+import {questExtras,mediaFor} from './quest-extras.mjs?v=release-20261016';
+import {galleryBlock} from './gallery.mjs?v=release-20261016';
+import {json} from './guide-common.mjs?v=release-20261016';
+import {loadContentBundle} from './content-bundles.mjs?v=release-20261016';
 import {bindMapTooltip} from './raid-tooltip.mjs';
 import {QuestMapFocusReceiver} from './quest-map-messages.mjs';
 import { CATEGORIES, LOOT_NAMES, titleOf, validPosition, floorOf, poiFloor, filterPois, projectPosition, projectRaster, rasterRegion, iconPath, displayPosition } from './raid-model.mjs';
@@ -336,7 +337,7 @@ function drawRoute(){
 
 async function start() {
   if(!globalThis.L)throw new Error('Не удалось загрузить модуль карты');
-  const [sourceMaps,names,calibration,qIndex,btr,looseCatalog]=await Promise.all([json('data/raid/maps.json'),json('data/raid/item-names.json').catch(()=>({})),json('data/raid/document-calibration.json'),json('data/raid/quest-index.json'),json('data/guide/btr.json'),json('data/raid/loose-items.json')]);itemCatalog=looseCatalog.items;questIndex=qIndex;btrReference=btr;extras=await questExtras();
+  const [[sourceMaps,names,calibration,qIndex,btr,looseCatalog],more]=await Promise.all([loadContentBundle('raid-base'),questExtras()]);itemCatalog=looseCatalog.items;questIndex=qIndex;btrReference=btr;extras=more;
   maps=localizeDisplay(sourceMaps).map(m=>({...m,documentMap:calibration[m.id]}));itemNames=names;
   looseFilter=new LooseLootFilter($('raid-loose-details'),{catalog:itemCatalog,preferences:loosePrefs,image:itemImage,onChange:render,onPersist:savePrefs});
   const mall=maps.find(m=>m.id==='interchange');if(mall){mall.baseFloor={...mall.baseFloor,name:'Территория / паркинг'};mall.floors=mall.floors.map(f=>({...f,name:f.id==='First_Floor'?'1 этаж торгового центра':'2 этаж торгового центра'}));}

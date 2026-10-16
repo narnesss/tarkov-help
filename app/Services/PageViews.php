@@ -13,7 +13,7 @@ final readonly class PageViews
     /** Отпечаток исходников совпадает с проверкой Node-сборки. */
     public function fingerprint(): string
     {
-        $names = ['public/data/page-routes.json', 'config/pages.php', 'app/Services/PageCatalog.php', 'app/Services/PageViews.php'];
+        $names = ['public/data/page-routes.json', 'config/pages.php', 'config/legal.php', 'app/Services/PageCatalog.php', 'app/Services/PageViews.php'];
         foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(resource_path('views'), \FilesystemIterator::SKIP_DOTS)) as $file) {
             if ($file->isFile()) { $names[] = 'resources/views/'.substr($file->getPathname(), strlen(resource_path('views')) + 1); }
         }

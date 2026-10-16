@@ -12,7 +12,7 @@ final readonly class Application
 {
     public function __construct(private AccountService $accounts, private StateRepository $states,
         private PriceService $prices, private PageRenderer $views, private string $secret,
-        private string $origin, private bool $secure = true) {}
+        private string $origin, private bool $secure = true, private ?\Closure $registration = null) {}
 
     private function session(Request $request): Session
     {
@@ -63,7 +63,8 @@ final readonly class Application
             if ($action !== 'logout') {
                 $this->accounts->rateLimit($request->ip, $action);
                 if (!is_string($data['username'] ?? null) || !is_string($data['password'] ?? null)) { throw new HttpError(422, 'Укажите логин и пароль.'); }
-                $next = $this->accounts->$action($data['username'], $data['password']);
+                $create=fn()=>$this->accounts->$action($data['username'],$data['password']);
+                $next=$action==='register'&&$this->registration!==null?($this->registration)($data,$create):$create();
             } else { $next = $this->accounts->guest(); }
             $this->accounts->revoke($session);
             return $this->withSession($next);

@@ -1,11 +1,12 @@
 import {profileStore} from './profile-store.mjs';
-import {json,el,action} from './guide-common.mjs';
-import {siteHref} from './site-routes.mjs';
+import {json,el,action} from './guide-common.mjs?v=release-20261016';
+import {siteHref} from './site-routes.mjs?v=release-20261016';
 import {resolveGameMode} from './game-mode.mjs';
 import {accountSummary} from './account-model.mjs';
 import {passwordError} from './password-policy.mjs';
 import {applyPlayerProfile} from './profile-identity.mjs';
 import {formFeedback,fieldError} from './form-feedback.mjs?v=feedback-2';
+import {configureLegal,showLegal,collectLegal,showLegalFailure} from './legal-consent.mjs?v=release-20261016';
 
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 let mode=resolveGameMode(params.get('mode'),profileStore.read('kord-atlas-game-mode')),view='login',busy=false,request=0;
@@ -55,6 +56,8 @@ function setView(next){
   const form=$('account-form');form.elements.password.autocomplete=view==='register'?'new-password':'current-password';
   form.elements.confirmation.required=view==='register';form.elements.confirmation.disabled=view!=='register';
   $('account-confirm-label').hidden=view!=='register';$('account-password-help').hidden=view!=='register';
+  showLegal($('account-register-legal'),view==='register');
+  showLegal($('account-oauth-legal'),view==='login'&&!profileStore.profile.authenticated);
   const url=new URL(location.href);url.searchParams.set('view',view);history.replaceState(null,'',url);
 }
 for(const button of document.querySelectorAll('[data-auth-view]'))button.onclick=()=>setView(button.dataset.authView);
@@ -107,8 +110,9 @@ $('account-form').onsubmit=event=>{event.preventDefault();run(async()=>{
     const policyError=passwordError(password,username);if(policyError)throw fieldError(policyError,'password');
     if(password!==form.elements.confirmation.value)throw fieldError('Пароли не совпадают.','password','confirmation');
   }
-  await profileStore.authenticate(view,{username,password});location.replace(siteHref('account.html?mode='+mode));
-},error=>showFormError(authFeedback,error,view==='register'?['password']:['password','username']));};
+  const consent=view==='register'?collectLegal($('account-register-legal')):{};
+  await profileStore.authenticate(view,{username,password,...consent});location.replace(siteHref('account.html?mode='+mode));
+},error=>showLegalFailure($('account-register-legal'),error)||showFormError(authFeedback,error,view==='register'?['password']:['password','username']));};
 $('account-logout').onclick=()=>run(async()=>{await profileStore.authenticate('logout');location.replace(siteHref('account.html?view=login'));});
 $('account-sync').onclick=()=>run(async()=>{if(!await profileStore.flush())throw new Error('Не удалось сохранить изменения. Повтори синхронизацию позже.');notify('Прогресс сохранён на сервере.');});
 async function saveName(name){
@@ -156,14 +160,16 @@ setInterval(()=>{if(emailState?.pending){if(emailState.pending.expiresAt<=Date.n
 loadEmail();
 for(const button of document.querySelectorAll('[data-oauth]'))button.onclick=()=>run(async()=>{
   if(!await profileStore.flush())throw new Error('Сначала сохрани последние изменения профиля.');
-  const result=await profileStore.api('/api/auth/oauth/'+button.dataset.oauth+'/start',{method:'POST',body:'{}'});
+  const consent=collectLegal($(profileStore.profile.authenticated?'account-link-legal':view==='register'?'account-register-legal':'account-oauth-legal'));
+  const result=await profileStore.api('/api/auth/oauth/'+button.dataset.oauth+'/start',{method:'POST',body:JSON.stringify(consent)});
   const target=new URL(result.url);if(target.protocol!=='https:'||!['accounts.google.com','discord.com'].includes(target.hostname))throw new Error('Не удалось открыть сервис входа.');
   location.assign(target.href);
-});
+},error=>showLegalFailure($(profileStore.profile.authenticated?'account-link-legal':view==='register'?'account-register-legal':'account-oauth-legal'),error));
 async function providers(){
   if(!profileStore.server){$('account-submit').disabled=true;$('account-provider-status').textContent='Вход в аккаунт сейчас недоступен. Можно продолжить с локальным профилем.';return;}
   try{
-    const {providers}=await profileStore.api('/api/auth/options');
+    const {providers,legal}=await profileStore.api('/api/auth/options');configureLegal(legal);
+    showLegal($('account-register-legal'),view==='register');showLegal($('account-oauth-legal'),view==='login'&&!profileStore.profile.authenticated);showLegal($('account-link-legal'),profileStore.profile.authenticated);
     for(const provider of providers)for(const button of document.querySelectorAll(`[data-oauth="${provider.id}"]`)){
       button.disabled=!provider.enabled;
       button.title=provider.linked?'Этот способ входа уже подключён':provider.enabled?'':'Этот способ входа пока недоступен';

@@ -32,13 +32,15 @@ final readonly class PlayerOAuth
         return rtrim((string)config('app.url'),'/').'/account?oauth='.$provider;
     }
 
-    public function begin(string $provider, Session $session): string
+    public function begin(string $provider, Session $session,array $input=[]): string
     {
         abort_unless($this->enabled($provider),503,'Этот способ входа пока недоступен.');
+        $consents=app(LegalConsents::class);
+        $legalVersion=$session->username===null||!$consents->hasCurrent($session->userId)?$consents->accept($input):null;
         DB::table('player_oauth_states')->where('expires_at','<=',time())->delete();
         $state=bin2hex(random_bytes(32));
         DB::table('player_oauth_states')->insert(['token_hash'=>hash('sha256',$state),'session_hash'=>hash('sha256',$session->token),'provider'=>$provider,
-            'link_user_id'=>$session->username===null?null:$session->userId,'expires_at'=>time()+600]);
+            'link_user_id'=>$session->username===null?null:$session->userId,'expires_at'=>time()+600,'legal_version'=>$legalVersion]);
         return self::PROVIDERS[$provider]['authorize'].'?'.http_build_query(['client_id'=>config('player-auth.'.$provider.'.client_id'),
             'redirect_uri'=>$this->redirectUri($provider),'response_type'=>'code','scope'=>self::PROVIDERS[$provider]['scope'],'state'=>$state]);
     }
@@ -51,6 +53,9 @@ final readonly class PlayerOAuth
             ->where('provider',$provider)->where('expires_at','>',time());
         $challenge=(clone $query)->first();
         abort_unless($challenge && $query->delete()===1,403,'Ссылка входа истекла. Начните вход ещё раз.');
+        if($challenge->legal_version!==null||$challenge->link_user_id===null||!app(LegalConsents::class)->hasCurrent($challenge->link_user_id)){
+            app(LegalConsents::class)->checkVersion($challenge->legal_version);
+        }
         try {
             $token=Http::asForm()->connectTimeout(2)->timeout(3)->post(self::PROVIDERS[$provider]['token'],[
                 'client_id'=>config('player-auth.'.$provider.'.client_id'),'client_secret'=>config('player-auth.'.$provider.'.client_secret'),
@@ -99,6 +104,7 @@ final readonly class PlayerOAuth
                 if(!$identity){DB::table('player_identities')->insert([...$values,'provider'=>$provider,'subject'=>$subject,'user_id'=>$owner,'created_at'=>time()]);}
                 else {DB::table('player_identities')->where('provider',$provider)->where('subject',$subject)->update($values);}
                 if($created){$this->profiles->initializeOAuth($owner,$display,$avatar);}
+                if($challenge->legal_version!==null){app(LegalConsents::class)->record($owner,$challenge->legal_version,$provider);}
                 $next=$this->accounts->issueFor($owner); $this->accounts->revoke($session);
                 return $next;
             });

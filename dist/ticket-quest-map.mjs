@@ -1,4 +1,4 @@
-import {el,action} from './guide-common.mjs';
+import {el,action} from './guide-common.mjs?v=release-20261016';
 import {readPersonal,writePersonal} from './profile-store.mjs';
 
 const endings={savior:'Спаситель',debtor:'Должник',survivor:'Выживший',fallen:'Падший'};

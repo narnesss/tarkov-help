@@ -11,9 +11,10 @@
   <base href="/">
   <title>Личный кабинет — Escape from Tarkov Wiki</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="style.css?v=account-1">
-  <link rel="stylesheet" href="site-ui.css?v=account-1">
-  <link rel="stylesheet" href="controls.css?v=account-1">
+  <link rel="stylesheet" href="legal.css?v=legal-1">
+  <link rel="stylesheet" href="style.css?v=release-20261016">
+  <link rel="stylesheet" href="site-ui.css?v=release-20261016">
+  <link rel="stylesheet" href="controls.css?v=release-20261016">
   <link rel="stylesheet" href="account.css?v=profile-3">
   <link rel="modulepreload" href="profile-store.mjs">
   <meta name="wiki-routing" content="pages">
@@ -48,8 +49,26 @@
       <div id="account-auth-login">
       <div class="account-social" id="account-providers"><button class="button social-google" type="button" data-oauth="google" disabled>Продолжить с Google</button><button class="button social-discord" type="button" data-oauth="discord" disabled>Продолжить с Discord</button></div>
       <p class="profile-help" id="account-provider-status">Проверяем доступные способы входа…</p>
+      <fieldset class="legal-checkboxes" id="account-oauth-legal" hidden disabled>
+<legend>Для входа через Google или Discord</legend>
+<p class="profile-help">Прочитай документы и отметь каждое подтверждение самостоятельно. Галочки не установлены заранее.</p>
+<label><input type="checkbox" name="legal_terms" aria-describedby="account-oauth-legal-error" required> <span>Принимаю <a href="/terms" target="_blank" rel="noopener">условия использования</a>.</span></label>
+<label><input type="checkbox" name="legal_privacy" aria-describedby="account-oauth-legal-error" required> <span>Ознакомлен(а) с <a href="/privacy" target="_blank" rel="noopener">политикой конфиденциальности</a>.</span></label>
+<label><input type="checkbox" name="legal_personal_data" aria-describedby="account-oauth-legal-error" required> <span>Даю отдельное <a href="/personal-data" target="_blank" rel="noopener">согласие на обработку персональных данных</a> для создания и работы аккаунта.</span></label>
+<p class="profile-help">О служебных cookie и локальных настройках — на <a href="/cookies" target="_blank" rel="noopener">отдельной странице</a>. Согласие на рекламу, рассылки или публикацию данных здесь не запрашивается.</p>
+<p class="profile-field-error" id="account-oauth-legal-error" data-legal-error role="alert" hidden></p>
+</fieldset>
       <div class="account-divider"><span>или по логину и паролю</span></div>
-      <form id="account-form" method="post" action="/api/auth/login"><p id="account-username-error" class="profile-field-error" role="alert" hidden></p><label class="profile-field">Логин<input name="username" autocomplete="username" required minlength="3" maxlength="32" aria-describedby="account-username-help"></label><p class="profile-help" id="account-username-help">От 3 до 32 букв или цифр, также можно использовать _ и дефис.</p><p id="account-password-error" class="profile-field-error" role="alert" hidden></p><label class="profile-field">Пароль<input name="password" type="password" autocomplete="current-password" required aria-describedby="account-password-help"></label><p class="profile-help" id="account-password-help" hidden>Минимум 12 символов (лучше 16 и больше), максимум 72 байта. Нужны заглавная и строчная латинские буквы, цифра и спецсимвол. Используй отдельный пароль для этого сайта, без популярных слов, дат, последовательностей и прежних паролей.</p><label class="profile-field" id="account-confirm-label" hidden>Повтори пароль<input name="confirmation" type="password" autocomplete="new-password"></label><button class="button primary" id="account-submit" type="submit">Войти</button></form>
+      <form id="account-form" method="post" action="/api/auth/login"><p id="account-username-error" class="profile-field-error" role="alert" hidden></p><label class="profile-field">Логин<input name="username" autocomplete="username" required minlength="3" maxlength="32" aria-describedby="account-username-help"></label><p class="profile-help" id="account-username-help">От 3 до 32 букв или цифр, также можно использовать _ и дефис.</p><p id="account-password-error" class="profile-field-error" role="alert" hidden></p><label class="profile-field">Пароль<input name="password" type="password" autocomplete="current-password" required aria-describedby="account-password-help"></label><p class="profile-help" id="account-password-help" hidden>Минимум 12 символов (лучше 16 и больше), максимум 72 байта. Нужны заглавная и строчная латинские буквы, цифра и спецсимвол. Используй отдельный пароль для этого сайта, без популярных слов, дат, последовательностей и прежних паролей.</p><label class="profile-field" id="account-confirm-label" hidden>Повтори пароль<input name="confirmation" type="password" autocomplete="new-password"></label><fieldset class="legal-checkboxes" id="account-register-legal" hidden disabled>
+<legend>Для регистрации</legend>
+<p class="profile-help">Прочитай документы и отметь каждое подтверждение самостоятельно. Галочки не установлены заранее.</p>
+<label><input type="checkbox" name="legal_terms" aria-describedby="account-register-legal-error" required> <span>Принимаю <a href="/terms" target="_blank" rel="noopener">условия использования</a>.</span></label>
+<label><input type="checkbox" name="legal_privacy" aria-describedby="account-register-legal-error" required> <span>Ознакомлен(а) с <a href="/privacy" target="_blank" rel="noopener">политикой конфиденциальности</a>.</span></label>
+<label><input type="checkbox" name="legal_personal_data" aria-describedby="account-register-legal-error" required> <span>Даю отдельное <a href="/personal-data" target="_blank" rel="noopener">согласие на обработку персональных данных</a> для создания и работы аккаунта.</span></label>
+<p class="profile-help">О служебных cookie и локальных настройках — на <a href="/cookies" target="_blank" rel="noopener">отдельной странице</a>. Согласие на рекламу, рассылки или публикацию данных здесь не запрашивается.</p>
+<p class="profile-field-error" id="account-register-legal-error" data-legal-error role="alert" hidden></p>
+</fieldset>
+<button class="button primary" id="account-submit" type="submit">Войти</button></form>
       <button class="account-link account-forgot" type="button" id="account-forgot">Забыли пароль?</button>
       </div>
       <section id="account-recovery" hidden aria-labelledby="account-recovery-title">
@@ -75,11 +94,23 @@
   <section class="account-controls" aria-label="Настройки профиля"><div class="account-mode" role="group" aria-label="Игровой режим"><button type="button" data-account-mode="pve" aria-pressed="true">PVE</button><button type="button" data-account-mode="regular" aria-pressed="false">PVP</button></div><div class="account-actions"><button class="button" id="account-sync" type="button">Синхронизировать</button><button class="button" type="button" data-profile-tools>Управление профилем</button><button class="button" id="account-logout" type="button" hidden>Выйти</button></div></section>
   <section aria-labelledby="account-overview-title"><div class="account-section-heading"><div><span class="account-kicker" id="account-mode-label">ПРОГРЕСС PVE</span><h2 id="account-overview-title">Твой путь в Таркове</h2></div><span id="account-level"></span></div><div class="account-summary" id="account-summary" aria-live="polite"><p>Загружаем сводку…</p></div></section>
   <section class="account-detail-grid"><div class="account-detail"><h2>Активные квесты</h2><p class="profile-help">То, что ты уже начал проходить.</p><div id="account-active">Загрузка…</div></div><div class="account-detail"><h2>Убежище и достижения</h2><p class="profile-help">Отмеченные постройки и полученные награды.</p><div id="account-unlocks">Загрузка…</div></div></section>
-  <section class="account-connections" id="account-connections" hidden aria-labelledby="account-connections-title"><h2 id="account-connections-title">Способы входа</h2><p class="profile-help">Google и Discord автоматически находят аккаунт по совпадающей подтверждённой почте, когда провайдер подтверждает владение адресом. Если адреса различаются или аккаунт создан только по логину, подключи второй сервис здесь — прогресс останется в этом аккаунте.</p><div class="account-actions"><button class="button" type="button" data-oauth="google" disabled>Подключить Google</button><button class="button" type="button" data-oauth="discord" disabled>Подключить Discord</button></div><p class="profile-help" id="account-connections-status"></p></section>
+  <section class="account-connections" id="account-connections" hidden aria-labelledby="account-connections-title"><h2 id="account-connections-title">Способы входа</h2><p class="profile-help">Google и Discord автоматически находят аккаунт по совпадающей подтверждённой почте, когда провайдер подтверждает владение адресом. Если адреса различаются или аккаунт создан только по логину, подключи второй сервис здесь — прогресс останется в этом аккаунте.</p>
+<fieldset class="legal-checkboxes" id="account-link-legal" hidden disabled>
+<legend>Для подключения способов входа</legend>
+<p class="profile-help">Прочитай документы и отметь каждое подтверждение самостоятельно. Галочки не установлены заранее.</p>
+<label><input type="checkbox" name="legal_terms" aria-describedby="account-link-legal-error" required> <span>Принимаю <a href="/terms" target="_blank" rel="noopener">условия использования</a>.</span></label>
+<label><input type="checkbox" name="legal_privacy" aria-describedby="account-link-legal-error" required> <span>Ознакомлен(а) с <a href="/privacy" target="_blank" rel="noopener">политикой конфиденциальности</a>.</span></label>
+<label><input type="checkbox" name="legal_personal_data" aria-describedby="account-link-legal-error" required> <span>Даю отдельное <a href="/personal-data" target="_blank" rel="noopener">согласие на обработку персональных данных</a> для создания и работы аккаунта.</span></label>
+<p class="profile-help">О служебных cookie и локальных настройках — на <a href="/cookies" target="_blank" rel="noopener">отдельной странице</a>. Согласие на рекламу, рассылки или публикацию данных здесь не запрашивается.</p>
+<p class="profile-field-error" id="account-link-legal-error" data-legal-error role="alert" hidden></p>
+</fieldset>
+<div class="account-actions"><button class="button" type="button" data-oauth="google" disabled>Подключить Google</button><button class="button" type="button" data-oauth="discord" disabled>Подключить Discord</button></div><p class="profile-help" id="account-connections-status"></p></section>
   <section class="account-settings" id="account-email" hidden aria-labelledby="account-email-title"><h2 id="account-email-title">E-mail для связи аккаунтов</h2><p class="profile-help">Подтверди почту этого аккаунта. При входе через Google или Discord с тем же подтверждённым адресом сохранятся твой аккаунт и прогресс. Для внешней почты Google может понадобиться подключить сервис из кабинета.</p><p id="account-email-status" role="status" aria-live="polite">Загружаем почту…</p><form id="account-email-form" method="post" action="/api/auth/email/send"><label class="profile-field">E-mail<input type="email" name="email" required maxlength="254" autocomplete="email"></label><button class="button" type="submit" id="account-email-send" disabled>Отправить код</button></form><form id="account-email-code-form" method="post" action="/api/auth/email/verify" hidden><label class="profile-field">Код из письма<input name="code" required inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{8}" minlength="8" maxlength="8" aria-describedby="account-email-code-help"></label><p class="profile-help" id="account-email-code-help">8 цифр, срок действия — 30 минут. Проверь также папку «Спам».</p><button class="button primary" type="submit" id="account-email-confirm">Подтвердить e-mail</button></form></section>
   <noscript><p>Для входа и отображения личного прогресса включи JavaScript.</p></noscript>
   <p class="profile-help"><a class="account-link" href="privacy.html">Как используются данные профиля</a></p>
 </main>
-<script type="module" src="bootstrap.mjs?v=profile-4"></script>
+<script type="module" src="bootstrap.mjs?v=legal-1"></script>
+<footer class="site-legal-footer"><nav class="legal-navigation" aria-label="Правовые документы"><a href="/terms">Условия использования</a><a href="/privacy">Политика конфиденциальности</a><a href="/personal-data">Согласие на обработку данных</a><a href="/cookies">Использование cookie</a></nav>
+</footer>
 </body>
 </html>

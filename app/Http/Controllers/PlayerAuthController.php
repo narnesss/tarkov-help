@@ -23,14 +23,15 @@ final readonly class PlayerAuthController
 
     public function options(Request $request): JsonResponse
     {
-        return response()->json(['providers'=>$this->oauth->options($this->session($request))])->header('Cache-Control','private, no-store');
+        $session=$this->session($request);
+        return response()->json(['providers'=>$this->oauth->options($session),'legal'=>app(\App\Services\LegalConsents::class)->publicData($session->username!==null?$session->userId:null)])->header('Cache-Control','private, no-store');
     }
 
     public function begin(Request $request,string $provider): JsonResponse
     {
         $session=$this->session($request,true);
         $this->accounts->rateLimit((string)($request->attributes->get('wiki_client_ip')??$request->ip()),'login');
-        return response()->json(['url'=>$this->oauth->begin($provider,$session)])->header('Cache-Control','private, no-store');
+        return response()->json(['url'=>$this->oauth->begin($provider,$session,$request->all())])->header('Cache-Control','private, no-store');
     }
 
     public function profile(Request $request): JsonResponse

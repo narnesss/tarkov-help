@@ -56,6 +56,7 @@ final readonly class PageCatalog
         $aliases = ['/' => 'index', '/index' => 'index', '/documents' => 'documents', '/raid' => 'raid', '/quest' => 'quest', '/quests' => 'quests', '/reference' => 'reference', '/boss' => 'boss', '/quest-map-source' => 'quest-map-source'];
         $aliases['/account'] = 'account';
         $aliases['/privacy'] = 'privacy';
+        foreach(['terms','personal-data','cookies'] as $page){$aliases['/'.$page]=$page;}
         if (isset($aliases[$plain])) {
             $template = $aliases[$plain];
             return ['template' => $template, 'title' => config('pages.'.$template.'.title'), 'params' => []];

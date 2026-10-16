@@ -9,10 +9,11 @@
   <base href="/">
   <title>Резерв — Escape from Tarkov Wiki</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="style.css?v=account-1">
-  <link rel="stylesheet" href="readability.css?v=account-1">
-  <link rel="stylesheet" href="site-ui.css?v=account-1">
-  <link rel="stylesheet" href="controls.css?v=account-1">
+  <link rel="stylesheet" href="legal.css?v=legal-1">
+  <link rel="stylesheet" href="style.css?v=release-20261016">
+  <link rel="stylesheet" href="readability.css?v=release-20261016">
+  <link rel="stylesheet" href="site-ui.css?v=release-20261016">
+  <link rel="stylesheet" href="controls.css?v=release-20261016">
   <link rel="modulepreload" href="profile-store.mjs">
   <meta name="wiki-routing" content="pages">
 <script type="application/json" id="wiki-page-params">{"map": "reserve"}</script>
@@ -89,6 +90,7 @@
           </div>
           <div class="floor-select" id="floor-group" hidden><label for="floor-select">Этаж по данным автора</label><select id="floor-select"></select><small>Для части точек этаж не указан.</small></div>
           <label class="alt-toggle" id="alt-group"><svg><use href="#i-layers"/></svg><span>Отметки на схемах<small>Связь с основной точкой</small></span><input type="checkbox" id="show-alts" checked></label>
+          <label class="document-size-label" for="document-icon-size">Размер значков <span><output id="document-icon-value" for="document-icon-size">24</output> px</span><input id="document-icon-size" type="range" min="16" max="36" step="2" value="24"></label>
           <button class="reset-filter" id="reset-filters">Сбросить фильтры</button>
         </section>
         <section id="points-panel" role="tabpanel" aria-labelledby="points-tab" hidden><div class="results-heading"><span id="results-caption">Точки на локации</span><span id="results-total"></span></div><div id="point-list" class="point-list"></div></section>
@@ -98,6 +100,8 @@
         <span><strong id="map-progress-text">0 из 32 точек</strong><small>Отмечено на этой локации</small></span><svg class="progress-arrow"><use href="#i-arrow"/></svg>
       </button>
       <div class="local-caption"><i></i> Прогресс сохраняется в этом браузере</div>
+      <div class="map-legal-links"><nav class="legal-navigation" aria-label="Правовые документы"><a href="/terms">Условия использования</a><a href="/privacy">Политика конфиденциальности</a><a href="/personal-data">Согласие на обработку данных</a><a href="/cookies">Использование cookie</a></nav>
+</div>
     </aside>
 
     <main class="map-area" id="map-area" aria-label="Интерактивная карта">
@@ -131,6 +135,6 @@
   <dialog class="dialog about-dialog" id="about-dialog"><div class="dialog-heading"><div><div class="eyebrow">О ПРОЕКТЕ</div><h2>Всё нужное — на карте.</h2></div><button class="icon-button dialog-close" aria-label="Закрыть"><svg><use href="#i-close"/></svg></button></div><p>Escape from Tarkov Wiki — личный справочник мест появления секретных документов для Kord Breach в Escape from Tarkov.</p><div class="about-stats"><div><strong id="about-maps">12</strong><span>локаций</span></div><div><strong id="about-spawns">376</strong><span>точек</span></div><div><strong>8</strong><span>типов документов</span></div></div><h3>Как пользоваться</h3><p>Выберите локацию и нужный тип документа. Нажмите на цветную метку, чтобы увидеть точное место на фотографии. Отмечайте найденные точки, добавляйте заметки и переключайтесь на «Осталось».</p><p>Колесо мыши или щипок меняют масштаб. Карту можно перетаскивать. Кнопка ⌖ возвращает общий вид. Пунктирная метка — та же точка на дополнительной схеме; при выборе видна связь между ними.</p><h3>Справочные материалы</h3><ul class="source-list"><li><a href="https://tarkov.help/ru" target="_blank" rel="noopener noreferrer">Tarkov.help — прохождения ↗</a></li><li><a href="https://escapefromtarkov.fandom.com/ru/wiki/Escape_from_Tarkov_Wiki" target="_blank" rel="noopener noreferrer">Русская Wiki ↗</a></li></ul><p class="muted">Авторы материалов: VOctavian, МетаДвиж, RE3MR, Jindouz и xTycho. Игровые материалы — Battlestate Games. Карты сохранены с исходными правами; CC BY-NC-SA 4.0.</p><div class="source-version" id="source-version"></div><p class="muted">Данные соответствуют указанной дате. Подложки могут содержать обозначения, не относящиеся к документам. Это неофициальный некоммерческий справочник.</p></dialog>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
   <div class="boot-error" id="boot-error" hidden><h1>Не удалось загрузить карту</h1><p>Проверьте соединение и обновите страницу.</p><button class="button primary" onclick="location.reload()">Попробовать снова</button></div>
-  <script type="module" src="bootstrap.mjs?v=account-1"></script>
+  <script type="module" src="bootstrap.mjs?v=legal-1"></script>
 </body>
 </html>

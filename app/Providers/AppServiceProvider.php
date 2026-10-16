@@ -28,7 +28,14 @@ final class AppServiceProvider extends ServiceProvider
             if (strlen($secret) < 32) { throw new \RuntimeException('APP_KEY required; run artisan key:generate'); }
             $origin = rtrim((string) config('app.url'), '/');
             return new Application($app->make(AccountService::class), $app->make(StateRepository::class), $app->make(PriceService::class),
-                $app->make(PageRenderer::class), $secret, $origin, str_starts_with($origin, 'https://'));
+                $app->make(PageRenderer::class), $secret, $origin, str_starts_with($origin, 'https://'),function(array $input,\Closure $create) use($app) {
+                    $consents=$app->make(\App\Services\LegalConsents::class);
+                    try{$version=$consents->accept($input);}
+                    catch(\Illuminate\Validation\ValidationException $error){throw new \EftWiki\Http\HttpError(422,'Подтвердите согласия перед регистрацией.',['errors'=>$error->errors()]);}
+                    return DB::transaction(function() use($consents,$version,$create) {
+                        $session=$create();$consents->record($session->userId,$version,'password');return $session;
+                    });
+                });
         });
     }
 }

@@ -1,0 +1,1 @@
+<p><strong>Оператор персональных данных:</strong> {{ config('legal.operator.name') }}, {{ config('legal.operator.country') }}. Контакт для обращений: <a href="mailto:{{ config('legal.operator.email') }}">{{ config('legal.operator.email') }}</a>.</p>

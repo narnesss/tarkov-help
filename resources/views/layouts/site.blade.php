@@ -13,8 +13,9 @@
   <base href="/">
   <title>{{ $title }}</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="legal.css?v=legal-1">
 @foreach ($meta['styles'] as $style)
-  <link rel="stylesheet" href="{{ $style }}?v={{ $style === 'account.css' ? 'profile-3' : 'account-1' }}">
+  <link rel="stylesheet" href="{{ $style }}?v={{ $style === 'account.css' ? 'profile-3' : 'release-20261016' }}">
 @endforeach
   <link rel="modulepreload" href="profile-store.mjs">
   <meta name="wiki-routing" content="pages">
@@ -24,5 +25,8 @@
 </head>
 <body {!! $meta['body_attributes'] !!}>
 @yield('content')
+@unless (in_array($page, ['documents', 'raid'], true))
+<footer class="site-legal-footer">@include('components.legal-navigation')</footer>
+@endunless
 </body>
 </html>

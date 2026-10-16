@@ -4,6 +4,7 @@
     <file>tests/Feature/WikiDomainTest.php</file>
     <file>tests/Feature/AdminContentSecurityTest.php</file>
     <file>tests/Feature/AdminNavigationTest.php</file>
+    <file>tests/Feature/LegalConsentsTest.php</file>
     <file>tests/Feature/ApiTest.php</file>
     <file>tests/Feature/PlayerOAuthTest.php</file>
     <file>tests/Feature/PlayerProfilesTest.php</file>
@@ -12,9 +13,12 @@
     <file>tests/Feature/PlayerPasswordRecoveryTest.php</file>
     <file>tests/Feature/ApiProxyTest.php</file>
     <file>tests/Feature/ContentManagementTest.php</file>
+    <file>tests/Feature/ContentCacheTest.php</file>
+    <file>tests/Feature/ContentBundleTest.php</file>
     <file>tests/Feature/ContentReferencesTest.php</file>
   </testsuite></testsuites>
   <php>
+    <env name="LEGAL_CONSENT_REQUIRED" value="false" force="true"/>
     <env name="APP_ENV" value="testing" force="true"/>
     <env name="APP_KEY" value="base64:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=" force="true"/>
     <env name="APP_URL" value="https://wiki.test" force="true"/>

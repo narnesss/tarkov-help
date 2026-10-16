@@ -23,7 +23,6 @@ final class PlatformProvider extends OrchidServiceProvider
             Menu::make('Квесты')->icon('bs.journal-text')->route('platform.quests')->permission('wiki.content'),
             Menu::make('Сущности и связи')->icon('bs.diagram-3')->route('platform.wiki')->permission('wiki.content'),
             Menu::make('Предметы')->icon('bs.box')->route('platform.wiki.list','items')->permission('wiki.content'),
-            Menu::make('Ключи')->icon('bs.key')->route('platform.wiki.list','keys')->permission('wiki.content'),
             Menu::make('Точки карты')->icon('bs.geo-alt')->route('platform.wiki.list','map_points')->permission('wiki.content'),
             Menu::make('Данные сайта')->icon('bs.database')->route('platform.datasets')->permission('wiki.content'),
             Menu::make('Пользователи')->icon('bs.people')->route('platform.players')->permission('wiki.users'),

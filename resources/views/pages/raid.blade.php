@@ -21,6 +21,7 @@
         </section>
         <section id="raid-results" role="tabpanel" aria-labelledby="raid-list-tab" hidden><p class="raid-list-hint">Выберите объект, чтобы показать его на карте.</p><div id="raid-list"></div><button class="button" id="raid-more" hidden>Показать ещё</button></section>
       </div>
+      <div class="map-legal-links">@include('components.legal-navigation')</div>
       </aside>
     <main class="raid-main">
       <div class="raid-heading"><div><div class="eyebrow">ЛУТ / СПАВНЫ / ВЫХОДЫ</div><h1 id="raid-title">Интерактивные карты</h1></div><div class="raid-floor-controls"><label class="map-style-control" for="raid-artwork">Схема</label><select id="raid-artwork" aria-label="Подложка карты"><option value="source">Основная</option><option value="documents">Альтернативная</option></select><label for="raid-floor">Этаж</label><select id="raid-floor"></select><button id="raid-fit" class="button" title="Показать всю карту">Вся карта</button><button id="raid-fullscreen" class="icon-button" aria-label="На весь экран">⛶</button></div></div>
@@ -33,5 +34,5 @@
   <dialog id="raid-about-dialog" class="dialog raid-about-dialog"><div class="dialog-heading"><h2>Интерактивные карты</h2><button id="raid-about-close" class="icon-button" aria-label="Закрыть">×</button></div><p>Выберите локацию, этаж и нужные слои. Отметки и заметки сохраняются в вашем профиле.</p><ul class="source-list"><li><a href="https://tarkov.help/ru" target="_blank" rel="noopener noreferrer">Tarkov.help — прохождения ↗</a></li><li><a href="https://escapefromtarkov.fandom.com/ru/wiki/Escape_from_Tarkov_Wiki" target="_blank" rel="noopener noreferrer">Русская Wiki ↗</a></li></ul><p class="muted">Авторы карт: Shebuka, RE3MR, Jindouz, xTycho, NepPure и участники сообщества. Игровые материалы — Battlestate Games. Карты распространяются на условиях CC BY-NC-SA 4.0; исходные права сохранены.</p></dialog>
   <div class="toast" id="raid-toast" role="status" hidden></div>
   <script src="vendor/leaflet.js"></script>
-  <script type="module" src="bootstrap.mjs?v=account-1"></script>
+  <script type="module" src="bootstrap.mjs?v=legal-1"></script>
 @endsection

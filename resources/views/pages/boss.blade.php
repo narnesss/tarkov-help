@@ -9,5 +9,5 @@
   <div id="boss-content" aria-live="polite"></div>
 </main>
 <div class="toast" id="guide-toast" role="status" hidden></div>
-  <script type="module" src="bootstrap.mjs?v=account-1"></script>
+  <script type="module" src="bootstrap.mjs?v=legal-1"></script>
 @endsection

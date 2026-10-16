@@ -14,7 +14,8 @@ final class ItemCatalog
     {
         $types=$item['types']??[];$property=$item['properties']['propertiesType']??'';$name=mb_strtolower($item['name']??'');
         if(in_array('container',$types,true)||$property==='ItemPropertiesContainer'){return 'containers';}
-        if(preg_match('/гаечн|разводно[йг]|газовый резак|болторез|отв[её]ртк|плоскогуб|кусачки/u',$name)){return 'tools';}
+        if(in_array($item['normalizedName']??'',['ratchet-wrench','pipe-grip-wrench'],true)
+            ||preg_match('/гаечн|разводно[йг]|газовый резак|болторез|отв[её]ртк|плоскогуб|кусачки|(?:шарнирн[а-яё]*|трещоточн[а-яё]*)\s+ключ/u',$name)){return 'tools';}
         if(in_array('keys',$types,true)||$property==='ItemPropertiesKey'||preg_match('/\bключ(?:[а-яё]*)\b|keycard|\bkey\b/ui',$name)){return 'keys';}
         foreach(['weapons'=>['gun','grenade','preset'],'ammo'=>['ammo','ammoBox'],'mods'=>['mods'],
             'gear'=>['armor','rig','backpack','glasses','helmet','headphones','armorPlate','wearable'],
@@ -25,7 +26,7 @@ final class ItemCatalog
     public function groups(): array
     {
         $datasets=ContentDataset::whereIn('path',['guide/items-pve.json','guide/items-regular.json'])->get();
-        $key='admin-item-groups-v1-'.hash('sha256',serialize([$datasets->first()?->getConnection()->getDatabaseName(),$datasets->pluck('payload','path')->all()]));
+        $key='admin-item-groups-v2-'.hash('sha256',serialize([$datasets->first()?->getConnection()->getDatabaseName(),$datasets->pluck('payload','path')->all()]));
         return Cache::remember($key,3600,function() use($datasets): array {
             $map=[];foreach($datasets as $dataset){foreach($dataset->content()['items']??[] as $item){if(isset($item['id'])){$map[$item['id']]=self::classify($item);}}}
             $groups=array_fill_keys(array_keys(self::GROUPS),[]);foreach($map as $id=>$group){$groups[$group][]=$id;}return $groups;

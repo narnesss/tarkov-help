@@ -1,7 +1,8 @@
 import {readPersonal,writePersonal} from './profile-store.mjs';
 import {ruText,localizeDisplay} from './ru-data.mjs';
 import {publicLinkURL,PUBLIC_HELP,PUBLIC_WIKI} from './public-links.mjs';
-import {contentResponse} from './content-client.mjs';
+import {contentResponse} from './content-client.mjs?v=release-20261016';
+import {createJsonPreloader} from './json-preload.mjs?v=release-20261016';
 export const $=id=>document.getElementById(id);
 export const el=(tag,text='',className='')=>{const n=document.createElement(tag);n.textContent=ruText(text);n.className=className;return n;};
 export const num=value=>Number(value||0).toLocaleString('ru-RU',{maximumFractionDigits:2});
@@ -10,7 +11,14 @@ export function safeURL(value){try{const u=new URL(value,location.href);return [
 export function external(label,url){const href=publicLinkURL(url);if(!href)return document.createDocumentFragment();const raw=safeURL(url);if(href!==raw)label=href===PUBLIC_WIKI?'Русская Wiki ↗':href===PUBLIC_HELP?'Tarkov.help ↗':label;const a=el('a',label,'guide-link');a.href=href;a.target='_blank';a.rel='noopener noreferrer';return a;}
 export function image(url,alt='',className=''){const i=el('img','',className);i.src=safeURL(url);i.alt=alt;i.loading='lazy';i.onerror=()=>{i.hidden=true;};return i;}
 let compressionManifest;
+const preloaded=createJsonPreloader(loadJson);
+export function preloadJson(url){
+  if(/^data\/(?:guide\/(?:quests|reference)-(?:pve|regular)|raid\/(?:pve\/)?[a-z-]+)\.json$/.test(url))preloaded.preload(url);
+}
 export async function json(url,signal){
+  const pending=!signal&&preloaded.take(url);return pending||loadJson(url,signal);
+}
+async function loadJson(url,signal){
   const content=await contentResponse(url,signal);if(content)return content.json();
   let target=url;
   if(url.startsWith('data/')){compressionManifest ||= fetch('data/compressed.json').then(r=>r.ok?r.json():{}).catch(()=>({}));target=(await compressionManifest)[url]||url;}

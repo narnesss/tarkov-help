@@ -9,7 +9,7 @@ const readJSON=name=>JSON.parse(fs.readFileSync(path.join(publicDir,name),'utf8'
 const escape=value=>String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#x27;'}[ch]));
 export function routePlan(){return readJSON('data/site-render-routes.json');}
 export function sourceFingerprint(){
- const names=['public/data/page-routes.json', 'config/pages.php','app/Services/PageCatalog.php','app/Services/PageViews.php'];
+ const names=['public/data/page-routes.json', 'config/pages.php','config/legal.php','app/Services/PageCatalog.php','app/Services/PageViews.php'];
  function walk(dir){for(const item of fs.readdirSync(path.join(root,dir),{withFileTypes:true})){
   const name=dir+'/'+item.name;if(item.isDirectory())walk(name);else names.push(name);
  }}

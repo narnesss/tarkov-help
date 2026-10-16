@@ -21,11 +21,13 @@ final class AdminNavigationTest extends TestCase
                 ['id'=>'wrench','name'=>'Гаечный ключ','types'=>['barter']],
                 ['id'=>'torch','name'=>'Газовый резак','types'=>['keys']],
                 ['id'=>'case','name'=>'Кейс для ключей','types'=>['container']],
+                ['id'=>'ratchet','name'=>'Трещоточный ключ','normalizedName'=>'ratchet-wrench','types'=>['barter']],
+                ['id'=>'pipe-grip','name'=>'Шарнирный ключ КШС','normalizedName'=>'pipe-grip-wrench','types'=>['barter']],
             ]],
             'guide/quests-pve.json'=>['traders'=>[['id'=>'prapor','name'=>'Прапор']]],
             'guide/bosses.json'=>['bosses'=>[]],
             'guide/reference-pve.json'=>['achievements'=>[],'crafts'=>[],'hideout'=>[],'barters'=>[],'traders'=>[],'maps'=>[]],
-            'spawns.json'=>[['id'=>'point','map'=>'lighthouse','doc'=>'doc','caption'=>'Документ у дерева','x'=>10,'y'=>20,'keyIds'=>['real-key','wrench','torch','case']]],
+            'spawns.json'=>[['id'=>'point','map'=>'lighthouse','doc'=>'doc','caption'=>'Документ у дерева','x'=>10,'y'=>20,'keyIds'=>['real-key','wrench','torch','case','ratchet','pipe-grip']]],
         ] as $path=>$data){$dataset=new ContentDataset(['path'=>$path]);$dataset->setContent($data);$dataset->save();}
         foreach(['pve','regular'] as $mode){foreach(['ordinary','story','kappa'] as $kind){$name=$mode.' '.$kind;
             Quest::create(['quest_id'=>$kind,'mode'=>$mode,'name'=>$name,'trader_id'=>'prapor','published'=>$kind!=='story',
@@ -59,12 +61,29 @@ final class AdminNavigationTest extends TestCase
     public function test_tools_and_containers_do_not_appear_in_keys_but_old_links_remain_accessible(): void
     {
         $this->fixtures();$before=$this->snapshot();
-        $this->get('/admin/wiki/keys')->assertOk()->assertSee('Ключ от двери')->assertDontSee('Гаечный ключ')->assertDontSee('Газовый резак')->assertDontSee('Кейс для ключей');
-        $this->get('/admin/wiki/keys?item_group=related')->assertOk()->assertSee('Гаечный ключ')->assertSee('Газовый резак')->assertSee('Кейс для ключей');
-        foreach(['tools'=>['Гаечный ключ','Газовый резак'],'containers'=>['Кейс для ключей'],'keys'=>['Ключ от двери']] as $group=>$names){
+        $this->get('/admin/wiki/keys')->assertOk()->assertSee('Ключ от двери')->assertDontSee('Гаечный ключ')->assertDontSee('Газовый резак')->assertDontSee('Кейс для ключей')->assertDontSee('Трещоточный ключ')->assertDontSee('Шарнирный ключ КШС');
+        $this->get('/admin/wiki/keys?item_group=related')->assertOk()->assertSee('Гаечный ключ')->assertSee('Газовый резак')->assertSee('Кейс для ключей')->assertSee('Трещоточный ключ')->assertSee('Шарнирный ключ КШС');
+        foreach(['tools'=>['Гаечный ключ','Газовый резак','Трещоточный ключ','Шарнирный ключ КШС'],'containers'=>['Кейс для ключей'],'keys'=>['Ключ от двери']] as $group=>$names){
             $response=$this->get('/admin/wiki/items?item_group='.$group)->assertOk();foreach($names as $name){$response->assertSee($name);}
         }
         foreach(array_keys(ItemCatalog::GROUPS) as $group){$this->get('/admin/wiki/items?item_group='.$group)->assertOk();}
+        $this->assertSame($before,$this->snapshot());
+    }
+    public function test_wrenches_are_tools_with_or_without_localized_names_and_hinge_mod_is_not_a_tool(): void
+    {
+        foreach(['Шарнирный ключ КШС','Трещоточный ключ'] as $name){$this->assertSame('tools',ItemCatalog::classify(['name'=>$name,'types'=>['barter']]));}
+        foreach(['ratchet-wrench','pipe-grip-wrench'] as $normalizedName){$this->assertSame('tools',ItemCatalog::classify(['name'=>'Инструмент','normalizedName'=>$normalizedName,'types'=>['barter']]));}
+        $this->assertSame('mods',ItemCatalog::classify(['name'=>'Переходник Рысь "Шарнир СВД-С" для СВДС','types'=>['mods']]));
+        $this->assertSame('keys',ItemCatalog::classify(['name'=>'Ключ от двери','types'=>['keys']]));
+    }
+    public function test_keys_are_an_item_subcategory_without_duplicate_sidebar_or_catalog_entries(): void
+    {
+        $this->fixtures();$before=$this->snapshot();
+        foreach(['/admin/wiki/items','/admin/wiki?group=catalogs'] as $url){
+            $html=$this->get($url)->assertOk()->getContent();$dom=new \DOMDocument();@$dom->loadHTML($html);$xpath=new \DOMXPath($dom);
+            $this->assertSame(0,$xpath->query('//a[@href="'.route('platform.wiki.list','keys').'"]')->length);
+        }
+        $this->get('/admin/wiki/items?item_group=keys')->assertOk()->assertSee('Ключ от двери')->assertDontSee('Трещоточный ключ')->assertDontSee('Шарнирный ключ КШС');
         $this->assertSame($before,$this->snapshot());
     }
     public function test_point_purpose_mode_and_named_location_filter_do_not_mix_data(): void

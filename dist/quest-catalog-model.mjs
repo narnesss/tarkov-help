@@ -1,4 +1,4 @@
-import {siteHref,pageParams} from './site-routes.mjs';
+import {siteHref,pageParams} from './site-routes.mjs?v=release-20261016';
 import {idOf,questState} from './quest-model.mjs';
 
 export function questHref(id,mode='pve',tab='objectives') {

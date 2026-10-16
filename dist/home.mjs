@@ -1,8 +1,8 @@
-import {json,readStorage,writeStorage,el} from './guide-common.mjs';
+import {json,readStorage,writeStorage,el} from './guide-common.mjs?v=release-20261016';
 import {resolveGameMode} from './game-mode.mjs';
 import {normalize} from './model.mjs';
-import {siteHref,canonicalURL} from './site-routes.mjs';
-import {questHref,catalogHref} from './quest-catalog-model.mjs';
+import {siteHref,canonicalURL} from './site-routes.mjs?v=release-20261016';
+import {questHref,catalogHref} from './quest-catalog-model.mjs?v=release-20261016';
 const $=id=>document.getElementById(id);
 let mode=resolveGameMode(new URLSearchParams(location.search).get('mode'),readStorage('kord-atlas-game-mode')),home,index,indexRequest,searchSequence=0;
 const arrow=()=>{const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),use=document.createElementNS('http://www.w3.org/2000/svg','use');use.setAttribute('href','#home-arrow');svg.setAttribute('aria-hidden','true');svg.append(use);return svg;};

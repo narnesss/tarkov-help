@@ -1,9 +1,11 @@
-import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs';
+import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs?v=release-20261016';
 import {readPersonal,writePersonal} from './profile-store.mjs';
 const storePersonal=(key,value)=>{if(!writePersonal(key,value))throw new Error('Локальное сохранение недоступно');};
 import { STORAGE_KEY, FLOOR_NAMES, filterSpawns, sanitizeProgress, fitTransform, zoomTransform, hasCoordinates } from './model.mjs';
 
 const $ = id => document.getElementById(id);
+const documentIconSize = value => typeof value === 'number' && Number.isFinite(value)
+  ? Math.max(16, Math.min(36, Math.round(value / 2) * 2)) : 24;
 const node = (tag, className = '', text = '') => {
   const element = document.createElement(tag);
   if (className) element.className = className;
@@ -34,7 +36,7 @@ function safeRead(key) {
   return readPersonal(key);
 }
 async function fetchData(path) {
-  const {contentResponse}=await import('./content-client.mjs');
+  const {contentResponse}=await import('./content-client.mjs?v=release-20261016');
   const content=await contentResponse(path);if(content)return content.json();
   const response = await fetch(path);
   if (!response.ok) throw new Error('Не удалось загрузить ' + path);
@@ -62,7 +64,7 @@ async function start() {
   const state = {
     mapId: mapById.has(initialMap) ? initialMap : 'interchange', types: new Set((Array.isArray(prefs.types)?prefs.types:docs.map(d => d.id)).filter(id=>docById.has(id))),
     query: typeof prefs.query==='string'?prefs.query:'', status: ['all','found','remaining'].includes(prefs.status)?prefs.status:'all', floor: 'all', allMaps: prefs.allMaps===true, showAlts: prefs.showAlts !== false, tab: prefs.tab==='points'?'points':'filters',
-    found: new Set(progress.found), notes: progress.notes, selected: null, photo: 0,
+    found: new Set(progress.found), notes: progress.notes, selected: null, photo: 0, iconSize: documentIconSize(prefs.iconSize),
   };
   let view = { x: 0, y: 0, scale: 1 };
   let baseScale = 1;
@@ -86,7 +88,12 @@ async function start() {
     }
   }
   function persistPrefs() {
-    try { storePersonal(prefsKey, { map: state.mapId, showAlts: state.showAlts, query:state.query, status:state.status, floor:state.floor, allMaps:state.allMaps, types:[...state.types], tab:state.tab }); } catch { /* Progress export remains available. */ }
+    try { storePersonal(prefsKey, { map: state.mapId, showAlts: state.showAlts, query:state.query, status:state.status, floor:state.floor, allMaps:state.allMaps, types:[...state.types], tab:state.tab, iconSize:state.iconSize }); } catch { /* Progress export remains available. */ }
+  }
+  function applyIconSize() {
+    $('document-icon-size').value = state.iconSize;
+    $('document-icon-value').textContent = state.iconSize;
+    $('marker-layer').style.setProperty('--document-marker-size', state.iconSize + 'px');
   }
   function setUrl() {
     const url = new URL(usesPageRoutes()?'documents.html':location.href,location.origin+'/');
@@ -541,6 +548,10 @@ async function start() {
   $('all-maps').addEventListener('change', event => { state.allMaps = event.target.checked; state.floor = 'all'; buildFloors(); chooseTab('points'); render(); });
   $('floor-select').addEventListener('change', event => { state.floor = event.target.value; render(); });
   $('show-alts').addEventListener('change', event => { state.showAlts = event.target.checked; persistPrefs(); renderMarkers(); });
+  $('document-icon-size').addEventListener('input', event => {
+    state.iconSize = documentIconSize(event.target.valueAsNumber);
+    applyIconSize(); persistPrefs();
+  });
   $('all-types').addEventListener('click', () => { state.types = new Set(docs.map(d => d.id)); render(); });
   for (const button of $('status-filters').children) button.addEventListener('click', () => { state.status = button.dataset.status; render(); });
   for (const id of ['reset-filters', 'empty-reset']) $(id).addEventListener('click', () => resetFilters());
@@ -684,6 +695,7 @@ async function start() {
     }
   });
   $('search').value=state.query;$('all-maps').checked=state.allMaps;
+  applyIconSize();
   chooseTab(state.tab);
   setMap(state.mapId, { updateUrl: !initialPoint,restoreFloor:!initialPoint&&(!params.has('map')||params.get('map')===prefs.map) });
   if (initialPoint) selectPoint(initialPoint);
