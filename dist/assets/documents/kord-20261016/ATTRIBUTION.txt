@@ -1,0 +1,6 @@
+Источник: https://kord-map-mtdv.ru/, снимок 16.10.2026.
+Точки и фотографии: Metadvij community. Original project: Kalle Leskinen / KordMap.
+Схемы: Shebuka (the-hideout/tarkov-dev-svg-maps) и RE3MR (reemr.se).
+CC BY-NC-SA 4.0: https://creativecommons.org/licenses/by-nc-sa/4.0/
+Изменения: схемы этажей собраны в отдельные подписанные панели; фото преобразованы в WebP.
+Игровые материалы: Battlestate Games.

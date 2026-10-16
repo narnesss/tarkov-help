@@ -50,6 +50,59 @@ final class ContentUpdatesTest extends TestCase
                 'guide/quest-content.json'=>['quests'=>['source'=>['walkthrough'=>['paragraphs'=>['Новая инструкция']]]]]]];
     }
 
+    public function test_document_atlas_keeps_point_ids_links_and_progress_and_refreshes_cached_public_data(): void
+    {
+        $this->fixtures();$this->dataset('docs.json',[['id'=>'technical','name'=>'Чертежи']]);
+        $spawns=$this->dataset('spawns.json',[
+            ['id'=>'kept','map'=>'ground-zero','doc'=>'technical','caption'=>'Комната','x'=>10,'y'=>20,
+                'cmsPositions'=>[['map'=>['slug'=>'documents','name'=>'Старая схема','image_url'=>'map.webp','width'=>1000,'height'=>1000],
+                    'version'=>['code'=>'current'],'layer'=>null,'x_percent'=>10,'y_percent'=>20,'order_index'=>0]],
+                'cmsQuestLinks'=>[['questId'=>'quest','objectiveId'=>'stable-goal','mode'=>'pve']]],
+            ['id'=>'retired','map'=>'ground-zero','doc'=>'technical','caption'=>'Старая копия','x'=>11,'y'=>21],
+        ]);app(WikiImporter::class)->dataset($spawns);
+        $ids=DB::table('wiki_map_points')->whereIn('external_id',['kept','retired'])->pluck('id','external_id')->all();
+        $position=DB::table('wiki_point_positions')->where('point_id',$ids['kept'])->value('id');
+        $link=DB::table('wiki_objective_points')->where('point_id',$ids['kept'])->first();$progress=DB::table('user_state')->first();
+        $before=$this->getJson('/api/content/data/spawns.json')->assertOk()->headers->get('X-Wiki-Content-Revision');
+        $patch=['schemaVersion'=>1,'id'=>2026101602,'datasets'=>['spawns.json'=>['records'=>[
+            ['id'=>'kept','expected'=>['x'=>10,'y'=>20],'fields'=>['x'=>30,'y'=>40,'floor'=>'floor-1','cmsPositions'=>null]],
+            ['id'=>'retired','expected'=>['x'=>11,'y'=>21],'fields'=>['cmsArchived'=>true]],
+            ['id'=>'new','expected'=>null,'fields'=>['map'=>'ground-zero','doc'=>'technical','caption'=>'Новое место','x'=>50,'y'=>60]],
+        ]]]];
+        $this->assertFalse(app(ContentUpdates::class)->apply($patch,true)['applied']);
+        $this->assertSame(10,$spawns->fresh()->content()[0]['x']);
+        app(ContentUpdates::class)->apply($patch);
+        $this->assertSame($position,DB::table('wiki_point_positions')->where('point_id',$ids['kept'])->value('id'));
+        $this->assertDatabaseHas('wiki_point_positions',['id'=>$position,'x_percent'=>30,'y_percent'=>40,'archived'=>0]);
+        $this->assertDatabaseHas('wiki_map_points',['id'=>$ids['retired'],'external_id'=>'retired','archived'=>1]);
+        $currentLink=DB::table('wiki_objective_points')->where('point_id',$ids['kept'])->first();
+        foreach(['objective_id','point_id','archived'] as $field){$this->assertSame($link->$field,$currentLink->$field);}
+        $this->assertEquals($progress,DB::table('user_state')->first());
+        $response=$this->getJson('/api/content/data/spawns.json')->assertOk()->assertJsonCount(2)->assertJsonPath('0.x',30);
+        $this->assertNotSame($before,$response->headers->get('X-Wiki-Content-Revision'));
+        $this->getJson('/api/content/data/spawns.json')->assertHeader('X-Wiki-Content-Cache','HIT');
+        app(\App\Services\WikiSync::class)->run(fn()=>app(\App\Services\WikiPublisher::class)->publish('map_points',$ids['kept']));
+        $this->getJson('/api/content/data/spawns.json')->assertJsonPath('0.x',30)->assertJsonPath('0.floor','floor-1');
+        $this->assertFalse(app(ContentUpdates::class)->apply($patch)['applied']);
+        // Импорт актуального seed также допустим без прежнего маркера обновления.
+        $fresh=$spawns->fresh();$data=$fresh->content();$data[0]['cmsPositions']=null;$fresh->setContent($data);$fresh->save();
+        $patch['id']=2026101603;app(ContentUpdates::class)->apply($patch);
+    }
+
+    public function test_document_atlas_does_not_overwrite_concurrent_editor_changes(): void
+    {
+        $this->fixtures();$maps=ContentDataset::where('path','maps.json')->firstOrFail();$before=$maps->getRawOriginal('payload');
+        $this->dataset('spawns.json',[['id'=>'edited','map'=>'ground-zero','caption'=>'Правка редактора','x'=>5,'y'=>10]]);
+        $patch=['schemaVersion'=>1,'id'=>2026101602,'datasets'=>[
+            'maps.json'=>['records'=>[['id'=>'ground-zero','expected'=>['file'=>'map.webp'],'fields'=>['file'=>'new.svg']]]],
+            'spawns.json'=>['records'=>[['id'=>'edited','expected'=>['x'=>1],'fields'=>['x'=>30]]]],
+        ]];
+        try{app(ContentUpdates::class)->apply($patch);$this->fail('Правку редактора нельзя затирать');}
+        catch(\RuntimeException $error){$this->assertStringContainsString('уже изменена редактором',$error->getMessage());}
+        $this->assertSame($before,$maps->fresh()->getRawOriginal('payload'));
+        $this->assertDatabaseMissing('wiki_projection_states',['owner_type'=>'content-update','owner_id'=>2026101602]);
+    }
+
     public function test_update_changes_only_reviewed_content_and_keeps_ids_relations_progress_and_files(): void
     {
         [$quest,$map]=$this->fixtures();$before=$quest->payload;$pointIds=DB::table('wiki_map_points')->pluck('id','external_id')->all();

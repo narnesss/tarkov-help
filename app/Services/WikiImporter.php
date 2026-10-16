@@ -92,8 +92,10 @@ final class WikiImporter
     {
         if(!$this->unchanged('dataset',$dataset->id,$previousRef,false)){$this->dataset($dataset);return;}
         $data=$dataset->content();$found=[];
-        foreach($data['pois']??[] as $i=>$point){if(!in_array($point['id']??null,$ids,true)){continue;}
-            $point['map']=$data['mapId'];$this->point($dataset,$point,'/pois/'.$i,'raid');$found[]=$point['id'];}
+        $document=$dataset->path==='spawns.json';
+        foreach($document?$data:($data['pois']??[]) as $i=>$point){if(!in_array($point['id']??null,$ids,true)){continue;}
+            if(!$document){$point['map']=$data['mapId'];}
+            $this->point($dataset,$point,($document?'/':'/pois/').$i,$document?'document':'raid');$found[]=$point['id'];}
         if(array_diff($ids,$found)!==[]){throw new \RuntimeException('Не все изменённые точки найдены в наборе.');}
         $this->ids=[];$this->state('dataset',$dataset->id,(string)$dataset->getRawOriginal('payload'));
     }

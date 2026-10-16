@@ -3,6 +3,8 @@ export const STORAGE_KEY = 'kord-atlas-progress-v1';
 export const FLOOR_NAMES = {
   First_Floor: '1 этаж', Second_Floor: '2 этаж', Third_Floor: '3 этаж',
   Ground_Floor: 'Первый уровень', Basement: 'Подвал',
+  'floor--1': 'Уровень схемы −1', 'floor-1': 'Уровень схемы 1', 'floor-2': 'Уровень схемы 2',
+  'floor-3': 'Уровень схемы 3', 'floor-4': 'Уровень схемы 4', 'floor-5': 'Уровень схемы 5',
 };
 
 export function normalize(value = '') {
@@ -12,6 +14,7 @@ export function normalize(value = '') {
 export function filterSpawns(spawns, { mapId, types, query = '', status = 'all', found = new Set(), floor = 'all', allMaps = false }) {
   const words = normalize(query).split(/\s+/).filter(Boolean);
   return spawns.filter(s => {
+    if (s.cmsArchived) return false;
     if (!allMaps && s.map !== mapId) return false;
     if (types && !types.has(s.doc)) return false;
     if (status === 'remaining' && found.has(s.id)) return false;
@@ -22,9 +25,9 @@ export function filterSpawns(spawns, { mapId, types, query = '', status = 'all',
   });
 }
 
-export function sanitizeProgress(value, spawns) {
+export function sanitizeProgress(value, spawns, retiredIds = []) {
   if (!value || value.version !== 1 || !Array.isArray(value.found)) throw new Error('Нужен файл прогресса Escape from Tarkov Wiki версии 1.');
-  const validIds = new Set(spawns.map(s => s.id));
+  const validIds = new Set([...spawns.map(s => s.id), ...retiredIds]);
   const found = [...new Set(value.found.filter(id => typeof id === 'string' && validIds.has(id)))];
   const notes = {};
   if (value.notes && typeof value.notes === 'object' && !Array.isArray(value.notes)) {

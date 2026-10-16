@@ -36,10 +36,18 @@ final readonly class ContentUpdates
                 }
             }
             foreach($update['datasets']??[] as $path=>$patch){
-                if(!preg_match('~^(guide/quest-(?:map-index|content)|raid/(?:pve/)?[a-z-]+)\.json$~',$path)){throw new RuntimeException('Недопустимый набор обновления.');}
+                if(!preg_match('~^(spawns|maps|source|guide/quest-(?:map-index|content)|raid/(?:pve/)?[a-z-]+)\.json$~',$path)){throw new RuntimeException('Недопустимый набор обновления.');}
                 $dataset=ContentDataset::where('path',$path)->lockForUpdate()->firstOrFail();$data=$dataset->content();
                 $pointIds=[];
-                if(isset($patch['archivePoints'])||isset($patch['pointReviews'])){
+                if(in_array($path,['spawns.json','maps.json'],true)){
+                    $data=$this->records($data,$patch['records']??[],$path);
+                    if($path==='spawns.json'){$pointIds=array_column($patch['records'],'id');}
+                }elseif($path==='source.json'){
+                    foreach($patch['metadata']??[] as $field=>$value){
+                        if(!in_array($field,['repository','commit','importedAt','spawnCount','mapCount','retiredPointIds','authors','license'],true)){throw new RuntimeException('Недопустимое поле источника.');}
+                        $data[$field]=$value;
+                    }
+                }elseif(isset($patch['archivePoints'])||isset($patch['pointReviews'])){
                     $expected=preg_replace('~^raid/(?:pve/)?|\.json$~','',$path);
                     if(($data['mapId']??null)!==$expected){throw new RuntimeException('Набор принадлежит другой карте.');}
                     foreach($patch['archivePoints']??[] as $id){$found=false;foreach($data['pois'] as &$point){if($point['id']===$id){$point['cmsArchived']=true;$point['archiveReason']=$patch['reason'];$found=true;$pointIds[]=$id;}}unset($point);
@@ -70,6 +78,29 @@ final readonly class ContentUpdates
             DB::table('wiki_projection_states')->insert([...$key,'content_ref'=>$hash]);
             return $result;
         }));
+    }
+
+    /** Проверяет прежние значения до записи; ID, порядок и дополнительные связи редактора сохраняются. */
+    private function records(array $data,array $patches,string $path): array
+    {
+        $indexes=[];foreach($data as $i=>$row){if(isset($indexes[$row['id']])){throw new RuntimeException('Повтор ID в наборе.');}$indexes[$row['id']]=$i;}
+        $allowed=$path==='maps.json'?['file','width','height','type','coordinateSource','coordinateDate','documentPanels']:
+            ['map','mapName','doc','docName','caption','floor','x','y','x2','y2','images','originalImages','cmsArchived','cmsPositions','cmsMedia','cmsDocuments','archiveReason','sourcePointId','coordinateSource','coordinateDate','sourceCoordinates'];
+        $seen=[];
+        foreach($patches as $patch){
+            $id=$patch['id'];if(isset($seen[$id])){throw new RuntimeException('Повтор ID в обновлении.');}$seen[$id]=true;
+            $index=$indexes[$id]??null;$expected=$patch['expected'];
+            foreach($patch['fields'] as $field=>$value){if(!in_array($field,$allowed,true)){throw new RuntimeException('Недопустимое поле записи: '.$field);}}
+            // Новый сервер может импортировать уже актуальный seed до первого применения пакета.
+            $current=$index===null?null:$data[$index];$ready=$current!==null;
+            foreach($patch['fields'] as $field=>$value){if(($current[$field]??null)!=$value){$ready=false;break;}}
+            if($ready){continue;}
+            if(($index===null)!==($expected===null)){throw new RuntimeException('Изменился состав точек: '.$id);}
+            foreach($expected??[] as $field=>$value){if(($data[$index][$field]??null)!=$value){throw new RuntimeException('Запись уже изменена редактором: '.$id.' / '.$field);}}
+            if($index===null){$data[]=['id'=>$id,...$patch['fields']];$indexes[$id]=array_key_last($data);}
+            else{$data[$index]=[...$data[$index],...$patch['fields']];}
+        }
+        return $data;
     }
 
     private function gallery(array $before,array $added): array

@@ -1,7 +1,7 @@
 import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs?v=release-20261016';
 import {readPersonal,writePersonal} from './profile-store.mjs';
 const storePersonal=(key,value)=>{if(!writePersonal(key,value))throw new Error('Локальное сохранение недоступно');};
-import { STORAGE_KEY, FLOOR_NAMES, filterSpawns, sanitizeProgress, fitTransform, zoomTransform, hasCoordinates } from './model.mjs';
+import { STORAGE_KEY, FLOOR_NAMES, filterSpawns, sanitizeProgress, fitTransform, zoomTransform, hasCoordinates } from './model.mjs?v=kord-20261016';
 
 const $ = id => document.getElementById(id);
 const documentIconSize = value => typeof value === 'number' && Number.isFinite(value)
@@ -44,7 +44,9 @@ async function fetchData(path) {
 }
 
 async function start() {
-  const [maps, docs, spawns, source] = await Promise.all(['maps', 'docs', 'spawns', 'source'].map(name => fetchData(`data/${name}.json`)));
+  const [maps, docs, allSpawns, source] = await Promise.all(['maps', 'docs', 'spawns', 'source'].map(name => fetchData(`data/${name}.json`)));
+  const spawns = allSpawns.filter(s => !s.cmsArchived);
+  const restoreProgress = value => sanitizeProgress(value, spawns, source.retiredPointIds || []);
   const mapById = new Map(maps.map(m => [m.id, m]));
   const docById = new Map(docs.map(d => [d.id, d]));
   const spawnById = new Map(spawns.map(s => [s.id, s]));
@@ -59,7 +61,7 @@ async function start() {
   let progress = { version: 1, found: [], notes: {} };
   const saved = safeRead(STORAGE_KEY);
   if (saved) {
-    try { progress = sanitizeProgress(saved, spawns); } catch { toast('Сохранённый прогресс не удалось прочитать. Можно загрузить резервную копию.'); }
+    try { progress = restoreProgress(saved); } catch { toast('Сохранённый прогресс не удалось прочитать. Можно загрузить резервную копию.'); }
   }
   const state = {
     mapId: mapById.has(initialMap) ? initialMap : 'interchange', types: new Set((Array.isArray(prefs.types)?prefs.types:docs.map(d => d.id)).filter(id=>docById.has(id))),
@@ -288,12 +290,13 @@ async function start() {
   function renderProgress() {
     const current = mapSpawns();
     const done = current.filter(s => state.found.has(s.id)).length;
-    $('total-found').textContent = state.found.size;
+    const activeFound = spawns.filter(s => state.found.has(s.id)).length;
+    $('total-found').textContent = activeFound;
     $('map-progress-text').textContent = `${done} из ${current.length} точек`;
     $('map-ring').style.setProperty('--progress', (done / current.length * 360) + 'deg');
-    $('progress-summary-found').textContent = state.found.size;
+    $('progress-summary-found').textContent = activeFound;
     $('progress-summary-total').textContent = `из ${spawns.length} возможных`;
-    $('progress-percent').textContent = Math.round(state.found.size / spawns.length * 100) + '%';
+    $('progress-percent').textContent = Math.round(activeFound / spawns.length * 100) + '%';
     $('progress-map-list').replaceChildren(...maps.map(map => {
       const total = spawns.filter(s => s.map === map.id);
       const count = total.filter(s => state.found.has(s.id)).length;
@@ -643,7 +646,7 @@ async function start() {
     if (!file) return;
     try {
       if (file.size > 2 * 1024 * 1024) throw new Error('Файл слишком большой. Максимум — 2 МБ.');
-      const imported = sanitizeProgress(JSON.parse(await file.text()), spawns);
+      const imported = restoreProgress(JSON.parse(await file.text()));
       const before = state.found.size;
       for (const id of imported.found) state.found.add(id);
       state.notes = { ...state.notes, ...imported.notes };
@@ -663,7 +666,7 @@ async function start() {
   addEventListener('wiki:state', event => {
     if (event.detail.key !== STORAGE_KEY) return;
     try {
-      const next = sanitizeProgress(safeRead(STORAGE_KEY)||{found:[],notes:{}},spawns);
+      const next = restoreProgress(safeRead(STORAGE_KEY)||{found:[],notes:{}});
       state.found = new Set(next.found); state.notes = next.notes; render();
       if (state.selected && document.activeElement !== $('point-note')) $('point-note').value = state.notes[state.selected.id] || '';
     } catch { /* Ignore malformed writes from another tab. */ }
