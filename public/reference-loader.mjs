@@ -1,6 +1,6 @@
 // CMS уже выдаёт обогащённые квесты: вспомогательные файлы нужны только автономному снимку.
 export async function loadReferenceSources(mode,{dataset,json,extras},tab='items'){
-  const quests=dataset('quests-'+mode,`data/guide/quests-${mode}.json`,{view:tab==='needed'?'catalog':'lookup'});
+  const quests=dataset('quests-'+mode,`data/guide/quests-${mode}.json`,{view:['needed','crafts','barters'].includes(tab)?'catalog':'lookup'});
   return Promise.all([
     dataset('reference-'+mode,`data/guide/reference-${mode}.json`),
     dataset('items-'+mode,`data/guide/items-${mode}.json`),

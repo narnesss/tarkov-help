@@ -2,7 +2,7 @@ import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs
 import {resolveGameMode} from './game-mode.mjs';
 import {ruText,localizeDisplay,currencyLabel,isVisibleItem} from './ru-data.mjs';
 import {questExtras,enrichQuests} from './quest-extras.mjs?v=lazy-20261016';
-import {loadReferenceSources} from './reference-loader.mjs?v=lazy-20261016';
+import {loadReferenceSources} from './reference-loader.mjs?v=lazy-20261016b';
 import {pageDataset} from './page-data.mjs?v=lazy-20261016';
 import {$,el,num,image,external,json,readStorage,writeStorage,toast,cached,freshDataset,section,action,empty} from './guide-common.mjs?v=lazy-20261016';
 import {idOf,list,mapAlias,sanitizeQuestProgress,requiredQuestItems} from './quest-model.mjs';

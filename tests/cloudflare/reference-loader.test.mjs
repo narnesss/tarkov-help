@@ -18,6 +18,12 @@ test('боссы и БТР загружаются только при откры
     assert.deepEqual(paths,tab==='bosses'?['data/guide/bosses.json']:tab==='btr'?['data/guide/btr.json']:[]);
   }
 });
+test('связи квестов нужны для рецептов, бартеров и нужных предметов',async()=>{
+  for(const tab of ['items','needed','crafts','barters']){
+    let selected;await loadReferenceSources('pve',{dataset:async(key,path,options)=>{if(key==='quests-pve')selected=options.view;return {cms:true};},json:async()=>({}),extras:async()=>({})},tab);
+    assert.equal(selected,tab==='items'?'lookup':'catalog');
+  }
+});
 test('автономный справочник сохраняет обогащение квестов и выбранный режим',async()=>{
   let extraCalls=0;const paths=[];const extra={media:{quests:{}}};
   const result=await loadReferenceSources('regular',{
