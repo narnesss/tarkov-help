@@ -14,7 +14,12 @@ final readonly class ContentUpdates
     {
         if(($update['schemaVersion']??null)!==1||!is_int($update['id']??null)||$update['id']<1){throw new RuntimeException('Некорректный пакет контента.');}
         $hash=hash('sha256',json_encode($update,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR));
-        return app(WikiSync::class)->run(fn()=>DB::transaction(function()use($update,$hash,$dryRun): array {
+        // Независимые исправления проекции возобновляются пакетами; файлы контента здесь не меняются.
+        $separated=0;
+        if(!$dryRun&&!empty($update['repairPointScopes'])&&!DB::table('wiki_projection_states')->where(['owner_type'=>'content-update','owner_id'=>$update['id']])->exists()){
+            $separated=app(WikiImporter::class)->repairPointScopes();
+        }
+        return app(WikiSync::class)->run(fn()=>DB::transaction(function()use($update,$hash,$dryRun,$separated): array {
             $key=['owner_type'=>'content-update','owner_id'=>$update['id']];
             $applied=DB::table('wiki_projection_states')->where($key)->value('content_ref');
             if($applied!==null){if(!hash_equals($applied,$hash)){throw new RuntimeException('Применённый пакет нельзя менять: создайте новый номер обновления.');}return ['applied'=>false,'quests'=>0,'datasets'=>0];}
@@ -58,7 +63,7 @@ final readonly class ContentUpdates
                 $datasets[]=[$dataset,$data,array_values(array_unique($pointIds)),(string)$dataset->getRawOriginal('payload')];
             }
             $result=['applied'=>!$dryRun,'quests'=>count($quests),'datasets'=>count($datasets)];if($dryRun){return $result;}
-            if(!empty($update['repairPointScopes'])){$result['separatedPoints']=app(WikiImporter::class)->repairPointScopes();}
+            if(!empty($update['repairPointScopes'])){$result['separatedPoints']=$separated;}
             foreach($quests as [$quest,$payload]){app(QuestEditor::class)->update($quest,['payload'=>$payload],$quest->revision());app(WikiImporter::class)->quest($quest);}
             foreach($datasets as [$dataset,$data,$pointIds,$previousRef]){$dataset->setContent($data);$dataset->save();
                 if($pointIds!==[]){app(WikiImporter::class)->changedPoints($dataset,$pointIds,$previousRef);}else{app(WikiImporter::class)->dataset($dataset);}}

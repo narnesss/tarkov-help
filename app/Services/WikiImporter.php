@@ -106,14 +106,16 @@ final class WikiImporter
             if(!$this->isPoints($dataset->path)){continue;}$data=$dataset->content();if(!isset($data['pois'],$data['mapId'])){continue;}
             $location=$this->find('locations',$data['mapId']);if(!$location){continue;}
             $mode=str_contains($dataset->path,'/pve/')?'pve':'regular';
-            foreach($data['pois'] as $i=>$point){
+            foreach(array_chunk($data['pois'],100,true) as $batch){$created+=$this->sync->run(fn()=>DB::transaction(function()use($batch,$dataset,$data,$location,$mode): int {
+            $added=0;foreach($batch as $i=>$point){
                 $old=DB::table('wiki_map_points')->where('external_id',$point['id'])->where('mode',$mode)->first();
                 if(!$old||(int)$old->location_id===$location){continue;}
                 $key=$this->pointExternal($point['id'],$mode,$location,'raid');
                 $existing=DB::table('wiki_map_points')->where('external_id',$key)->where('mode',$mode)->value('id');
                 if($existing){$this->store->source($dataset->id,'/pois/'.$i,'point',(int)$existing,'raid-point');continue;}
-                $point['map']=$data['mapId'];$this->point($dataset,$point,'/pois/'.$i,'raid');$created++;
-            }
+                $point['map']=$data['mapId'];$this->point($dataset,$point,'/pois/'.$i,'raid');$added++;
+            }return $added;
+            }));}
             $this->ids=[];
         }
         return $created;

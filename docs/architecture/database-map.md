@@ -12,6 +12,8 @@ FK и личные отметки. Неподтверждённые внешни
 scoped-SHA256(kind, mode, location_id, public_id). wiki_sources связывает каждый указатель
 с правильной строкой. ID в JSON и ключах личного прогресса не меняются. Одноразовый проход
 repairPointScopes разделяет старые совпадения без перезаписи уже исправленных строк.
+Проход фиксирует до 100 исходных точек за транзакцию WikiSync и возобновляется после сбоя.
+Он выполняется до общей транзакции пакета контента и не меняет файлы, аккаунты или прогресс.
 
 Миграция `2026_10_16_000009_add_player_password_recovery.php` добавляет `player_password_resets`:
 PK/FK user_id, unique challenge_id, email/email_verified_at, session_hash, credential_hash,

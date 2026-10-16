@@ -138,4 +138,21 @@ final class ContentUpdatesTest extends TestCase
         $this->assertSame($original,(int)DB::table('wiki_sources')->where('dataset_id',$ground->id)->where('pointer','/pois/1')->value('point_id'));
         $this->assertSame($separate,(int)DB::table('wiki_sources')->where('dataset_id',$other->id)->value('point_id'));
     }
+
+    public function test_scope_repair_resumes_after_a_later_batch_fails(): void
+    {
+        [$quest,$ground]=$this->fixtures();$maps=ContentDataset::where('path','maps.json')->first();$data=$maps->content();$data[]=['id'=>'shoreline','name'=>'Берег','file'=>'shore.webp','width'=>1000,'height'=>1000];$maps->setContent($data);$maps->save();app(WikiImporter::class)->dataset($maps);
+        $points=[];for($i=0;$i<105;$i++){$points[]=['id'=>'scope-'.$i,'name'=>'Контейнер '.$i,'category'=>'loot','position'=>['x'=>$i,'y'=>0,'z'=>1]];}
+        $ground->setContent(['mapId'=>'ground-zero','pois'=>$points]);$ground->save();app(WikiImporter::class)->dataset($ground);
+        $old=DB::table('wiki_map_points')->where('external_id','like','scope-%')->pluck('location_id','id')->all();
+        $other=ContentDataset::withoutEvents(fn()=>$this->dataset('raid/shoreline.json',['mapId'=>'shoreline','pois'=>$points]));
+        $fail=true;DB::listen(function($query)use(&$fail,$other): void {
+            if($fail&&str_starts_with(strtolower($query->sql),'insert')&&str_contains($query->sql,'wiki_sources')&&in_array('/pois/101',$query->bindings,true)&&in_array($other->id,$query->bindings,true)){$fail=false;throw new \RuntimeException('Тестовый обрыв следующего пакета');}
+        });
+        try{app(WikiImporter::class)->repairPointScopes();$this->fail('Ожидался обрыв пакета');}catch(\RuntimeException $error){$this->assertStringContainsString('Тестовый обрыв',$error->getMessage());}
+        $this->assertSame(100,DB::table('wiki_map_points')->where('external_id','like','scoped-%')->count());
+        $this->assertSame(5,app(WikiImporter::class)->repairPointScopes());
+        $this->assertSame(105,DB::table('wiki_sources')->where('dataset_id',$other->id)->count());
+        $this->assertSame($old,DB::table('wiki_map_points')->whereIn('id',array_keys($old))->pluck('location_id','id')->all());
+    }
 }
