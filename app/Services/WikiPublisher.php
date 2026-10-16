@@ -74,8 +74,13 @@ final class WikiPublisher
     }
     private function flush(): void
     {
-        $saved=[];foreach($this->datasets as $entry){$model=$entry['model'];if($model->exists&&isset($saved[$model->id])){continue;}$model->setContent($entry['document']);$model->save();$saved[$model->id]=true;
+        $saved=[];foreach(array_keys($this->datasets) as $key){$model=$this->datasets[$key]['model'];if($model->exists&&isset($saved[$model->id])){continue;}
+            $model->setContent($this->datasets[$key]['document']);
+            // После записи файла не держим распакованный каталог при повторном чтении индексатором.
+            // Числовой ключ и путь могут ссылаться на один элемент; освобождаем обе ссылки сразу.
+            unset($this->datasets[$key]['document']);$model->save();$saved[$model->id]=true;
             DB::table('wiki_projection_states')->updateOrInsert(['owner_type'=>'dataset','owner_id'=>$model->id],['content_ref'=>$model->getRawOriginal('payload')]);}
+        $this->datasets=[];
     }
     private function publishEntity(string $type,int $id,array $row,string $entity): void
     {

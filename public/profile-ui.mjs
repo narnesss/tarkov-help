@@ -1,5 +1,6 @@
 import {profileStore} from './profile-store.mjs';
 import {siteHref} from './site-routes.mjs?v=release-20261016';
+import {renderProfileNavigation} from './profile-navigation.mjs?v=session-20261016';
 
 const node = (tag, text, className = '') => { const n = document.createElement(tag); if (text) n.textContent = text; n.className = className; return n; };
 function button(text, handler, className = 'button') { const b = node('button', text, className); b.type = 'button'; b.onclick = handler; return b; }
@@ -15,8 +16,7 @@ export function mountProfile() {
   const reload = () => location.reload();
   async function run(fn) { status.textContent = ''; try { await fn(); } catch (error) { notify(error.message); } }
   function render() {
-    content.replaceChildren(); trigger.textContent = profileStore.profile.authenticated ? 'Личный кабинет' : 'Мой прогресс'; trigger.setAttribute('aria-label', 'Личный кабинет: ' + profileStore.profile.name);
-    for (const link of document.querySelectorAll('[data-player-guest]')) link.hidden = !!profileStore.profile.authenticated;
+    content.replaceChildren(); renderProfileNavigation(profileStore,trigger,document.querySelectorAll('[data-player-guest]'));
     content.append(node('p', profileStore.server ? profileStore.profile.authenticated ? 'Отметки, свёрнутые цели, заметки и фильтры сохраняются в вашем аккаунте и синхронизируются между устройствами.' : 'Отметки, свёрнутые цели, заметки и фильтры принадлежат только этому профилю. Войдите в аккаунт для синхронизации между устройствами.' : 'Отметки, свёрнутые цели, заметки и фильтры сохраняются отдельно для каждого профиля в этом браузере. На другом устройстве можно загрузить файл профиля.'));
     if (!profileStore.server) {
       const label = node('label', 'Активный профиль', 'profile-field'), select = node('select');

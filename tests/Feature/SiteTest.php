@@ -32,6 +32,16 @@ final class SiteTest extends TestCase
         $this->head('/quests/story')->assertOk()->assertContent('');
     }
 
+    public function test_initial_header_does_not_guess_guest_status_before_session_check(): void
+    {
+        foreach(['/', '/account', '/documents', '/raid/lighthouse', '/quests', '/reference'] as $url){
+            $html=$this->get($url)->assertOk()->getContent();$dom=new \DOMDocument();@$dom->loadHTML('<?xml encoding="utf-8" ?>'.$html);$xpath=new \DOMXPath($dom);
+            $this->assertSame(2,$xpath->query('//*[@data-player-guest and @hidden]')->length,$url);
+            $this->assertSame(0,$xpath->query('//*[@data-player-guest and not(@hidden)]')->length,$url);
+            $this->assertSame('Личный кабинет',$xpath->query('//*[@id="profile-button" and @aria-busy="true"]')->item(0)?->textContent,$url);
+        }
+    }
+
     public function test_public_view_cache_hits_and_separates_php_from_static_runtime(): void
     {
         Cache::flush(); $calls = 0;

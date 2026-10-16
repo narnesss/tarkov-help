@@ -23,7 +23,8 @@
   OAuth-реквизитов через RSA-шифротекст; атомарная правка только четырёх переменных .env.
 - account.blade.php / account.mjs / account-model.mjs: отдельный кабинет, формы входа/регистрации,
   сводка PVE/PVP по актуальным ID каталога; чтение личных данных через ProfileStore.
-  player-navigation — общие заметные ссылки входа/регистрации во всех шапках.
+  player-navigation.blade.php / profile-navigation.mjs — нейтральная ссылка кабинета в исходном HTML;
+  кнопки входа/регистрации скрыты до подтверждения гостевой сессии, включая отказ API.
 
 - MysqlMigration / MigrateMysql: пробный и финальный перенос всех таблиц SQLite в MariaDB,
   сохранение PK/rowid/sequence, сверка SHA-256 каждой строки, FK и файлов контента;
@@ -57,6 +58,8 @@
   cms-полях; прежние текстовые поля согласуются с ними при правке через старые формы.
 - WikiGraph: SQL-каталоги и детали точек/квестов на /api/content/data/wiki/*.json,
   фильтры локации/режима/категории, деревья условий и награды; private/no-store.
+  WikiPublisher освобождает распакованный справочник после файловой записи до индексации,
+  чтобы сохранение предмета сразу в PVE/PVP укладывалось в память PHP-хостинга.
 
 - Orchid PlatformProvider / routes/platform.php: админка PHP `/admin`, права `wiki.content`.
 - User / UserPresenter / AdminSession: отдельные редакторы `admin_users`, DB-сессии

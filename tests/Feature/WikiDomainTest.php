@@ -111,6 +111,26 @@ final class WikiDomainTest extends TestCase
         $this->assertTrue(DB::table('wiki_sources')->where('point_id',$point)->exists());
         $this->get('/api/content/data/spawns.json')->assertOk()->assertJsonPath('1.caption','Новое место')->assertJsonPath('1.x',30);
     }
+    public function test_admin_item_creation_rename_and_archive_change_browser_revisions_in_both_modes(): void
+    {
+        $this->fixtures();$this->dataset('guide/items-regular.json',['items'=>[['id'=>'watch','name'=>'Бронзовые часы']]]);
+        $urls=[];$versions=[];
+        foreach(['pve','regular'] as $mode){$url='/api/content/data/guide/items-'.$mode.'.json?view=catalog';$urls[]=$url;
+            $versions[$url]=$this->getJson($url)->assertOk()->headers->get('X-Wiki-Content-Revision');$this->getJson($url)->assertHeader('X-Wiki-Content-Cache','HIT');}
+        $id=$this->save('items',null,['name'=>'Тест публикации','category'=>'other','active'=>1,'archived'=>0]);
+        $external=DB::table('wiki_items')->where('id',$id)->value('external_id');
+        foreach(['Тест публикации','Обновлённое название',null] as $index=>$name){
+            if($index===1){$this->save('items',$id,['name'=>$name]);}elseif($index===2){$this->save('items',$id,['archived'=>1]);}
+            foreach($urls as $url){
+                $revision=$this->getJson($url.'&revision=1')->assertOk()->json('revision');$this->assertNotSame($versions[$url],$revision);
+                $response=$this->getJson($url)->assertOk()->assertHeader('X-Wiki-Content-Cache','MISS');$this->assertSame($revision,$response->headers->get('X-Wiki-Content-Revision'));
+                $items=collect($response->json('items'))->keyBy('id');$this->assertSame('Бронзовые часы',$items['watch']['name']);
+                if($name===null){$this->assertFalse($items->has($external));}else{$this->assertSame($name,$items[$external]['name']);}
+                $versions[$url]=$revision;$this->getJson($url)->assertHeader('X-Wiki-Content-Cache','HIT');
+            }
+        }
+        $this->assertDatabaseCount('user_state',0);
+    }
     public function test_wrong_map_cycles_stale_versions_and_permissions_are_rejected(): void
     {
         $this->fixtures();$point=$this->id('map_points');
