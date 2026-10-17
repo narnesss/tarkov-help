@@ -56,7 +56,7 @@ $backup = new PDO('sqlite:'.$backups[0]);
 if ((int) $backup->query("SELECT count(*) FROM users WHERE id='keep-this-user'")->fetchColumn() !== 1) { throw new RuntimeException('Резервная копия потеряла данные.'); }
 $routes = json_decode($run([PHP_BINARY, 'artisan', 'route:list', '--json']), true, flags: JSON_THROW_ON_ERROR);
 foreach ($routes as $route) {
-    if (!in_array($route['uri'], ['up', 'api/{path?}', 'api/content/data/{path}', 'api/content/bundle/{name}', 'api/content/quest/{quest}', 'api/auth/options', 'api/auth/profile', 'api/auth/email', 'api/auth/email/send', 'api/auth/email/verify', 'api/auth/password/request', 'api/auth/password/reset', 'api/auth/oauth/{provider}/start', 'api/auth/oauth/{provider}/finish'], true)
+    if (!in_array($route['uri'], ['up', 'api/{path?}', 'api/content/data/{path}', 'api/content/bundle/{name}', 'api/content/quest/{quest}', 'api/player-navigation', 'api/auth/options', 'api/auth/profile', 'api/auth/email', 'api/auth/email/send', 'api/auth/email/verify', 'api/auth/password/request', 'api/auth/password/reset', 'api/auth/oauth/{provider}/start', 'api/auth/oauth/{provider}/finish'], true)
         && !str_starts_with($route['uri'], 'admin')) { throw new RuntimeException('API-пакет публикует лишний маршрут: '.$route['uri']); }
 }
 echo "PASS: production API-пакет, повторный deploy, APP_KEY, SQLite backup и API_ONLY маршруты.\n";
