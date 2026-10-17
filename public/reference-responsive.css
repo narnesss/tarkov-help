@@ -8,6 +8,18 @@ body[data-page="reference"] .reference-card :is(h3, p, small, a, summary),
 body[data-page="reference"] .item-stat-grid strong { overflow-wrap: anywhere; }
 body[data-page="reference"] .reference-heading .quest-tag { flex-shrink: 0; }
 .reference-cell-label { display: none; }
+/* Расписание БТР: время и названия остановок переносятся независимо. */
+body[data-page="reference"] .reference-btr-card .btr-departure { margin: 16px 0 12px; padding: 12px; border: 1px solid var(--reading-border); border-radius: 6px; background: #142018; }
+body[data-page="reference"] .btr-departure .btr-time-label { display: block; margin-bottom: 5px; color: var(--reading-muted); font-size: 13px; }
+body[data-page="reference"] .btr-departure strong { display: block; color: var(--reading-accent); font-size: 16px; overflow-wrap: anywhere; }
+body[data-page="reference"] .reference-btr-card .btr-note { font-size: 14px; line-height: 1.6; }
+body[data-page="reference"] .reference-btr-card .btr-stop-list { margin: 16px 0 20px; padding-left: 26px; min-width: 0; }
+body[data-page="reference"] .btr-stop-list li { padding: 10px 0 12px 4px; border-bottom: 1px solid var(--reading-border); min-width: 0; line-height: 1.6; }
+body[data-page="reference"] .btr-stop-list li:last-child { border-bottom: 0; }
+body[data-page="reference"] .btr-stop-list li::marker { color: var(--reading-accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+body[data-page="reference"] .btr-stop-name { display: block; margin-bottom: 4px; color: var(--reading-text); font-size: 15px; overflow-wrap: anywhere; }
+body[data-page="reference"] .btr-stop-time { display: block; color: var(--reading-muted); font-size: 14px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+body[data-page="reference"] .reference-btr-card > .button { display: flex; width: 100%; box-sizing: border-box; white-space: normal; text-align: center; justify-content: center; }
 /* Требования торговца читаются по уровням без горизонтальной прокрутки. */
 body[data-page="reference"] .trader-card-header { display: flex; align-items: center; gap: 14px; min-width: 0; margin-bottom: 16px; }
 body[data-page="reference"] .trader-card-header h3 { min-width: 0; margin: 0; }

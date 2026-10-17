@@ -33,10 +33,11 @@ function configure(){
   if(tab==='barters')filters=[['all','Все торговцы'],...list(data.traders).map(t=>[t.id,t.name])];
   if(tab==='crafts')filters=[['all','Все станции'],...list(data.hideout).map(s=>[s.id,s.name])];
   if(tab==='hideout')filters=[['all','Все модули'],...list(data.hideout).map(s=>[s.id,s.name]).sort((a,b)=>a[1].localeCompare(b[1],'ru'))];
-  if(tab==='bosses'||tab==='btr')filters=[['all','Все локации'],...list(quests.maps).filter(m=>!['night-factory','ground-zero-21','ground-zero-tutorial','the-lab-dark'].includes(m.normalizedName)).map(m=>[m.normalizedName,m.name])];
+  if(tab==='bosses')filters=[['all','Все локации'],...list(quests.maps).filter(m=>!['night-factory','ground-zero-21','ground-zero-tutorial','the-lab-dark'].includes(m.normalizedName)).map(m=>[m.normalizedName,m.name])];
+  if(tab==='btr')filters=[['all','Все локации'],...Object.values(btr.maps).filter(m=>list(m.routes).length).map(m=>[m.mapId,list(quests.maps).find(x=>x.normalizedName===m.mapId)?.name||m.mapId]).sort((a,b)=>a[1].localeCompare(b[1],'ru'))];
   if(tab==='needed')filters=[['all','Все нужные предметы'],['fir','Найдено в рейде']];
   if(tab==='ammo')sorts.push(['penetration','По пробитию ↓'],['damage','По урону ↓']);
-  const filterTitle=['hideout','crafts'].includes(tab)?'Модуль':tab==='barters'?'Торговец':tab==='ammo'?'Калибр':'Категория';$('reference-filter-title').textContent=filterTitle;$('reference-filter').setAttribute('aria-label',filterTitle);
+  const filterTitle=['hideout','crafts'].includes(tab)?'Модуль':tab==='barters'?'Торговец':tab==='ammo'?'Калибр':tab==='btr'?'Локация':'Категория';$('reference-filter-title').textContent=filterTitle;$('reference-filter').setAttribute('aria-label',filterTitle);
   setOptions('reference-filter',filters);setOptions('reference-sort',sorts);$('reference-filter').hidden=filters.length===1;$('reference-sort').hidden=sorts.length===1;$('reference-filter-label').hidden=filters.length===1;$('reference-sort-label').hidden=sorts.length===1;
 }
 function sourceRows(){
@@ -126,7 +127,14 @@ function renderCard(r){const card=el('article','','reference-card');card.append(
   }else if(tab==='achievements'){
     if(r.imageLink)card.prepend(image(r.imageLink,'','achievement-icon'));card.append(el('p',r.description));card.append(el('p',`Получили: ${num(r.playersCompletedPercent)}% игроков · ${r.hidden?'Скрытое':'Обычное'} достижение`));const key='kord-achievements-'+mode,state=readStorage(key)||[];const b=action(state.includes(r.id)?'✓ Получено':'Отметить полученным',()=>{let current=readStorage(key)||[];current=current.includes(r.id)?current.filter(x=>x!==r.id):[...current,r.id];writeStorage(key,current);b.textContent=current.includes(r.id)?'✓ Получено':'Отметить полученным';b.setAttribute('aria-pressed',String(current.includes(r.id)));});b.setAttribute('aria-pressed',String(state.includes(r.id)));card.append(b);
   }else if(tab==='btr'){
-    card.append(el('p',`Выезд: ${formatRaidRemaining(r.spawnRemainingSeconds)}. Это расписание из снимка, а не отслеживание БТР.`));const visits=r.visits||[];for(const visit of visits){const stop=r.map.stops.find(x=>x.id===(visit.stopId||visit.id));card.append(el('p',`${stop?.name||visit.stopId||visit.name||'Остановка'} · ${formatRaidRemaining(visit.arrivalRemainingSeconds??visit.remainingSeconds)}`));}const a=el('a','Открыть маршрут на карте','button');a.href=siteHref(`raid.html?map=${r.map.mapId}&route=${encodeURIComponent(r.id)}&artwork=source`);card.append(a);if(r.map.mapId==='lighthouse')card.append(el('p','Остановки Маяка есть в справочном снимке NepPure, но не подтверждены текущим API.'));
+    card.classList.add('reference-btr-card');
+    const departure=el('p','','btr-departure');departure.append(el('span','Выезд:','btr-time-label'),' ',el('strong',formatRaidRemaining(r.spawnRemainingSeconds)));card.append(departure,el('p','Это расписание из снимка, а не отслеживание БТР.','btr-note'));
+    const stops=el('ol','','btr-stop-list');stops.setAttribute('aria-label','Остановки маршрута');
+    for(const visit of r.visits||[]){
+      const stop=r.map.stops.find(x=>x.id===(visit.stopId||visit.id)),row=el('li');
+      row.append(el('strong',stop?.name||visit.stopId||visit.name||'Остановка','btr-stop-name'),' ',el('span',formatRaidRemaining(visit.arrivalRemainingSeconds??visit.remainingSeconds),'btr-stop-time'));stops.append(row);
+    }
+    card.append(stops);const a=el('a','Открыть маршрут на карте','button');a.href=siteHref(`raid.html?map=${r.map.mapId}&route=${encodeURIComponent(r.id)}&artwork=source&mode=${mode}`);card.append(a);if(r.map.mapId==='lighthouse')card.append(el('p','Остановки Маяка есть в справочном снимке NepPure, но не подтверждены текущим API.','btr-note'));
   }return card;
 }
 async function showItem(id){let item=items.get(id);if(!item){toast('Карточки этого предмета нет в текущем снимке.');return;}const inline=usesPageRoutes()&&pageParams().get('item')===id;const root=inline?$('reference-content'):$('item-body');
