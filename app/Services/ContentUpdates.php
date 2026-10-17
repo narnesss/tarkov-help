@@ -23,7 +23,7 @@ final readonly class ContentUpdates
             $key=['owner_type'=>'content-update','owner_id'=>$update['id']];
             $applied=DB::table('wiki_projection_states')->where($key)->value('content_ref');
             if($applied!==null){if(!hash_equals($applied,$hash)){throw new RuntimeException('Применённый пакет нельзя менять: создайте новый номер обновления.');}return ['applied'=>false,'quests'=>0,'datasets'=>0];}
-            $quests=[];$datasets=[];
+            $quests=[];$datasets=[];$catalogChanged=false;
             foreach($update['quests']??[] as $patch){
                 foreach($patch['modes'] as $mode){
                     $quest=Quest::where('quest_id',$patch['id'])->where('mode',$mode)->lockForUpdate()->firstOrFail();$payload=$quest->payload;
@@ -36,7 +36,7 @@ final readonly class ContentUpdates
                 }
             }
             foreach($update['datasets']??[] as $path=>$patch){
-                if(!preg_match('~^(spawns|maps|source|guide/quest-(?:map-index|content)|raid/(?:pve/)?[a-z-]+)\.json$~',$path)){throw new RuntimeException('Недопустимый набор обновления.');}
+                if(!preg_match('~^(spawns|maps|source|guide/(?:quest-(?:map-index|content)|(?:quests|items)-(?:pve|regular))|raid/(?:pve/)?[a-z-]+)\.json$~',$path)){throw new RuntimeException('Недопустимый набор обновления.');}
                 $dataset=ContentDataset::where('path',$path)->lockForUpdate()->firstOrFail();$data=$dataset->content();
                 $pointIds=[];
                 if(in_array($path,['spawns.json','maps.json'],true)){
@@ -56,6 +56,8 @@ final readonly class ContentUpdates
                         if(($point['position']??null)!=$review['expectedPosition']){throw new RuntimeException('Координаты точки уже изменились: '.$review['id']);}
                         $point['hiddenByDefault']=true;$point['sourceStatus']='unverified-coordinates';$point['reviewReason']=$review['reason'];$pointIds[]=$point['id'];
                     }unset($point);if(!$found){throw new RuntimeException('Проверяемая точка отсутствует: '.$review['id']);}}
+                }elseif(preg_match('~^guide/(?:quests|items)-(?:pve|regular)\.json$~',$path)){
+                    $data=$this->appendReferences($data,$patch['appendReferences']??[]);$catalogChanged=true;
                 }elseif($path==='guide/quest-map-index.json'){
                     foreach($patch['sourceMaps']??[] as $id=>$map){$data['sourceMaps'][$id]=$map;}
                     foreach($patch['sourceQuests']??[] as $id=>$maps){foreach($maps as $map=>$points){$data['sourceQuests'][$id][$map]=$points;}}
@@ -72,12 +74,33 @@ final readonly class ContentUpdates
             }
             $result=['applied'=>!$dryRun,'quests'=>count($quests),'datasets'=>count($datasets)];if($dryRun){return $result;}
             if(!empty($update['repairPointScopes'])){$result['separatedPoints']=$separated;}
-            foreach($quests as [$quest,$payload]){app(QuestEditor::class)->update($quest,['payload'=>$payload],$quest->revision());app(WikiImporter::class)->quest($quest);}
             foreach($datasets as [$dataset,$data,$pointIds,$previousRef]){$dataset->setContent($data);$dataset->save();
                 if($pointIds!==[]){app(WikiImporter::class)->changedPoints($dataset,$pointIds,$previousRef);}else{app(WikiImporter::class)->dataset($dataset);}}
+            // Сначала добавляем справочные предметы, затем связываем с ними новые цели и награды.
+            foreach($quests as [$quest,$payload]){app(QuestEditor::class)->update($quest,['payload'=>$payload],$quest->revision());app(WikiImporter::class)->quest($quest,$catalogChanged);}
             DB::table('wiki_projection_states')->insert([...$key,'content_ref'=>$hash]);
             return $result;
         }));
+    }
+
+    /** Добавляет отсутствующие предметы; существующие ID и редакторские значения не заменяет. */
+    private function appendReferences(array $data,array $additions): array
+    {
+        foreach($additions as $field=>$records){
+            if(!in_array($field,['items','questItems'],true)||!is_array($records)){throw new RuntimeException('Недопустимый справочник дополнения.');}
+            $data[$field]??=[];$known=[];
+            foreach($data[$field] as $record){if(is_array($record)&&isset($record['id'])){$known[$record['id']]=true;}}
+            $dictionary=$field==='items'&&!array_is_list($data[$field]);
+            foreach($records as $record){
+                if(!is_array($record)||!is_string($record['id']??null)||!preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,127}$/D',$record['id'])||!is_string($record['name']??null)||trim($record['name'])===''){
+                    throw new RuntimeException('Некорректный предмет дополнения.');
+                }
+                if(isset($known[$record['id']])){continue;}
+                if($dictionary){$data[$field][$record['id']]=$record;}else{$data[$field][]=$record;}
+                $known[$record['id']]=true;
+            }
+        }
+        return $data;
     }
 
     /** Проверяет прежние значения до записи; ID, порядок и дополнительные связи редактора сохраняются. */

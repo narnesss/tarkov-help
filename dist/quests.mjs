@@ -9,7 +9,7 @@ import {rewardLabels,resolveAchievement,rewardAchievementNames,groupRewardLines,
 import {hasQuestRoadmap,questGalleryPlan} from './quest-view-model.mjs?v=guides-20261016b';
 import {resolveGameMode} from './game-mode.mjs';
 import {ruText} from './ru-data.mjs';
-import {questExtras,questUiExtras,enrichQuests} from './quest-extras.mjs?v=guides-20261016b';
+import {questExtras,questUiExtras,questMediaLocalization,enrichQuests,localizeQuestMediaTask} from './quest-extras.mjs?v=media-ru-20261017';
 import {pageDataset} from './page-data.mjs?v=lazy-20261016';
 import {questBriefing} from './quest-briefing.mjs?v=guides-20261016b';
 import {questMapForLocation,questMapURL} from './quest-map-model.mjs?v=guides-20261016b';
@@ -350,9 +350,9 @@ function setData(bundle){
 async function loadDetail(id){
  const current=request,target=mode;const root=$('quest-detail');root.replaceChildren(empty('Загружаем подробности задания…'));
  try{
-  const [detail,more]=await Promise.all([pageDataset('quests-'+target,'data/guide/quests-'+target+'.json',{view:'detail',id}),questUiExtras()]);
+  const [detail,more,localization]=await Promise.all([pageDataset('quests-'+target,'data/guide/quests-'+target+'.json',{view:'detail',id}),questUiExtras(),questMediaLocalization()]);
   if(current!==request||target!==mode||route.kind!=='quest'||route.id!==id)return;
-  const task=detail.tasks.find(task=>task.id===id);if(!task)throw new Error('Задание недоступно в этом режиме.');
+  const task=localizeQuestMediaTask(detail.tasks.find(task=>task.id===id),localization);if(!task)throw new Error('Задание недоступно в этом режиме.');
   const catalogTasks=tasks.map(row=>row.id===id?task:row),items=[...new Map([...(data.items||[]),...(detail.items||[])].map(item=>[item.id,item])).values()];
   data={...data,...detail,tasks:catalogTasks,items};tasks=catalogTasks;byId.set(id,task);extras=more;choices=questChoiceIndex(tasks,extras.choices,mode);renderRoute();
  }catch(error){if(current!==request||route.kind!=='quest'||route.id!==id)return;root.replaceChildren(empty(error.message||'Не удалось загрузить подробности.'),action('Повторить',()=>loadDetail(id)),routeLink('← К списку заданий',backHref(),'button'));}

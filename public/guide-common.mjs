@@ -23,7 +23,7 @@ async function loadJson(url,signal){
   let target=url;
   if(url.startsWith('data/')){compressionManifest ||= fetch('data/compressed.json').then(r=>r.ok?r.json():{}).catch(()=>({}));target=(await compressionManifest)[url]||url;}
   const r=await fetch(target,{signal});if(!r.ok)throw new Error(`Не удалось загрузить данные (${r.status})`);
-  if(!target.endsWith('.gz'))return r.json();
+  if(!target.split(/[?#]/,1)[0].endsWith('.gz'))return r.json();
   const bytes=new Uint8Array(await r.arrayBuffer());
   // Some static hosts decode gzip in transit; detect the magic bytes to avoid a second decode.
   if(bytes[0]!==31||bytes[1]!==139)return JSON.parse(new TextDecoder().decode(bytes));

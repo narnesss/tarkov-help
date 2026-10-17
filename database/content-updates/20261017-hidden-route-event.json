@@ -1,0 +1,381 @@
+{
+  "schemaVersion": 1,
+  "id": 2026101701,
+  "quests": [
+    {
+      "id": "event-20261016-hidden-route",
+      "modes": [
+        "pve",
+        "regular"
+      ],
+      "expectedObjectiveIds": [
+        "event-20261016-hidden-route-goal-transit"
+      ],
+      "walkthrough": {
+        "paragraphs": [
+          "Переход расположен в канализационном тоннеле, соединённом с затопленным участком подземелий Завода. На приложенной схеме отмечены его расположение и дверь.",
+          "Для перехода нужна ключ-карта доступа в TerraGroup Labs. По сохранённой странице переход становится доступен через одну минуту после начала рейда."
+        ],
+        "sourceUrl": "https://escapefromtarkov.fandom.com/wiki/Hidden_Route"
+      },
+      "gallery": [],
+      "objectiveGuides": {}
+    },
+    {
+      "id": "event-20261016-a-simple-task-in-a-difficult-place",
+      "modes": [
+        "pve",
+        "regular"
+      ],
+      "expectedObjectiveIds": [
+        "event-20261016-a-simple-task-in-a-difficult-place-goal-survive"
+      ],
+      "walkthrough": {
+        "paragraphs": [
+          "Заверши рейд в Лаборатории со статусом «Выжил». Статус «Пробежка» не засчитывается.",
+          "Согласно сохранённой странице, для исключения «Пробежки» нужно набрать не менее 200 опыта в рейде либо провести в нём не менее семи минут. При принятии выдаётся одна ключ-карта доступа."
+        ],
+        "sourceUrl": "https://escapefromtarkov.fandom.com/wiki/A_Simple_Task_in_a_Difficult_Place"
+      },
+      "gallery": [],
+      "objectiveGuides": {}
+    },
+    {
+      "id": "event-20261016-extending-the-operation",
+      "modes": [
+        "pve",
+        "regular"
+      ],
+      "expectedObjectiveIds": [
+        "event-20261016-extending-the-operation-goal-eliminate"
+      ],
+      "walkthrough": {
+        "paragraphs": [
+          "Уничтожь шесть любых целей в Лаборатории. В сохранённой странице нет ограничения на конкретный тип противника или требования выполнить всё за один рейд.",
+          "При принятии выдаются три ключ-карты доступа в TerraGroup Labs."
+        ],
+        "sourceUrl": "https://escapefromtarkov.fandom.com/wiki/Extending_the_Operation"
+      },
+      "gallery": [],
+      "objectiveGuides": {}
+    },
+    {
+      "id": "event-20261016-information-trail",
+      "modes": [
+        "pve",
+        "regular"
+      ],
+      "expectedObjectiveIds": [
+        "event-20261016-information-trail-goal-obtain",
+        "event-20261016-information-trail-goal-survive",
+        "event-20261016-information-trail-goal-handover"
+      ],
+      "walkthrough": {
+        "paragraphs": [
+          "Уничтожь Бича (Scourge) и забери смартфон из его карманов. Затем передай смартфон Терапевту.",
+          "Отдельно требуется выйти из Лаборатории со статусом «Выжил». По сохранённой странице эту цель можно выполнить в другом рейде, отдельно от получения смартфона.",
+          "При принятии выдаётся одна ключ-карта доступа. В таблице источника для смартфона не требуется отметка «Найдено в рейде»."
+        ],
+        "sourceUrl": "https://escapefromtarkov.fandom.com/wiki/Information_Trail"
+      },
+      "gallery": [],
+      "objectiveGuides": {}
+    },
+    {
+      "id": "event-20261016-side-hustle",
+      "modes": [
+        "pve",
+        "regular"
+      ],
+      "expectedObjectiveIds": [
+        "event-20261016-side-hustle-goal-gladiators",
+        "event-20261016-side-hustle-goal-precursors",
+        "event-20261016-side-hustle-goal-container",
+        "event-20261016-side-hustle-goal-handover"
+      ],
+      "walkthrough": {
+        "paragraphs": [
+          "В Лаборатории уничтожь Бича (Scourge) и/или его бойцов: всего нужны три уничтожения.",
+          "Контейнеры с прекурсорами получают при распаковке чемодана или посылки сотрудника TerraGroup. В таблице квестовых предметов сохранённой страницы указано количество 3; отметка «Найдено в рейде» для сдачи не требуется.",
+          "Чемодан появляется в одном из двух мест зоны отдыха R11 на первом этаже Лаборатории. В каждом рейде появляется один чемодан, забрать его может один игрок.",
+          "Посылка появляется в одном из двух мест почтового отделения на Улицах Таркова. В каждом рейде появляется одна посылка, доступная одному игроку. Фотографии показывают доступные в сохранённых файлах места.",
+          "При принятии этого задания открывается «Деанонимизация» у Механика; завершать «Побочный заработок» для её открытия не требуется."
+        ],
+        "sourceUrl": "https://escapefromtarkov.fandom.com/wiki/Side_Hustle"
+      },
+      "gallery": [],
+      "objectiveGuides": {}
+    },
+    {
+      "id": "event-20261016-doxed",
+      "modes": [
+        "pve",
+        "regular"
+      ],
+      "expectedObjectiveIds": [
+        "event-20261016-doxed-goal-ssd",
+        "event-20261016-doxed-goal-handover"
+      ],
+      "walkthrough": {
+        "paragraphs": [
+          "Задание открывается после принятия «Побочного заработка». Найди офис № 3 на втором этаже здания TerraGroup на Эпицентре.",
+          "Накопитель лежит сверху на красном компьютере. Положение офиса, его дверь и место накопителя показаны на фотографиях.",
+          "SSD появляется только при активном задании и помещается в отдельный инвентарь квестовых предметов. Если погибнуть до эвакуации, накопитель теряется. Вынеси его и передай Механику."
+        ],
+        "sourceUrl": "https://escapefromtarkov.fandom.com/wiki/Doxed"
+      },
+      "gallery": [],
+      "objectiveGuides": {}
+    }
+  ],
+  "datasets": {
+    "guide/quests-pve.json": {
+      "appendReferences": {
+        "items": [
+          {
+            "id": "event-20261016-scourge-smartphone",
+            "name": "Смартфон Бича (Scourge)",
+            "shortName": "Смартфон Бича (Scourge)",
+            "description": "Смартфон командира наёмников Рефа. Для задания «Информационный след».",
+            "normalizedName": "scourge-smartphone",
+            "iconLink": "/assets/hidden-route-event/d248c1c55897334b5344.webp",
+            "gridImageLink": "/assets/hidden-route-event/d248c1c55897334b5344.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Information_Trail",
+            "idKind": "local-wiki-stable"
+          },
+          {
+            "id": "event-20261016-precursor-container",
+            "name": "Контейнер с прекурсорами",
+            "shortName": "Контейнер с прекурсорами",
+            "description": "Контейнер с материалами для производства препаратов. Извлекается из чемодана или посылки сотрудника TerraGroup.",
+            "normalizedName": "precursor-container",
+            "iconLink": "/assets/hidden-route-event/b43aaf327559df8c5db1.webp",
+            "gridImageLink": "/assets/hidden-route-event/b43aaf327559df8c5db1.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Side_Hustle",
+            "idKind": "local-wiki-stable"
+          },
+          {
+            "id": "event-20261016-employee-suitcase",
+            "name": "Чемодан сотрудника TerraGroup",
+            "shortName": "Чемодан сотрудника TerraGroup",
+            "description": "Чемодан в зоне отдыха R11 на первом этаже Лаборатории. При распаковке выдаёт контейнер с прекурсорами.",
+            "normalizedName": "employee-suitcase",
+            "iconLink": "/assets/hidden-route-event/268d2ec14d94f3681a3d.webp",
+            "gridImageLink": "/assets/hidden-route-event/268d2ec14d94f3681a3d.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Side_Hustle",
+            "idKind": "local-wiki-stable"
+          },
+          {
+            "id": "event-20261016-employee-package",
+            "name": "Посылка сотрудника TerraGroup",
+            "shortName": "Посылка сотрудника TerraGroup",
+            "description": "Посылка в почтовом отделении на Улицах Таркова. При распаковке выдаёт контейнер с прекурсорами.",
+            "normalizedName": "employee-package",
+            "iconLink": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/c/c9/TerraGroup_employee%27s_package_icon.png/revision/latest?cb=20261016185408",
+            "gridImageLink": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/c/c9/TerraGroup_employee%27s_package_icon.png/revision/latest?cb=20261016185408",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Side_Hustle",
+            "idKind": "local-wiki-stable"
+          }
+        ],
+        "questItems": [
+          {
+            "id": "event-20261016-shipment-ssd",
+            "name": "SSD с данными о поставках",
+            "shortName": "SSD с данными о поставках",
+            "description": "Квестовый накопитель с маршрутами поставок. Появляется при активном задании в офисе № 3 на втором этаже TerraGroup на Эпицентре.",
+            "normalizedName": "shipment-ssd",
+            "iconLink": "/assets/hidden-route-event/dd6fb79ed71f00c06a5b.webp",
+            "gridImageLink": "/assets/hidden-route-event/dd6fb79ed71f00c06a5b.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Doxed",
+            "idKind": "local-wiki-stable"
+          }
+        ]
+      }
+    },
+    "guide/items-pve.json": {
+      "appendReferences": {
+        "items": [
+          {
+            "id": "event-20261016-scourge-smartphone",
+            "name": "Смартфон Бича (Scourge)",
+            "shortName": "Смартфон Бича (Scourge)",
+            "description": "Смартфон командира наёмников Рефа. Для задания «Информационный след».",
+            "normalizedName": "scourge-smartphone",
+            "iconLink": "/assets/hidden-route-event/d248c1c55897334b5344.webp",
+            "gridImageLink": "/assets/hidden-route-event/d248c1c55897334b5344.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Information_Trail",
+            "idKind": "local-wiki-stable"
+          },
+          {
+            "id": "event-20261016-precursor-container",
+            "name": "Контейнер с прекурсорами",
+            "shortName": "Контейнер с прекурсорами",
+            "description": "Контейнер с материалами для производства препаратов. Извлекается из чемодана или посылки сотрудника TerraGroup.",
+            "normalizedName": "precursor-container",
+            "iconLink": "/assets/hidden-route-event/b43aaf327559df8c5db1.webp",
+            "gridImageLink": "/assets/hidden-route-event/b43aaf327559df8c5db1.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Side_Hustle",
+            "idKind": "local-wiki-stable"
+          },
+          {
+            "id": "event-20261016-employee-suitcase",
+            "name": "Чемодан сотрудника TerraGroup",
+            "shortName": "Чемодан сотрудника TerraGroup",
+            "description": "Чемодан в зоне отдыха R11 на первом этаже Лаборатории. При распаковке выдаёт контейнер с прекурсорами.",
+            "normalizedName": "employee-suitcase",
+            "iconLink": "/assets/hidden-route-event/268d2ec14d94f3681a3d.webp",
+            "gridImageLink": "/assets/hidden-route-event/268d2ec14d94f3681a3d.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Side_Hustle",
+            "idKind": "local-wiki-stable"
+          },
+          {
+            "id": "event-20261016-employee-package",
+            "name": "Посылка сотрудника TerraGroup",
+            "shortName": "Посылка сотрудника TerraGroup",
+            "description": "Посылка в почтовом отделении на Улицах Таркова. При распаковке выдаёт контейнер с прекурсорами.",
+            "normalizedName": "employee-package",
+            "iconLink": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/c/c9/TerraGroup_employee%27s_package_icon.png/revision/latest?cb=20261016185408",
+            "gridImageLink": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/c/c9/TerraGroup_employee%27s_package_icon.png/revision/latest?cb=20261016185408",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Side_Hustle",
+            "idKind": "local-wiki-stable"
+          },
+          {
+            "id": "event-20261016-shipment-ssd",
+            "name": "SSD с данными о поставках",
+            "shortName": "SSD с данными о поставках",
+            "description": "Квестовый накопитель с маршрутами поставок. Появляется при активном задании в офисе № 3 на втором этаже TerraGroup на Эпицентре.",
+            "normalizedName": "shipment-ssd",
+            "iconLink": "/assets/hidden-route-event/dd6fb79ed71f00c06a5b.webp",
+            "gridImageLink": "/assets/hidden-route-event/dd6fb79ed71f00c06a5b.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Doxed",
+            "idKind": "local-wiki-stable"
+          }
+        ]
+      }
+    },
+    "guide/quests-regular.json": {
+      "appendReferences": {
+        "items": [
+          {
+            "id": "event-20261016-scourge-smartphone",
+            "name": "Смартфон Бича (Scourge)",
+            "shortName": "Смартфон Бича (Scourge)",
+            "description": "Смартфон командира наёмников Рефа. Для задания «Информационный след».",
+            "normalizedName": "scourge-smartphone",
+            "iconLink": "/assets/hidden-route-event/d248c1c55897334b5344.webp",
+            "gridImageLink": "/assets/hidden-route-event/d248c1c55897334b5344.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Information_Trail",
+            "idKind": "local-wiki-stable"
+          },
+          {
+            "id": "event-20261016-precursor-container",
+            "name": "Контейнер с прекурсорами",
+            "shortName": "Контейнер с прекурсорами",
+            "description": "Контейнер с материалами для производства препаратов. Извлекается из чемодана или посылки сотрудника TerraGroup.",
+            "normalizedName": "precursor-container",
+            "iconLink": "/assets/hidden-route-event/b43aaf327559df8c5db1.webp",
+            "gridImageLink": "/assets/hidden-route-event/b43aaf327559df8c5db1.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Side_Hustle",
+            "idKind": "local-wiki-stable"
+          },
+          {
+            "id": "event-20261016-employee-suitcase",
+            "name": "Чемодан сотрудника TerraGroup",
+            "shortName": "Чемодан сотрудника TerraGroup",
+            "description": "Чемодан в зоне отдыха R11 на первом этаже Лаборатории. При распаковке выдаёт контейнер с прекурсорами.",
+            "normalizedName": "employee-suitcase",
+            "iconLink": "/assets/hidden-route-event/268d2ec14d94f3681a3d.webp",
+            "gridImageLink": "/assets/hidden-route-event/268d2ec14d94f3681a3d.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Side_Hustle",
+            "idKind": "local-wiki-stable"
+          },
+          {
+            "id": "event-20261016-employee-package",
+            "name": "Посылка сотрудника TerraGroup",
+            "shortName": "Посылка сотрудника TerraGroup",
+            "description": "Посылка в почтовом отделении на Улицах Таркова. При распаковке выдаёт контейнер с прекурсорами.",
+            "normalizedName": "employee-package",
+            "iconLink": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/c/c9/TerraGroup_employee%27s_package_icon.png/revision/latest?cb=20261016185408",
+            "gridImageLink": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/c/c9/TerraGroup_employee%27s_package_icon.png/revision/latest?cb=20261016185408",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Side_Hustle",
+            "idKind": "local-wiki-stable"
+          }
+        ],
+        "questItems": [
+          {
+            "id": "event-20261016-shipment-ssd",
+            "name": "SSD с данными о поставках",
+            "shortName": "SSD с данными о поставках",
+            "description": "Квестовый накопитель с маршрутами поставок. Появляется при активном задании в офисе № 3 на втором этаже TerraGroup на Эпицентре.",
+            "normalizedName": "shipment-ssd",
+            "iconLink": "/assets/hidden-route-event/dd6fb79ed71f00c06a5b.webp",
+            "gridImageLink": "/assets/hidden-route-event/dd6fb79ed71f00c06a5b.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Doxed",
+            "idKind": "local-wiki-stable"
+          }
+        ]
+      }
+    },
+    "guide/items-regular.json": {
+      "appendReferences": {
+        "items": [
+          {
+            "id": "event-20261016-scourge-smartphone",
+            "name": "Смартфон Бича (Scourge)",
+            "shortName": "Смартфон Бича (Scourge)",
+            "description": "Смартфон командира наёмников Рефа. Для задания «Информационный след».",
+            "normalizedName": "scourge-smartphone",
+            "iconLink": "/assets/hidden-route-event/d248c1c55897334b5344.webp",
+            "gridImageLink": "/assets/hidden-route-event/d248c1c55897334b5344.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Information_Trail",
+            "idKind": "local-wiki-stable"
+          },
+          {
+            "id": "event-20261016-precursor-container",
+            "name": "Контейнер с прекурсорами",
+            "shortName": "Контейнер с прекурсорами",
+            "description": "Контейнер с материалами для производства препаратов. Извлекается из чемодана или посылки сотрудника TerraGroup.",
+            "normalizedName": "precursor-container",
+            "iconLink": "/assets/hidden-route-event/b43aaf327559df8c5db1.webp",
+            "gridImageLink": "/assets/hidden-route-event/b43aaf327559df8c5db1.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Side_Hustle",
+            "idKind": "local-wiki-stable"
+          },
+          {
+            "id": "event-20261016-employee-suitcase",
+            "name": "Чемодан сотрудника TerraGroup",
+            "shortName": "Чемодан сотрудника TerraGroup",
+            "description": "Чемодан в зоне отдыха R11 на первом этаже Лаборатории. При распаковке выдаёт контейнер с прекурсорами.",
+            "normalizedName": "employee-suitcase",
+            "iconLink": "/assets/hidden-route-event/268d2ec14d94f3681a3d.webp",
+            "gridImageLink": "/assets/hidden-route-event/268d2ec14d94f3681a3d.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Side_Hustle",
+            "idKind": "local-wiki-stable"
+          },
+          {
+            "id": "event-20261016-employee-package",
+            "name": "Посылка сотрудника TerraGroup",
+            "shortName": "Посылка сотрудника TerraGroup",
+            "description": "Посылка в почтовом отделении на Улицах Таркова. При распаковке выдаёт контейнер с прекурсорами.",
+            "normalizedName": "employee-package",
+            "iconLink": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/c/c9/TerraGroup_employee%27s_package_icon.png/revision/latest?cb=20261016185408",
+            "gridImageLink": "https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/c/c9/TerraGroup_employee%27s_package_icon.png/revision/latest?cb=20261016185408",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Side_Hustle",
+            "idKind": "local-wiki-stable"
+          },
+          {
+            "id": "event-20261016-shipment-ssd",
+            "name": "SSD с данными о поставках",
+            "shortName": "SSD с данными о поставках",
+            "description": "Квестовый накопитель с маршрутами поставок. Появляется при активном задании в офисе № 3 на втором этаже TerraGroup на Эпицентре.",
+            "normalizedName": "shipment-ssd",
+            "iconLink": "/assets/hidden-route-event/dd6fb79ed71f00c06a5b.webp",
+            "gridImageLink": "/assets/hidden-route-event/dd6fb79ed71f00c06a5b.webp",
+            "wikiLink": "https://escapefromtarkov.fandom.com/wiki/Doxed",
+            "idKind": "local-wiki-stable"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -21,7 +21,7 @@ final class SiteTest extends TestCase
         foreach (['/quests/unknown', '/raid/unknown', '/reference/items/invalid', '/%2e%2e/bootstrap'] as $url) {
             $this->get($url)->assertNotFound()->assertSee('name="wiki-runtime" content="php"', false);
         }
-        $this->assertCount(7041, $this->app->make(PageCatalog::class)->routes());
+        $this->assertCount(7058, $this->app->make(PageCatalog::class)->routes());
     }
 
     public function test_head_and_etag_revalidation_do_not_return_page_body(): void

@@ -50,6 +50,42 @@ final class ContentUpdatesTest extends TestCase
                 'guide/quest-content.json'=>['quests'=>['source'=>['walkthrough'=>['paragraphs'=>['Новая инструкция']]]]]]];
     }
 
+    public function test_additive_item_catalog_preserves_editor_values_and_resolves_new_quest_links(): void
+    {
+        [$quest]=$this->fixtures();$dataset=ContentDataset::where('path','guide/quests-pve.json')->firstOrFail();
+        $dataset->setContent(['traders'=>[],'items'=>['editor-item'=>['id'=>'editor-item','name'=>'Имя редактора']]]);$dataset->save();
+        $items=$this->dataset('guide/items-pve.json',['items'=>[['id'=>'editor-item','name'=>'Имя редактора']]]);
+        $payload=$quest->payload;unset($payload['objectives'][0]['cmsConditionGroups']);$payload['objectives'][0]['items']=['event-item'];$quest->payload=$payload;$quest->save();
+        $state=DB::table('user_state')->first();$ref=$dataset->fresh()->getRawOriginal('payload');
+        $update=$this->update();$update['datasets']['guide/quests-pve.json']=['appendReferences'=>['items'=>[
+            ['id'=>'editor-item','name'=>'Устаревшее исходное имя'],['id'=>'event-item','name'=>'Новый событийный предмет'],
+        ]]];
+        $update['datasets']['guide/items-pve.json']=$update['datasets']['guide/quests-pve.json'];
+        app(ContentUpdates::class)->apply($update,true);$this->assertSame($ref,$dataset->fresh()->getRawOriginal('payload'));
+        app(ContentUpdates::class)->apply($update);
+        $this->assertSame('Имя редактора',$dataset->fresh()->content()['items']['editor-item']['name']);
+        $this->assertSame('Имя редактора',$items->fresh()->content()['items'][0]['name']);
+        $this->getJson('/api/content/data/guide/items-pve.json')->assertOk()->assertJsonCount(2,'items')->assertJsonPath('items.1.id','event-item');
+        $this->assertStringStartsWith('@file:',$items->fresh()->getRawOriginal('payload'));
+        $item=DB::table('wiki_items')->where('external_id','event-item')->value('id');$this->assertNotNull($item);
+        $objective=DB::table('wiki_objectives')->where('external_id','stable-goal')->value('id');
+        $group=DB::table('wiki_objective_groups')->where('objective_id',$objective)->where('source_path','/items')->value('id');
+        $this->assertDatabaseHas('wiki_objective_items',['group_id'=>$group,'item_id'=>$item,'archived'=>0]);
+        $this->assertEquals($state,DB::table('user_state')->first());
+        $this->assertFalse(app(ContentUpdates::class)->apply($update)['applied']);
+        $this->assertSame(1,DB::table('wiki_items')->where('external_id','event-item')->count());
+    }
+
+    public function test_additive_item_catalog_rejects_non_item_fields_before_writing(): void
+    {
+        $this->fixtures();$dataset=ContentDataset::where('path','guide/quests-pve.json')->firstOrFail();$ref=$dataset->getRawOriginal('payload');
+        $update=$this->update();$update['datasets']['guide/quests-pve.json']=['appendReferences'=>['tasks'=>[['id'=>'replace-quest','name'=>'Подмена']]]];
+        try{app(ContentUpdates::class)->apply($update);$this->fail('Изменение заданий через справочник запрещено');}
+        catch(\RuntimeException $error){$this->assertStringContainsString('Недопустимый справочник',$error->getMessage());}
+        $this->assertSame($ref,$dataset->fresh()->getRawOriginal('payload'));
+        $this->assertDatabaseMissing('wiki_projection_states',['owner_type'=>'content-update','owner_id'=>$update['id']]);
+    }
+
     public function test_document_atlas_keeps_point_ids_links_and_progress_and_refreshes_cached_public_data(): void
     {
         $this->fixtures();$this->dataset('docs.json',[['id'=>'technical','name'=>'Чертежи']]);

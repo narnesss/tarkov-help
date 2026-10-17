@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {gzipSync, gunzipSync} from 'node:zlib';
 import {root} from './build-pages.mjs';
-import {enrichQuests, localizeQuestMedia} from '../public/quest-extras.mjs';
+import {enrichQuests, localizeQuestMediaTask} from '../public/quest-extras.mjs';
 
 // Переносим уже проверенные данные и обогащённые квесты, сохраняя все ID.
 export function prepareContentSeed() {
@@ -26,12 +26,13 @@ export function prepareContentSeed() {
     choices:'quest-choices', rewardSupport:'quest-reward-support', questPatch:'quest-patch-1150', ticketMap:'ticket-map', content:'quest-content'};
   const extras = Object.fromEntries(Object.entries(names).map(([key, name]) => [key, datasets[`guide/${name}.json`]]));
   const localization=datasets['guide/media-localization.json'];
-  for(const task of Object.values(extras.media?.quests||{}))if(task.gallery)task.gallery=task.gallery.map(frame=>localizeQuestMedia(frame,localization));
+  for(const [id,task] of Object.entries(extras.media?.quests||{}))extras.media.quests[id]=localizeQuestMediaTask(task,localization);
+  extras.story.tasks=extras.story.tasks.map(task=>localizeQuestMediaTask(task,localization));
   const quests = {};
   for (const mode of ['pve', 'regular']) {
     const key = `guide/quests-${mode}.json`, bundle = enrichQuests(datasets[key], extras);
     const traders=new Map(bundle.traders.map(trader=>[trader.id,trader]));
-    quests[mode] = bundle.tasks.map(task=>typeof task.trader==='string'?{...task,trader:traders.get(task.trader)||{id:task.trader,name:task.trader}}:task);
+    quests[mode] = bundle.tasks.map(task=>localizeQuestMediaTask(typeof task.trader==='string'?{...task,trader:traders.get(task.trader)||{id:task.trader,name:task.trader}}:task,localization));
     datasets[key] = {...bundle, tasks: []};
   }
   fs.mkdirSync(output, {recursive: true});
