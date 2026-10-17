@@ -5,9 +5,10 @@
     <a href="raid.html">Карты</a>
     <a href="documents.html">Документы</a>
     <a href="quests.html">Квесты</a>
-    <a href="reference.html" aria-current="page">Справочник</a>
+    <a href="reference.html" aria-current="page">Справочник</a><a href="/important-items">Важные предметы</a>
   </nav>
   <div class="header-right">
+  @include('components.game-clock')
     <a class="button quiet" id="boss-guide" href="reference.html?tab=bosses">Справочник</a>
     @include('components.player-navigation')
   </div>

@@ -1,0 +1,10 @@
+.topbar .game-clock { display:flex; flex:0 0 auto; gap:10px; padding:7px 10px; border:1px solid var(--line,#2c342e); border-radius:8px; font-size:13px; font-weight:750; font-variant-numeric:tabular-nums; }
+.game-clock > span { display:flex; align-items:center; gap:5px; white-space:nowrap; }
+.game-clock svg { width:16px; height:16px; color:#c8ed9e; }
+@media(max-width:760px) { .topbar .game-clock { margin-left:auto; gap:8px; padding:6px 8px; font-size:12px; } }
+@media(max-width:420px) { .topbar .game-clock { flex-direction:column; gap:1px; padding:4px 7px; } }
+
+.game-clock svg { fill:none; stroke:currentColor; stroke-width:1.5; }
+
+@media(max-width:760px) { .topbar .header-right { flex:1 0 100%; max-width:100%; min-width:0; flex-wrap:wrap; } }
+@media(max-width:760px) { .topbar .header-right > .profile-trigger { max-width:100%; } }

@@ -5,7 +5,8 @@
     <a href="raid.html">Карты</a>
     <a href="documents.html">Документы</a>
     <a href="quests.html">Квесты</a>
-    <a href="reference.html">Справочник</a>
+    <a href="reference.html">Справочник</a><a href="/important-items">Важные предметы</a>
   </nav>
-  <div class="header-right">@include('components.player-navigation')</div>
+  <div class="header-right">
+  @include('components.game-clock')@include('components.player-navigation')</div>
 </header>

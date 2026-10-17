@@ -7,7 +7,7 @@
     "directory": "./dist",
     "binding": "ASSETS",
     "run_worker_first": [
-      "/api", "/api/*", "/profile-runtime.mjs",
+      "/api", "/api/*", "/profile-runtime.mjs", "/important-items", "/important-items.html",
       "/", "/index.html", "/account", "/account.html", "/privacy", "/privacy.html",
       "/documents", "/documents.html", "/documents/*", "/raid", "/raid.html", "/raid/*",
       "/quests", "/quests.html", "/quests/*", "/quest", "/quest.html",

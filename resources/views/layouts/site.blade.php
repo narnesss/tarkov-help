@@ -13,6 +13,8 @@
   <base href="/">
   <title>{{ $title }}</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="game-clock.css?v=important-items-20261017">
+  <script type="module" src="game-clock.mjs?v=important-items-20261017"></script>
   <link rel="stylesheet" href="legal.css?v=mobile-legal-20261017">
 @foreach ($meta['styles'] as $style)
 @if ($style === 'account-responsive.css')

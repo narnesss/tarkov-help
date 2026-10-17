@@ -9,6 +9,8 @@
   <base href="/">
   <title>Кронштейн на Ласточкин Хвост для ОП-СКС — Escape from Tarkov Wiki</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="game-clock.css?v=important-items-20261017">
+  <script type="module" src="game-clock.mjs?v=important-items-20261017"></script>
   <link rel="stylesheet" href="legal.css?v=mobile-legal-20261017">
   <link rel="stylesheet" href="style.css?v=release-20261016">
   <link rel="stylesheet" href="guide.css?v=release-20261016">
@@ -46,9 +48,13 @@ body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
     <a href="raid.html">Карты</a>
     <a href="documents.html">Документы</a>
     <a href="quests.html">Квесты</a>
-    <a href="reference.html" aria-current="page">Справочник</a>
+    <a href="reference.html" aria-current="page">Справочник</a><a href="/important-items">Важные предметы</a>
   </nav>
   <div class="header-right">
+  <div class="game-clock" data-game-clock role="group" aria-label="Внутриигровое время" title="Внутриигровое время · два варианта рейда с разницей 12 часов">
+  <span><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg><span data-game-time>--:--</span></span>
+  <span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 15A9 9 0 0 1 9 4a9 9 0 1 0 11 11Z"/></svg><span data-game-time>--:--</span></span>
+</div>
     <a class="button profile-trigger" id="profile-button" href="account.html" aria-busy="true">Личный кабинет</a>
 <a class="button player-login" href="account.html?view=login" data-player-guest hidden>Войти</a>
 <a class="button primary player-register" href="account.html?view=register" data-player-guest hidden>Регистрация</a>

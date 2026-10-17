@@ -6,9 +6,10 @@
     <a href="raid.html" aria-current="page">Карты</a>
     <a href="documents.html" id="documents-link">Документы</a>
     <a href="quests.html">Квесты</a>
-    <a href="reference.html">Справочник</a>
+    <a href="reference.html">Справочник</a><a href="/important-items">Важные предметы</a>
   </nav>
   <div class="header-right">
+  @include('components.game-clock')
     <span class="data-status" id="raid-total">Загрузка локаций</span><button class="button quiet" id="raid-about">Источники</button>
     @include('components.player-navigation')
   </div>

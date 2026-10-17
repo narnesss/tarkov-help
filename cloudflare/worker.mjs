@@ -17,6 +17,24 @@ function unavailable() {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url), config = settings(env);
+    if (url.pathname === '/important-items' || url.pathname === '/important-items.html') {
+      if (!['GET', 'HEAD'].includes(request.method)) return new Response('Method not allowed', {status:405, headers:{Allow:'GET, HEAD', ...privateHeaders}});
+      const errorPage = (status, text) => new Response(request.method === 'HEAD' ? null : `<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Важные предметы</title><body><h1>Важные предметы</h1><p role="alert">${text}</p><a href="/important-items">Вернуться к списку</a></body></html>`, {status, headers:{...privateHeaders, 'Content-Type':'text/html; charset=utf-8'}});
+      if (config) {
+        try {
+          const target = new URL('/api/content/important-items', config.origin); target.search = url.search;
+          // Это публичная страница: пользовательские cookies и OAuth-заголовки не отправляются.
+          const response = await fetch(target, {headers:{'X-Wiki-Proxy-Token':config.token, 'X-Wiki-Client-IP':request.headers.get('CF-Connecting-IP') || '', 'Accept':'application/json'}, redirect:'manual', cache:'no-store', signal:AbortSignal.timeout(15000)});
+          if (response.status === 422) return errorPage(422, 'Некорректный поиск или фильтр. Поиск ограничен 160 символами.');
+          if (response.status === 404) return errorPage(404, 'Такой страницы списка нет.');
+          if (!response.ok || !response.headers.get('Content-Type')?.includes('application/json')) return errorPage(503, 'Справочник временно недоступен. Попробуйте позже.');
+          const body = await response.json();
+          if (typeof body.html !== 'string') return errorPage(503, 'Справочник временно недоступен.');
+          return playerNavigation(request,new Response(request.method === 'HEAD' ? null : body.html, {headers:{'Content-Type':'text/html; charset=utf-8', 'Cache-Control':'public, max-age=0, must-revalidate', 'X-Content-Type-Options':'nosniff', 'Referrer-Policy':'strict-origin-when-cross-origin'}}),config);
+        } catch { return errorPage(503, 'Справочник временно недоступен. Попробуйте позже.'); }
+      }
+      return errorPage(503, 'Справочник временно недоступен. Попробуйте позже.');
+    }
     if (url.pathname === '/profile-runtime.mjs') {
       return new Response(`export const serverProfiles = ${!!config};\n`, {
         headers: {...privateHeaders, 'Content-Type': 'text/javascript; charset=utf-8'},
