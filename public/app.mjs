@@ -5,7 +5,7 @@ import { STORAGE_KEY, FLOOR_NAMES, filterSpawns, sanitizeProgress, fitTransform,
 import {documentViewport,documentPointPosition,documentLevelSvg,documentFloors} from './document-map.mjs?v=levels-ui-20261016';
 
 const $ = id => document.getElementById(id);
-const compactViewport = () => innerWidth <= 1100;
+const compactViewport = () => innerWidth <= 1200;
 const documentIconSize = value => typeof value === 'number' && Number.isFinite(value)
   ? Math.max(16, Math.min(36, Math.round(value / 2) * 2)) : 24;
 const node = (tag, className = '', text = '') => {

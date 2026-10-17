@@ -25,7 +25,7 @@ const prefsKey = 'kord-atlas-raid-view-v1';
 const original = read(progressKey) || {};
 let saved = { checked: Array.isArray(original.checked) ? original.checked.filter(x => typeof x === 'string') : [], notes: original.notes && typeof original.notes === 'object' && !Array.isArray(original.notes) ? original.notes : {} };
 const embedded=pageParams().get('embed')==='quest';if(embedded)document.body.classList.add('raid-embed');
-const compactRaid=()=>!embedded&&innerWidth<=1100;
+const compactRaid=()=>!embedded&&innerWidth<=1200;
 const prefs = embedded?{}:read(prefsKey)||{};
 const loosePrefs=new LooseLootPreferences(prefs.looseLoot);
 let itemCatalog={},looseFilter;
