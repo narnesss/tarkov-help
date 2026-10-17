@@ -18,7 +18,7 @@
 @if ($style === 'account-responsive.css')
   <link rel="stylesheet" href="{{ $style }}?v=tablet-account-20261017">
 @else
-  <link rel="stylesheet" href="{{ $style }}?v={{ $style === 'account.css' ? 'profile-3' : ($style === 'documents.css' ? 'tablet-20261017b' : ($style === 'raid-responsive.css' ? 'tablet-20261017b' : ($style === 'reference-responsive.css' ? 'mobile-btr-20261017' : ($style === 'quests-responsive.css' ? 'tablet-20261017b' : 'release-20261016')))) }}">
+  <link rel="stylesheet" href="{{ $style }}?v={{ $style === 'account.css' ? 'profile-3' : ($style === 'documents.css' ? 'tablet-20261017b' : ($style === 'raid-responsive.css' ? 'tablet-20261017b' : ($style === 'reference-responsive.css' ? 'mobile-btr-20261017' : ($style === 'quests-responsive.css' ? 'quest-filters-20261017' : 'release-20261016')))) }}">
 @endif
 @endforeach
   <link rel="stylesheet" href="site-responsive.css?v=desktop-20261017">

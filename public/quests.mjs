@@ -19,7 +19,7 @@ import {TicketQuestMap} from './ticket-quest-map.mjs?v=page-content-20261017';
 import {GunsmithView} from './gunsmith-ui.mjs?v=page-content-20261017';
 import {itemReferences,resolveQuestItem} from './quest-items.mjs?v=page-content-20261017';
 import {$,el,num,image,external,json,readStorage,writeStorage,toast,download,section,action,empty} from './guide-common.mjs?v=page-content-20261017';
-import {QUEST_STATES,idOf,list,mapAlias,taskMaps,sanitizeQuestProgress,questState,availability,requirementStatus,followingTasks,filterQuests,chainColumns} from './quest-model.mjs?v=page-content-20261017';
+import {QUEST_STATES,idOf,list,mapAlias,taskMaps,sanitizeQuestProgress,questState,availability,requirementStatus,followingTasks,filterQuests,chainColumns} from './quest-model.mjs?v=quest-search-20261017';
 
 const params=pageParams();
 let mode=resolveGameMode(params.get('mode'),readStorage('kord-atlas-game-mode'));

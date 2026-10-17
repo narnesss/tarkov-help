@@ -35,7 +35,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 if (entry === 'index' && ['map','point'].some(key=>new URLSearchParams(location.search).has(key))) {
   location.replace(siteHref('documents.html'+location.search+location.hash));
 } else {
-const modules = {index: './home.mjs?v=page-content-20261017', documents: './app.mjs?v=page-content-20261017', raid: './raid.mjs?v=page-content-20261017', quests: './quests.mjs?v=page-content-20261017', reference: './reference.mjs?v=page-content-20261017', boss: './boss.mjs?v=page-content-20261017', account: './account.mjs?v=page-content-20261017'};
+const modules = {index: './home.mjs?v=page-content-20261017', documents: './app.mjs?v=page-content-20261017', raid: './raid.mjs?v=page-content-20261017', quests: './quests.mjs?v=quest-filters-20261017', reference: './reference.mjs?v=page-content-20261017', boss: './boss.mjs?v=page-content-20261017', account: './account.mjs?v=page-content-20261017'};
 if (modules[entry]) await import(modules[entry]);
 
 }

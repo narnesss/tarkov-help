@@ -32,8 +32,20 @@ export function availability(task,progress){
   return {available:progress.level>=level&&!missing.length&&!faction&&!modeUnavailable,modeUnavailable,missing,level,faction,external};
 }
 export function followingTasks(task,tasks){return tasks.filter(t=>(t.taskRequirements||[]).some(r=>idOf(r.task)===task.id));}
+/** Название важнее текста целей; выбранная сортировка применяется внутри одинаковой релевантности. */
+function questSearchRank(task,phrase,words){
+  const name=normalize(task.name).replace(/\s+/g,' ');
+  const alias=normalize(task.normalizedName).replace(/[-_\s]+/g,' ');
+  if(name===phrase||alias===phrase)return 0;
+  if(name.startsWith(phrase))return 1;
+  const titleWords=name.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+  if(words.every(word=>titleWords.some(part=>part.startsWith(word))))return 2;
+  if(words.every(word=>name.includes(word)))return 3;
+  if(words.every(word=>alias.includes(word)))return 4;
+  return 5;
+}
 export function filterQuests(tasks,{query='',trader='all',map='all',status='all',flag='all',sort='level',progress,maps=[]}){
-  const words=normalize(query).split(/\s+/).filter(Boolean);
+  const phrase=normalize(query).replace(/\s+/g,' '),words=phrase.split(' ').filter(Boolean);
   const results=tasks.filter(t=>{
     if(trader!=='all'&&idOf(t.trader)!==trader)return false;
     if(map!=='all'&&!taskMaps(t,maps).some(m=>mapAlias(m.normalizedName)===map))return false;
@@ -46,7 +58,8 @@ export function filterQuests(tasks,{query='',trader='all',map='all',status='all'
     if(flag==='kappa'&&!t.kappaRequired)return false;if(flag==='lightkeeper'&&!t.lightkeeperRequired)return false;
     const text=normalize([t.name,t.normalizedName,...(t.objectives||[]).map(o=>o.description)].join(' '));return words.every(w=>text.includes(w));
   });
-  return results.sort((a,b)=>sort==='name'?a.name.localeCompare(b.name,'ru'):sort==='xp'?(b.experience||0)-(a.experience||0):(a.minPlayerLevel||1)-(b.minPlayerLevel||1)||a.name.localeCompare(b.name,'ru'));
+  const ranks=words.length?new Map(results.map(task=>[task,questSearchRank(task,phrase,words)])):null;
+  return results.sort((a,b)=>(ranks?ranks.get(a)-ranks.get(b):0)||(sort==='name'?a.name.localeCompare(b.name,'ru'):sort==='xp'?(b.experience||0)-(a.experience||0):(a.minPlayerLevel||1)-(b.minPlayerLevel||1)||a.name.localeCompare(b.name,'ru')));
 }
 export function chainColumns(task,tasks,depth=2){
   const byId=new Map(tasks.map(t=>[t.id,t])),seen=new Set([task.id]),columns=new Map([[0,[task]]]);

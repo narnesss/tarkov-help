@@ -1,0 +1,75 @@
+/* Единые шевроны и отдельное действие сброса только для фильтров квестов. */
+body[data-page="quests"] .quest-filter-panel {
+  --quest-filter-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%23bfd8c8' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+body[data-page="quests"] .quest-filter-panel select:not([multiple]):not([size]) {
+  background-image: var(--quest-filter-chevron) !important;
+}
+body[data-page="quests"] .quest-filter-more > summary {
+  position: relative;
+  min-height: 44px;
+  padding-inline: 14px 44px;
+  list-style: none;
+}
+body[data-page="quests"] .quest-filter-more > summary::marker { content: ""; }
+body[data-page="quests"] .quest-filter-more > summary::-webkit-details-marker { display: none; }
+body[data-page="quests"] .quest-filter-more > summary::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  background: var(--quest-filter-chevron) center / 16px 16px no-repeat;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+body[data-page="quests"] .quest-filter-more[open] > summary::after { transform: translateY(-50%) rotate(180deg); }
+body[data-page="quests"] #quest-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid #789867;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #293e2b, #17261e);
+  color: #d9efb9;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+body[data-page="quests"] #quest-reset svg { width: 18px; height: 18px; flex: 0 0 18px; }
+body[data-page="quests"] #quest-reset:hover { border-color: #c5e59c; background: #304b32; color: #efffd9; }
+body[data-page="quests"] #quest-reset:active { background: #395b3b; }
+@media (forced-colors: active) {
+  body[data-page="quests"] .quest-filter-panel select:not([multiple]):not([size]) { background-image: none !important; }
+  body[data-page="quests"] .quest-filter-more > summary::after {
+    width: 8px; height: 8px; right: 19px; margin-top: -2px;
+    background: none; border-right: 2px solid ButtonText; border-bottom: 2px solid ButtonText;
+    transform: translateY(-50%) rotate(45deg);
+  }
+  body[data-page="quests"] .quest-filter-more[open] > summary::after { transform: translateY(-50%) rotate(225deg); }
+}
+
+/* На планшете поиск и действия не сжимают выбранные значения в списках. */
+@media (min-width: 701px) and (max-width: 1200px), (min-width: 701px) and (pointer: coarse) {
+  body[data-page="quests"] .quest-primary-filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+  body[data-page="quests"] .quest-primary-filters > label { grid-column: auto; }
+  body[data-page="quests"] .quest-primary-filters > .quest-search-label { grid-column: 1 / -1; }
+  body[data-page="quests"] .quest-primary-filters > .quest-filter-more { grid-column: 1 / 3; }
+  body[data-page="quests"] .quest-primary-filters > #quest-reset { grid-column: 3; justify-self: end; }
+  body[data-page="quests"] .quest-filter-more > summary { width: max-content; }
+  body[data-page="quests"] .quest-primary-filters > .quest-filter-more[open] { grid-column: 1 / -1 !important; }
+  body[data-page="quests"] .quest-filter-more[open] .quest-secondary-filters {
+    position: static;
+    width: 100%;
+    max-width: none;
+    margin-top: 12px;
+  }
+}

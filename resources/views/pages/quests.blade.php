@@ -23,7 +23,7 @@
 <div class="quest-progress"><div><strong id="quest-done">—</strong><span id="quest-total"> / … выполнено</span></div><progress id="quest-progress" value="0" max="1" aria-label="Прогресс квестов"></progress></div>
 <div class="guide-side-foot"><div class="guide-button-row"><button class="button" id="quest-export">Скачать прогресс</button><button class="button" id="quest-import">Загрузить</button><input id="quest-import-file" type="file" accept=".json,application/json" hidden></div><small>Личные отметки и настройки сохраняются в вашем профиле. У PVE и PVP отдельный прогресс.</small><button class="text-button" id="quest-refresh">Обновить квесты ↻</button><span id="quest-data-date" role="status">Загрузка данных…</span></div>
 </div></details>
-<button id="quest-reset" class="text-button">Сбросить</button>
+<button id="quest-reset" class="button quest-reset" type="button" title="Сбросить поиск и фильтры"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10a9 9 0 1 1 2.5 8M3 4v6h6"/></svg><span>Сбросить</span></button>
 </div>
 </div></section>
 <section id="quest-hub" class="quest-hub" aria-label="Разделы квестов">
@@ -41,5 +41,5 @@
 </main>
 <dialog class="quest-mobile-filter-dialog" id="quest-filters-dialog" aria-label="Поиск и фильтры квестов"><div class="quest-filter-dialog-heading"><h2>Поиск и фильтры</h2><button id="quest-filters-close" class="button quest-mobile-control" type="button">Готово</button></div></dialog>
 <dialog class="dialog" id="guide-sources-dialog"><div class="dialog-heading"><h2>Справочные материалы</h2><button class="icon-button" id="guide-sources-close" aria-label="Закрыть">×</button></div><ul class="source-list"><li><a href="https://tarkov.help/ru" target="_blank" rel="noopener noreferrer">Tarkov.help — прохождения ↗</a></li><li><a href="https://escapefromtarkov.fandom.com/ru/wiki/Escape_from_Tarkov_Wiki" target="_blank" rel="noopener noreferrer">Русская Wiki ↗</a></li></ul><p class="muted">Неофициальный справочник. Ваши отметки не связаны с игровым аккаунтом.</p></dialog><div class="toast" id="guide-toast" role="status" hidden></div>
-  <script type="module" src="bootstrap.mjs?v=page-content-20261017"></script>
+  <script type="module" src="bootstrap.mjs?v=quest-filters-20261017"></script>
 @endsection

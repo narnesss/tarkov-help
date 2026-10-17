@@ -66,7 +66,7 @@ body[data-page="quests"] #quest-filters-close { flex-shrink: 0; }
 
 
 /* На планшете дополнительные фильтры занимают собственную строку и не накрывают квесты. */
-@media (min-width: 701px) and (max-width: 1200px) {
+@media (min-width: 701px) and (max-width: 1200px), (min-width: 701px) and (pointer: coarse) {
   body[data-page="quests"] .quest-primary-filters > .quest-filter-more[open] { grid-column: 1 / -1 !important; }
   body[data-page="quests"] .quest-filter-more[open] .quest-secondary-filters {
     position: static;
@@ -75,4 +75,11 @@ body[data-page="quests"] #quest-filters-close { flex-shrink: 0; }
     margin-top: 12px;
     box-sizing: border-box;
   }
+}
+
+/* Крупная область нажатия не вытесняет текст цели на сенсорных экранах. */
+@media (max-width: 1200px), (pointer: coarse) {
+  body[data-page="quests"] .quest-reading-main .objective-row { grid-template-columns: 44px minmax(0, 1fr); }
+  body[data-page="quests"] .objective-row > input[type="checkbox"] { width: 44px; height: 44px; margin: 0; }
+  body[data-page="quests"] .briefing-original > summary { min-height: 44px; padding-block: 10px; box-sizing: border-box; }
 }
