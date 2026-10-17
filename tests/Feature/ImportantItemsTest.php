@@ -3,17 +3,16 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Services\ImportantItems;
-use Illuminate\Support\Facades\{DB, Schema};
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /** Проверяет готовый HTML, пагинацию, безопасность поиска и обновление файловых версий. */
 final class ImportantItemsTest extends TestCase
 {
+    use RefreshDatabase;
     private function seedCatalog(int $count = 27): void
     {
-        Schema::create('content_datasets', function (Blueprint $table): void { $table->id(); $table->string('path'); $table->text('payload'); });
-        Schema::create('quests', function (Blueprint $table): void { $table->id(); $table->string('quest_id'); $table->string('mode'); $table->string('name'); $table->boolean('published'); $table->text('payload'); });
         $items = $goals = [];
         for ($n = 1; $n <= $count; $n++) {
             $id = sprintf('item-%02d', $n);
