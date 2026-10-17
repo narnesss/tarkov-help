@@ -18,7 +18,7 @@ function restoreView(){if(!$('reference-search'))return;const view=readStorage(v
 const savedView=readStorage(viewKey());if(!params.has('tab')&&TABS[savedView?.tab])tab=savedView.tab;
 const pageSize=40;const money=v=>v===null||v===undefined?'Нет цены':num(v)+' ₽';const itemName=id=>items.get(idOf(id))?.name||'Предмет '+idOf(id);const nameTrader=id=>traders.get(idOf(id))?.name||'Торговец';
 const duration=formatDuration;
-function itemLink(ref,count){const item=items.get(idOf(ref));const b=usesPageRoutes()?el('a','','guide-item'):action('',()=>showItem(idOf(ref)),'guide-item');if(usesPageRoutes())b.href=siteHref('reference.html?'+new URLSearchParams({tab:'items',item:idOf(ref),mode}));if(item?.iconLink)b.append(image(item.iconLink));b.append(el('span',item?.name||'Предмет '+idOf(ref)));if(count!==undefined)b.append(el('b','× '+num(count)));return b;}
+function itemLink(ref,count,linked=true){const item=items.get(idOf(ref));const b=!linked?el('span','','guide-item'):usesPageRoutes()?el('a','','guide-item'):action('',()=>showItem(idOf(ref)),'guide-item');if(linked&&usesPageRoutes())b.href=siteHref('reference.html?'+new URLSearchParams({tab:'items',item:idOf(ref),mode}));if(item?.iconLink)b.append(image(item.iconLink));b.append(el('span',item?.name||'Предмет '+idOf(ref)));if(count!==undefined)b.append(el('b','× '+num(count)));return b;}
 function setOptions(id,choices){$(id).replaceChildren(...choices.map(([value,name])=>{const o=el('option',name);o.value=value;return o;}));}
 function revealActiveTab(){const nav=$('reference-tabs');if(!nav)return;const active=nav.querySelector('[aria-current="page"]');if(!active||getComputedStyle(nav).flexDirection!=='row'||nav.scrollWidth<=nav.clientWidth)return;const box=nav.getBoundingClientRect(),target=active.getBoundingClientRect();nav.scrollTo({left:nav.scrollLeft+target.left-box.left-(nav.clientWidth-target.width)/2,behavior:'auto'});}
 function setTab(next){if(!$('reference-search')){location.assign(siteHref('reference.html?'+new URLSearchParams({tab:next,mode})));return;}if(!TABS[next])return;tab=next;page=0;$('reference-search').value='';const u=new URL(usesPageRoutes()?'reference.html':location.href,location.origin+'/');u.search='';u.searchParams.set('tab',tab);u.searchParams.set('mode',mode);history.replaceState(null,'',canonicalURL(u));return load().catch(fail);}
@@ -55,7 +55,7 @@ function filtered(){const words=normalize($('reference-search').value).split(/\s
       if(tab==='bosses'&&!bossSpawns(r,data).some(s=>s.map.normalizedName===filter)&&!r.canonicalMapSlugs?.includes(filter))return false;if(tab==='btr'&&r.map.mapId!==filter)return false;
       if(tab==='needed'&&filter==='fir'&&!r.foundInRaid)return false;
     }
-    const text=normalize([r.name,r.shortName,r.description,...(r.requiredItems||[]).map(x=>itemName(x.item)),...(r.tasks||[]).map(x=>x.name)].join(' '));return words.every(w=>text.includes(w));
+    const text=normalize([r.name,r.shortName,r.description,...[...(r.requiredItems||[]),...(r.requiredQuestItems||[])].map(x=>itemName(x.item)),...(r.tasks||[]).map(x=>x.name)].join(' '));return words.every(w=>text.includes(w));
   });
   rows.sort((a,b)=>sort==='damage'?(b.properties.damage||0)-(a.properties.damage||0):sort==='penetration'?(b.properties.penetrationPower||0)-(a.properties.penetrationPower||0):a.name.localeCompare(b.name,'ru'));return rows;
 }
@@ -85,9 +85,15 @@ function renderTable(root,rows){
 function renderCard(r){const card=el('article','','reference-card');card.append(el('h3',r.name));
   if(['hideout','crafts','barters'].includes(tab))card.classList.add('reference-workshop-card');
   if(['barters','crafts'].includes(tab)){
-    const offered=r.productItem||r.offeredItem;card.append(itemLink(offered.item,offered.count));card.append(el('p',tab==='barters'?`${nameTrader(r.trader)} · лояльность ${r.minTraderLevel}`:`${stations.get(idOf(r.station))?.name||'Убежище'} · уровень ${r.level} · ${duration(r.duration)}`));card.append(el('h4','Требуется'));for(const required of r.requiredItems||[]){card.append(itemLink(required.item,required.count));if(required.attributes?.tool)card.append(el('small','Инструмент: не расходуется'));}
+    const offered=r.productItem||r.offeredItem;card.append(itemLink(offered.item,offered.count));
+    const station=stations.get(idOf(r.station)),context=el('p','','recipe-context');
+    if(tab==='crafts'&&station?.imageLink)context.append(image(station.imageLink,'','recipe-station-icon'));
+    context.append(el('span',tab==='barters'?`${nameTrader(r.trader)} · лояльность ${r.minTraderLevel}`:`${station?.name||'Убежище'} · уровень ${r.level} · ${duration(r.duration)}`));card.append(context,el('h4','Требуется'));
+    for(const required of r.requiredItems||[]){card.append(itemLink(required.item,required.count));if(required.attributes?.tool)card.append(el('small','Инструмент: не расходуется'));}
+    if(r.requiredQuestItems?.length){const materials=el('div','','recipe-quest-materials');materials.append(el('h4','Квестовые материалы'));for(const required of r.requiredQuestItems)materials.append(items.has(idOf(required.item))?itemLink(required.item,required.count,false):el('p','Название и изображение квестового материала пока отсутствуют в источнике.','recipe-material-unavailable'));card.append(materials);}
     if(r.taskUnlock){const t=quests.tasks.find(t=>t.id===idOf(r.taskUnlock));if(t){const a=el('a','Открывает: '+t.name,'guide-link');a.href=siteHref(`quests.html?quest=${t.id}&mode=${mode}`);card.append(el('p'),a);}}
   }else if(tab==='hideout'){
+    const header=el('header','','hideout-card-header');if(r.imageLink)header.append(image(r.imageLink,'','hideout-module-icon'));header.append(card.querySelector('h3'));card.prepend(header);
     const built=readStorage('kord-hideout-'+mode)||{};
     for(const level of r.levels||[]){
       const d=el('details','','hideout-level'),summary=el('summary');
