@@ -1,4 +1,4 @@
-import {normalize} from './model.mjs';
+import {normalize} from './model.mjs?v=page-content-20261017';
 
 export const UNKNOWN_LOOSE_ITEM='unknown';
 export const LOOSE_FALLBACK_ICON='assets/raid-icons/loose-items.svg';

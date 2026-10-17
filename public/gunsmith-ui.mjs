@@ -1,7 +1,7 @@
-import {siteHref} from './site-routes.mjs?v=release-20261016';
-import {action,el,external,image,readStorage,writeStorage,toast} from './guide-common.mjs?v=lazy-20261016';
-import {galleryBlock} from './gallery.mjs?v=lazy-20261016';
-import {BUILD_VIEWS,assemblyFrames,shoppingRows,shoppingText} from './gunsmith-model.mjs';
+import {siteHref} from './site-routes.mjs?v=page-content-20261017';
+import {action,el,external,image,readStorage,writeStorage,toast} from './guide-common.mjs?v=page-content-20261017';
+import {galleryBlock} from './gallery.mjs?v=page-content-20261017';
+import {BUILD_VIEWS,assemblyFrames,shoppingRows,shoppingText} from './gunsmith-model.mjs?v=page-content-20261017';
 
 /** Assembly presentation and personal shopping marks, separate from game goals. */
 export class GunsmithView{

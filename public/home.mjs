@@ -1,19 +1,13 @@
-import {json,readStorage,writeStorage,el} from './guide-common.mjs?v=lazy-20261016';
-import {serverProfiles} from './profile-runtime.mjs';
-import {resolveGameMode} from './game-mode.mjs';
-import {normalize} from './model.mjs';
-import {siteHref,canonicalURL} from './site-routes.mjs?v=release-20261016';
-import {questHref,catalogHref} from './quest-catalog-model.mjs?v=release-20261016';
+import {pageDataset} from './page-data.mjs?v=page-content-20261017';
+import {json,readStorage,writeStorage,el} from './guide-common.mjs?v=page-content-20261017';
+import {resolveGameMode} from './game-mode.mjs?v=page-content-20261017';
+import {normalize} from './model.mjs?v=page-content-20261017';
+import {siteHref,canonicalURL} from './site-routes.mjs?v=page-content-20261017';
+import {questHref,catalogHref} from './quest-catalog-model.mjs?v=page-content-20261017';
 const $=id=>document.getElementById(id);
-let mode=resolveGameMode(new URLSearchParams(location.search).get('mode'),readStorage('kord-atlas-game-mode')),home,index,indexRequest,searchSequence=0;
+let mode=resolveGameMode(new URLSearchParams(location.search).get('mode'),readStorage('kord-atlas-game-mode')),home,searchSequence=0;const itemIndexes=new Map();
 const arrow=()=>{const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),use=document.createElementNS('http://www.w3.org/2000/svg','use');use.setAttribute('href','#home-arrow');svg.setAttribute('aria-hidden','true');svg.append(use);return svg;};
-async function loadHome(){
- const dynamic=serverProfiles||document.querySelector('meta[name="wiki-runtime"]')?.content==='php';
- if(!dynamic)return json('data/home.json');
- const response=await fetch('/api/content/data/home.json',{credentials:'same-origin',cache:'no-store'});
- if(!response.ok)throw Error('Сводка сайта временно недоступна');
- return response.json();
-}
+async function loadHome(){ return json('data/home.json'); }
 const count=value=>Number.isSafeInteger(value)&&value>=0?value.toLocaleString('ru-RU'):'—';
 const word=(value,one,few,many)=>{const n=Math.abs(Number(value));return n%10===1&&n%100!==11?one:n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?few:many;};
 function statistics(){
@@ -69,11 +63,12 @@ async function renderSearch(){
  if(query.length<2){root.hidden=true;list.replaceChildren();return;}
  root.hidden=false;$('home-search-status').textContent='Ищем в справочнике…';
  try{
-  if(!home)home=await loadHome();
-  if(!index)index=await(indexRequest??=json('data/page-routes.json').catch(error=>{indexRequest=null;throw error;}));
+  if(!home)home=await json('data/home.json');
+  if(!itemIndexes.has(mode))itemIndexes.set(mode,pageDataset('search-items-'+mode,`data/guide/items-${mode}.json`,{view:'lookup'}).catch(error=>{itemIndexes.delete(mode);throw error;}));
+  const index=await itemIndexes.get(mode);
   if(sequence!==searchSequence)return;
   const snapshot=home.modes[mode],traderNames=new Map(snapshot.traders.map(trader=>[trader.id,trader.name]));
-  const records=[...snapshot.tasks.map(task=>({name:task.name,kind:task.story?'Основной сюжет':task.archive?'Архивный квест':'Квест',detail:traderNames.get(task.trader)||'',href:questHref(task.id,mode)})),...home.maps.map(map=>({name:map.name,kind:'Карта',href:siteHref('raid.html?'+new URLSearchParams({map:map.id,mode}))})),...home.bosses.map(boss=>({name:boss.name,kind:'Босс',href:siteHref('boss.html?'+new URLSearchParams({boss:boss.slug,mode}))})),...Object.entries(index.items).filter(([,item])=>!/^\s*(?:none|debug|test item|unknown)\b/i.test(item.name)).map(([id,item])=>({name:item.name,kind:'Предмет',href:siteHref('reference.html?'+new URLSearchParams({tab:'items',item:id,mode}))}))];
+  const records=[...snapshot.tasks.map(task=>({name:task.name,kind:task.story?'Основной сюжет':task.archive?'Архивный квест':'Квест',detail:traderNames.get(task.trader)||'',href:questHref(task.id,mode)})),...home.maps.map(map=>({name:map.name,kind:'Карта',href:siteHref('raid.html?'+new URLSearchParams({map:map.id,mode}))})),...home.bosses.map(boss=>({name:boss.name,kind:'Босс',href:siteHref('boss.html?'+new URLSearchParams({boss:boss.slug,mode}))})),...index.items.map(item=>[item.id,item]).filter(([,item])=>!/^\s*(?:none|debug|test item|unknown)\b/i.test(item.name)).map(([id,item])=>({name:item.name,kind:'Предмет',href:siteHref('reference.html?'+new URLSearchParams({tab:'items',item:id,mode}))}))];
   const words=query.split(/\s+/),matches=records.filter(record=>words.every(word=>normalize(record.name).includes(word)));
   matches.sort((a,b)=>(normalize(b.name)===query)-(normalize(a.name)===query)||(normalize(b.name).startsWith(query))-(normalize(a.name).startsWith(query))||a.name.localeCompare(b.name,'ru'));
   list.replaceChildren();$('home-search-status').textContent=matches.length?'Найдено: '+matches.length+(matches.length>8?' · первые 8 результатов':''):'Ничего не найдено. Попробуй другое название.';
@@ -88,6 +83,4 @@ $('home-search-form').onsubmit=async event=>{event.preventDefault();if(!$('home-
 for(const button of document.querySelectorAll('.home-mode button'))button.onclick=()=>applyMode(button.dataset.mode);
 globalThis.addEventListener('wiki:state',event=>{if(event.detail?.key==='kord-atlas-game-mode'){const next=readStorage('kord-atlas-game-mode');if(next!==mode)applyMode(next,false);}else if([`kord-atlas-quests-${mode}-v1`,`kord-atlas-quest-view-${mode}-v1`].includes(event.detail?.key))journal();});
 relink();
-try{home=await loadHome();statistics();traders();journal();}catch{
- $('home-progress-label').textContent='Сводка временно недоступна';$('home-documents-summary').textContent='Не удалось загрузить сводку документов. Открой атлас, чтобы посмотреть точки.';
-}
+home=await loadHome();statistics();traders();journal();

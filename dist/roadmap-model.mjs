@@ -1,5 +1,5 @@
-import {normalize} from './model.mjs';
-import {idOf,questState} from './quest-model.mjs';
+import {normalize} from './model.mjs?v=page-content-20261017';
+import {idOf,questState} from './quest-model.mjs?v=page-content-20261017';
 
 export function chapterGraph(task,{mode='regular',branch='',done=new Set()}={}){
  const visible=(task.objectives||[]).filter(o=>!o.modes||o.modes.includes(mode)),byId=new Map(visible.map(o=>[o.id,o]));

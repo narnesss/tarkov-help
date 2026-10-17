@@ -1,5 +1,5 @@
-import {el,num} from './guide-common.mjs?v=lazy-20261016';
-import {looseItemOptions,filterLooseItems} from './loose-loot-model.mjs';
+import {el,num} from './guide-common.mjs?v=page-content-20261017';
+import {looseItemOptions,filterLooseItems} from './loose-loot-model.mjs?v=page-content-20261017';
 
 /** Item-level controls keep search separate from the map's global POI search. */
 export class LooseLootFilter{

@@ -1,6 +1,6 @@
-import {profileStore} from './profile-store.mjs';
-import {siteHref} from './site-routes.mjs?v=release-20261016';
-import {renderProfileNavigation} from './profile-navigation.mjs?v=session-20261016';
+import {profileStore} from './profile-store.mjs?v=page-content-20261017';
+import {siteHref} from './site-routes.mjs?v=page-content-20261017';
+import {renderProfileNavigation} from './profile-navigation.mjs?v=page-content-20261017';
 
 const node = (tag, text, className = '') => { const n = document.createElement(tag); if (text) n.textContent = text; n.className = className; return n; };
 function button(text, handler, className = 'button') { const b = node('button', text, className); b.type = 'button'; b.onclick = handler; return b; }

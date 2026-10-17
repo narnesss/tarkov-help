@@ -24,7 +24,7 @@ test('новый опубликованный квест открывается 
   }finally{globalThis.fetch=saved;}
 });
 
-test('CMS читается свежей без cookie, ошибка оставляет возможность загрузки статического снимка',async()=>{
+test('CMS читается без cookie; при ошибке API статический снимок запрещён',async()=>{
   const saved=globalThis.document;
   globalThis.document={querySelector:()=>({content:'php'})};
   try{
@@ -35,7 +35,7 @@ test('CMS читается свежей без cookie, ошибка оставл
       return Response.json({cms:true,tasks:[]});
     });
     assert.equal((await reply.json()).cms,true);
-    assert.equal(await contentResponse('data/maps.json',undefined,async()=>new Response('',{status:503})),null);
+    await assert.rejects(contentResponse('data/maps.json',undefined,async()=>new Response('',{status:503})),/загрузить данные с сервера/);
     assert.equal(await contentResponse('https://json.tarkov.dev/pve/tasks',undefined,()=>{throw Error('must not request');}),null);
   }finally{globalThis.document=saved;}
 });

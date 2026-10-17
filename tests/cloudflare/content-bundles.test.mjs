@@ -10,20 +10,17 @@ test('14 файлов квестов или 6 справочников карт�
     assert.equal(calls,1);assert.deepEqual(values.map(x=>x.path),PUBLIC_BUNDLES[name].map(([path])=>path));
   }
 });
-test('статический экспорт и временно недоступный новый endpoint сохраняют прежние файлы',async()=>{
-  for(const response of [null,Response.json({files:{}})]){
-    const values=await loadContentBundle('quest-extras',{bundle:async()=>response,read:async path=>{if(path.includes('quest-conditions'))throw Error('optional missing');return {path};}});
-    assert.equal(values.length,14);assert.deepEqual(values[2],{quests:{}});
-  }
-  await assert.rejects(loadContentBundle('raid-base',{bundle:async()=>null,read:async()=>{throw Error('required missing');}}),/required missing/);
+test('ошибочный набор не подменяется статическими файлами',async()=>{
+ for(const response of [null,Response.json({files:{}})])await assert.rejects(loadContentBundle('quest-extras',{bundle:async()=>response,read:()=>{throw Error('Статические данные запрещены');}}),/неполный набор/);
 });
+
 test('загрузка набора сохраняет private API-контракт и не отправляет cookie',async()=>{
   const before=globalThis.document;globalThis.document={querySelector:()=>({content:'php'})};
   try{
     const response=await contentBundleResponse('quest-extras',undefined,async(path,options)=>{
       assert.equal(path,'/api/content/bundle/quest-extras');assert.equal(options.cache,'no-store');assert.equal(options.credentials,'omit');return Response.json({files:{}});
     });
-    assert.ok(response);assert.equal(await contentBundleResponse('raid-base',undefined,async()=>new Response('',{status:503})),null);
+    assert.ok(response);await assert.rejects(contentBundleResponse('raid-base',undefined,async()=>new Response('',{status:503})),/загрузить данные с сервера/);
     assert.equal(await contentBundleResponse('../state',undefined,()=>{throw Error('Недопустимый запрос');}),null);
   }finally{globalThis.document=before;}
 });

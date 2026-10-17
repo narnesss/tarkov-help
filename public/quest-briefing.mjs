@@ -1,4 +1,4 @@
-import {el} from './guide-common.mjs?v=lazy-20261016';
+import {el} from './guide-common.mjs?v=page-content-20261017';
 
 export function questBriefing(task){
  const briefing=task.questContent?.briefing;

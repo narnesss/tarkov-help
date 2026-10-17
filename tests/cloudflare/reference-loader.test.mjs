@@ -24,15 +24,17 @@ test('связи квестов нужны для рецептов, бартер
     assert.equal(selected,tab==='items'?'lookup':'catalog');
   }
 });
-test('автономный справочник сохраняет обогащение квестов и выбранный режим',async()=>{
-  let extraCalls=0;const paths=[];const extra={media:{quests:{}}};
-  const result=await loadReferenceSources('regular',{
-    dataset:async(key,url)=>{paths.push(url);return {tasks:[]};},json:async()=>({}),
-    extras:async()=>{extraCalls++;return extra;},
-  });
-  assert.equal(extraCalls,1);assert.equal(result[5],extra);
-  assert.deepEqual(paths.sort(),['data/guide/items-regular.json','data/guide/quests-regular.json','data/guide/reference-regular.json']);
+test('карточка предмета получает только выбранную запись и её серверные связи',async()=>{
+ const calls=[],selected={items:[{id:'selected'}],related:{reference:{crafts:[{id:'craft'}]},quests:{cms:true,tasks:[{id:'related'}]}}};
+ const result=await loadReferenceSources('regular',{dataset:async(key,path,options)=>{calls.push([path,options]);return selected;},json:()=>{throw Error('Лишний запрос');}},'items','selected');
+ assert.deepEqual(calls,[['data/guide/items-regular.json',{view:'detail',id:'selected'}]]);assert.equal(result[2].tasks[0].id,'related');assert.equal(result[0].crafts[0].id,'craft');
 });
+
+test('достижения не загружают предметы, квесты или данные других разделов',async()=>{
+ const calls=[];await loadReferenceSources('pve',{dataset:async(key,path,options)=>{calls.push([path,options]);return {};},json:()=>{throw Error('Лишний запрос');}},'achievements');
+ assert.deepEqual(calls,[['data/guide/reference-pve.json',{view:'catalog',section:'achievements'}]]);
+});
+
 test('ошибка основного каталога не заменяется неполным справочником',async()=>{
   await assert.rejects(loadReferenceSources('pve',{
     dataset:async()=>{throw Error('Нет каталога');},json:async()=>({}),extras:async()=>({}),

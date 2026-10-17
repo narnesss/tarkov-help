@@ -65,7 +65,13 @@ for(const filename of files){
  if(filename.endsWith('.json.gz'))JSON.parse(gunzipSync(fs.readFileSync(filename)));
  else if(filename.endsWith('.json'))JSON.parse(fs.readFileSync(filename));
 }
-const compressed=JSON.parse(fs.readFileSync(path.join(site,'data/compressed.json')));
+for(const name of ['quests/boreas','boss/birdeye']){
+ const html=fs.readFileSync(path.join(site,name+'.html'),'utf8');assert.ok(html.includes('data-content-state="loading"'),name);
+ assert.ok(!html.includes(name.startsWith('quests')?'id="quest-search"':'id="boss-search"'),name+' не содержит поиск каталога');
+}
+for(const file of files.filter(name=>name.startsWith(path.join(site,'data')+path.sep))){assert.ok(['page-routes.json','navigation-routes.json','site-render-routes.json','view-export.json'].includes(path.basename(file)),'Игровые данные не публикуются: '+file);}
+const compressed={};
+assert.ok(!fs.existsSync(path.join(site,'data/guide/quests-pve.json.gz')),'Игровые снимки не публикуются в frontend');
 for(const [source,target] of Object.entries(compressed))assert.ok(fs.existsSync(path.join(site,target)),source);
 for(const filename of files.filter(name=>name.endsWith('.html'))){
  const source=fs.readFileSync(filename,'utf8');

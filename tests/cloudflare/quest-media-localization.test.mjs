@@ -13,8 +13,8 @@ const story = read('story');
 
 test('версия gzip-таблицы переводов обходит прежний статический кэш и корректно распаковывается',async()=>{
   const original=globalThis.fetch,requested=[],url='data/guide/media-localization.json.gz?v=media-ru-20261017';
-  globalThis.fetch=async target=>{requested.push(target);return target==='data/compressed.json'?Response.json({}):new Response(gzipSync(JSON.stringify({images:{test:{url:'assets/ru.webp'}}})));};
-  try{assert.deepEqual(await json(url),{images:{test:{url:'assets/ru.webp'}}});assert.ok(requested.includes(url));}
+  globalThis.fetch=async target=>{requested.push(target);return Response.json({images:{test:{url:'assets/ru.webp'}}});};
+  try{assert.deepEqual(await json(url),{images:{test:{url:'assets/ru.webp'}}});assert.deepEqual(requested,['/api/content/data/guide/media-localization.json']);}
   finally{globalThis.fetch=original;}
 });
 

@@ -1,21 +1,21 @@
-import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs?v=release-20261016';
-import {publicLinkURL,publicAttribution} from './public-links.mjs';
-import {LooseLootFilter} from './loose-loot-ui.mjs?v=lazy-20261016';
-import {LooseLootPreferences,loosePresentation,looseItemRecord,looseItemIds,LOOSE_FALLBACK_ICON} from './loose-loot-model.mjs';
-import {resolveGameMode} from './game-mode.mjs';
-import {readPersonal,writePersonal} from './profile-store.mjs';
+import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs?v=page-content-20261017';
+import {publicLinkURL,publicAttribution} from './public-links.mjs?v=page-content-20261017';
+import {LooseLootFilter} from './loose-loot-ui.mjs?v=page-content-20261017';
+import {LooseLootPreferences,loosePresentation,looseItemRecord,looseItemIds,LOOSE_FALLBACK_ICON} from './loose-loot-model.mjs?v=page-content-20261017';
+import {resolveGameMode} from './game-mode.mjs?v=page-content-20261017';
+import {readPersonal,writePersonal} from './profile-store.mjs?v=page-content-20261017';
 const storePersonal=(key,value)=>{if(!writePersonal(key,value))throw new Error('Локальное сохранение недоступно');};
-import {ruText,localizeDisplay} from './ru-data.mjs';
-import {questExtras,mediaFor} from './quest-extras.mjs?v=lazy-20261016';
-import {pageDataset} from './page-data.mjs?v=lazy-20261016';
-import {questGalleryPlan} from './quest-view-model.mjs';
-import {galleryBlock} from './gallery.mjs?v=lazy-20261016';
-import {json} from './guide-common.mjs?v=lazy-20261016';
-import {loadContentBundle} from './content-bundles.mjs?v=lazy-20261016';
-import {bindMapTooltip} from './raid-tooltip.mjs';
-import {scopedRaidPoints} from './raid-scope.mjs';
-import {QuestMapFocusReceiver} from './quest-map-messages.mjs';
-import { CATEGORIES, LOOT_NAMES, titleOf, validPosition, floorOf, poiFloor, filterPois, projectPosition, projectRaster, rasterRegion, iconPath, displayPosition } from './raid-model.mjs';
+import {ruText,localizeDisplay} from './ru-data.mjs?v=page-content-20261017';
+import {questExtras,mediaFor} from './quest-extras.mjs?v=page-content-20261017';
+import {pageDataset} from './page-data.mjs?v=page-content-20261017';
+import {questGalleryPlan} from './quest-view-model.mjs?v=page-content-20261017';
+import {galleryBlock} from './gallery.mjs?v=page-content-20261017';
+import {json} from './guide-common.mjs?v=page-content-20261017';
+import {loadContentBundle} from './content-bundles.mjs?v=page-content-20261017';
+import {bindMapTooltip} from './raid-tooltip.mjs?v=page-content-20261017';
+import {scopedRaidPoints} from './raid-scope.mjs?v=page-content-20261017';
+import {QuestMapFocusReceiver} from './quest-map-messages.mjs?v=page-content-20261017';
+import { CATEGORIES, LOOT_NAMES, titleOf, validPosition, floorOf, poiFloor, filterPois, projectPosition, projectRaster, rasterRegion, iconPath, displayPosition } from './raid-model.mjs?v=page-content-20261017';
 
 const $ = id => document.getElementById(id);
 const el = (tag, text = '', cls = '') => { const n = document.createElement(tag); n.textContent = ruText(text); n.className = cls; return n; };
@@ -427,4 +427,4 @@ async function start() {
   if(params.has('q'))$('raid-search').value=params.get('q');if(params.has('category')&&CATEGORIES[params.get('category')]){categories.clear();categories.add(params.get('category'));}if(questFilter){categories.clear();categories.add('quest');$('raid-search').value='';$('raid-status').value='all';}
   const id=params.get('map')||prefs.map||'shoreline';await setLocation(maps.some(m=>m.id===id)?id:'shoreline',{initial:true});
 }
-start().catch(e=>{$('raid-loading').hidden=false;$('raid-loading').replaceChildren(el('span',e.message));const b=el('button','Обновить страницу','button');b.onclick=()=>location.reload();$('raid-loading').append(b);});
+await start();

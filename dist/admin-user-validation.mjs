@@ -1,4 +1,4 @@
-import {passwordError} from './password-policy.mjs?v=policy-1';
+import {passwordError} from './password-policy.mjs?v=page-content-20261017';
 
 // Предварительная проверка помогает заполнению; сервер повторно проверяет каждый POST.
 export function playerErrors(values,{creating=false}={}){

@@ -1,4 +1,4 @@
-import {normalize} from './model.mjs';
+import {normalize} from './model.mjs?v=page-content-20261017';
 
 export const QUEST_STATES={notstarted:'Не начат',active:'В процессе',complete:'Выполнен',failed:'Провален'};
 export const idOf=value=>typeof value==='string'?value:value?.id;
@@ -8,13 +8,13 @@ export function taskMaps(task,maps=[]){
   const ids=new Set([idOf(task.map),...(task.objectives||[]).flatMap(o=>[...(o.maps||[]).map(idOf),...(o.zones||[]).map(z=>idOf(z.map))])].filter(Boolean));
   return maps.filter(m=>ids.has(m.id));
 }
-export function sanitizeQuestProgress(raw,tasks){
+export function sanitizeQuestProgress(raw,tasks,{partial=false}={}){
   const valid=new Map(tasks.map(t=>[t.id,t]));const out={version:1,mode:['regular','pve'].includes(raw?.mode)?raw.mode:undefined,level:Math.max(1,Math.min(100,Math.floor(Number(raw?.level)||1))),faction:['BEAR','USEC'].includes(raw?.faction)?raw.faction:'any',quests:{}};
   if(!raw?.quests||typeof raw.quests!=='object'||Array.isArray(raw.quests))return out;
   for(const [id,entry] of Object.entries(raw.quests)){
-    if(!valid.has(id)||!entry||typeof entry!=='object')continue;
-    const objectives=new Set((valid.get(id).objectives||[]).map(o=>o.id));
-    out.quests[id]={storyBranch:(valid.get(id).storyBranches||[]).some(b=>b.id===entry.storyBranch)?entry.storyBranch:'',status:Object.hasOwn(QUEST_STATES,entry.status)?entry.status:'notstarted',favorite:entry.favorite===true,note:typeof entry.note==='string'?entry.note.slice(0,3000):'',objectives:Array.isArray(entry.objectives)?[...new Set(entry.objectives.filter(x=>objectives.has(x)))]:[]};
+    if((!valid.has(id)&&!partial)||!entry||typeof entry!=='object'||Array.isArray(entry)||['__proto__','constructor','prototype'].includes(id))continue;
+    const task=valid.get(id),objectives=new Set((task?.objectives||[]).map(o=>o.id)),unknown=partial;
+    out.quests[id]={storyBranch:(unknown&&typeof entry.storyBranch==='string'||(task?.storyBranches||[]).some(b=>b.id===entry.storyBranch))?entry.storyBranch:'',status:Object.hasOwn(QUEST_STATES,entry.status)?entry.status:'notstarted',favorite:entry.favorite===true,note:typeof entry.note==='string'?entry.note.slice(0,3000):'',objectives:Array.isArray(entry.objectives)?[...new Set(entry.objectives.filter(x=>typeof x==='string'&&(unknown||objectives.has(x))))]:[]};
   }return out;
 }
 export const questState=(task,progress)=>progress.quests?.[task.id]?.status||'notstarted';

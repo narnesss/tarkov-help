@@ -1,5 +1,5 @@
-import {el,action} from './guide-common.mjs?v=lazy-20261016';
-import {readPersonal,writePersonal} from './profile-store.mjs';
+import {el,action} from './guide-common.mjs?v=page-content-20261017';
+import {readPersonal,writePersonal} from './profile-store.mjs?v=page-content-20261017';
 
 const endings={savior:'Спаситель',debtor:'Должник',survivor:'Выживший',fallen:'Падший'};
 const visible=(nodes,mode)=>(nodes||[]).filter(node=>!node.modes||node.modes.includes(mode));

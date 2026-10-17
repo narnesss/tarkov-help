@@ -1,4 +1,4 @@
-import {assemblyFrames} from './gunsmith-model.mjs';
+import {assemblyFrames} from './gunsmith-model.mjs?v=page-content-20261017';
 
 export const QUEST_TABS={};
 export const hasQuestRoadmap=task=>task?.id==='68da33fe00868edcb6025ac4'||task?.normalizedName==='the-ticket';

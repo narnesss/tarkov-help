@@ -27,8 +27,24 @@
 @if ($params !== [])
   <script type="application/json" id="wiki-page-params">{!! json_encode($params, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) !!}</script>
 @endif
+@if (in_array($page, ['index','documents','raid','quests','quest','reference','boss','account'], true))
+<style>
+body[data-content-state="loading"] > :is(main,#app-layout,#raid-layout,.site-legal-footer),
+body[data-content-state="error"] > :is(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: hidden; }
+.page-boot-status { position: fixed; inset: var(--header-height, 100px) 16px 16px; display: grid; place-content: center; gap: 16px; text-align: center; color: #c6d1c1; z-index: 4; }
+.reference-detail-layout { display: flex; flex-direction: column; }
+.reference-detail-layout > .reference-mode { align-self: flex-end; max-width: 180px; }
+.reference-detail-layout > .reference-main { flex: 1; min-height: 0; width: 100%; }
+body[data-content-state="ready"] > .page-boot-status { display: none; }
+body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
+</style>
+@endif
 </head>
-<body {!! $meta['body_attributes'] !!}>
+<body {!! $meta['body_attributes'] !!} @if (in_array($page, ['index','documents','raid','quests','quest','reference','boss','account'], true)) data-content-state="loading" @endif>
+@if (in_array($page, ['index','documents','raid','quests','quest','reference','boss','account'], true))
+<div class="page-boot-status" id="page-boot-status" role="status" aria-live="polite">Загрузка страницы…</div>
+<noscript>Для отображения данных включите JavaScript.</noscript>
+@endif
 @yield('content')
 @unless (in_array($page, ['documents', 'raid'], true))
 <footer class="site-legal-footer">@include('components.legal-navigation')</footer>

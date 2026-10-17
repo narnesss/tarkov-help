@@ -34,3 +34,11 @@
 
 Источники: https://developers.cloudflare.com/workers/static-assets/binding/
 и https://developers.cloudflare.com/workers/wrangler/commands/workers/.
+
+
+Экспорт frontend содержит HTML/CSS/JS/изображения и метаданные маршрутов. Игровые JSON из
+`public/data` используются при подготовке seed backend, но не копируются в `dist`.
+Для данных нужен доступный Laravel API; при его отказе frontend показывает ошибку и повтор,
+не подставляя устаревший снимок. Сначала устанавливать совместимый backend с `view=detail`
+для боссов и предметов, `contextTasks/ui` для квестов и `section` для справочника, затем Worker.
+Публиковать только согласованный проверенный коммит, не затрагивая параллельные рабочие ветки.

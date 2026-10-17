@@ -1,8 +1,8 @@
-import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs?v=release-20261016';
-import {readPersonal,writePersonal} from './profile-store.mjs';
+import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs?v=page-content-20261017';
+import {readPersonal,writePersonal} from './profile-store.mjs?v=page-content-20261017';
 const storePersonal=(key,value)=>{if(!writePersonal(key,value))throw new Error('Локальное сохранение недоступно');};
-import { STORAGE_KEY, FLOOR_NAMES, filterSpawns, sanitizeProgress, fitTransform, zoomTransform, hasCoordinates } from './model.mjs?v=kord-20261016';
-import {documentViewport,documentPointPosition,documentLevelSvg,documentFloors} from './document-map.mjs?v=levels-ui-20261016';
+import { STORAGE_KEY, FLOOR_NAMES, filterSpawns, sanitizeProgress, fitTransform, zoomTransform, hasCoordinates } from './model.mjs?v=page-content-20261017';
+import {documentViewport,documentPointPosition,documentLevelSvg,documentFloors} from './document-map.mjs?v=page-content-20261017';
 
 const $ = id => document.getElementById(id);
 const compactViewport = () => innerWidth <= 1200;
@@ -38,7 +38,7 @@ function safeRead(key) {
   return readPersonal(key);
 }
 async function fetchData(path) {
-  const {contentResponse}=await import('./content-client.mjs?v=lazy-20261016');
+  const {contentResponse}=await import('./content-client.mjs?v=page-content-20261017');
   const content=await contentResponse(path);if(content)return content.json();
   const response = await fetch(path);
   if (!response.ok) throw new Error('Не удалось загрузить ' + path);
@@ -746,7 +746,4 @@ async function start() {
   // Открытие карты и изменение размера значков не записывают игровой прогресс.
 }
 
-start().catch(error => {
-  console.error('Escape from Tarkov Wiki startup failed:', error);
-  $('boot-error').hidden = false;
-});
+await start();

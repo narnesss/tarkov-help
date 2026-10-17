@@ -20,3 +20,8 @@ test('предзагружаются только публичные данны�
   run('account','mode=pve');run('raid','mode=pve&map=../../state');run('quests','mode=unknown');run('quests','');
   assert.deepEqual(paths,['data/guide/quests-pve.json','data/guide/items-regular.json','data/raid/pve/interchange.json']);
 });
+
+test('вложенные карточки предзагружаются без каталога',()=>{
+ const calls=[];for(const [page,query] of [['quests','mode=pve&quest=boreas-id'],['reference','mode=pve&tab=items&item=item-id']])preloadPageData(page,{params:new URLSearchParams(query),preload:(path,options)=>calls.push([path,options])});
+ assert.deepEqual(calls,[['data/guide/quests-pve.json',{view:'detail',id:'boreas-id'}],['data/guide/items-pve.json',{view:'detail',id:'item-id'}]]);
+});

@@ -1,4 +1,4 @@
-import {idOf} from './quest-model.mjs';
+import {idOf} from './quest-model.mjs?v=page-content-20261017';
 export const priceOf=item=>Number(item?.lastLowPrice)>0?Number(item.lastLowPrice):Number(item?.avg24hPrice)>0?Number(item.avg24hPrice):null;
 export const slotsOf=item=>Math.max(1,(Number(item?.width)||1)*(Number(item?.height)||1));
 export const sellPrice=item=>item?.marketTraderPrice??(Math.max(0,...(item?.sellToTrader||item?.sellFor||[]).map(p=>Number(p.priceRUB)||0))||null);

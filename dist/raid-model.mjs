@@ -1,6 +1,6 @@
-import {ruText} from './ru-data.mjs';
-import { normalize } from './model.mjs';
-import {matchingLooseItems,LOOSE_FALLBACK_ICON} from './loose-loot-model.mjs';
+import {ruText} from './ru-data.mjs?v=page-content-20261017';
+import { normalize } from './model.mjs?v=page-content-20261017';
+import {matchingLooseItems,LOOSE_FALLBACK_ICON} from './loose-loot-model.mjs?v=page-content-20261017';
 
 export const CATEGORIES = {
   'extract-pmc': ['Выходы ЧВК', '#a7d967', '↗'],

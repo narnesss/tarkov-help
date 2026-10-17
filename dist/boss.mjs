@@ -1,11 +1,12 @@
-import {siteHref,pageParams,canonicalURL} from './site-routes.mjs?v=release-20261016';
-import {resolveGameMode} from './game-mode.mjs';
-import {publicAttribution} from './public-links.mjs';
-import {$,action,el,empty,external,image,json,freshDataset,num,readStorage,writeStorage,section} from './guide-common.mjs?v=lazy-20261016';
-import {localizeDisplay} from './ru-data.mjs';
-import {mapAlias} from './quest-model.mjs';
-import {normalize} from './model.mjs';
-import {findBoss,bossSpawns,bossHealth,relatedBosses} from './boss-model.mjs';
+import {siteHref,pageParams,canonicalURL} from './site-routes.mjs?v=page-content-20261017';
+import {resolveGameMode} from './game-mode.mjs?v=page-content-20261017';
+import {publicAttribution} from './public-links.mjs?v=page-content-20261017';
+import {$,action,el,empty,external,image,json,num,readStorage,writeStorage,section} from './guide-common.mjs?v=page-content-20261017';
+import {localizeDisplay} from './ru-data.mjs?v=page-content-20261017';
+import {mapAlias} from './quest-model.mjs?v=page-content-20261017';
+import {normalize} from './model.mjs?v=page-content-20261017';
+import {pageDataset} from './page-data.mjs?v=page-content-20261017';
+import {findBoss,bossSpawns,bossHealth,relatedBosses} from './boss-model.mjs?v=page-content-20261017';
 
 const params=pageParams();
 let mode=resolveGameMode(params.get('mode'),readStorage('kord-atlas-game-mode'));
@@ -30,7 +31,7 @@ function healthPanel(profile){
 }
 function mapLink(map,label){const link=el('a',label||map.name,'button');link.href=siteHref(`raid.html?map=${encodeURIComponent(mapAlias(map.normalizedName))}&mode=${mode}`);return link;}
 function detail(profile){
- const root=$('boss-content');root.replaceChildren();$('boss-catalog-controls').hidden=true;$('boss-title').textContent=profile.name;document.title=profile.name+' — Escape from Tarkov Wiki';
+ const root=$('boss-content');root.replaceChildren();if($('boss-catalog-controls'))$('boss-catalog-controls').hidden=true;$('boss-title').textContent=profile.name;document.title=profile.name+' — Escape from Tarkov Wiki';
  const hero=el('section','','boss-hero'),portrait=el('div','','boss-portrait');portrait.append(el('span',profile.name[0],'boss-portrait-fallback'));
  if(profile.imagePortraitLink)portrait.append(image(profile.imagePortraitLink,profile.name));
  const text=el('div');text.append(el('span',profile.faction,'eyebrow'),el('h2',profile.name),el('p',profile.description));const stats=el('div','','boss-stat');stats.append(el('span','Общее здоровье'),el('strong',num(profile.healthTotal)));text.append(stats);hero.append(portrait,text);root.append(hero);
@@ -56,14 +57,14 @@ function listing(){
  for(const profile of profiles){const card=el('a','','boss-card');card.href=href(profile);card.append(el('span',profile.faction,'eyebrow'),el('h2',profile.name),el('p',profile.description),el('strong',`${num(profile.healthTotal)} здоровья`),el('span','Описание и части тела →','boss-card-more'));cards.append(card);}root.append(profiles.length?cards:empty('Боссы не найдены. Измените поиск.'));
 }
 async function load(){
- const current=++request;$('boss-mode').value=mode;$('boss-content').replaceChildren(empty('Загрузка боссов…'));
- try{const [data,api]=await Promise.all([json('data/guide/bosses.json'),freshDataset('reference-'+mode,`data/guide/reference-${mode}.json`)]);if(current!==request)return;catalog=data;reference=localizeDisplay(api);
+ const current=++request,id=pageParams().get('boss');$('boss-mode').value=mode;if($('boss-catalog-controls'))$('boss-catalog-controls').hidden=Boolean(id);$('boss-title').textContent=id?'Загрузка босса…':'Боссы Таркова';if($('boss-description'))$('boss-description').hidden=Boolean(id);$('boss-content').replaceChildren(empty('Загрузка боссов…'));
+ try{const data=id?await pageDataset('boss-'+id,'data/guide/bosses.json',{view:'detail',id,mode}):await json('data/guide/bosses.json');const api=data.reference||{meta:{},maps:[]};if(current!==request)return;catalog=data;reference=localizeDisplay(api);
   $('boss-back').href=siteHref(`reference.html?tab=bosses&mode=${mode}`);const top=$('boss-guide');if(top)top.href=$('boss-back').href;
-  $('boss-search').value=readStorage(prefsKey())?.bossPage?.query||'';
-  const id=pageParams().get('boss');if(id){const profile=findBoss(id,catalog.profiles);if(profile)detail(profile);else{$('boss-content').replaceChildren(empty('Босс не найден. Откройте общий каталог.'));$('boss-catalog-controls').hidden=false;}}else listing();
- }catch{if(current===request)$('boss-content').replaceChildren(empty('Не удалось загрузить справочник боссов. Обновите страницу.'));}
+  if($('boss-search'))$('boss-search').value=readStorage(prefsKey())?.bossPage?.query||'';
+  if(id){const profile=findBoss(id,catalog.profiles);if(profile)detail(profile);else{$('boss-content').replaceChildren(empty('Босс не найден. Откройте общий каталог.'));$('boss-title').textContent='Босс не найден';}}else listing();
+ }catch(error){if(current===request){$('boss-title').textContent=id?'Босс недоступен':'Боссы Таркова';$('boss-content').replaceChildren(empty(error.message||'Не удалось загрузить данные босса.'),action('Повторить',()=>load()));}}
 }
-$('boss-search').oninput=listing;
+if($('boss-search'))$('boss-search').oninput=listing;
 $('boss-mode').onchange=()=>{mode=$('boss-mode').value==='pve'?'pve':'regular';writeStorage('kord-atlas-game-mode',mode);const url=new URL(location.href);url.searchParams.set('mode',mode);history.replaceState(null,'',canonicalURL(url));return load();};
-globalThis.addEventListener('wiki:state',event=>{if(event.detail?.key===prefsKey()&&!params.has('boss')){$('boss-search').value=readStorage(prefsKey())?.bossPage?.query||'';listing();}});
+globalThis.addEventListener('wiki:state',event=>{if(event.detail?.key===prefsKey()&&!params.has('boss')){if($('boss-search'))$('boss-search').value=readStorage(prefsKey())?.bossPage?.query||'';listing();}});
 await load();

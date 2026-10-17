@@ -1,6 +1,6 @@
-import {el} from './guide-common.mjs?v=guides-20261016b';
-import {questMapPlan,questMapURL,questMapFocusIndexes,questMapForLocation,questMapKey} from './quest-map-model.mjs?v=guides-20261016b';
-import {QUEST_MAP_READY,QUEST_MAP_FOCUS,questMapContextMatches} from './quest-map-messages.mjs';
+import {el} from './guide-common.mjs?v=page-content-20261017';
+import {questMapPlan,questMapURL,questMapFocusIndexes,questMapForLocation,questMapKey} from './quest-map-model.mjs?v=page-content-20261017';
+import {QUEST_MAP_READY,QUEST_MAP_FOCUS,questMapContextMatches} from './quest-map-messages.mjs?v=page-content-20261017';
 let viewSequence=0;
 export class QuestMapView {
  constructor(task,{mode,index,objectives}) {

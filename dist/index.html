@@ -18,8 +18,20 @@
   <link rel="stylesheet" href="site-responsive.css?v=desktop-20261017">
   <link rel="modulepreload" href="profile-store.mjs">
   <meta name="wiki-routing" content="pages">
+<style>
+body[data-content-state="loading"] > :is(main,#app-layout,#raid-layout,.site-legal-footer),
+body[data-content-state="error"] > :is(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: hidden; }
+.page-boot-status { position: fixed; inset: var(--header-height, 100px) 16px 16px; display: grid; place-content: center; gap: 16px; text-align: center; color: #c6d1c1; z-index: 4; }
+.reference-detail-layout { display: flex; flex-direction: column; }
+.reference-detail-layout > .reference-mode { align-self: flex-end; max-width: 180px; }
+.reference-detail-layout > .reference-main { flex: 1; min-height: 0; width: 100%; }
+body[data-content-state="ready"] > .page-boot-status { display: none; }
+body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
+</style>
 </head>
-<body class="home-page" data-page="index">
+<body class="home-page" data-page="index"  data-content-state="loading" >
+<div class="page-boot-status" id="page-boot-status" role="status" aria-live="polite">Загрузка страницы…</div>
+<noscript>Для отображения данных включите JavaScript.</noscript>
 <svg class="svg-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
   <symbol id="home-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
   <symbol id="home-search-icon" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
@@ -100,7 +112,7 @@
   <section class="home-documents"><div><span class="home-kicker">KORD BREACH</span><h2>Секретные документы</h2><p id="home-documents-summary">Загружаем сводку документов…</p></div><a class="button quiet" href="documents.html">Открыть атлас <svg aria-hidden="true"><use href="#home-doc"/></svg></a></section>
   <footer class="home-footer"><div><img src="assets/site-logo.svg" alt="" width="30" height="30"><span>ESCAPE FROM TARKOV WIKI<small>Неофициальный справочник. Игровые материалы — Battlestate Games.</small></span></div><nav aria-label="Справочные материалы"><a href="https://tarkov.help/ru" target="_blank" rel="noopener noreferrer">Tarkov.help ↗</a><a href="https://escapefromtarkov.fandom.com/ru/wiki/Escape_from_Tarkov_Wiki" target="_blank" rel="noopener noreferrer">Русская Wiki ↗</a></nav></footer>
 </main>
-  <script type="module" src="bootstrap.mjs?v=counts-20261017"></script>
+  <script type="module" src="bootstrap.mjs?v=page-content-20261017"></script>
 <footer class="site-legal-footer"><nav class="legal-navigation" aria-label="Правовые документы"><a href="/terms">Условия использования</a><a href="/privacy">Политика конфиденциальности</a><a href="/personal-data">Согласие на обработку данных</a><a href="/cookies">Использование cookie</a></nav>
 </footer>
 </body>

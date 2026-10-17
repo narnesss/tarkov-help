@@ -1,4 +1,4 @@
-import {idOf} from './quest-model.mjs';
+import {idOf} from './quest-model.mjs?v=page-content-20261017';
 
 /** Mutual options and directional failure effects are different relationships. */
 export function questChoiceIndex(tasks,reference={},mode='pve') {

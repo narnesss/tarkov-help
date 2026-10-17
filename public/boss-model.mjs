@@ -1,4 +1,4 @@
-import {normalize} from './model.mjs';
+import {normalize} from './model.mjs?v=page-content-20261017';
 
 export function findBoss(value,profiles){
  const query=normalize(value||'');

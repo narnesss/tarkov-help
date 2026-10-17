@@ -1,6 +1,6 @@
-import {action,el,external} from './guide-common.mjs?v=lazy-20261016';
-import {readPersonal,writePersonal} from './profile-store.mjs';
-import {TICKET_ROUTES,clampView,edgeRoute,findNodes,layoutGraph,zoomAt} from './roadmap-model.mjs';
+import {action,el,external} from './guide-common.mjs?v=page-content-20261017';
+import {readPersonal,writePersonal} from './profile-store.mjs?v=page-content-20261017';
+import {TICKET_ROUTES,clampView,edgeRoute,findNodes,layoutGraph,zoomAt} from './roadmap-model.mjs?v=page-content-20261017';
 
 let sequence=0;
 const svgNode=(name,attributes={})=>{const n=document.createElementNS('http://www.w3.org/2000/svg',name);for(const [k,v] of Object.entries(attributes))n.setAttribute(k,String(v));return n;};

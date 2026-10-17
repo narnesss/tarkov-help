@@ -1,39 +1,39 @@
-import {siteHref,pageParams,canonicalURL} from './site-routes.mjs?v=release-20261016';
-import {questChoiceIndex,questChoicePlan} from './quest-choice-model.mjs';
-import {QuestMapView} from './quest-map-view.mjs?v=guides-20261016b';
-import {questHref,catalogHref,catalogRoute,sectionTasks,catalogGroups,questPreview} from './quest-catalog-model.mjs?v=release-20261016';
-import {QuestObjectiveWorkspace} from './quest-objective-workspace.mjs?v=lazy-20261016';
-import {QuestSaveFeedback} from './quest-save-feedback.mjs?v=lazy-20261016';
-import {setObjective} from './quest-workspace-model.mjs';
-import {rewardLabels,resolveAchievement,rewardAchievementNames,groupRewardLines,rewardTradeUnlocks} from './quest-reward-model.mjs';
-import {hasQuestRoadmap,questGalleryPlan} from './quest-view-model.mjs?v=guides-20261016b';
-import {resolveGameMode} from './game-mode.mjs';
-import {ruText} from './ru-data.mjs';
-import {questExtras,questUiExtras,questMediaLocalization,enrichQuests,localizeQuestMediaTask} from './quest-extras.mjs?v=media-links-20261017';
-import {pageDataset} from './page-data.mjs?v=lazy-20261016';
-import {questBriefing} from './quest-briefing.mjs?v=guides-20261016b';
-import {questMapForLocation,questMapURL} from './quest-map-model.mjs?v=guides-20261016b';
-import {galleryBlock} from './gallery.mjs?v=guides-20261016b';
-import {objectiveConditions,objectiveGuide,questOverview} from './quest-details.mjs';
-import {orderedObjectives} from './roadmap-model.mjs';
-import {TicketQuestMap} from './ticket-quest-map.mjs?v=lazy-20261016';
-import {GunsmithView} from './gunsmith-ui.mjs?v=lazy-20261016';
-import {itemReferences,resolveQuestItem} from './quest-items.mjs';
-import {$,el,num,image,external,json,readStorage,writeStorage,toast,download,apiDataset,cached,section,action,empty} from './guide-common.mjs?v=guides-20261016b';
-import {QUEST_STATES,idOf,list,mapAlias,taskMaps,sanitizeQuestProgress,questState,availability,requirementStatus,followingTasks,filterQuests,chainColumns} from './quest-model.mjs';
+import {siteHref,pageParams,canonicalURL} from './site-routes.mjs?v=page-content-20261017';
+import {questChoiceIndex,questChoicePlan} from './quest-choice-model.mjs?v=page-content-20261017';
+import {QuestMapView} from './quest-map-view.mjs?v=page-content-20261017';
+import {questHref,catalogHref,catalogRoute,sectionTasks,catalogGroups,questPreview} from './quest-catalog-model.mjs?v=page-content-20261017';
+import {QuestObjectiveWorkspace} from './quest-objective-workspace.mjs?v=page-content-20261017';
+import {QuestSaveFeedback} from './quest-save-feedback.mjs?v=page-content-20261017';
+import {setObjective} from './quest-workspace-model.mjs?v=page-content-20261017';
+import {rewardLabels,resolveAchievement,rewardAchievementNames,groupRewardLines,rewardTradeUnlocks} from './quest-reward-model.mjs?v=page-content-20261017';
+import {hasQuestRoadmap,questGalleryPlan} from './quest-view-model.mjs?v=page-content-20261017';
+import {resolveGameMode} from './game-mode.mjs?v=page-content-20261017';
+import {ruText} from './ru-data.mjs?v=page-content-20261017';
+import {pageDataset} from './page-data.mjs?v=page-content-20261017';
+import {questBriefing} from './quest-briefing.mjs?v=page-content-20261017';
+import {questMapForLocation,questMapURL} from './quest-map-model.mjs?v=page-content-20261017';
+import {galleryBlock} from './gallery.mjs?v=page-content-20261017';
+import {objectiveConditions,objectiveGuide,questOverview} from './quest-details.mjs?v=page-content-20261017';
+import {orderedObjectives} from './roadmap-model.mjs?v=page-content-20261017';
+import {TicketQuestMap} from './ticket-quest-map.mjs?v=page-content-20261017';
+import {GunsmithView} from './gunsmith-ui.mjs?v=page-content-20261017';
+import {itemReferences,resolveQuestItem} from './quest-items.mjs?v=page-content-20261017';
+import {$,el,num,image,external,json,readStorage,writeStorage,toast,download,section,action,empty} from './guide-common.mjs?v=page-content-20261017';
+import {QUEST_STATES,idOf,list,mapAlias,taskMaps,sanitizeQuestProgress,questState,availability,requirementStatus,followingTasks,filterQuests,chainColumns} from './quest-model.mjs?v=page-content-20261017';
 
 const params=pageParams();
 let mode=resolveGameMode(params.get('mode'),readStorage('kord-atlas-game-mode'));
 let extras,data,tasks=[],byId=new Map(),traders=new Map(),maps=new Map(),progress,selected,filterTrader='all',limit=70,request=0,roadmap;
 let objectiveWorkspace,questMap,choices=new Map(),route=catalogRoute(location.href),returnCatalog;
 
-function catalogFilters(){return {q:$('quest-search').value,map:$('quest-map').value,status:$('quest-status').value,flag:$('quest-flag').value,sort:$('quest-sort').value};}
+function catalogFilters(){return {q:$('quest-search')?.value||'',map:$('quest-map')?.value||'all',status:$('quest-status')?.value||'all',flag:$('quest-flag')?.value||'all',sort:$('quest-sort')?.value||'level'};}
 function updateParams(){for(const key of [...params.keys()])params.delete(key);for(const [key,value] of pageParams())params.set(key,value);}
 function navigate(href,{replace=false}={}){
-  const target=new URL(href,location.href);
+  const target=new URL(href,location.href);if(!$('quest-search')&&catalogRoute(target.href).kind==='catalog'){location.assign(target.href);return;}
   if(target.href!==location.href)(replace?history.replaceState:history.pushState||history.replaceState).call(history,null,'',target);
   if(route.kind==='catalog'&&catalogRoute(target.href).kind==='quest')returnCatalog=catalogHref(route.section,mode,catalogFilters());
   updateParams();route=catalogRoute(location.href);closeFilters(false);feedback.clearUndo();
+  if(data?.partial&&(route.kind!=='quest'||!data.tasks.some(task=>task.id===route.id))){loadMode().catch(fail);return;}
   if(route.kind==='quest'){selected=byId.get(route.id);}
   else{selected=null;filterTrader=route.section;restoreView();}
   renderRoute();globalThis.scrollTo?.({top:0,behavior:'auto'});
@@ -43,14 +43,14 @@ function routeLink(label,href,className='text-button'){
  const a=el('a',label,className);a.href=href;a.onclick=e=>{if(e&&(e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||e.button>0))return;e?.preventDefault();navigate(href);};return a;
 }
 function backHref(){if(returnCatalog){const url=new URL(returnCatalog,location.href);url.searchParams.set('mode',mode);return url.pathname+url.search;}return catalogHref(selected?.story?'story':selected?.catalogSection==='supplementary'?'archive':idOf(selected?.trader)||'all',mode,catalogFilters());}
-function closeFilters(focus=true){const dialog=$('quest-filters-dialog'),layout=$('quest-layout');if(dialog.open)dialog.close();layout.prepend(document.querySelector('.quest-toolbar'));layout.classList.remove('show-filters');$('quest-mobile-filters').setAttribute('aria-expanded','false');if(focus)$('quest-mobile-filters').focus();}
+function closeFilters(focus=true){const dialog=$('quest-filters-dialog'),layout=$('quest-layout');if(!dialog)return;if(dialog.open)dialog.close();layout.prepend(document.querySelector('.quest-toolbar'));layout.classList.remove('show-filters');$('quest-mobile-filters').setAttribute('aria-expanded','false');if(focus)$('quest-mobile-filters').focus();}
 
 const progressKey=()=>`kord-atlas-quests-${mode}-v1`;
 const entry=t=>progress.quests[t.id]||{status:'notstarted',favorite:false,note:'',objectives:[]};
 const feedback=new QuestSaveFeedback(progressKey);
 const viewKey=()=>`kord-atlas-quest-view-${mode}-v1`;
-function saveView(){const {tab,...previous}=readStorage(viewKey())||{};writeStorage(viewKey(),{...previous,trader:filterTrader,query:$('quest-search').value,map:$('quest-map').value,status:$('quest-status').value,flag:$('quest-flag').value,sort:$('quest-sort').value,selected:selected?.id});}
-function restoreView(){
+function saveView(){const {tab,...previous}=readStorage(viewKey())||{};writeStorage(viewKey(),{...previous,trader:filterTrader,query:catalogFilters().q,map:catalogFilters().map,status:catalogFilters().status,flag:catalogFilters().flag,sort:catalogFilters().sort,selected:selected?.id});}
+function restoreView(){if(!$('quest-search'))return readStorage(viewKey())||{};
  const view=readStorage(viewKey())||{};filterTrader=route.kind==='catalog'?route.section:'all';
  const restore=route.kind==='quest';$('quest-search').value=params.get('q')||(restore&&typeof view.query==='string'?view.query:'');
  for(const key of ['map','status','flag','sort']){const control=$('quest-'+key),value=params.get(key)||(restore?view[key]:undefined);control.value=[...control.options].some(o=>o.value===value)?value:control.options[0]?.value||'';}return view;
@@ -74,7 +74,7 @@ function keyGroups(value){
 }
 function mapLink(mapId,questId,label='На карте',objective){const map=maps.get(idOf(mapId));if(!map)return null;const alias=mapAlias(map.normalizedName),plan=questMapForLocation(extras.questMaps?.modes?.[mode]?.[questId],alias,objective);const a=el('a',`${label}: ${map.name}`,'button');a.href=plan?questMapURL(questId,mode,plan,objective,false):siteHref(`raid.html?map=${encodeURIComponent(alias)}&quest=${encodeURIComponent(questId)}&mode=${mode}${objective?'&objective='+encodeURIComponent(objective):''}`);a.onclick=e=>{if(e&&(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button>0))return;if(questMap?.focus(alias,objective)){e?.preventDefault();}};return a;}
 function statusName(task){if(task.catalogUnavailableModes?.includes(mode))return 'Недоступен в '+mode.toUpperCase();const state=questState(task,progress);if(state!=='notstarted')return QUEST_STATES[state];const a=availability(task,progress);return a.available?(a.external?'Проверить условия':'По цепочке доступен'):'Закрыт';}
-function renderTraders(){
+function renderTraders(){if(!$('quest-traders'))return;
  const main=sectionTasks(tasks,'all'),total=main.filter(t=>questState(t,progress)==='complete').length;$('quest-done').textContent=num(total);$('quest-total').textContent=` / ${num(main.length)} выполнено`;$('quest-progress').max=main.length;$('quest-progress').value=total;
  const groups=catalogGroups(tasks,list(data.traders),progress),story=groups.find(tr=>tr.id==='story');
  $('quest-kappa-link').href=catalogHref('all',mode,{flag:'kappa'});$('quest-kappa-link').textContent='Для Каппы · '+main.filter(t=>t.kappaRequired).length;$('quest-kappa-link').onclick=e=>{if(e&&(e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||e.button>0))return;e?.preventDefault();navigate(catalogHref('all',mode,{flag:'kappa'}));};
@@ -104,7 +104,7 @@ function renderCatalogHeader(){
  const crumbs=$('quest-catalog-breadcrumbs');crumbs.replaceChildren();if(section!=='hub')crumbs.append(routeLink('Квесты',catalogHref('hub',mode)),el('span','›'),el('span',title));
  $('quest-list-title').textContent=section==='story'?'Сюжетные главы':section==='hub'?'Результаты поиска':'Список заданий';
 }
-function renderList(){
+function renderList(){if(!$('quest-list'))return;
  saveView();if(route.kind==='quest')return;
  const filters=catalogFilters(),isHub=route.section==='hub'&&!filters.q&&['map','status','flag'].every(key=>filters[key]==='all');
  $('quest-layout').dataset.view=isHub?'hub':'list';renderCatalogHeader();
@@ -124,7 +124,7 @@ function renderList(){
 function renderRoute(){
  const layout=$('quest-layout');layout.classList.toggle('detail-open',route.kind==='quest');
  if(route.kind==='quest'){
-  layout.dataset.view='quest';selected=byId.get(route.id);if(selected){if(data.cms&&(selected._detailPending||!extras.uiReady)){loadDetail(selected.id);}else{renderDetail();}}
+  layout.dataset.view='quest';selected=byId.get(route.id);if(selected){if(data.cms&&(selected._detailPending||!extras.uiReady||extras.questId!==selected.id)){loadDetail(selected.id);}else{renderDetail();}}
   else{questMap?.destroy();questMap=null;$('quest-detail').replaceChildren(empty('Задание не найдено в этом режиме.'),routeLink('← К каталогу квестов',catalogHref('hub',mode),'button'));document.title='Квест не найден — Escape from Tarkov Wiki';}
  }else{objectiveWorkspace=null;questMap?.destroy();questMap=null;roadmap?.destroy();roadmap=null;feedback.root=null;$('quest-detail').replaceChildren();selected=null;filterTrader=route.section;renderList();}
 }
@@ -338,9 +338,10 @@ function renderRewards(root,t){
  root.append(el('p','Бонусы убежища, издания и временных событий могут изменить итоговую награду.','guide-footer-note'));
 }
 function setData(bundle){
- if(!bundle.cms)bundle=enrichQuests(bundle,extras);
+ if(!bundle.cms)throw new Error('Сервер вернул неполные данные квеста.');
   if(!Array.isArray(bundle.tasks)||(!bundle.cms&&!bundle.tasks.length)||!bundle.tasks.every(t=>t.id&&typeof t.name==='string'&&Array.isArray(t.objectives)))throw new Error('API вернул неполный список заданий');
-  data=bundle;tasks=bundle.tasks;choices=questChoiceIndex(tasks,extras.choices,mode);byId=new Map(tasks.map(t=>[t.id,t]));traders=new Map(list(bundle.traders).map(t=>[t.id,t]));maps=new Map(list(bundle.maps).map(m=>[m.id,m]));progress=sanitizeQuestProgress({...readStorage(progressKey()),mode},tasks);
+  data=bundle;tasks=[...bundle.tasks,...(bundle.contextTasks||[])];choices=questChoiceIndex(tasks,extras.choices,mode);byId=new Map(tasks.map(t=>[t.id,t]));traders=new Map(list(bundle.traders).map(t=>[t.id,t]));maps=new Map(list(bundle.maps).map(m=>[m.id,m]));progress=sanitizeQuestProgress({...readStorage(progressKey()),mode},tasks,{partial:Boolean(data?.partial)});
+  if(!$('quest-search')){$('header-quest-mode').value=mode;renderRoute();return;}
   if(route.kind==='catalog'&&!['hub','all','story','archive'].includes(route.section)&&!traders.has(route.section))route.section='all';
   $('quest-mode').value=mode;$('header-quest-mode').value=mode;$('player-level').value=progress.level;$('player-faction').value=progress.faction;
   $('quest-map').replaceChildren();const all=el('option','Все локации');all.value='all';$('quest-map').append(all);const seen=new Set();for(const m of maps.values()){const alias=mapAlias(m.normalizedName);if(seen.has(alias))continue;seen.add(alias);const o=el('option',m.name);o.value=alias;$('quest-map').append(o);}
@@ -350,18 +351,33 @@ function setData(bundle){
 async function loadDetail(id){
  const current=request,target=mode;const root=$('quest-detail');root.replaceChildren(empty('Загружаем подробности задания…'));
  try{
-  const [detail,more,localization]=await Promise.all([pageDataset('quests-'+target,'data/guide/quests-'+target+'.json',{view:'detail',id}),questUiExtras(),questMediaLocalization()]);
+  const detail=await pageDataset('quests-'+target,'data/guide/quests-'+target+'.json',{view:'detail',id});
   if(current!==request||target!==mode||route.kind!=='quest'||route.id!==id)return;
-  const task=localizeQuestMediaTask(detail.tasks.find(task=>task.id===id),localization);if(!task)throw new Error('Задание недоступно в этом режиме.');
+  const task=detail.tasks.find(task=>task.id===id);if(!task)throw new Error('Задание недоступно в этом режиме.');
   const catalogTasks=tasks.map(row=>row.id===id?task:row),items=[...new Map([...(data.items||[]),...(detail.items||[])].map(item=>[item.id,item])).values()];
-  data={...data,...detail,tasks:catalogTasks,items};tasks=catalogTasks;byId.set(id,task);extras=more;choices=questChoiceIndex(tasks,extras.choices,mode);renderRoute();
+  data={...data,...detail,partial:Boolean(data.partial),tasks:catalogTasks,items,maps:data.maps,traders:data.traders,questItems:[...new Map([...(data.questItems||[]),...(detail.questItems||[])].map(item=>[item.id,item])).values()]};tasks=catalogTasks;byId.set(id,task);extras=detail.ui;choices=questChoiceIndex(tasks,extras.choices,mode);renderRoute();
  }catch(error){if(current!==request||route.kind!=='quest'||route.id!==id)return;root.replaceChildren(empty(error.message||'Не удалось загрузить подробности.'),action('Повторить',()=>loadDetail(id)),routeLink('← К списку заданий',backHref(),'button'));}
 }
-async function loadMode(){questMap?.destroy();questMap=null;const token=++request;for(const n of [...$('quest-layout').querySelectorAll('input,select,button'),...$('quest-filters-dialog').querySelectorAll('input,select,button')])n.disabled=true;$('quest-detail').replaceChildren(empty('Загружаем задания…'));selected=null;filterTrader='all';const bundle=await pageDataset('quests-'+mode,'data/guide/quests-'+mode+'.json');const more=bundle.cms?{choices:{}}:await questExtras();if(token!==request)return;extras=more;setData(bundle);for(const n of [...$('quest-layout').querySelectorAll('input,select,button'),...$('quest-filters-dialog').querySelectorAll('input,select,button')])n.disabled=false;}
-async function refresh(){const target=mode,token=request,baseline=data;const b=$('quest-refresh');b.disabled=true;b.textContent='Обновление…';const abort=new AbortController();const timeout=setTimeout(()=>abort.abort(),25000);
-  if(data?.cms){try{const bundle=await pageDataset('quests-'+target,'data/guide/quests-'+target+'.json',{view:'catalog'},abort.signal);if(!bundle.cms)throw new Error('CMS unavailable');if(token===request)setData(bundle);toast('Квесты обновлены');}catch{toast('Не удалось обновить квесты. Повторите позже.');}finally{clearTimeout(timeout);b.disabled=false;b.textContent='Обновить квесты ↻';}return;}
-  try{const [fresh,rawTraders]=await Promise.all([apiDataset('tasks',target,abort.signal),apiDataset('traders',target,abort.signal)]);const bundle={...baseline,tasks:list(fresh.tasks),questItems:fresh.questItems,achievements:fresh.achievements,traders:list(rawTraders.traders||rawTraders),meta:{...baseline.meta,fetchedAt:new Date().toISOString(),source:'https://json.tarkov.dev/'+target+'/tasks'}};if(!bundle.tasks.length)throw new Error('Empty');await cached('quests-'+target,bundle);if(token===request)setData(bundle);toast('Квесты обновлены из API');}catch{toast('API сейчас недоступен. Сохранённые задания и прогресс продолжают работать.');}finally{clearTimeout(timeout);b.disabled=false;b.textContent='Обновить квесты ↻';}}
+async function loadMode(){
+ questMap?.destroy();questMap=null;const token=++request;
+ const controls=[...$('quest-layout').querySelectorAll('input,select,button'),...($('quest-filters-dialog')?.querySelectorAll('input,select,button')||[])];
+ for(const n of controls)n.disabled=true;
+ $('quest-layout').dataset.view=route.kind==='quest'?'quest':'hub';$('quest-detail').replaceChildren(empty('Загружаем задание…'));selected=null;filterTrader='all';
+ try{
+  const options=route.kind==='quest'?{view:'detail',id:route.id}:{view:'catalog'};
+  const bundle=await pageDataset('quests-'+mode,'data/guide/quests-'+mode+'.json',options);
+  if(token!==request)return;extras=bundle.ui||{choices:{}};setData(bundle);
+ }finally{if(token===request)for(const n of controls)n.disabled=false;}
+}
+async function refresh(){const button=$('quest-refresh');button.disabled=true;button.textContent='Обновление…';try{await loadMode();toast('Данные обновлены');}catch{toast('Не удалось обновить данные. Повторите позже.');}finally{button.disabled=false;button.textContent='Обновить квесты ↻';}}
 function wire(){
+ if(!$('quest-search')){
+  $('header-quest-mode').onchange=()=>{feedback.clearUndo();mode=$('header-quest-mode').value;writeStorage('kord-atlas-game-mode',mode);const url=new URL(location.href);url.searchParams.set('mode',mode);history.replaceState(null,'',canonicalURL(url));updateParams();return loadMode().catch(fail);};
+  $('guide-sources').onclick=()=>$('guide-sources-dialog').showModal();$('guide-sources-close').onclick=()=>$('guide-sources-dialog').close();
+  window.addEventListener('wiki:state',event=>{if(event.detail.key===progressKey()&&data){progress=sanitizeQuestProgress({...readStorage(progressKey()),mode},tasks,{partial:true});renderDetail();}});
+  return;
+ }
+
   $('quest-mode').onchange=()=>{feedback.clearUndo();mode=$('quest-mode').value;writeStorage('kord-atlas-game-mode',mode);const url=new URL(location.href);url.searchParams.set('mode',mode);history.replaceState(null,'',canonicalURL(url));updateParams();return loadMode().catch(fail);};
   $('header-quest-mode').onchange=()=>{$('quest-mode').value=$('header-quest-mode').value;return $('quest-mode').onchange();};
   $('player-level').onchange=()=>{progress.level=Math.max(1,Math.min(100,Math.floor(Number($('player-level').value)||1)));$('player-level').value=progress.level;save();renderList();renderDetail();};
@@ -370,14 +386,14 @@ function wire(){
   $('quest-reset').onclick=()=>{$('quest-search').value='';for(const id of ['quest-map','quest-status','quest-flag'])$(id).value='all';$('quest-sort').value='level';limit=70;renderTraders();renderList();};
   $('quest-more').onclick=()=>{limit+=100;renderList();};$('quest-mobile-filters').onclick=()=>{const layout=$('quest-layout'),dialog=$('quest-filters-dialog');layout.classList.add('show-filters');$('quest-mobile-filters').setAttribute('aria-expanded','true');if(innerWidth<=700){dialog.append(document.querySelector('.quest-toolbar'));dialog.showModal();$('quest-search').focus();}};$('quest-filters-close').onclick=closeFilters;$('quest-filters-dialog').addEventListener('cancel',e=>{e.preventDefault();closeFilters();});window.addEventListener('resize',()=>{if(innerWidth>700&&$('quest-filters-dialog').open)closeFilters();});$('quest-refresh').onclick=refresh;
   $('quest-export').onclick=()=>download({...progress,mode,exportedAt:new Date().toISOString()},`kord-quests-${mode}-${new Date().toISOString().slice(0,10)}.json`);
-  $('quest-import').onclick=()=>$('quest-import-file').click();$('quest-import-file').onchange=async()=>{try{const file=$('quest-import-file').files?.[0];if(!file)return;if(file.size>5e6)throw new Error('large');const raw=JSON.parse(await file.text());if(!raw.quests||raw.version!==1)throw new Error('format');if(raw.mode&&raw.mode!==mode){toast('Это прогресс другого режима. Сначала переключите игровой режим.');return;}const clean=sanitizeQuestProgress({...raw,mode},tasks);progress={...clean,quests:{...progress.quests,...clean.quests}};save();$('player-level').value=progress.level;$('player-faction').value=progress.faction;renderTraders();renderList();renderDetail();toast('Прогресс объединён');}catch{toast('Не удалось прочитать файл прогресса. Нужен JSON, скачанный из этого раздела.');}finally{$('quest-import-file').value='';}};
+  $('quest-import').onclick=()=>$('quest-import-file').click();$('quest-import-file').onchange=async()=>{try{const file=$('quest-import-file').files?.[0];if(!file)return;if(file.size>5e6)throw new Error('large');const raw=JSON.parse(await file.text());if(!raw.quests||raw.version!==1)throw new Error('format');if(raw.mode&&raw.mode!==mode){toast('Это прогресс другого режима. Сначала переключите игровой режим.');return;}const clean=sanitizeQuestProgress({...raw,mode},tasks,{partial:Boolean(data?.partial)});progress={...clean,quests:{...progress.quests,...clean.quests}};save();$('player-level').value=progress.level;$('player-faction').value=progress.faction;renderTraders();renderList();renderDetail();toast('Прогресс объединён');}catch{toast('Не удалось прочитать файл прогресса. Нужен JSON, скачанный из этого раздела.');}finally{$('quest-import-file').value='';}};
   $('guide-sources').onclick=()=>$('guide-sources-dialog').showModal();$('guide-sources-close').onclick=()=>$('guide-sources-dialog').close();
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('quest-layout').classList.contains('show-filters'))closeFilters();if(e.key==='/'&&!e.target.closest('input,textarea,select,dialog')&&route.kind==='catalog'){e.preventDefault();if(innerWidth<=700)$('quest-mobile-filters').onclick();$('quest-search').focus();}});
-  window.addEventListener('wiki:state',e=>{if(e.detail.key===progressKey()&&data){progress=sanitizeQuestProgress({...readStorage(progressKey()),mode},tasks);renderTraders();renderList();renderDetail();}});
+  window.addEventListener('wiki:state',e=>{if(e.detail.key===progressKey()&&data){progress=sanitizeQuestProgress({...readStorage(progressKey()),mode},tasks,{partial:Boolean(data?.partial)});renderTraders();renderList();renderDetail();}});
 }
 function fail(){questMap?.destroy();questMap=null;$('quest-layout').dataset.view='quest';const root=$('quest-detail');root.replaceChildren(empty('Не удалось загрузить справочник. Проверьте соединение.'),action('Повторить',()=>loadMode().catch(fail)));}
-window.addEventListener('popstate',()=>{updateParams();route=catalogRoute(location.href);const requested=resolveGameMode(params.get('mode'),readStorage('kord-atlas-game-mode'));if(requested!==mode){mode=requested;return loadMode().catch(fail);}restoreView();renderRoute();});
-$('quest-layout').dataset.view=route.kind==='quest'?'quest':'hub';wire();loadMode().catch(fail);
+window.addEventListener('popstate',()=>{updateParams();route=catalogRoute(location.href);const requested=resolveGameMode(params.get('mode'),readStorage('kord-atlas-game-mode'));if(requested!==mode||data?.partial){mode=requested;return loadMode().catch(fail);}restoreView();renderRoute();});
+$('quest-layout').dataset.view=route.kind==='quest'?'quest':'hub';wire();await loadMode();
 
 function renderStory(root,t){if(!t.story)return;const story=section('Сюжетная глава');story.classList.add('story-briefing');if(t.description&&!t.questContent?.briefing?.paragraphs?.length)story.append(el('p',t.description));for(const group of t.guideSections||[]){const box=el('details','','story-guide-group');box.append(el('summary',group.title));for(const line of group.paragraphs||[])box.append(el('p',line));if(group.sourceUrl)box.append(external('Источник этапа ↗',group.sourceUrl));story.append(box);}
  if(t.storyBranches?.length){const label=el('label','Вариант прохождения','story-branch-label'),select=el('select');select.id='story-branch';label.htmlFor=select.id;const all=el('option','Все варианты');all.value='';select.append(all);for(const branch of t.storyBranches){const option=el('option',branch.name);option.value=branch.id;select.append(option);}select.value=entry(t).storyBranch||'';select.onchange=()=>{update(t,{storyBranch:select.value});renderDetail();};story.append(label,select);const branch=t.storyBranches.find(b=>b.id===select.value);if(branch)for(const line of branch.conditions||[])story.append(el('p',line));}

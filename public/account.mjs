@@ -1,12 +1,12 @@
-import {profileStore} from './profile-store.mjs';
-import {json,el,action} from './guide-common.mjs?v=lazy-20261016';
-import {siteHref} from './site-routes.mjs?v=release-20261016';
-import {resolveGameMode} from './game-mode.mjs';
-import {accountSummary} from './account-model.mjs';
-import {passwordError} from './password-policy.mjs';
-import {applyPlayerProfile} from './profile-identity.mjs';
-import {formFeedback,fieldError} from './form-feedback.mjs?v=feedback-2';
-import {configureLegal,showLegal,collectLegal,showLegalFailure} from './legal-consent.mjs?v=release-20261016';
+import {profileStore} from './profile-store.mjs?v=page-content-20261017';
+import {json,el,action} from './guide-common.mjs?v=page-content-20261017';
+import {siteHref} from './site-routes.mjs?v=page-content-20261017';
+import {resolveGameMode} from './game-mode.mjs?v=page-content-20261017';
+import {accountSummary} from './account-model.mjs?v=page-content-20261017';
+import {passwordError} from './password-policy.mjs?v=page-content-20261017';
+import {applyPlayerProfile} from './profile-identity.mjs?v=page-content-20261017';
+import {formFeedback,fieldError} from './form-feedback.mjs?v=page-content-20261017';
+import {configureLegal,showLegal,collectLegal,showLegalFailure} from './legal-consent.mjs?v=page-content-20261017';
 
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 let mode=resolveGameMode(params.get('mode'),profileStore.read('kord-atlas-game-mode')),view='login',busy=false,request=0;

@@ -1,8 +1,8 @@
-import {readPersonal,writePersonal} from './profile-store.mjs';
-import {ruText,localizeDisplay} from './ru-data.mjs';
-import {publicLinkURL,PUBLIC_HELP,PUBLIC_WIKI} from './public-links.mjs?v=quest-guides-20261016';
-import {contentResponse} from './content-client.mjs?v=lazy-20261016';
-import {createJsonPreloader} from './json-preload.mjs?v=release-20261016';
+import {readPersonal,writePersonal} from './profile-store.mjs?v=page-content-20261017';
+import {ruText,localizeDisplay} from './ru-data.mjs?v=page-content-20261017';
+import {publicLinkURL,PUBLIC_HELP,PUBLIC_WIKI} from './public-links.mjs?v=page-content-20261017';
+import {contentResponse} from './content-client.mjs?v=page-content-20261017';
+import {createJsonPreloader} from './json-preload.mjs?v=page-content-20261017';
 export const $=id=>document.getElementById(id);
 export const el=(tag,text='',className='')=>{const n=document.createElement(tag);n.textContent=ruText(text);n.className=className;return n;};
 export const num=value=>Number(value||0).toLocaleString('ru-RU',{maximumFractionDigits:2});
@@ -28,7 +28,7 @@ async function loadJson(url,signal){
   // Some static hosts decode gzip in transit; detect the magic bytes to avoid a second decode.
   if(bytes[0]!==31||bytes[1]!==139)return JSON.parse(new TextDecoder().decode(bytes));
   if(globalThis.DecompressionStream){const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));return JSON.parse(await new Response(stream).text());}
-  const fallback=await import('./vendor/pako-inflate.mjs');const pako=fallback.default||globalThis.pako||globalThis.window?.pako;
+  const fallback=await import('./vendor/pako-inflate.mjs?v=page-content-20261017');const pako=fallback.default||globalThis.pako||globalThis.window?.pako;
   return JSON.parse(pako.inflate(bytes,{to:'string'}));
 }
 export const readStorage=readPersonal;
@@ -56,7 +56,7 @@ export function translateApi(raw,dictionary){
 export async function apiDataset(kind,mode='pve',signal){const base=`https://json.tarkov.dev/${mode==='pve'?'pve':'regular'}/`;const [raw,locale]=await Promise.all([json(base+kind,signal),json(base+kind+'_ru',signal).catch(()=>({data:{}}))]);if(!raw?.data||raw.errors||(raw.translations?.length&&!Object.keys(locale.data||{}).length))throw new Error('API вернул неполный ответ');return localizeDisplay(translateApi(raw,locale.data||{}));}
 function openCache(){return new Promise((resolve,reject)=>{if(!globalThis.indexedDB)return reject(new Error('Cache unavailable'));const r=indexedDB.open('kord-atlas-api',1);r.onupgradeneeded=()=>r.result.createObjectStore('data');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
 export async function cached(key,value){let db;try{db=await openCache();return await new Promise((resolve,reject)=>{const tx=db.transaction('data',value===undefined?'readonly':'readwrite');const req=value===undefined?tx.objectStore('data').get(key):tx.objectStore('data').put(value,key);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}catch{return undefined;}finally{db?.close();}}
-export async function freshDataset(key,url,signal){try{return await json(url,signal);}catch(error){const offline=await cached(key);if(offline)return offline;throw error;}}
+export async function freshDataset(key,url,signal){return json(url,signal);}
 export function section(title){const s=el('section','','guide-section');s.append(el('h3',title));return s;}
 export function action(label,callback,className='button'){const b=el('button',label,className);b.type='button';b.onclick=callback;return b;}
 export function empty(message){return el('p',message,'guide-empty');}

@@ -21,9 +21,21 @@
   <link rel="stylesheet" href="site-responsive.css?v=desktop-20261017">
   <link rel="modulepreload" href="profile-store.mjs">
   <meta name="wiki-routing" content="pages">
+  <style>
+body[data-content-state="loading"] > :is(main,#app-layout,#raid-layout,.site-legal-footer),
+body[data-content-state="error"] > :is(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: hidden; }
+.page-boot-status { position: fixed; inset: var(--header-height, 100px) 16px 16px; display: grid; place-content: center; gap: 16px; text-align: center; color: #c6d1c1; z-index: 4; }
+.reference-detail-layout { display: flex; flex-direction: column; }
+.reference-detail-layout > .reference-mode { align-self: flex-end; max-width: 180px; }
+.reference-detail-layout > .reference-main { flex: 1; min-height: 0; width: 100%; }
+body[data-content-state="ready"] > .page-boot-status { display: none; }
+body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
+</style>
 <script type="application/json" id="wiki-page-params">{"boss": "knight"}</script>
 </head>
-<body class="guide-page" data-page="boss">
+<body class="guide-page" data-page="boss"  data-content-state="loading" >
+<div class="page-boot-status" id="page-boot-status" role="status" aria-live="polite">Загрузка страницы…</div>
+<noscript>Для отображения данных включите JavaScript.</noscript>
 <header class="topbar">
   <a class="brand" href="index.html" aria-label="Escape from Tarkov Wiki — главная">
     <img class="site-logo" src="assets/site-logo.svg" width="40" height="40" alt="">
@@ -46,12 +58,11 @@
 
 <main class="boss-page">
   <a class="guide-link" id="boss-back" href="reference.html?tab=bosses">← Справочник</a>
-  <header class="boss-heading"><div><span class="eyebrow">ПРОТИВНИКИ В РЕЙДЕ</span><h1 id="boss-title">Боссы Таркова</h1><p>Описание, здоровье по частям тела и места появления. Выберите босса, чтобы открыть его отдельную страницу.</p></div><label class="boss-mode">Режим<select id="boss-mode"><option value="pve" selected>PVE</option><option value="regular">PVP</option></select></label></header>
-  <div class="boss-catalog-controls" id="boss-catalog-controls"><input type="search" id="boss-search" placeholder="Найти босса…" aria-label="Поиск боссов"><span id="boss-count" role="status"></span></div>
+  <header class="boss-heading"><div><span class="eyebrow">ПРОТИВНИКИ В РЕЙДЕ</span><h1 id="boss-title">Загрузка босса…</h1></div><label class="boss-mode">Режим<select id="boss-mode"><option value="pve" selected>PVE</option><option value="regular">PVP</option></select></label></header>
   <div id="boss-content" aria-live="polite"></div>
 </main>
 <div class="toast" id="guide-toast" role="status" hidden></div>
-  <script type="module" src="bootstrap.mjs?v=session-20261016"></script>
+  <script type="module" src="bootstrap.mjs?v=page-content-20261017"></script>
 <footer class="site-legal-footer"><nav class="legal-navigation" aria-label="Правовые документы"><a href="/terms">Условия использования</a><a href="/privacy">Политика конфиденциальности</a><a href="/personal-data">Согласие на обработку данных</a><a href="/cookies">Использование cookie</a></nav>
 </footer>
 </body>

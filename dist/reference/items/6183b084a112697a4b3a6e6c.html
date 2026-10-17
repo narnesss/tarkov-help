@@ -21,9 +21,21 @@
   <link rel="stylesheet" href="site-responsive.css?v=desktop-20261017">
   <link rel="modulepreload" href="profile-store.mjs">
   <meta name="wiki-routing" content="pages">
+  <style>
+body[data-content-state="loading"] > :is(main,#app-layout,#raid-layout,.site-legal-footer),
+body[data-content-state="error"] > :is(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: hidden; }
+.page-boot-status { position: fixed; inset: var(--header-height, 100px) 16px 16px; display: grid; place-content: center; gap: 16px; text-align: center; color: #c6d1c1; z-index: 4; }
+.reference-detail-layout { display: flex; flex-direction: column; }
+.reference-detail-layout > .reference-mode { align-self: flex-end; max-width: 180px; }
+.reference-detail-layout > .reference-main { flex: 1; min-height: 0; width: 100%; }
+body[data-content-state="ready"] > .page-boot-status { display: none; }
+body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
+</style>
 <script type="application/json" id="wiki-page-params">{"tab": "items", "item": "6183b084a112697a4b3a6e6c"}</script>
 </head>
-<body class="guide-page" data-page="reference">
+<body class="guide-page" data-page="reference"  data-content-state="loading" >
+<div class="page-boot-status" id="page-boot-status" role="status" aria-live="polite">Загрузка страницы…</div>
+<noscript>Для отображения данных включите JavaScript.</noscript>
 <header class="topbar">
   <a class="brand" href="index.html" aria-label="Escape from Tarkov Wiki — главная">
     <img class="site-logo" src="assets/site-logo.svg" width="40" height="40" alt="">
@@ -43,23 +55,13 @@
   </div>
 </header>
 
-<main class="reference-layout">
-<header class="reference-toolbar">
-  <span class="eyebrow">ПОЛЕВОЙ СПРАВОЧНИК</span><div class="reference-toolbar-title"><h1>Справочник</h1><p>Снаряжение, рецепты и ориентиры для следующего рейда.</p></div>
-  <div class="reference-filters">
-    <label class="reference-search-label">Поиск<input type="search" id="reference-search" placeholder="Найти предмет, босса или рецепт…" aria-label="Поиск в справочнике"></label>
-    <label class="reference-mode">Режим<select id="reference-mode"><option value="pve" selected>PVE</option><option value="regular">PVP</option></select></label>
-    <label id="reference-filter-label"><span id="reference-filter-title">Категория</span><select id="reference-filter" aria-label="Категория"></select></label>
-    <label id="reference-sort-label">Сортировка<select id="reference-sort" aria-label="Сортировка"></select></label>
-  </div>
-</header>
-<aside class="reference-nav-panel" aria-label="Навигация справочника"><h2>Разделы</h2><nav class="reference-tabs" id="reference-tabs" aria-label="Раздел справочника"></nav></aside>
+<main class="reference-layout reference-detail-layout">
+<label class="reference-mode">Режим<select id="reference-mode"><option value="pve">PVE</option><option value="regular">PVP</option></select></label>
 <section class="reference-main" aria-label="Выбранный раздел">
   <header class="reference-heading"><div><nav class="reference-breadcrumbs" aria-label="Путь к разделу"><span>Справочник</span><span>›</span><span id="reference-crumb"></span></nav><h2 id="reference-title">Загрузка…</h2><p id="reference-description"></p></div><span id="reference-count" class="quest-tag" aria-label="Количество результатов"></span></header>
-  <p id="reference-data-date" class="reference-help" role="status"></p><div id="reference-content"></div><div class="reference-pager"><button class="button" id="reference-prev">← Назад</button><span id="reference-page"></span><button class="button" id="reference-next">Далее →</button></div>
-</section></main>
+  <p id="reference-data-date" class="reference-help" role="status"></p><div id="reference-content"></div></section></main>
 <dialog class="dialog item-dialog" id="item-dialog"><div class="dialog-heading"><h2 id="item-title"></h2><button class="icon-button" id="item-close" aria-label="Закрыть предмет">×</button></div><div id="item-body" class="item-dialog-body"></div></dialog><div class="toast" id="guide-toast" role="status" hidden></div>
-  <script type="module" src="bootstrap.mjs?v=mobile-btr-20261017"></script>
+  <script type="module" src="bootstrap.mjs?v=page-content-20261017"></script>
 <footer class="site-legal-footer"><nav class="legal-navigation" aria-label="Правовые документы"><a href="/terms">Условия использования</a><a href="/privacy">Политика конфиденциальности</a><a href="/personal-data">Согласие на обработку данных</a><a href="/cookies">Использование cookie</a></nav>
 </footer>
 </body>
