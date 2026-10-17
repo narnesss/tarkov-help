@@ -2,6 +2,11 @@
 body.not-found-page { height: auto; min-height: 100dvh; overflow: auto; }
 .not-found-page .not-found-shell { width: 100%; max-width: 720px; margin: clamp(24px, 6vh, 64px) auto; padding: 24px; overflow-wrap: anywhere; }
 .not-found-page .topbar .atlas-modes a { display: flex; align-items: center; justify-content: center; min-height: 44px; }
+body.qmap-embed .site-legal-footer { display: none; }
+body.qmap-embed .qmap-tools { display: flex; padding: 8px; }
+body.qmap-embed .qmap-tools > :is(strong, a) { display: none; }
+body.qmap-embed .qmap-tools > div { display: grid; flex: 1; width: 100%; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 44px; gap: 8px; }
+body.qmap-embed > footer:not(.site-legal-footer) { flex-wrap: wrap; gap: 4px 12px; padding: 8px; font-size: 11px; }
 @media (max-width: 1000px), (max-height: 520px) {
   dialog.dialog[open] {
     width: 560px;

@@ -4,7 +4,8 @@ import {QuestMapFocusReceiver} from './quest-map-messages.mjs';
 const $=id=>document.getElementById(id),textNode=text=>{const n=document.createElement('span');n.textContent=text;return n;};
 function showError(message){const root=$('qmap-loading');root.hidden=false;root.replaceChildren(textNode(message));const retry=document.createElement('button');retry.textContent='Повторить';retry.type='button';retry.onclick=()=>location.reload();root.append(retry);}
 async function start(){
- const params=pageParams(),index=await json('data/guide/quest-map-index.json'),asset=index.sourceMaps?.[params.get('map')],points=index.sourceQuests?.[params.get('quest')]?.[params.get('map')];
+ const params=pageParams();document.body.classList.toggle('qmap-embed',params.get('embed')==='quest'||globalThis.parent!==globalThis);
+ const index=await json('data/guide/quest-map-index.json'),asset=index.sourceMaps?.[params.get('map')],points=index.sourceQuests?.[params.get('quest')]?.[params.get('map')];
  if(!asset||!points?.length||!asset.width||!asset.height)throw Error('Для этого задания нет меток на выбранной схеме.');
  const map=L.map('qmap',{crs:L.CRS.Simple,minZoom:-6,maxZoom:2,zoomSnap:.25,zoomDelta:.5,scrollWheelZoom:true,attributionControl:false});
  const bounds=L.latLngBounds([-asset.height,0],[0,asset.width]);const image=L.imageOverlay(asset.src,bounds,{interactive:false,attribution:'Авторы исходной карты'}).addTo(map);
