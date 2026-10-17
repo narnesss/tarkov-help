@@ -9,6 +9,8 @@
     <file>tests/Feature/ApiTest.php</file>
     <file>tests/Feature/PlayerOAuthTest.php</file>
     <file>tests/Feature/PlayerProfilesTest.php</file>
+    <file>tests/Feature/PlayerProfileDetailsTest.php</file>
+    <file>tests/Feature/PlayerNavigationTest.php</file>
     <file>tests/Feature/PlayerAdminTest.php</file>
     <file>tests/Feature/PlayerEmailsTest.php</file>
     <file>tests/Feature/PlayerPasswordRecoveryTest.php</file>

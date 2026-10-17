@@ -13,7 +13,9 @@ Route::get('/api/content/data/{path}', ContentController::class)->where('path', 
 Route::get('/api/content/bundle/{name}',[ContentController::class,'bundle'])->where('name','quest-extras|raid-base|quest-ui')->middleware(VerifyApiProxy::class);
 Route::get('/api/content/quest/{quest}', ContentQuestController::class)->middleware(VerifyApiProxy::class);
 Route::get('/api/auth/options', [PlayerAuthController::class, 'options'])->middleware(VerifyApiProxy::class);
+Route::get('/api/player-navigation', \App\Http\Controllers\PlayerNavigationController::class)->middleware(VerifyApiProxy::class);
 Route::post('/api/auth/profile', [PlayerAuthController::class, 'profile'])->middleware(VerifyApiProxy::class);
+Route::get('/api/auth/profile', [PlayerAuthController::class, 'profileDetails'])->middleware(VerifyApiProxy::class);
 Route::get('/api/auth/email', [PlayerAuthController::class, 'emailStatus'])->middleware(VerifyApiProxy::class);
 Route::post('/api/auth/email/send', [PlayerAuthController::class, 'sendEmail'])->middleware(VerifyApiProxy::class);
 Route::post('/api/auth/email/verify', [PlayerAuthController::class, 'verifyEmail'])->middleware(VerifyApiProxy::class);

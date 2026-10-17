@@ -37,9 +37,13 @@ final readonly class PlayerAuthController
     public function profile(Request $request): JsonResponse
     {
         $session=$this->session($request,true);
-        $data=$request->validate(['display_name'=>'required|string|max:64']);
-        $this->profiles->rename($session,$data['display_name']);
+        $this->profiles->update($session,$request->all());
         return response()->json($this->profiles->publicData($session))->header('Cache-Control','private, no-store');
+    }
+
+    public function profileDetails(Request $request): JsonResponse
+    {
+        return response()->json($this->profiles->details($this->session($request)))->header('Cache-Control','private, no-store');
     }
 
     public function emailStatus(Request $request): JsonResponse
@@ -63,6 +67,11 @@ final readonly class PlayerAuthController
     public function requestPassword(Request $request): JsonResponse
     {
         $session=$this->session($request,true);
+        if ($session->username !== null) {
+            $email = \Illuminate\Support\Facades\DB::table('player_emails')->where('user_id',$session->userId)->value('email');
+            abort_unless(is_string($email),422,'Для сброса пароля нужна подтверждённая контактная почта. Войти также можно через подключённый Google или Discord.');
+            $request->merge(['email'=>$email]);
+        }
         $data=$request->validate(['email'=>'required|string|max:254']);
         return response()->json($this->recovery->request($session,$data['email'],(string)($request->attributes->get('wiki_client_ip')??$request->ip())))
             ->header('Cache-Control','private, no-store');
