@@ -128,13 +128,13 @@ final class ContentController
         }catch(\Throwable $error){report($error);$status='BYPASS';}
         if(is_string($json)){$status='HIT';}
         else{
-            $json=$build();
+            $json=\App\Services\PublicMedia::json($build());
             try{Cache::put($key,['revision'=>$revision,'gzip'=>gzencode($json,1)],600);}catch(\Throwable $error){report($error);$status='BYPASS';}
         }
         return response($json,200,['Content-Type'=>'application/json; charset=utf-8','Cache-Control'=>'private, no-store','X-Wiki-Content-Cache'=>$status,'X-Wiki-Content-Revision'=>$revision]);
     }
     private function revision(string $key,string $revision): string
-    { return hash('sha256',self::FORMAT."\0".$key."\0".$revision); }
+    { return hash('sha256',self::FORMAT."\0".$key."\0".$revision."\0".\App\Services\PublicMedia::revision()); }
     private function revisionResponse(string $key,string $revision)
     { return response()->json(['revision'=>$this->revision($key,$revision)])->header('Cache-Control','private, no-store'); }
 
