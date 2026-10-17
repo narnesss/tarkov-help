@@ -120,6 +120,10 @@
     min-width: 0;
     max-width: 100%;
   }
+  #post-form .ts-wrapper.form-control,
+  #post-form .ts-control {
+    height: auto;
+  }
   .ts-control .item,
   .ts-dropdown .option {
     white-space: normal;
@@ -134,6 +138,10 @@
   .wiki-matrix-scroll .matrix {
     min-width: 42rem;
     margin-bottom: 0;
+  }
+  /* Orchid задаёт всем полям Matrix фиксированные 40 px через !important. */
+  #post-form .wiki-matrix-scroll :is(.ts-wrapper.form-control, .ts-control) {
+    height: auto !important;
   }
   .wiki-matrix-scroll textarea {
     min-width: 16rem;

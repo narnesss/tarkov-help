@@ -131,7 +131,7 @@ final class AdminNavigationTest extends TestCase
         $payload['objectives']=[['id'=>'stable-mobile-goal','description'=>'Длинное описание цели для мобильной формы','type'=>'visit','count'=>2]];
         $quest->payload=$payload;$quest->save();$before=$this->snapshot();
         $html=$this->get('/admin/quests/'.$quest->id.'/edit')->assertOk()
-            ->assertSee('/admin-responsive.css?v=tablet-orchid-20261017a',false)->getContent();
+            ->assertSee('/admin-responsive.css?v=tablet-orchid-20261017b',false)->getContent();
         $dom=new \DOMDocument();@$dom->loadHTML($html);$xpath=new \DOMXPath($dom);
         $this->assertSame(1,$xpath->query('//div[@role="region" and @aria-label="Цели задания" and @tabindex="0"]/table[@data-controller="matrix"]')->length);
         $this->assertSame(1,$xpath->query('//input[@name="quest[goals][0][id]" and @value="stable-mobile-goal"]')->length);
@@ -139,7 +139,7 @@ final class AdminNavigationTest extends TestCase
         $this->assertSame(1,$xpath->query('//select[@name="quest[goals][0][type]"]')->length);
         $this->assertSame(1,$xpath->query('//input[@name="quest[goals][0][count]" and @value="2"]')->length);
         foreach(['/admin/quests','/admin/wiki/items/create','/admin/datasets'] as $url){
-            $this->get($url)->assertOk()->assertSee('/admin-responsive.css?v=tablet-orchid-20261017a',false);
+            $this->get($url)->assertOk()->assertSee('/admin-responsive.css?v=tablet-orchid-20261017b',false);
         }
         $this->assertSame($before,$this->snapshot());
     }

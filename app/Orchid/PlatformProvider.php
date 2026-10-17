@@ -31,7 +31,7 @@ final class PlatformProvider extends OrchidServiceProvider
 
     public function stylesheets(): array
     {
-        return ['/admin-responsive.css?v=tablet-orchid-20261017a'];
+        return ['/admin-responsive.css?v=tablet-orchid-20261017b'];
     }
 
     public function permissions(): array
