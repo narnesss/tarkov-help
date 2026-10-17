@@ -9,6 +9,9 @@
 - Публичный сайт: https://tarkov-compass.narnesss.workers.dev.
 - PHP origin: https://narnes.alwaysdata.net; карточка https://admin.alwaysdata.com/site/1086865/.
 - Worker `tarkov-compass` обслуживает dist через ASSETS и пересылает только /api и /api/*.
+  При cookie eft_session HTML-шапка заменяется фрагментом PHP из /api/player-navigation
+  до отправки браузеру. Контроллер только читает действующую сессию, не создаёт гостя;
+  персонализированные страницы имеют private, no-store и Vary: Cookie.
 - Orchid доступен на PHP origin `/admin` с отдельным входом редакторов. Динамические данные
   выдаются в `/api/content/*`; новые URL квестов получают оболочку через Worker.
   Заполнение и первый вход: [docs/orchid-content.md](../docs/orchid-content.md).

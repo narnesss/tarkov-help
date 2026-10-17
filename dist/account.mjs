@@ -1,5 +1,7 @@
+import {profileFields} from './profile-fields.mjs?v=profile-details-20261017';
+import {pageDataset} from './page-data.mjs?v=page-content-20261017';
 import {profileStore} from './profile-store.mjs?v=page-content-20261017';
-import {json,el,action} from './guide-common.mjs?v=page-content-20261017';
+import {el,action} from './guide-common.mjs?v=page-content-20261017';
 import {siteHref} from './site-routes.mjs?v=page-content-20261017';
 import {resolveGameMode} from './game-mode.mjs?v=page-content-20261017';
 import {accountSummary} from './account-model.mjs?v=page-content-20261017';
@@ -14,6 +16,8 @@ const data=new Map();
 const authFeedback=formFeedback($('account-form'),{username:$('account-username-error'),password:$('account-password-error'),confirmation:$('account-password-error')});
 const resetFeedback=formFeedback($('account-recovery-reset'),{code:$('account-recovery-code-error'),password:$('account-recovery-password-error'),password_confirmation:$('account-recovery-password-error')});
 const emailFeedback=formFeedback($('account-recovery-request'),{email:$('account-recovery-email-error')});
+const profileFeedback=formFeedback($('account-name-form'),Object.fromEntries(['display_name','phone','country','city','gender','age'].map(field=>[field,$('account-'+(field==='display_name'?'display-name':field)+'-error')])));
+let details=null,detailsLoaded=false;
 function showFormError(feedback,error,fallback){
   const names=error.fields??Object.keys(error.data?.errors??{});
   return feedback.show(error.message,names.length?names:fallback);
@@ -50,6 +54,8 @@ function setView(next){
   authFeedback.clear();resetFeedback.clear();emailFeedback.clear();
   $('account-auth-login').hidden=view==='reset';$('account-recovery').hidden=view!=='reset';
   $('account-forgot').hidden=view!=='login';$('account-auth-feedback').textContent='';
+  $('account-recovery-feedback').textContent='';
+  $('account-recovery-back').textContent=profileStore.profile.authenticated?'Вернуться к профилю':'Вернуться ко входу';
   for(const button of document.querySelectorAll('[data-auth-view]'))button.setAttribute('aria-pressed',String(button.dataset.authView===view));
   $('account-submit').textContent=view==='register'?'Создать аккаунт':'Войти';
   const form=$('account-form');form.elements.password.autocomplete=view==='register'?'new-password':'current-password';
@@ -61,26 +67,32 @@ function setView(next){
 for(const button of document.querySelectorAll('[data-auth-view]'))button.onclick=()=>setView(button.dataset.authView);
 $('account-forgot').onclick=()=>setView('reset');
 $('account-recovery-back').onclick=()=>setView('login');
+$('account-password-reset').onclick=()=>{
+  if(!details?.passwordResetAvailable)return;
+  setView('reset');$('account-recovery-request').elements.email.value=details.email;
+  $('account-recovery-request').elements.email.readOnly=true;
+  $('account-recovery').scrollIntoView({behavior:'smooth',block:'start'});
+};
 let recovery=null,recoveryAttempts=0;
 function renderRecovery(){
   const now=Math.floor(Date.now()/1000),cooldown=Math.max(0,(recovery?.resendAt??0)-now);
-  if(recovery&&recovery.expiresAt<=now){recovery=null;if(view==='reset')$('account-auth-feedback').textContent='Срок кода истёк. Запроси новый код восстановления.';}
+  if(recovery&&recovery.expiresAt<=now){recovery=null;if(view==='reset')$('account-recovery-feedback').textContent='Срок кода истёк. Запроси новый код восстановления.';}
   $('account-recovery-send').disabled=!profileStore.server||busy||cooldown>0;
   $('account-recovery-send').textContent=cooldown>0?'Повторить через '+cooldown+' с':recovery?'Отправить новый код':'Получить код восстановления';
   $('account-recovery-reset').hidden=!recovery;
   $('account-recovery-confirm').disabled=busy||recoveryAttempts>=5;
 }
 async function recover(callback,feedback,fallback){
-  await run(async()=>{try{$('account-auth-feedback').textContent='';await callback();}catch(error){if(!showFormError(feedback,error,fallback))$('account-auth-feedback').textContent=error.message;}});
+  await run(async()=>{try{$('account-recovery-feedback').textContent='';await callback();}catch(error){if(!showFormError(feedback,error,fallback))$('account-recovery-feedback').textContent=error.message;}});
   renderRecovery();
 }
 $('account-recovery-request').onsubmit=event=>{event.preventDefault();recover(async()=>{
   const response=await profileStore.api('/api/auth/password/request',{method:'POST',body:JSON.stringify({email:$('account-recovery-request').elements.email.value.trim()})});
-  recovery=response;recoveryAttempts=0;$('account-recovery-reset').reset();$('account-auth-feedback').textContent=response.message;renderRecovery();
+  recovery=response;recoveryAttempts=0;$('account-recovery-reset').reset();$('account-recovery-feedback').textContent=response.message;renderRecovery();
   $('account-recovery-reset').elements.code.focus();
 },emailFeedback,['email']);};
 $('account-recovery-request').elements.email.addEventListener('input',()=>{
-  if(recovery){recovery=null;$('account-recovery-reset').reset();$('account-auth-feedback').textContent='';renderRecovery();}
+  if(recovery){recovery=null;$('account-recovery-reset').reset();$('account-recovery-feedback').textContent='';renderRecovery();}
 });
 $('account-recovery-reset').onsubmit=event=>{event.preventDefault();recover(async()=>{
   if(!recovery||recovery.expiresAt<=Date.now()/1000)throw fieldError('Запроси новый код восстановления.','code');
@@ -88,8 +100,13 @@ $('account-recovery-reset').onsubmit=event=>{event.preventDefault();recover(asyn
   const policyError=passwordError(password);if(policyError)throw fieldError(policyError,'password');
   if(password!==confirmation)throw fieldError('Пароли не совпадают.','password','password_confirmation');
   try{
+    if(profileStore.profile.authenticated&&!await profileStore.flush())throw new Error('Сначала сохрани последние изменения прогресса.');
     const response=await profileStore.api('/api/auth/password/reset',{method:'POST',body:JSON.stringify({challenge_id:recovery.challengeId,
       code:form.elements.code.value.trim(),password,password_confirmation:confirmation})});
+    if(profileStore.profile.authenticated){
+      profileStore.setRaw('eft-wiki:identity-change',{id:crypto.randomUUID(),at:Date.now()});
+      location.replace(siteHref('account.html?view=login'));return;
+    }
     recovery=null;form.reset();setView('login');$('account-form').elements.username.value=response.username;$('account-form').elements.password.value='';
     $('account-auth-feedback').textContent=response.message;$('account-form').elements.password.focus();
   }catch(error){
@@ -113,12 +130,26 @@ $('account-form').onsubmit=event=>{event.preventDefault();run(async()=>{
 },error=>showLegalFailure($('account-register-legal'),error)||showFormError(authFeedback,error,view==='register'?['password']:['password','username']));};
 $('account-logout').onclick=()=>run(async()=>{await profileStore.authenticate('logout');location.replace(siteHref('account.html?view=login'));});
 $('account-sync').onclick=()=>run(async()=>{if(!await profileStore.flush())throw new Error('Не удалось сохранить изменения. Повтори синхронизацию позже.');notify('Прогресс сохранён на сервере.');});
-async function saveName(name){
-  if(!await profileStore.flush())throw new Error('Сначала сохрани последние изменения профиля.');
-  const response=await profileStore.api('/api/auth/profile',{method:'POST',body:JSON.stringify({display_name:name})});
-  applyPlayerProfile(profileStore,response);renderIdentity();globalThis.dispatchEvent(new Event('wiki:profile'));notify('Имя сохранено.');
+async function loadDetails(){
+  if(!profileStore.profile.authenticated)return;
+  details=await profileStore.api('/api/auth/profile');detailsLoaded=true;
+  const form=$('account-name-form');
+  for(const field of ['phone','country','city','gender','age'])form.elements[field].value=details[field]??'';
+  $('account-contact-email').textContent=details.email??'Не указан';
+  const date=value=>value?new Intl.DateTimeFormat('ru-RU',{dateStyle:'long',timeStyle:'short'}).format(new Date(Number(value)*1000)):'Нет данных';
+  $('account-registered').textContent=date(details.registeredAt);$('account-last-active').textContent=date(details.lastActiveAt);
+  $('account-profile-fields').disabled=false;$('account-password-reset').disabled=!details.passwordResetAvailable;
+  $('account-password-reset-help').textContent=details.passwordResetAvailable?'Код придёт на подтверждённую почту. После смены пароля потребуется войти заново. Аккаунт и прогресс сохранятся.':'Для сброса пароля нужна подтверждённая контактная почта. Если её нет, войди через подключённый Google или Discord либо обратись в поддержку.';
 }
-$('account-name-form').onsubmit=event=>{event.preventDefault();run(()=>saveName($('account-name-form').elements.display_name.value.trim()));};
+async function saveProfile(){
+  if(!detailsLoaded)throw new Error('Данные профиля ещё не загружены.');
+  const values=profileFields(Object.fromEntries(new FormData($('account-name-form'))));
+  values.profile_version=details.version;
+  if(!await profileStore.flush())throw new Error('Сначала сохрани последние изменения профиля.');
+  const response=await profileStore.api('/api/auth/profile',{method:'POST',body:JSON.stringify(values)});
+  applyPlayerProfile(profileStore,response);renderIdentity();await loadDetails();globalThis.dispatchEvent(new Event('wiki:profile'));notify('Профиль сохранён.');
+}
+$('account-name-form').onsubmit=event=>{event.preventDefault();run(saveProfile,error=>error.status!==409&&showFormError(profileFeedback,error,['display_name']));};
 for(const button of document.querySelectorAll('[data-oauth]'))button.onclick=()=>run(async()=>{
   if(!await profileStore.flush())throw new Error('Сначала сохрани последние изменения профиля.');
   const consent=!profileStore.profile.authenticated&&view==='register'?collectLegal($('account-register-legal')):{};
@@ -148,7 +179,7 @@ async function render(){
   $('account-mode-label').textContent='ПРОГРЕСС '+(mode==='pve'?'PVE':'PVP');
   $('account-summary').replaceChildren(el('p','Загружаем сводку…'));$('account-active').textContent='Загрузка…';$('account-unlocks').textContent='Загрузка…';$('account-level').textContent='';
   try{
-    if(!data.has(current))data.set(current,Promise.all([json(`data/guide/quests-${current}.json`),json(`data/guide/reference-${current}.json`)]).catch(error=>{data.delete(current);throw error;}));
+    if(!data.has(current))data.set(current,Promise.all([pageDataset(`account-quests-${current}`,`data/guide/quests-${current}.json`),pageDataset(`account-hideout-${current}`,`data/guide/reference-${current}.json`,{section:'hideout'}),pageDataset(`account-achievements-${current}`,`data/guide/reference-${current}.json`,{section:'achievements'})]).then(([quests,hideout,achievements])=>[quests,{hideout:hideout.hideout,achievements:achievements.achievements}]).catch(error=>{data.delete(current);throw error;}));
     const [quests,reference]=await data.get(current);if(ticket!==request)return;
     const summary=accountSummary({tasks:quests.tasks,hideout:reference.hideout,achievements:reference.achievements},profileStore.read(`kord-atlas-quests-${current}-v1`),profileStore.read('kord-hideout-'+current),profileStore.read('kord-achievements-'+current));
     $('account-level').textContent='Уровень персонажа: '+summary.level;
@@ -186,3 +217,4 @@ if(oauth){
   }else notify('Не удалось завершить вход. Начни его ещё раз.');
 }else if(!profileStore.profile.authenticated)setView(params.get('view'));
 providers();render();
+loadDetails().catch(()=>notify('Не удалось загрузить данные профиля. Обнови страницу, чтобы повторить.'));

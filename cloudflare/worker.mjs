@@ -1,3 +1,5 @@
+import {navigationAssetRequest,playerNavigation} from './player-navigation.mjs';
+
 /** Статика остаётся на Cloudflare; приватный API исполняется только на alwaysdata. */
 function settings(env) {
   let origin;
@@ -21,20 +23,20 @@ export default {
       });
     }
     if (url.pathname !== '/api' && !url.pathname.startsWith('/api/')) {
-      const asset = await env.ASSETS.fetch(request);
+      const asset = await env.ASSETS.fetch(navigationAssetRequest(request));
       const match = url.pathname.match(/^\/quests\/(trader\/)?([a-zA-Z0-9_-]+)\/?$/);
-      if (asset.status !== 404 || !config || !match || !['GET', 'HEAD'].includes(request.method)) return asset;
+      if (asset.status !== 404 || !config || !match || !['GET', 'HEAD'].includes(request.method)) return playerNavigation(request,asset,config);
       try {
         const lookup = new URL('/api/content/quest/' + match[2], config.origin);
         if(match[1])lookup.searchParams.set('trader','1');
         const response = await fetch(lookup, {headers: {'X-Wiki-Proxy-Token': config.token,
           'X-Wiki-Client-IP': request.headers.get('CF-Connecting-IP') || ''}, redirect: 'manual', cache: 'no-store', signal: AbortSignal.timeout(7000)});
-        if (!response.ok || !(await response.json()).exists) return asset;
+        if (!response.ok || !(await response.json()).exists) return playerNavigation(request,asset,config);
         const shell = new URL(match[1]?'/quests':'/quest', url);
         const page = await env.ASSETS.fetch(new Request(shell, {method: request.method}));
         const headers = new Headers(page.headers);headers.set('Cache-Control', 'private, no-store');
-        return new Response(page.body, {status: page.status, headers});
-      } catch { return asset; }
+        return playerNavigation(request,new Response(page.body, {status: page.status, headers}),config);
+      } catch { return playerNavigation(request,asset,config); }
     }
     if (!config) return unavailable();
     // Origin, CSRF и opaque cookie проверяет Laravel; клиентские proxy-заголовки заменяем.
