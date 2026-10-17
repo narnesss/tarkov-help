@@ -7,6 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Build committed export without PHP
+        env:
+          PHP_BINARY: /tmp/wiki-missing-php-static-check
+        run: npm run build
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101412">
+  <meta name="wiki-runtime" content="static">
+  <meta name="description" content="Боссы Таркова: описание, здоровье по частям тела и места появления в PVP и PVE.">
+  <base href="/">
+  <title>Боссы — Escape from Tarkov Wiki</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="legal.css?v=mobile-legal-20261017">
+  <link rel="stylesheet" href="style.css?v=release-20261016">
+  <link rel="stylesheet" href="guide.css?v=release-20261016">
+  <link rel="stylesheet" href="readability.css?v=release-20261016">
+  <link rel="stylesheet" href="quest-ui.css?v=release-20261016">
+  <link rel="stylesheet" href="boss.css?v=release-20261016">
+  <link rel="stylesheet" href="site-ui.css?v=release-20261016">
+  <link rel="stylesheet" href="controls.css?v=release-20261016">
+  <link rel="stylesheet" href="boss-responsive.css?v=release-20261016">
+  <link rel="stylesheet" href="site-responsive.css?v=desktop-20261017">
+  <link rel="modulepreload" href="profile-store.mjs">
+  <meta name="wiki-routing" content="pages">
+  <script type="application/json" id="wiki-page-params">{"boss":""}</script>
+<style>
+body[data-content-state="loading"] > :is(main,#app-layout,#raid-layout,.site-legal-footer),
+body[data-content-state="error"] > :is(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: hidden; }
+.page-boot-status { position: fixed; inset: var(--header-height, 100px) 16px 16px; display: grid; place-content: center; gap: 16px; text-align: center; color: #c6d1c1; z-index: 4; }
+.reference-detail-layout { display: flex; flex-direction: column; }
+.reference-detail-layout > .reference-mode { align-self: flex-end; max-width: 180px; }
+.reference-detail-layout > .reference-main { flex: 1; min-height: 0; width: 100%; }
+body[data-content-state="ready"] > .page-boot-status { display: none; }
+body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
+</style>
+</head>
+<body class="guide-page" data-page="boss"  data-content-state="loading" >
+<div class="page-boot-status" id="page-boot-status" role="status" aria-live="polite">Загрузка страницы…</div>
+<noscript>Для отображения данных включите JavaScript.</noscript>
+<header class="topbar">
+  <a class="brand" href="index.html" aria-label="Escape from Tarkov Wiki — главная">
+    <img class="site-logo" src="assets/site-logo.svg" width="40" height="40" alt="">
+    <span class="brand-wordmark">ESCAPE FROM TARKOV<span class="brand-light">WIKI</span><small>КАРТЫ · ЗАДАНИЯ · СПРАВОЧНИК</small></span>
+  </a>
+  <nav class="atlas-modes" aria-label="Раздел сайта">
+    <a href="index.html">Главная</a>
+    <a href="raid.html">Карты</a>
+    <a href="quests.html">Квесты</a>
+    <a href="reference.html" aria-current="page">Справочник</a>
+    <a href="documents.html">Документы</a>
+  </nav>
+  <div class="header-right">
+    <a class="button quiet" id="boss-guide" href="reference.html?tab=bosses">Справочник</a>
+    <a class="button profile-trigger" id="profile-button" href="account.html" aria-busy="true">Личный кабинет</a>
+<a class="button player-login" href="account.html?view=login" data-player-guest hidden>Войти</a>
+<a class="button primary player-register" href="account.html?view=register" data-player-guest hidden>Регистрация</a>
+  </div>
+</header>
+
+<main class="boss-page">
+  <a class="guide-link" id="boss-back" href="reference.html?tab=bosses">← Справочник</a>
+  <header class="boss-heading"><div><span class="eyebrow">ПРОТИВНИКИ В РЕЙДЕ</span><h1 id="boss-title">Загрузка босса…</h1></div><label class="boss-mode">Режим<select id="boss-mode"><option value="pve" selected>PVE</option><option value="regular">PVP</option></select></label></header>
+  <div id="boss-content" aria-live="polite"></div>
+</main>
+<div class="toast" id="guide-toast" role="status" hidden></div>
+  <script type="module" src="bootstrap.mjs?v=page-content-20261017"></script>
+<footer class="site-legal-footer"><nav class="legal-navigation" aria-label="Правовые документы"><a href="/terms">Условия использования</a><a href="/privacy">Политика конфиденциальности</a><a href="/personal-data">Согласие на обработку данных</a><a href="/cookies">Использование cookie</a></nav>
+</footer>
+</body>
+</html>
