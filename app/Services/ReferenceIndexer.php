@@ -26,6 +26,20 @@ final class ReferenceIndexer
             ['kind', 'variant', 'value'], ['label', 'search_text', 'quest_record_id', 'active']);
     }
 
+    /** Добавляет названия новых предметов без деактивации и перечитывания полного каталога. */
+    public function appendItems(ContentDataset $dataset,array $references): void
+    {
+        $rows=[];
+        foreach($references as $reference){$record=$reference['record'];$name=$record['name'];
+            $aliases=array_filter([$record['shortName']??'',$record['normalizedName']??'',$record['en']??'',$record['nameEn']??''],'is_string');
+            $search=implode(' ',[$name,...$aliases]);
+            $rows[]=['kind'=>'item','variant'=>'default','value'=>$record['id'],'label'=>mb_substr($name,0,500),
+                'search_text'=>mb_strtolower($search.' '.preg_replace('/[\s_-]+/u',' ',$search)),
+                'source_dataset_id'=>$dataset->id,'source_pointer'=>$reference['pointer'],'quest_record_id'=>null,'active'=>true];
+        }
+        foreach(array_chunk($rows,100) as $chunk){ContentReference::upsert($chunk,['kind','variant','value'],['label','search_text','source_dataset_id','source_pointer','active']);}
+    }
+
     public function dataset(ContentDataset $dataset): void
     {
         $path = $dataset->path;

@@ -87,6 +87,14 @@ final class WikiImporter
         }
         $this->ids=[];$this->state('dataset',$dataset->id,$ref);
     }
+    /** Проецирует только добавленные предметы, сохраняя существующие строки и их источники. */
+    public function appendItems(ContentDataset $dataset,array $references,string $previousRef): void
+    {
+        if(!$this->unchanged('dataset',$dataset->id,$previousRef,false)){$this->dataset($dataset);return;}
+        foreach($references as $reference){$id=$this->item($reference['record']);$this->store->source($dataset->id,$reference['pointer'],'item',$id);}
+        $this->ids=[];$this->state('dataset',$dataset->id,(string)$dataset->getRawOriginal('payload'));
+    }
+
     /** Обновляет только проверенные точки, если остальная проекция набора уже актуальна. */
     public function changedPoints(ContentDataset $dataset,array $ids,string $previousRef): void
     {

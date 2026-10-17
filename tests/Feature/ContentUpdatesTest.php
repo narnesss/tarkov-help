@@ -56,13 +56,19 @@ final class ContentUpdatesTest extends TestCase
         $dataset->setContent(['traders'=>[],'items'=>['editor-item'=>['id'=>'editor-item','name'=>'Имя редактора']]]);$dataset->save();
         $items=$this->dataset('guide/items-pve.json',['items'=>[['id'=>'editor-item','name'=>'Имя редактора']]]);
         $payload=$quest->payload;unset($payload['objectives'][0]['cmsConditionGroups']);$payload['objectives'][0]['items']=['event-item'];$quest->payload=$payload;$quest->save();
+        // На production полный импорт перед пакетами уже согласовал прежние файловые версии.
+        app(WikiImporter::class)->dataset($dataset->fresh());app(WikiImporter::class)->dataset($items->fresh());
         $state=DB::table('user_state')->first();$ref=$dataset->fresh()->getRawOriginal('payload');
         $update=$this->update();$update['datasets']['guide/quests-pve.json']=['appendReferences'=>['items'=>[
             ['id'=>'editor-item','name'=>'Устаревшее исходное имя'],['id'=>'event-item','name'=>'Новый событийный предмет'],
         ]]];
         $update['datasets']['guide/items-pve.json']=$update['datasets']['guide/quests-pve.json'];
         app(ContentUpdates::class)->apply($update,true);$this->assertSame($ref,$dataset->fresh()->getRawOriginal('payload'));
-        app(ContentUpdates::class)->apply($update);
+        // Повторный импорт прежних предметов раздувал расход памяти и число SQL-запросов на сервере.
+        $guard=true;DB::listen(function($query)use(&$guard): void {
+            if($guard&&str_contains($query->sql,'wiki_items')&&in_array('editor-item',$query->bindings,true)){throw new \RuntimeException('Нельзя переимпортировать прежний справочник');}
+        });
+        try{app(ContentUpdates::class)->apply($update);}finally{$guard=false;}
         $this->assertSame('Имя редактора',$dataset->fresh()->content()['items']['editor-item']['name']);
         $this->assertSame('Имя редактора',$items->fresh()->content()['items'][0]['name']);
         $this->getJson('/api/content/data/guide/items-pve.json')->assertOk()->assertJsonCount(2,'items')->assertJsonPath('items.1.id','event-item');

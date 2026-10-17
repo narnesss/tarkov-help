@@ -38,7 +38,7 @@ final readonly class ContentUpdates
             foreach($update['datasets']??[] as $path=>$patch){
                 if(!preg_match('~^(spawns|maps|source|guide/(?:quest-(?:map-index|content)|(?:quests|items)-(?:pve|regular))|raid/(?:pve/)?[a-z-]+)\.json$~',$path)){throw new RuntimeException('Недопустимый набор обновления.');}
                 $dataset=ContentDataset::where('path',$path)->lockForUpdate()->firstOrFail();$data=$dataset->content();
-                $pointIds=[];
+                $pointIds=[];$addedReferences=[];
                 if(in_array($path,['spawns.json','maps.json'],true)){
                     $data=$this->records($data,$patch['records']??[],$path);
                     if($path==='spawns.json'){$pointIds=array_column($patch['records'],'id');}
@@ -57,7 +57,7 @@ final readonly class ContentUpdates
                         $point['hiddenByDefault']=true;$point['sourceStatus']='unverified-coordinates';$point['reviewReason']=$review['reason'];$pointIds[]=$point['id'];
                     }unset($point);if(!$found){throw new RuntimeException('Проверяемая точка отсутствует: '.$review['id']);}}
                 }elseif(preg_match('~^guide/(?:quests|items)-(?:pve|regular)\.json$~',$path)){
-                    $data=$this->appendReferences($data,$patch['appendReferences']??[]);$catalogChanged=true;
+                    $data=$this->appendReferences($data,$patch['appendReferences']??[],$addedReferences);$catalogChanged=true;
                 }elseif($path==='guide/quest-map-index.json'){
                     foreach($patch['sourceMaps']??[] as $id=>$map){$data['sourceMaps'][$id]=$map;}
                     foreach($patch['sourceQuests']??[] as $id=>$maps){foreach($maps as $map=>$points){$data['sourceQuests'][$id][$map]=$points;}}
@@ -70,12 +70,23 @@ final readonly class ContentUpdates
                     foreach($patch['quests']??[] as $id=>$record){$before=$data['quests'][$id]??[];$data['quests'][$id]=[...$before,...$record,'gallery'=>$this->gallery($before['gallery']??[],$record['gallery']??[])];}
                     foreach($patch['modes']??[] as $mode=>$records){foreach($records as $id=>$source){$data['modes'][$mode][$id]=$source;}}
                 }else{throw new RuntimeException('Отсутствует операция набора.');}
-                $datasets[]=[$dataset,$data,array_values(array_unique($pointIds)),(string)$dataset->getRawOriginal('payload')];
+                $previousRef=(string)$dataset->getRawOriginal('payload');
+                // Не держим несколько полных каталогов в памяти одновременно.
+                if(!$dryRun){$dataset->setContent($data);}
+                $datasets[]=[$dataset,array_values(array_unique($pointIds)),$previousRef,$addedReferences,isset($patch['appendReferences'])];unset($data);
             }
             $result=['applied'=>!$dryRun,'quests'=>count($quests),'datasets'=>count($datasets)];if($dryRun){return $result;}
             if(!empty($update['repairPointScopes'])){$result['separatedPoints']=$separated;}
-            foreach($datasets as [$dataset,$data,$pointIds,$previousRef]){$dataset->setContent($data);$dataset->save();
-                if($pointIds!==[]){app(WikiImporter::class)->changedPoints($dataset,$pointIds,$previousRef);}else{app(WikiImporter::class)->dataset($dataset);}}
+            foreach($datasets as [$dataset,$pointIds,$previousRef,$addedReferences,$additive]){
+                if($additive){
+                    // Небольшое дополнение не запускает полный импорт и переиндексацию справочника.
+                    ContentDataset::withoutEvents(fn()=>$dataset->save());
+                    app(ReferenceIndexer::class)->appendItems($dataset,$addedReferences);
+                    app(WikiImporter::class)->appendItems($dataset,$addedReferences,$previousRef);
+                }else{$dataset->save();
+                    if($pointIds!==[]){app(WikiImporter::class)->changedPoints($dataset,$pointIds,$previousRef);}else{app(WikiImporter::class)->dataset($dataset);}
+                }
+            }
             // Сначала добавляем справочные предметы, затем связываем с ними новые цели и награды.
             foreach($quests as [$quest,$payload]){app(QuestEditor::class)->update($quest,['payload'=>$payload],$quest->revision());app(WikiImporter::class)->quest($quest,$catalogChanged);}
             DB::table('wiki_projection_states')->insert([...$key,'content_ref'=>$hash]);
@@ -84,7 +95,7 @@ final readonly class ContentUpdates
     }
 
     /** Добавляет отсутствующие предметы; существующие ID и редакторские значения не заменяет. */
-    private function appendReferences(array $data,array $additions): array
+    private function appendReferences(array $data,array $additions,array &$added): array
     {
         foreach($additions as $field=>$records){
             if(!in_array($field,['items','questItems'],true)||!is_array($records)){throw new RuntimeException('Недопустимый справочник дополнения.');}
@@ -96,7 +107,8 @@ final readonly class ContentUpdates
                     throw new RuntimeException('Некорректный предмет дополнения.');
                 }
                 if(isset($known[$record['id']])){continue;}
-                if($dictionary){$data[$field][$record['id']]=$record;}else{$data[$field][]=$record;}
+                if($dictionary){$key=$record['id'];$data[$field][$key]=$record;}else{$data[$field][]=$record;$key=array_key_last($data[$field]);}
+                $added[]=['record'=>$record,'pointer'=>'/'.$field.'/'.str_replace(['~','/'],['~0','~1'],(string)$key)];
                 $known[$record['id']]=true;
             }
         }
