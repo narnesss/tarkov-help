@@ -7,7 +7,7 @@ export const $=id=>document.getElementById(id);
 export const el=(tag,text='',className='')=>{const n=document.createElement(tag);n.textContent=ruText(text);n.className=className;return n;};
 export const num=value=>Number(value||0).toLocaleString('ru-RU',{maximumFractionDigits:2});
 export const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export function safeURL(value){try{const u=new URL(value,location.href);return ['http:','https:'].includes(u.protocol)?u.href:'';}catch{return '';}}
+export function safeURL(value){try{const u=new URL(value,globalThis.document?.baseURI||location.href);return ['http:','https:'].includes(u.protocol)?u.href:'';}catch{return '';}}
 export function external(label,url){const href=publicLinkURL(url);if(!href)return document.createDocumentFragment();const raw=safeURL(url);if(href!==raw)label=href===PUBLIC_WIKI?'Русская Wiki ↗':href===PUBLIC_HELP?'Tarkov.help ↗':label;const a=el('a',label,'guide-link');a.href=href;a.target='_blank';a.rel='noopener noreferrer';return a;}
 export function image(url,alt='',className=''){const i=el('img','',className);i.src=safeURL(url);i.alt=alt;i.loading='lazy';i.onerror=()=>{i.hidden=true;};return i;}
 let compressionManifest;

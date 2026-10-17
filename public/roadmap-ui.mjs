@@ -1,4 +1,4 @@
-import {action,el,external} from './guide-common.mjs?v=page-content-20261017';
+import {action,el,external} from './guide-common.mjs?v=media-paths-20261017';
 import {readPersonal,writePersonal} from './profile-store.mjs?v=page-content-20261017';
 import {TICKET_ROUTES,clampView,edgeRoute,findNodes,layoutGraph,zoomAt} from './roadmap-model.mjs?v=page-content-20261017';
 

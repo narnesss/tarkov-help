@@ -94,7 +94,7 @@ final class ContentViewsTest extends TestCase
         Quest::create(['quest_id'=>'unrelated','mode'=>'pve','name'=>'Другой','trader_id'=>'prapor','published'=>true,'payload'=>['id'=>'unrelated','name'=>'Другой','objectives'=>[]]]);
         $this->dataset('guide/media-localization.json',['images'=>['https://example.test/image.jpg'=>['url'=>'assets/ru.webp']]]);
         $this->getJson('/api/content/data/guide/quests-pve.json?view=detail&id=stable')->assertOk()->assertJsonPath('partial',true)->assertJsonCount(1,'tasks')->assertJsonCount(1,'contextTasks')
-            ->assertJsonPath('contextTasks.0.id','previous')->assertJsonPath('contextTasks.0.objectives.0.id','previous-goal')->assertJsonPath('tasks.0.objectives.0.media.0.url','assets/ru.webp')->assertJsonPath('ui.uiReady',true);
+            ->assertJsonPath('contextTasks.0.id','previous')->assertJsonPath('contextTasks.0.objectives.0.id','previous-goal')->assertJsonPath('tasks.0.objectives.0.media.0.url','/assets/ru.webp')->assertJsonPath('ui.uiReady',true);
         $this->assertDatabaseCount('users',0);$this->assertDatabaseCount('user_state',0);
     }
 
@@ -112,9 +112,25 @@ final class ContentViewsTest extends TestCase
         $quest=$this->fixtures();$images=json_decode(gzdecode(file_get_contents(public_path('data/guide/media-localization.json.gz'))),true)['images'];
         $source=array_key_first($images);$payload=$quest->payload;$payload['objectives'][0]['media']=[['url'=>$source,'id'=>'stable-frame','objectiveIds'=>['goal']]];$quest->payload=$payload;$quest->save();
         $url='/api/content/data/guide/quests-pve.json?view=detail&id=stable';
-        $this->getJson($url)->assertOk()->assertJsonPath('tasks.0.objectives.0.media.0.url',$images[$source]['url'])->assertJsonPath('tasks.0.objectives.0.media.0.id','stable-frame');
+        $this->getJson($url)->assertOk()->assertJsonPath('tasks.0.objectives.0.media.0.url','/'.ltrim($images[$source]['url'],'/'))->assertJsonPath('tasks.0.objectives.0.media.0.id','stable-frame');
         $this->dataset('guide/media-localization.json',['images'=>[$source=>['url'=>'assets/editor.webp']]]);
-        $this->getJson($url)->assertJsonPath('tasks.0.objectives.0.media.0.url','assets/editor.webp');
+        $this->getJson($url)->assertJsonPath('tasks.0.objectives.0.media.0.url','/assets/editor.webp');
+    }
+
+    public function test_media_paths_work_on_nested_pages_without_rewriting_source_records(): void
+    {
+        $quest=$this->fixtures();$payload=$quest->payload;
+        $frames=[['id'=>'stable-photo','url'=>'assets/photo.webp','fullUrl'=>'./assets/full.webp','objectiveIds'=>['goal'],'association'=>'objective'],
+            ['url'=>'https://editor.example/photo.webp?version=2','fullUrl'=>'https://editor.example/full.webp'],['url'=>'/assets/already-root.webp']];
+        $payload['gallery']=$frames;$payload['media']['gallery']=$frames;$payload['questContent']['gallery']=$frames;$payload['objectives'][0]['media']=$frames;
+        $quest->payload=$payload;$quest->save();
+        $response=$this->getJson('/api/content/data/guide/quests-pve.json?view=detail&id=stable')->assertOk();
+        foreach(['gallery','media.gallery','questContent.gallery','objectives.0.media'] as $key){
+            $response->assertJsonPath('tasks.0.'.$key.'.0.url','/assets/photo.webp')->assertJsonPath('tasks.0.'.$key.'.0.fullUrl','/assets/full.webp')
+                ->assertJsonPath('tasks.0.'.$key.'.0.id','stable-photo')->assertJsonPath('tasks.0.'.$key.'.0.objectiveIds',['goal'])
+                ->assertJsonPath('tasks.0.'.$key.'.0.association','objective')->assertJsonPath('tasks.0.'.$key.'.1',$frames[1])->assertJsonPath('tasks.0.'.$key.'.2',$frames[2]);
+        }
+        $this->assertSame($payload,$quest->fresh()->payload);$this->assertDatabaseCount('users',0);$this->assertDatabaseCount('user_state',0);
     }
 
     public function test_item_search_names_are_read_from_backend_and_map_frame_loads_one_quest_only(): void

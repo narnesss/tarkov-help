@@ -1,4 +1,4 @@
-import {el,num} from './guide-common.mjs?v=page-content-20261017';
+import {el,num} from './guide-common.mjs?v=media-paths-20261017';
 import {looseItemOptions,filterLooseItems} from './loose-loot-model.mjs?v=page-content-20261017';
 
 /** Item-level controls keep search separate from the map's global POI search. */

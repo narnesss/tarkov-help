@@ -1,5 +1,5 @@
-import {pageDataset} from './page-data.mjs?v=page-content-20261017';
-import {json,readStorage,writeStorage,el} from './guide-common.mjs?v=page-content-20261017';
+import {pageDataset} from './page-data.mjs?v=media-paths-20261017';
+import {json,readStorage,writeStorage,el} from './guide-common.mjs?v=media-paths-20261017';
 import {resolveGameMode} from './game-mode.mjs?v=page-content-20261017';
 import {normalize} from './model.mjs?v=page-content-20261017';
 import {siteHref,canonicalURL} from './site-routes.mjs?v=page-content-20261017';

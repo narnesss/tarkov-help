@@ -1,5 +1,5 @@
 import {contentViewResponse} from './content-client.mjs?v=page-content-20261017';
-import {freshDataset} from './guide-common.mjs?v=page-content-20261017';
+import {freshDataset} from './guide-common.mjs?v=media-paths-20261017';
 
 const pending=new Map();
 const keyOf=(path,options)=>path+'?'+new URLSearchParams(options);

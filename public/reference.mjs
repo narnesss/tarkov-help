@@ -2,8 +2,8 @@ import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs
 import {resolveGameMode} from './game-mode.mjs?v=page-content-20261017';
 import {ruText,localizeDisplay,currencyLabel,isVisibleItem} from './ru-data.mjs?v=page-content-20261017';
 import {loadReferenceSources} from './reference-loader.mjs?v=page-content-20261017';
-import {pageDataset} from './page-data.mjs?v=page-content-20261017';
-import {$,el,num,image,external,json,readStorage,writeStorage,toast,section,action,empty} from './guide-common.mjs?v=page-content-20261017';
+import {pageDataset} from './page-data.mjs?v=media-paths-20261017';
+import {$,el,num,image,external,json,readStorage,writeStorage,toast,section,action,empty} from './guide-common.mjs?v=media-paths-20261017';
 import {idOf,list,mapAlias,sanitizeQuestProgress,requiredQuestItems} from './quest-model.mjs?v=page-content-20261017';
 import {normalize} from './model.mjs?v=page-content-20261017';
 import {formatDuration,formatRaidRemaining} from './time-format.mjs?v=page-content-20261017';

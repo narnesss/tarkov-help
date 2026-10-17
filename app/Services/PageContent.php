@@ -64,7 +64,7 @@ final class PageContent
     }
 
     public static function mediaRevision(): string
-    { $file=self::mediaFile();return $file!==null?hash_file('sha256',$file):'none'; }
+    { $file=self::mediaFile();return hash('sha256','media-paths-v2:'.($file!==null?hash_file('sha256',$file):'none')); }
 
     private static function mediaFile(): ?string
     {
@@ -83,12 +83,17 @@ final class PageContent
 
     private function localize(array $task,array $images): array
     {
-        $frame=static function(array $row) use($images): array {
+        // Корневые пути работают и в прежних клиентах, разрешавших URL относительно адреса квеста.
+        $paths=static function(array $row): array {
+            foreach(['url','fullUrl'] as $key){if(isset($row[$key])&&is_string($row[$key]))$row[$key]=preg_replace('~^(?:\./)?assets/~','/assets/',$row[$key]);}
+            return $row;
+        };
+        $frame=static function(array $row) use($images,$paths): array {
             foreach([$row['originalUrl']??null,$row['fullUrl']??null,$row['url']??null] as $candidate){
                 if(!is_string($candidate))continue;$patch=$images[$candidate]??$images[preg_replace('/[?#].*$/','',$candidate)]??null;if(!is_array($patch))continue;
                 $result=[...$row,...$patch,'url'=>$patch['url']??$row['url']??null,'originalUrl'=>$row['originalUrl']??$candidate,'fullUrl'=>$patch['url']??$row['fullUrl']??$row['url']??null];
-                foreach(['id','objectiveIds','association'] as $key){if(array_key_exists($key,$row))$result[$key]=$row[$key];}return $result;
-            }return $row;
+                foreach(['id','objectiveIds','association'] as $key){if(array_key_exists($key,$row))$result[$key]=$row[$key];}return $paths($result);
+            }return $paths($row);
         };
         if(isset($task['gallery']))$task['gallery']=array_map($frame,$task['gallery']);
         foreach(['media','questContent'] as $key){if(isset($task[$key]['gallery']))$task[$key]['gallery']=array_map($frame,$task[$key]['gallery']);}

@@ -13,7 +13,7 @@ const entry = document.body.dataset.page;
 try {
   const initializing=profileStore.initialize(runtime);
   if(['quests','raid','reference'].includes(entry)){
-    await import('./page-data-preload.mjs?v=page-content-20261017').then(module=>module.preloadPageData(entry)).catch(()=>{});
+    await import('./page-data-preload.mjs?v=media-paths-20261017').then(module=>module.preloadPageData(entry)).catch(()=>{});
   }
   await initializing;
 }
@@ -35,7 +35,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 if (entry === 'index' && ['map','point'].some(key=>new URLSearchParams(location.search).has(key))) {
   location.replace(siteHref('documents.html'+location.search+location.hash));
 } else {
-const modules = {'important-items':'./important-items.mjs?v=important-items-20261017',index: './home.mjs?v=page-content-20261017', documents: './app.mjs?v=page-content-20261017', raid: './raid.mjs?v=page-content-20261017', quests: './quests.mjs?v=quest-filters-20261017', reference: './reference.mjs?v=page-content-20261017', boss: './boss.mjs?v=page-content-20261017', account: './account.mjs?v=profile-details-20261017'};
+const modules = {'important-items':'./important-items.mjs?v=important-items-20261017',index: './home.mjs?v=media-paths-20261017', documents: './app.mjs?v=page-content-20261017', raid: './raid.mjs?v=media-paths-20261017', quests: './quests.mjs?v=media-paths-20261017', reference: './reference.mjs?v=media-paths-20261017', boss: './boss.mjs?v=media-paths-20261017', account: './account.mjs?v=media-paths-20261017'};
 if (modules[entry]) await import(modules[entry]);
 
 }

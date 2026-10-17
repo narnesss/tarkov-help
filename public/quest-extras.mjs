@@ -5,7 +5,7 @@ import {localizeDisplay} from './ru-data.mjs?v=page-content-20261017';
 import {assemblyFrames} from './gunsmith-model.mjs?v=page-content-20261017';
 import {applyQuestContent} from './quest-content-model.mjs?v=page-content-20261017';
 import {localizeQuestMedia,localizeQuestMediaTask,mergeQuestMediaLocalization} from './quest-media-model.mjs?v=page-content-20261017';
-import {json} from './guide-common.mjs?v=page-content-20261017';
+import {json} from './guide-common.mjs?v=media-paths-20261017';
 export {localizeQuestMedia,localizeQuestMediaTask,mergeQuestMediaLocalization};
 let loaded;
 let uiLoaded;
