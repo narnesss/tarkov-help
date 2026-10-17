@@ -2,6 +2,40 @@
 
 Читайте вместе со specs/cloudflare-deployment.md перед изменениями API и публикацией.
 
+## Действующий production: MariaDB
+
+Это рабочая ветка инструкции. SQLite ниже помечен как история или отдельный тест совместимости.
+Команды wiki:backup/wiki:restore выбирают текущий драйвер; старые имена классов и workflows
+со словом SQLite не означают, что production продолжает использовать SQLite.
+
+Для действующего приложения по SSH (без смены .env и без вывода секретов):
+
+```sh
+cd /home/narnes/tarkov-api
+php artisan wiki:backup --kind=daily
+php artisan wiki:restore --list
+```
+
+Проверка выбранной SQL-копии, не восстановление (подставить точные name и SHA из list):
+
+```sh
+php artisan wiki:restore --check --backup=mysql-daily-YYYYMMDD-HHMMSS-xxxxxx.sql.gz --sha256=SHA256_ИЗ_LIST
+```
+
+Настоящий restore требует отдельного решения владельца; только после safety-копии,
+сверки совместимой схемы и полного content, добавляется --confirm=RESTORE вместо --check.
+Не выполнять restore ради проверки. [Полный контракт восстановления](recovery-contract.md)
+отделяет проверку существующих файлов от учения с импортом MariaDB и content.
+
+SQL-копии: /home/narnes/tarkov-data/mysql-backups/mysql-{daily|deploy}-*.sql.gz
+и .manifest.json; content — отдельный постоянный каталог. Проверка SHA/схемы и
+доступности файлов не заменяет пробное восстановление.
+Daily workflow называется «Daily SQLite backup on alwaysdata» исторически, но backup.sh
+вызывает wiki:backup с действующим mysql. Расписание — 00:30 UTC (03:30 Europe/Moscow).
+Пределы config/backup.php: до 7 daily/3 deploy/100 МиБ, включая MariaDB; переменные
+SQLITE_BACKUP_* пока сохраняют старые имена. Копии на том же аккаунте не защищают от его потери.
+Внешняя доставка и проектные RPO/RTO описаны отдельно и не объявляются уже настроенными.
+
 ## Адреса и границы
 
 Личный кабинет `/account`, Google/Discord и настройки OAuth описаны в [player-account.md](player-account.md).
@@ -17,7 +51,8 @@
   Заполнение и первый вход: [docs/orchid-content.md](../docs/orchid-content.md).
 - Контент Orchid находится в `/home/narnes/tarkov-data/content` в неизменяемых JSON gzip-файлах.
   SQL хранит ссылки на версии. Для внешней копии нужны SQL gzip-снимок и весь content.
-  Проверка/restore откажут при отсутствии нужного файла.
+  Проверка/restore проверяют достижимость файлов; согласованный комплект и учение
+  восстановления описаны в [recovery-contract.md](recovery-contract.md).
 - Laravel 13 исполняется на alwaysdata PHP 8.4; production — MariaDB 11.8 через pdo_mysql.
 - База `narnes_tarkov`, host `mysql-narnes.alwaysdata.net`, пользователь `narnes`.
   DB_CONNECTION=mysql, utf8mb4_nopad_bin, TLS с проверкой CA; пароль только в shared .env.
@@ -50,7 +85,11 @@
 Production-база MariaDB создаётся в MySQL-разделе панели. SQLite остаётся локальным вариантом.
 Не ставьте Laravel заново из Marketplace: используется наш composer.lock и код API.
 
-## 2. Первоначальная загрузка API с SQLite (исторический сценарий)
+## 2. История: первоначальная загрузка API с SQLite
+
+Не применять этот сценарий к действующему mysql production и не возвращать его .env
+к SQLite. Он сохранён для понимания переноса/локальной совместимости; первоначальный
+переход на MariaDB — [mysql-migration.md](mysql-migration.md).
 
 На компьютере в корне репозитория:
 
@@ -100,7 +139,7 @@ curl -i https://narnes.alwaysdata.net/api/session
 
 ## 3. Автоматические обновления из main
 
-`.github/workflows/check.yml` после успешного job `check` скачивает API-артефакт именно
+`.github/workflows/check.yml` после успешных jobs `check` и `mysql` скачивает API-артефакт именно
 этого запуска и выполняет `deployment/alwaysdata/github-deploy.sh`. Только push в main
 получает SSH-секреты; pull_request проверяет код без публикации. Cloudflare продолжает
 собственную Git-сборку сайта. Два деплоя API не идут параллельно: GitHub concurrency без
@@ -130,12 +169,14 @@ Host `ssh-narnes.alwaysdata.net` и user `narnes` заданы в github-deploy.
 - `/home/narnes/tarkov-api` — ссылка на активный релиз; web root остаётся прежним;
 - `/home/narnes/tarkov-releases/<SHA>-<run>-<attempt>` — исходники, vendor и bootstrap/cache;
 - `/home/narnes/tarkov-shared/.env` и `storage` — постоянные приватные файлы;
-- `/home/narnes/tarkov-data/wiki.sqlite` — существующая SQLite по неизменному DB_DATABASE;
+- MariaDB narnes_tarkov — действующая БД; content и mysql-backups — в /home/narnes/tarkov-data;
+- `/home/narnes/tarkov-data/wiki.sqlite` — прежний источник переноса, закрытый для записи;
 - `/home/narnes/tarkov-api-before-releases` — сохранённый первоначальный каталог приложения.
 
 Первый запуск копирует существующие .env/storage в shared; все последующие релизы используют
 ссылки на них. Редактировать настройки после перехода можно через `/home/narnes/tarkov-api/.env`
-(это ссылка на shared), затем запустить deploy.sh активного релиза для обновления кэша.
+(это ссылка на shared); применять изменения через штатный релиз и обновление PHP/config cache
+по процедуре, не запускать старую SQLite-инициализацию и не менять APP_KEY.
 Нельзя снова распаковывать архив поверх активного каталога: используйте Actions.
 
 Новый релиз устанавливает зависимости из composer.lock и проверяет production-конфигурацию.
@@ -153,8 +194,8 @@ autoload для нового кода. Это исключает повторн�
 без корректного REVISION. Активный каталог всегда защищён. Это освобождает квоту после
 неудачных установок до копирования нового vendor; shared, tarkov-data и копии не обходятся.
 Сохраняются три последних завершённых каталога кода и предыдущий активный релиз; очистка не следует
-по ссылкам .env/storage. Первоначальный каталог не удаляется автоматически; backup SQLite
-очищаются общей политикой хранения после создания исправного снимка.
+по ссылкам .env/storage. Первоначальный каталог не удаляется автоматически; SQL-копии
+очищаются политикой соответствующего драйвера после создания исправного снимка.
 Следите за квотой alwaysdata и скачивайте важные копии. После подтверждения первого
 автоматического деплоя старый before-releases можно удалить вручную, убедившись, что БД
 и секреты находятся в постоянных каталогах. Не удаляйте shared или tarkov-data.
@@ -164,7 +205,12 @@ autoload для нового кода. Это исключает повторн�
 Повторный запуск failed jobs получает новый attempt и может повторить деплой. Если нет
 секретов или SSH недоступен, job явно падает; старый API продолжает работать.
 
-## 4. Ежедневный бэкап SQLite и ограничение копий
+## 4. Исторические детали SQLite backup и совместимость
+
+Ниже формат SQLite-снимков, VACUUM и WAL относятся только к локальной/исторической SQLite.
+Для production MariaDB использовать раздел «Действующий production» выше и recovery-contract.md.
+Названия workflow/переменных сохранены ради совместимости; команды выбирают текущий драйвер.
+Не переносить SQLite-пути, quick_check и WAL-процедуры на MariaDB.
 
 Команда `php artisan wiki:backup --kind=daily` создаёт согласованный VACUUM INTO снимок
 даже при активном WAL, проверяет `PRAGMA quick_check` и только затем публикует файл.
@@ -227,7 +273,11 @@ du -sh /home/narnes/tarkov-data
 нужна отдельная скачанная копия. Для восстановления остановите запись и выберите снимок,
 прошедший quick_check; не заменяйте открытую WAL-БД простым cp.
 
-## 5. Ручное восстановление выбранной копии
+## 5. Исторические детали восстановления SQLite
+
+Файлы wiki.sqlite.backup-* и операции WAL/inode ниже — только SQLite.
+Workflow restore-alwaysdata.yml и wiki:restore сейчас также поддерживают mysql-имена;
+действующая production-процедура и требуемые файлы — в начале документа и recovery-contract.md.
 
 Workflow **Manual SQLite restore on alwaysdata** (`restore-alwaysdata.yml`) запускается
 только вручную через Actions → Run workflow → main. Push и ежедневное расписание
@@ -280,7 +330,10 @@ exclusive и ждёт завершения старых запросов до м
 подтверждения. При приёмке на production запускайте только list/check; restore выбранных
 живых данных требует отдельного решения владельца, а не проверки работоспособности workflow.
 
-## 6. Проверка восстановления на отдельной SQLite alwaysdata
+## 6. Проверка совместимости на отдельной SQLite alwaysdata
+
+Этот автоматический тест остаётся действующим, но проверяет только одноразовую SQLite.
+Он не подтверждает восстановление действующей MariaDB с её content; это отдельное учение.
 
 После каждого успешного deploy job запускает **Verify restore on a disposable SQLite on
 alwaysdata**. Тот же сценарий можно повторить через Actions → **Test SQLite restore on
@@ -348,7 +401,9 @@ run_worker_first включает API, runtime-модуль и `/quests/*` дл�
 
 ## 8. Проверка после включения
 
-Обновите браузер без кэша (Ctrl+F5: bootstrap.mjs может оставаться в кэше час).
+Проверяйте стандартную перезагрузку без ручной очистки кэша. Если помогает только Ctrl+F5,
+это дефект версионирования ресурсов; диагностика не считается успешной приёмкой.
+Текущие ручные query-версии и требуемый fingerprint описаны в [client-api-contract.md](client-api-contract.md).
 Откройте основной сайт: в Network /api/session и /api/state должны вернуть JSON;
 в интерфейсе профиля должны появиться регистрация и вход. Создайте аккаунт,
 отметьте цель, обновите страницу, выйдите и войдите снова; затем проверьте вход в
@@ -362,7 +417,8 @@ node scripts/check-export-freshness.mjs; npm run package:alwaysdata;
 npx wrangler@4.151.0 deploy --dry-run; git diff --check. CI отдельно проверяет API_ONLY.
 Содержимое архивов и .env не коммитить. Push main публикует сайт Cloudflare и запускает
 SSH-деплой API после успешного CI; оба результата проверять отдельно. Production smoke
-в CI проверяет повторные релизы, сохранение .env/storage/SQLite, HTTP-откат и очистку ссылок.
+в CI проверяет повторные релизы, сохранение .env/storage и тестовых данных, HTTP-откат и очистку ссылок.
+MariaDB проверяется job mysql; alwaysdata disposable SQLite restore — отдельная проверка совместимости.
 
 Free alwaysdata предназначен для некоммерческого личного использования; website
 остаётся на предоставленном alwaysdata.net адресе. При рекламе/монетизации пересмотреть тариф.

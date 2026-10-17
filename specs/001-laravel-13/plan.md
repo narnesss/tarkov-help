@@ -1,4 +1,9 @@
-# План
+# Исторический план этапа 001
+
+Статус: выполненный первоначальный переход на Laravel/SQLite. Это история решений,
+не актуальный production-runbook и не полный перечень сущностей.
+Текущие [источники схемы](../data-authority-and-publication.md) и
+[деплой MariaDB](../alwaysdata-deployment.md) имеют приоритет над SQLite-шагами ниже.
 
 1. Закрепить Cloudflare workflow и границы PHP/static.
 2. Установить Laravel 13, Composer lock, bootstrap, provider и маршруты.

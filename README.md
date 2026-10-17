@@ -8,14 +8,14 @@
 - app, bootstrap, routes, config — Laravel HTTP, DI, Cache и Artisan.
 - resources/views — Blade/PHP, общий layout и страницы.
 - src — проверенные доменные сервисы аккаунтов, CSRF и сохранения прогресса.
-- database/migrations — совместимая SQLite-схема; composer.lock фиксирует зависимости.
+- database/migrations — актуальная схема MariaDB и локальная совместимость SQLite; composer.lock фиксирует зависимости.
 - public — web root, исходные браузерные модули/ассеты и экспорт оболочек.
 - dist — сгенерированная статическая публикация Cloudflare.
 - specs/cloudflare-deployment.md — обязательные правила публикации для будущих изменений.
 
-## PHP-хостинг
+## Локальный запуск PHP
 
-Laravel 13 поддерживает PHP >= 8.3; production/CI — PHP 8.4 с PDO SQLite, mbstring,
+Laravel 13 поддерживает PHP >= 8.3; production/CI — PHP 8.4 с PDO MySQL, PDO SQLite для совместимости, mbstring,
 curl, XML и стандартными расширениями Laravel. Корень веб-сервера — public.
 
 ```sh
@@ -27,7 +27,8 @@ php artisan migrate --force
 php artisan serve
 ```
 
-Существующая БД: DB_DATABASE=/absolute/path/var/wiki.sqlite перед migrate.
+Этот пример — локальный SQLite: в .env задать DB_CONNECTION=sqlite и путь DB_DATABASE.
+Существующая локальная БД: DB_DATABASE=/absolute/path/var/wiki.sqlite перед migrate.
 Сделайте резервную копию; миграция принимает существующие таблицы и не удаляет записи.
 APP_STORAGE совместим с прежним размещением БД. APP_KEY обязателен; храните его
 и .env вне Git, используйте APP_URL с настоящим HTTPS origin.
@@ -35,7 +36,8 @@ APP_STORAGE совместим с прежним размещением БД. AP
 Production: APP_DEBUG=false, composer install --no-dev --optimize-autoloader,
 php artisan migrate --force, php artisan optimize. При обновлении сначала
 php artisan optimize:clear, затем optimize. Нужны права записи только в storage
-и bootstrap/cache. Подробности: specs/001-laravel-13/quickstart.md.
+и bootstrap/cache. Локальный исторический старт: specs/001-laravel-13/quickstart.md;
+действующая production-процедура — specs/alwaysdata-deployment.md.
 
 ## Кэширование
 
@@ -66,8 +68,11 @@ specs/cloudflare-deployment.md. Для отдельного Pages-проекта
 `npm run package:alwaysdata` создаёт build/alwaysdata-api.tar.gz без vendor, dist,
 карт и личных данных. После загрузки на сервер скопировать production environment.example
 в .env, задать секрет, выполнить `sh deployment/alwaysdata/deploy.sh`.
-SQLite хранится в /home/narnes/tarkov-data/wiki.sqlite; MySQL в панели не нужен.
-При обновлении .env, APP_KEY и БД сохраняются; существующая БД копируется VACUUM INTO.
+Production использует MariaDB: DB_CONNECTION=mysql, база narnes_tarkov на
+mysql-narnes.alwaysdata.net. SQL backup — native SQL gzip + manifest; для восстановления
+нужен соответствующий CONTENT_DIRECTORY=/home/narnes/tarkov-data/content.
+Прежняя wiki.sqlite — сохранённый источник переноса, для записи не используется.
+При обновлении сохраняются .env, APP_KEY, ID, связи, аккаунты и прогресс.
 
 ## Проверки и экспорт
 
@@ -86,3 +91,14 @@ git diff --check
 HTML нельзя править вручную. .gitattributes помечает экспорт linguist-generated,
 поэтому он не искажает статистику исходных языков GitHub. JavaScript остаётся
 исходным кодом интерактивных карт; Laravel не заменяет браузерный JavaScript.
+
+## Действующие контракты
+
+- [Источники истины, схема, публикация и импорт контента](specs/data-authority-and-publication.md).
+- [Совместимость фронтенда/API, ресурсы и конфликты профиля](specs/client-api-contract.md).
+- [Восстановление MariaDB вместе с контентом](specs/recovery-contract.md).
+- [Аудит и измеримые бюджеты производительности](specs/audit-and-performance.md).
+
+Статусы реализации и проектные цели указаны в каждом документе; новые требования
+не означают, что соответствующие механизмы уже внедрены. Планы первоначального
+SQLite-развёртывания не заменяют текущие миграции и production-runbook.
