@@ -4,9 +4,9 @@
   <nav class="atlas-modes" aria-label="Раздел сайта">
     <a href="index.html">Главная</a>
     <a href="raid.html" id="raid-link">Карты</a>
+    <a href="documents.html" aria-current="page">Документы</a>
     <a href="quests.html">Квесты</a>
     <a href="reference.html">Справочник</a>
-    <a href="documents.html" aria-current="page">Документы</a>
   </nav>
   <div class="header-right">
     <span class="data-status"><i></i><span id="dataset-count">Загрузка данных</span></span>
