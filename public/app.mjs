@@ -47,7 +47,7 @@ async function fetchData(path) {
 
 async function start() {
   const [maps, docs, allSpawns, source] = await Promise.all(['maps', 'docs', 'spawns', 'source'].map(name => fetchData(`data/${name}.json`)));
-  const spawns = allSpawns.filter(s => !s.cmsArchived);
+  const spawns = allSpawns.filter(s => !s.cmsArchived && maps.some(map=>map.id===s.map));
   const restoreProgress = value => sanitizeProgress(value, spawns, source.retiredPointIds || []);
   const mapById = new Map(maps.map(m => [m.id, m]));
   const docById = new Map(docs.map(d => [d.id, d]));
@@ -155,6 +155,7 @@ async function start() {
   $('dataset-count').textContent = `${maps.length} локаций · ${spawns.length} точек`;
   $('about-maps').textContent = maps.length;
   $('about-spawns').textContent = spawns.length;
+  $('about-document-types').textContent = docs.length;
   $('map-select').replaceChildren(...maps.map(map => {
     const option = node('option', '', map.name);
     option.value = map.id;

@@ -1,4 +1,5 @@
 import {json,readStorage,writeStorage,el} from './guide-common.mjs?v=lazy-20261016';
+import {serverProfiles} from './profile-runtime.mjs';
 import {resolveGameMode} from './game-mode.mjs';
 import {normalize} from './model.mjs';
 import {siteHref,canonicalURL} from './site-routes.mjs?v=release-20261016';
@@ -6,6 +7,35 @@ import {questHref,catalogHref} from './quest-catalog-model.mjs?v=release-2026101
 const $=id=>document.getElementById(id);
 let mode=resolveGameMode(new URLSearchParams(location.search).get('mode'),readStorage('kord-atlas-game-mode')),home,index,indexRequest,searchSequence=0;
 const arrow=()=>{const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),use=document.createElementNS('http://www.w3.org/2000/svg','use');use.setAttribute('href','#home-arrow');svg.setAttribute('aria-hidden','true');svg.append(use);return svg;};
+async function loadHome(){
+ const dynamic=serverProfiles||document.querySelector('meta[name="wiki-runtime"]')?.content==='php';
+ if(!dynamic)return json('data/home.json');
+ const response=await fetch('/api/content/data/home.json',{credentials:'same-origin',cache:'no-store'});
+ if(!response.ok)throw Error('Сводка сайта временно недоступна');
+ return response.json();
+}
+const count=value=>Number.isSafeInteger(value)&&value>=0?value.toLocaleString('ru-RU'):'—';
+const word=(value,one,few,many)=>{const n=Math.abs(Number(value));return n%10===1&&n%100!==11?one:n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?few:many;};
+function statistics(){
+ const stats=home.statistics||{},snapshot=home.modes[mode];
+ $('home-map-total').textContent=count(stats.maps);
+ $('home-map-total').nextElementSibling.textContent=word(stats.maps,'интерактивная карта','интерактивные карты','интерактивных карт');
+ $('home-quest-total').textContent=count(snapshot.total);$('home-kappa-total').textContent=count(snapshot.kappa);
+ $('home-quest-total').nextElementSibling.textContent=word(snapshot.total,'задание','задания','заданий')+' в каталоге';
+ $('home-kappa-total').nextElementSibling.textContent=word(snapshot.kappa,'задание','задания','заданий')+' для Каппы';
+ $('home-locations-total').textContent=count(stats.maps)+' '+word(stats.maps,'локация','локации','локаций');
+ const featured=(home.maps||[]).findIndex(map=>map.id==='streets-of-tarkov');
+ $('home-map-preview').hidden=featured<0;
+ $('home-map-position').textContent=featured<0?'—':String(featured+1).padStart(2,'0')+' / '+count(stats.maps);
+ $('home-documents-summary').textContent=Number.isSafeInteger(stats.documentPoints)&&Number.isSafeInteger(stats.documentMaps)
+  ?count(stats.documentPoints)+' '+word(stats.documentPoints,'место','места','мест')+' возможного появления на '+count(stats.documentMaps)+' '+word(stats.documentMaps,'локации','локациях','локациях')+'. Фотографии, отметки найденного и личные заметки.'
+  :'Сводка документов временно недоступна. Открой атлас, чтобы посмотреть доступные точки.';
+ const locations=$('home-location-list');locations.replaceChildren();
+ for(const [index,map] of (home.maps||[]).entries()){
+  const link=el('a');link.href=siteHref('raid.html?'+new URLSearchParams({map:map.id,mode}));
+  link.append(el('span',String(index+1).padStart(2,'0')),el('strong',map.name),arrow());locations.append(link);
+ }
+}
 function relink(){
  for(const link of document.querySelectorAll('[data-home-link]')){
   const url=new URL(link.dataset.homeLink,location.origin+'/');url.searchParams.set('mode',mode);link.href=siteHref(url.pathname+url.search);
@@ -15,7 +45,7 @@ function relink(){
 }
 function journal(){
  if(!home)return;const snapshot=home.modes[mode],progress=readStorage('kord-atlas-quests-'+mode+'-v1')?.quests||{},main=snapshot.tasks.filter(task=>!task.archive),done=main.filter(task=>progress[task.id]?.status==='complete').length;
- $('home-progress').max=snapshot.total;$('home-progress').value=done;$('home-progress-label').textContent=done+' из '+snapshot.total+' заданий';
+ $('home-progress').hidden=false;$('home-progress').max=Math.max(1,snapshot.total);$('home-progress').value=done;$('home-progress-label').textContent=done+' из '+snapshot.total+' заданий';
  const selected=readStorage('kord-atlas-quest-view-'+mode+'-v1')?.selected;
  const current=main.find(task=>task.id===selected&&progress[task.id]?.status!=='complete')||main.find(task=>progress[task.id]?.status==='active');
  $('home-continue').href=current?questHref(current.id,mode):catalogHref('all',mode);
@@ -26,20 +56,20 @@ function traders(){
  for(const trader of home.modes[mode].traders.slice(0,8)){
   const link=el('a','','home-trader');link.dataset.homeLink='quests.html?trader='+encodeURIComponent(trader.id);link.href=catalogHref(trader.id,mode);
   if(trader.image){const img=el('img');img.src=trader.image;img.alt='';img.width=58;img.height=64;img.loading='lazy';link.append(img);}
-  link.append(el('strong',trader.name),el('span',trader.total+' заданий'));root.append(link);
+  link.append(el('strong',trader.name),el('span',count(trader.total)+' '+word(trader.total,'задание','задания','заданий')));root.append(link);
  }
 }
 function applyMode(next,persist=true){
  mode=resolveGameMode(next);if(persist)writeStorage('kord-atlas-game-mode',mode);
  const url=new URL(location.href);url.searchParams.set('mode',mode);history.replaceState(null,'',canonicalURL(url));
- relink();if(home){$('home-quest-total').textContent=home.modes[mode].total;$('home-kappa-total').textContent=home.modes[mode].kappa;traders();journal();}renderSearch();
+ relink();if(home){statistics();traders();journal();}renderSearch();
 }
 async function renderSearch(){
  const sequence=++searchSequence,query=normalize($('home-search').value.trim()),root=$('home-search-results'),list=$('home-search-list');
  if(query.length<2){root.hidden=true;list.replaceChildren();return;}
  root.hidden=false;$('home-search-status').textContent='Ищем в справочнике…';
  try{
-  if(!home)home=await json('data/home.json');
+  if(!home)home=await loadHome();
   if(!index)index=await(indexRequest??=json('data/page-routes.json').catch(error=>{indexRequest=null;throw error;}));
   if(sequence!==searchSequence)return;
   const snapshot=home.modes[mode],traderNames=new Map(snapshot.traders.map(trader=>[trader.id,trader.name]));
@@ -58,4 +88,6 @@ $('home-search-form').onsubmit=async event=>{event.preventDefault();if(!$('home-
 for(const button of document.querySelectorAll('.home-mode button'))button.onclick=()=>applyMode(button.dataset.mode);
 globalThis.addEventListener('wiki:state',event=>{if(event.detail?.key==='kord-atlas-game-mode'){const next=readStorage('kord-atlas-game-mode');if(next!==mode)applyMode(next,false);}else if([`kord-atlas-quests-${mode}-v1`,`kord-atlas-quest-view-${mode}-v1`].includes(event.detail?.key))journal();});
 relink();
-try{home=await json('data/home.json');traders();journal();$('home-quest-total').textContent=home.modes[mode].total;$('home-kappa-total').textContent=home.modes[mode].kappa;}catch{/* Server-rendered navigation and counts remain available. */}
+try{home=await loadHome();statistics();traders();journal();}catch{
+ $('home-progress-label').textContent='Сводка временно недоступна';$('home-documents-summary').textContent='Не удалось загрузить сводку документов. Открой атлас, чтобы посмотреть точки.';
+}

@@ -9,7 +9,7 @@
     <a href="documents.html" id="documents-link">Документы</a>
   </nav>
   <div class="header-right">
-    <span class="data-status" id="raid-total">13 локаций</span><button class="button quiet" id="raid-about">Источники</button>
+    <span class="data-status" id="raid-total">Загрузка локаций</span><button class="button quiet" id="raid-about">Источники</button>
     @include('components.player-navigation')
   </div>
 </header>

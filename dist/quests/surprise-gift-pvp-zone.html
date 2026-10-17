@@ -69,7 +69,7 @@
 <label>Сортировка<select id="quest-sort" aria-label="Порядок"><option value="level">По уровню</option><option value="name">По названию</option><option value="xp">По опыту</option></select></label>
 <label>Уровень<input id="player-level" type="number" min="1" max="100" value="1"></label>
 <label>Фракция<select id="player-faction"><option value="any">Любая</option><option>BEAR</option><option>USEC</option></select></label>
-<div class="quest-progress"><div><strong id="quest-done">0</strong><span id="quest-total"> / … выполнено</span></div><progress id="quest-progress" value="0" max="1" aria-label="Прогресс квестов"></progress></div>
+<div class="quest-progress"><div><strong id="quest-done">—</strong><span id="quest-total"> / … выполнено</span></div><progress id="quest-progress" value="0" max="1" aria-label="Прогресс квестов"></progress></div>
 <div class="guide-side-foot"><div class="guide-button-row"><button class="button" id="quest-export">Скачать прогресс</button><button class="button" id="quest-import">Загрузить</button><input id="quest-import-file" type="file" accept=".json,application/json" hidden></div><small>Личные отметки и настройки сохраняются в вашем профиле. У PVE и PVP отдельный прогресс.</small><button class="text-button" id="quest-refresh">Обновить квесты ↻</button><span id="quest-data-date" role="status">Загрузка данных…</span></div>
 </div></details>
 <button id="quest-reset" class="text-button">Сбросить</button>
@@ -77,7 +77,7 @@
 </div></section>
 <section id="quest-hub" class="quest-hub" aria-label="Разделы квестов">
 <div id="quest-story-card"></div>
-<div class="quest-hub-heading"><div><span class="eyebrow">ЗАДАНИЯ ТОРГОВЦЕВ</span><h2>Выберите торговца</h2></div><div class="quest-catalog-shortcuts"><a id="quest-kappa-link" class="button" href="quests.html?section=all&amp;flag=kappa&amp;mode=pve">Для Каппы · 231</a><a id="quest-all-link" class="button quiet" href="quests.html?section=all&amp;mode=pve">Все задания ↗</a></div></div>
+<div class="quest-hub-heading"><div><span class="eyebrow">ЗАДАНИЯ ТОРГОВЦЕВ</span><h2>Выберите торговца</h2></div><div class="quest-catalog-shortcuts"><a id="quest-kappa-link" class="button" href="quests.html?section=all&amp;flag=kappa&amp;mode=pve">Для Каппы · …</a><a id="quest-all-link" class="button quiet" href="quests.html?section=all&amp;mode=pve">Все задания ↗</a></div></div>
 <div class="guide-traders quest-trader-grid" id="quest-traders" aria-label="Торговцы"></div>
 <a id="quest-archive-link" class="text-button quest-archive-link" href="quests.html?section=archive&amp;mode=pve">Другие и архивные</a>
 </section>

@@ -236,7 +236,7 @@ async function setLocation(id, {initial = false} = {}) {
     for (const p of pois) if (p.lootType && !(p.lootType in LOOT_NAMES)) lootTypes.add(p.lootType);
     currentFloor = initial && params.has('floor') ? params.get('floor') : initial && questFilter ? 'all' : (read(prefsKey)?.floors?.[id+':'+artworkMode]||'all');
     currentFloor=next.floorAliases?.[currentFloor]||currentFloor;if (!['all',next.baseFloor.id,...next.floors.map(f=>f.id)].includes(currentFloor)) currentFloor = 'all';
-    $('raid-total').textContent='13 локаций · '+(gameMode==='pve'?'PVE':'PVP');$('raid-artwork').value=artworkMode;$('raid-mode').value=gameMode;
+    $('raid-total').textContent=maps.length+' локаций · '+(gameMode==='pve'?'PVE':'PVP');$('raid-artwork').value=artworkMode;$('raid-mode').value=gameMode;
     $('raid-map-select').value = id; $('raid-title').textContent = next.name; document.title = `${next.name} — Интерактивные карты — Escape from Tarkov Wiki`;
     $('raid-map-credit').textContent = next.documentMap ? 'Альтернативная схема' : 'Интерактивная карта';
     $('raid-labels').closest('label').hidden=Boolean(next.documentMap);
@@ -395,7 +395,7 @@ async function start() {
   looseFilter=new LooseLootFilter($('raid-loose-details'),{catalog:itemCatalog,preferences:loosePrefs,image:itemImage,onChange:render,onPersist:savePrefs});
   const mall=maps.find(m=>m.id==='interchange');if(mall){mall.baseFloor={...mall.baseFloor,name:'Территория / паркинг'};mall.floors=mall.floors.map(f=>({...f,name:f.id==='First_Floor'?'1 этаж торгового центра':'2 этаж торгового центра'}));}
   $('raid-map-select').replaceChildren(...maps.map(m=>{const o=el('option',m.name);o.value=m.id;return o;}));
-  $('raid-total').textContent=`13 локаций · ${maps.reduce((s,m)=>s+m.pointCount,0).toLocaleString('ru')} объектов`;
+  $('raid-total').textContent=`${maps.length} локаций`;
   $('raid-artwork').onchange=e=>{artworkMode=e.target.value;savePrefs();setLocation(definition.id);};
   $('raid-mode').onchange=e=>{gameMode=e.target.value;try{storePersonal('kord-atlas-game-mode',gameMode);}catch{}setLocation(definition.id);};
   $('raid-legacy').onchange=()=>{render();savePrefs();};

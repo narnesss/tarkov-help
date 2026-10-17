@@ -11,7 +11,8 @@ use App\Services\PublicCatalog;
 /** Собирает и кэширует публичный контент без открытия сессии игрока. */
 final class ContentController
 {
-    private const FORMAT='public-views-20261016-v3';
+    private const FORMAT='public-views-counts-20261017';
+    private const HOME_DATASETS=['raid/maps.json','maps.json','spawns.json','docs.json'];
     public const BUNDLES=[
         'quest-extras'=>[
             'guide/quest-media.json'=>null,'guide/story.json'=>null,'guide/quest-conditions.json'=>['quests'=>[]],
@@ -71,13 +72,14 @@ final class ContentController
         }
         abort_if($view==='detail'&&$questMode!==null&&$quests->isEmpty(),404);
         $versions=$quests->map(fn(Quest $quest)=>$quest->getAttributes())->all();
+        $related=$path==='home.json'?ContentDataset::whereIn('path',self::HOME_DATASETS)->orderBy('path')->get()->keyBy('path'):new Collection();
         $key='public-content-json-v1-'.hash('sha256',serialize([
             $dataset->getConnection()->getName(),$dataset->getConnection()->getDatabaseName(),config('content.directory'),
             $path,...($view==='full'?[]:[$view,$id]),
         ]));
-        $revision=hash('sha256',serialize([$dataset->getRawOriginal('payload'),$versions]));
+        $revision=hash('sha256',serialize([$dataset->getRawOriginal('payload'),$versions,$related->map(fn(ContentDataset $row)=>$row->getRawOriginal('payload'))->all()]));
         if($request->boolean('revision')){return $this->revisionResponse($key,$revision);}
-        return $this->cachedResponse($key,$revision,fn()=>$this->build($dataset,$path,$quests,$view,$id)->getContent());
+        return $this->cachedResponse($key,$revision,fn()=>$this->build($dataset,$path,$quests,$view,$id,$related)->getContent());
     }
 
     private function cachedResponse(string $key,string $revision,\Closure $build)
@@ -102,9 +104,9 @@ final class ContentController
     private function revisionResponse(string $key,string $revision)
     { return response()->json(['revision'=>$this->revision($key,$revision)])->header('Cache-Control','private, no-store'); }
 
-    private function build(ContentDataset $dataset,string $path,Collection $quests,string $view='full',?string $id=null)
+    private function build(ContentDataset $dataset,string $path,Collection $quests,string $view='full',?string $id=null,?Collection $related=null)
     {
-        if ($path === 'home.json') { return $this->home($dataset,$quests); }
+        if ($path === 'home.json') { return $this->home($dataset,$quests,$related??new Collection()); }
         if (!preg_match('~^guide/quests-(pve|regular)\.json$~', $path, $match)) {
             $raw=$dataset->json();$data=json_decode($raw,true,128,JSON_THROW_ON_ERROR);$changed=false;
             foreach(['pois','items','maps','traders'] as $field){if(is_array($data[$field]??null)){$filtered=array_filter($data[$field],fn($row)=>!is_array($row)||(empty($row['cmsArchived'])&&($field!=='pois'||($row['sourceStatus']??null)!=='unverified-coordinates')));if(count($filtered)!==count($data[$field])){$data[$field]=array_values($filtered);$changed=true;}}}
@@ -137,9 +139,20 @@ final class ContentController
     }
 
     /** Главная страница и поиск используют актуальные названия и только опубликованные квесты. */
-    private function home(ContentDataset $dataset,Collection $quests)
+    private function home(ContentDataset $dataset,Collection $quests,Collection $related)
     {
         $data = $dataset->content(); $traders = [];
+        // Считаем доступные сущности из действующих файлов CMS, а не из снимка главной.
+        $active=static fn(array $rows): array=>array_values(array_filter($rows,static fn($row)=>is_array($row)&&empty($row['cmsArchived'])));
+        $maps=$active($related->get('raid/maps.json')?->content()??[]);
+        $documentMaps=$active($related->get('maps.json')?->content()??[]);
+        $mapIds=array_column($documentMaps,'id');
+        $points=array_values(array_filter($active($related->get('spawns.json')?->content()??[]),static fn($row)=>in_array($row['map']??null,$mapIds,true)));
+        $data['maps']=array_map(static fn($map)=>['id'=>$map['id'],'name'=>$map['name']??$map['displayName']??$map['id']],$maps);
+        $data['statistics']=['maps'=>$related->has('raid/maps.json')?count($maps):null,
+            'documentMaps'=>$related->has('maps.json')?count($documentMaps):null,
+            'documentPoints'=>$related->has('maps.json')&&$related->has('spawns.json')?count($points):null,
+            'documentTypes'=>$related->has('docs.json')?count($active($related->get('docs.json')->content())):null];
         foreach (['pve', 'regular'] as $mode) {
             $traders[$mode] = collect($data['modes'][$mode]['traders'] ?? [])->keyBy('id')->map(fn ($trader) => [...$trader, 'total' => 0])->all();
             $data['modes'][$mode] = ['total' => 0, 'kappa' => 0, 'story' => 0, 'tasks' => [], 'traders' => []];
