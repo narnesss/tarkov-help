@@ -36,7 +36,7 @@ function configure(){
   if(tab==='bosses'||tab==='btr')filters=[['all','Все локации'],...list(quests.maps).filter(m=>!['night-factory','ground-zero-21','ground-zero-tutorial','the-lab-dark'].includes(m.normalizedName)).map(m=>[m.normalizedName,m.name])];
   if(tab==='needed')filters=[['all','Все нужные предметы'],['fir','Найдено в рейде']];
   if(tab==='ammo')sorts.push(['penetration','По пробитию ↓'],['damage','По урону ↓']);
-  const filterTitle=['hideout','crafts'].includes(tab)?'Модуль':tab==='barters'?'Торговец':'Категория';$('reference-filter-title').textContent=filterTitle;$('reference-filter').setAttribute('aria-label',filterTitle);
+  const filterTitle=['hideout','crafts'].includes(tab)?'Модуль':tab==='barters'?'Торговец':tab==='ammo'?'Калибр':'Категория';$('reference-filter-title').textContent=filterTitle;$('reference-filter').setAttribute('aria-label',filterTitle);
   setOptions('reference-filter',filters);setOptions('reference-sort',sorts);$('reference-filter').hidden=filters.length===1;$('reference-sort').hidden=sorts.length===1;$('reference-filter-label').hidden=filters.length===1;$('reference-sort-label').hidden=sorts.length===1;
 }
 function sourceRows(){
@@ -66,9 +66,9 @@ function render(){if(!data)return;$('reference-count').hidden=false;document.que
   if(['items','ammo','needed'].includes(tab))renderTable(root,visible);else{const cards=el('div','','reference-cards');for(const row of visible)cards.append(renderCard(row));root.append(cards);}
 }
 function renderTable(root,rows){
-  const wrap=el('div','','reference-table-wrap'),table=el('table','','reference-table'),head=el('thead'),tr=el('tr');
+  const wrap=el('div','','reference-table-wrap'),table=el('table','','reference-table reference-responsive-table'),head=el('thead'),tr=el('tr');
   const headers=tab==='ammo'?['Патрон','Калибр','Урон','Пробитие','Бронеурон','Скорость']:tab==='needed'?['Предмет','Нужно','Условие','Для заданий']:['Предмет','Торговцу','Габариты'];
-  if(tab!=='ammo')table.classList.add('reference-item-table');
+  table.classList.add(tab==='ammo'?'reference-ammo-table':'reference-item-table');
   table.setAttribute('role','table');head.setAttribute('role','rowgroup');tr.setAttribute('role','row');
   for(const [index,h] of headers.entries()){const th=el('th',h,index>0&&!(tab==='needed'&&index===3)?'number':'');th.scope='col';th.setAttribute('role','columnheader');tr.append(th);}
   head.append(tr);table.append(head);const body=el('tbody');body.setAttribute('role','rowgroup');
@@ -77,7 +77,7 @@ function renderTable(root,rows){
     let values;if(tab==='ammo')values=[r.properties.caliber?.replace(/^Caliber/,''),r.properties.damage,r.properties.penetrationPower,num(r.properties.armorDamage)+'%',num(r.properties.initialSpeed)+' м/с'];else if(tab==='needed')values=[num(r.count),r.foundInRaid?'В рейде':'Любые'];else values=[money(sellPrice(r)),r.width&&r.height?`${r.width} × ${r.height}`:'—'];
     for(const v of values)row.append(el('td',String(v??'—'),'number'));
     if(tab==='needed'){const td=el('td');for(const t of r.tasks){const a=el('a',t.name,'guide-link');a.href=siteHref(`quests.html?quest=${encodeURIComponent(t.id)}&mode=${mode}`);td.append(a,el('br'));}row.append(td);}
-    for(const [index,cell] of [...row.children].entries()){cell.setAttribute('role','cell');if(tab!=='ammo'){const label=el('span',headers[index],'reference-cell-label');label.setAttribute('aria-hidden','true');cell.prepend(label);}}
+    for(const [index,cell] of [...row.children].entries()){cell.setAttribute('role','cell');const label=el('span',headers[index],'reference-cell-label');label.setAttribute('aria-hidden','true');cell.prepend(label);}
     body.append(row);
   }
   table.append(body);wrap.append(table);root.append(wrap);
