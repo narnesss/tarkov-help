@@ -25,9 +25,10 @@ final class PublicCatalog
         if(isset($task['finishRewards'])){$task['finishRewards']=['items'=>array_map(static fn($row)=>['item'=>self::reference($row['item']??null),'count'=>$row['count']??1],$task['finishRewards']['items']??[])];}
         $task['_detailPending']=true;return $task;
     }
-    public static function dataset(array $data,string $path,string $view,?string $id): array
+    public static function dataset(array $data,string $path,string $view,?string $id,?string $section=null): array
     {
         if(str_contains($path,'/items-')){
+            if($view==='lookup'){return ['meta'=>$data['meta']??[],'lookup'=>true,'items'=>array_map(fn($row)=>self::fields($row,['id','name']),$data['items']??[])];}
             $data['catalog']=$view==='catalog';
             if($view==='detail'){$data['items']=array_values(array_filter($data['items']??[],fn($item)=>($item['id']??null)===$id));abort_if(!$data['items'],404);}
             else{$data['items']=array_map(static function($item){
@@ -37,6 +38,10 @@ final class PublicCatalog
             },$data['items']??[]);}
         }elseif(str_contains($path,'/reference-')){
             unset($data['mapMetadata']);$data['maps']=array_map(fn($map)=>self::fields($map,['id','name','normalizedName','bosses']),$data['maps']??[]);
+        }
+        if($section!==null){
+            $fields=['items'=>['traders'],'ammo'=>[],'needed'=>[],'crafts'=>['crafts','hideout','traders'],'barters'=>['barters','traders'],'hideout'=>['hideout'],'bosses'=>['maps'],'traders'=>['traders','barters'],'achievements'=>['achievements'],'btr'=>['maps']];
+            $data=self::fields($data,['meta',...($fields[$section]??[])]);
         }
         return $data;
     }

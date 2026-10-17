@@ -68,4 +68,64 @@ final class ContentViewsTest extends TestCase
         $this->getJson('/api/content/data/guide/reference-pve.json?view=catalog')->assertOk()->assertJsonPath('maps.0.bosses.0.mob','boss')->assertJsonPath('crafts.0.id','craft')->assertJsonMissingPath('mapMetadata')->assertJsonMissingPath('maps.0.pois');
         $this->getJson('/api/content/data/guide/reference-pve.json')->assertJsonPath('mapMetadata.large','метаданные');
     }
+    public function test_boss_detail_contains_selected_profile_related_links_and_only_its_spawns(): void
+    {
+        $this->dataset('guide/bosses.json',['profiles'=>[
+            ['id'=>'followerBirdEye','slug'=>'birdeye','name'=>'Зрячий','spawnParentMobId'=>'bossKnight','canonicalMapSlugs'=>['lighthouse'],'description'=>'Описание'],
+            ['id'=>'bossKnight','slug'=>'knight','name'=>'Рыцарь','description'=>'Не нужно в карточке Зрячего'],
+            ['id'=>'bossKilla','slug'=>'killa','name'=>'Килла'],
+        ]]);
+        $this->dataset('guide/reference-pve.json',['meta'=>['fetchedAt'=>'2026-10-17'],'achievements'=>[['id'=>'unrelated']],'maps'=>[
+            ['id'=>'lighthouse','normalizedName'=>'lighthouse','name'=>'Маяк','pois'=>['unrelated'],'bosses'=>[['mob'=>'bossKnight','spawnChance'=>0.4],['mob'=>'bossKilla']]],
+            ['id'=>'interchange','normalizedName'=>'interchange','name'=>'Развязка','bosses'=>[['mob'=>'bossKilla']]],
+        ]]);
+        $url='/api/content/data/guide/bosses.json?view=detail&id=birdeye&mode=pve';
+        $this->getJson($url)->assertOk()->assertJsonCount(2,'profiles')->assertJsonCount(1,'reference.maps')->assertJsonCount(1,'reference.maps.0.bosses')
+            ->assertJsonPath('profiles.0.name','Зрячий')->assertJsonPath('reference.maps.0.bosses.0.mob','bossKnight')->assertJsonMissingPath('profiles.1.description')->assertJsonMissingPath('reference.maps.0.pois')->assertJsonMissingPath('reference.achievements');
+        $this->getJson($url)->assertHeader('X-Wiki-Content-Cache','HIT');
+        $this->getJson('/api/content/data/guide/bosses.json?view=detail&id=missing&mode=pve')->assertNotFound();
+        $this->getJson($url.'&mode[]=pve')->assertUnprocessable();$this->assertDatabaseCount('user_state',0);
+    }
+
+    public function test_detail_has_only_related_quest_context_and_media_is_localized_by_backend(): void
+    {
+        $this->fixtures();
+        Quest::create(['quest_id'=>'previous','mode'=>'pve','name'=>'До','trader_id'=>'prapor','published'=>true,'payload'=>['id'=>'previous','name'=>'До','objectives'=>[['id'=>'previous-goal']]]]);
+        Quest::create(['quest_id'=>'unrelated','mode'=>'pve','name'=>'Другой','trader_id'=>'prapor','published'=>true,'payload'=>['id'=>'unrelated','name'=>'Другой','objectives'=>[]]]);
+        $this->dataset('guide/media-localization.json',['images'=>['https://example.test/image.jpg'=>['url'=>'assets/ru.webp']]]);
+        $this->getJson('/api/content/data/guide/quests-pve.json?view=detail&id=stable')->assertOk()->assertJsonPath('partial',true)->assertJsonCount(1,'tasks')->assertJsonCount(1,'contextTasks')
+            ->assertJsonPath('contextTasks.0.id','previous')->assertJsonPath('contextTasks.0.objectives.0.id','previous-goal')->assertJsonPath('tasks.0.objectives.0.media.0.url','assets/ru.webp')->assertJsonPath('ui.uiReady',true);
+        $this->assertDatabaseCount('users',0);$this->assertDatabaseCount('user_state',0);
+    }
+
+    public function test_reference_sections_exclude_other_datasets_and_item_cards_do_not_include_catalogs(): void
+    {
+        $this->dataset('guide/reference-pve.json',['meta'=>[],'achievements'=>[['id'=>'achievement']],'crafts'=>[['id'=>'craft','requiredItems'=>[['item'=>['id'=>'item']]]],['id'=>'other','requiredItems'=>[['item'=>['id'=>'other']]]]],'maps'=>[['id'=>'woods']]]);
+        $this->dataset('guide/items-pve.json',['meta'=>[],'items'=>[['id'=>'item','name'=>'Предмет'],['id'=>'other','name'=>'Другой']]]);
+        $this->getJson('/api/content/data/guide/reference-pve.json?view=catalog&section=achievements')->assertOk()->assertJsonCount(1,'achievements')->assertJsonMissingPath('crafts')->assertJsonMissingPath('maps');
+        $this->getJson('/api/content/data/guide/items-pve.json?view=detail&id=item')->assertOk()->assertJsonCount(1,'items')->assertJsonCount(1,'related.reference.crafts')->assertJsonPath('related.reference.crafts.0.id','craft')->assertJsonMissingPath('related.reference.maps');
+        $this->getJson('/api/content/data/guide/reference-pve.json?view=catalog&section=unknown')->assertUnprocessable();
+    }
+
+    public function test_php_applies_file_media_defaults_without_overriding_editor_choice(): void
+    {
+        $quest=$this->fixtures();$images=json_decode(gzdecode(file_get_contents(public_path('data/guide/media-localization.json.gz'))),true)['images'];
+        $source=array_key_first($images);$payload=$quest->payload;$payload['objectives'][0]['media']=[['url'=>$source,'id'=>'stable-frame','objectiveIds'=>['goal']]];$quest->payload=$payload;$quest->save();
+        $url='/api/content/data/guide/quests-pve.json?view=detail&id=stable';
+        $this->getJson($url)->assertOk()->assertJsonPath('tasks.0.objectives.0.media.0.url',$images[$source]['url'])->assertJsonPath('tasks.0.objectives.0.media.0.id','stable-frame');
+        $this->dataset('guide/media-localization.json',['images'=>[$source=>['url'=>'assets/editor.webp']]]);
+        $this->getJson($url)->assertJsonPath('tasks.0.objectives.0.media.0.url','assets/editor.webp');
+    }
+
+    public function test_item_search_names_are_read_from_backend_and_map_frame_loads_one_quest_only(): void
+    {
+        $quest=$this->fixtures();$this->dataset('guide/items-pve.json',['items'=>[['id'=>'active','name'=>'Новое имя','description'=>'Лишний текст'],['id'=>'archived','cmsArchived'=>true]]]);
+        $this->getJson('/api/content/data/guide/items-pve.json?view=lookup')->assertOk()->assertJsonPath('lookup',true)->assertJsonCount(1,'items')->assertJsonPath('items.0.name','Новое имя')->assertJsonMissingPath('items.0.description');
+        $this->dataset('guide/quest-map-index.json',['sourceMaps'=>['woods'=>['width'=>100], 'other'=>['width'=>200]],'sourceQuests'=>['stable'=>['woods'=>[['id'=>'goal']],'other'=>[['id'=>'unrelated']]],'unrelated'=>['woods'=>[['id'=>'other']]]]]);
+        $url='/api/content/data/guide/quest-map-index.json?view=detail&id=stable&map=woods&mode=pve';
+        $this->getJson($url)->assertOk()->assertJsonPath('sourceQuests.stable.woods.0.id','goal')->assertJsonMissingPath('sourceMaps.other')->assertJsonMissingPath('sourceQuests.unrelated')->assertJsonMissingPath('sourceQuests.stable.other');
+        $this->getJson($url.'&map[]=woods')->assertUnprocessable();
+        $quest->published=false;$quest->save();$this->getJson($url)->assertNotFound();$this->assertDatabaseCount('user_state',0);
+    }
+
 }

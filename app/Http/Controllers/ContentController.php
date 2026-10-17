@@ -11,7 +11,7 @@ use App\Services\PublicCatalog;
 /** Собирает и кэширует публичный контент без открытия сессии игрока. */
 final class ContentController
 {
-    private const FORMAT='public-views-counts-20261017';
+    private const FORMAT='page-content-counts-20261017-v1';
     private const HOME_DATASETS=['raid/maps.json','maps.json','spawns.json','docs.json'];
     public const BUNDLES=[
         'quest-extras'=>[
@@ -52,13 +52,16 @@ final class ContentController
     public function __invoke(string $path,Request $request)
     {
         abort_unless(preg_match('~^[a-z0-9][a-z0-9/._-]*\.json$~', $path) && !str_contains($path, '..'), 404);
-        $input=$request->validate(['view'=>['sometimes','string','in:full,catalog,detail,lookup'],'id'=>['sometimes','prohibited_unless:view,detail','string','max:128','regex:/^[a-zA-Z0-9_-]+$/D']]);
+        $input=$request->validate(['view'=>['sometimes','string','in:full,catalog,detail,lookup'],'map'=>['sometimes','string','max:128','regex:/^[a-zA-Z0-9_-]+$/D'],'mode'=>['sometimes','string','in:pve,regular'],'section'=>['sometimes','string','in:items,ammo,needed,barters,crafts,hideout,bosses,traders,achievements,btr'],'id'=>['sometimes','prohibited_unless:view,detail','string','max:128','regex:/^[a-zA-Z0-9_-]+$/D']]);
         $request->validate(['revision'=>['sometimes','boolean']]);
         $view=$input['view']??'full';$id=$input['id']??null;
+        if($path==='guide/quest-map-index.json'&&$view==='detail'){return $this->sourceMap($request,$id);}
+        if($path==='guide/bosses.json'&&$view==='detail'){return $this->boss($request,$id);}
+        if(isset($input['section'])){abort_unless(preg_match('~^guide/reference-(pve|regular)\.json$~',$path)&&$view==='catalog',422);}
         if($view!=='full'){
             abort_unless(preg_match('~^guide/(quests|items|reference)-(pve|regular)\.json$~',$path,$kind),422);
             abort_if($view==='detail'&&($kind[1]==='reference'||$id===null),422);
-            abort_if($view==='lookup'&&$kind[1]!=='quests',422);
+            abort_if($view==='lookup'&&!in_array($kind[1],['quests','items'],true),422);
         }
         if(str_starts_with($path,'wiki/')){return response()->json(app(\App\Services\WikiGraph::class)->read($path))->header('Cache-Control','private, no-store');}
         $dataset = ContentDataset::where('path', $path)->firstOrFail();
@@ -75,11 +78,42 @@ final class ContentController
         $related=$path==='home.json'?ContentDataset::whereIn('path',self::HOME_DATASETS)->orderBy('path')->get()->keyBy('path'):new Collection();
         $key='public-content-json-v1-'.hash('sha256',serialize([
             $dataset->getConnection()->getName(),$dataset->getConnection()->getDatabaseName(),config('content.directory'),
-            $path,...($view==='full'?[]:[$view,$id]),
+            $path,...($view==='full'?[]:[$view,$id]),$input['section']??null,
         ]));
-        $revision=hash('sha256',serialize([$dataset->getRawOriginal('payload'),$versions,$related->map(fn(ContentDataset $row)=>$row->getRawOriginal('payload'))->all()]));
+        $dependencies=[];$mediaRevision=null;
+        if($view==='detail'){
+            $mediaRevision=\App\Services\PageContent::mediaRevision();
+            $dependencies=ContentDataset::orderBy('path')->get(['path','payload'])->map(fn($row)=>$row->getAttributes())->all();
+            $versions=Quest::where('mode',$questMode??(str_contains($path,'-pve.')?'pve':'regular'))->orderBy('id')->get(['id','quest_id','mode','name','published','payload'])->map(fn($row)=>$row->getAttributes())->all();
+        }
+        $revision=hash('sha256',serialize([$dataset->getRawOriginal('payload'),$versions,$dependencies,$mediaRevision,$related->map(fn(ContentDataset $row)=>$row->getRawOriginal('payload'))->all()]));
         if($request->boolean('revision')){return $this->revisionResponse($key,$revision);}
-        return $this->cachedResponse($key,$revision,fn()=>$this->build($dataset,$path,$quests,$view,$id,$related)->getContent());
+        return $this->cachedResponse($key,$revision,fn()=>$this->build($dataset,$path,$quests,$view,$id,$input['section']??null,$related)->getContent());
+    }
+
+    private function sourceMap(Request $request,?string $id)
+    {
+        $map=$request->input('map');$mode=$request->input('mode','pve');abort_unless($id!==null&&is_string($map),422);
+        $quest=Quest::where('quest_id',$id)->where('mode',$mode)->where('published',true)->firstOrFail();
+        $dataset=ContentDataset::where('path','guide/quest-map-index.json')->firstOrFail();
+        $key='public-source-map-'.hash('sha256',serialize([config('content.directory'),$dataset->getConnection()->getDatabaseName(),$id,$map,$mode]));
+        $revision=hash('sha256',serialize([$dataset->getRawOriginal('payload'),$quest->revision()]));
+        if($request->boolean('revision'))return $this->revisionResponse($key,$revision);
+        return $this->cachedResponse($key,$revision,function() use($dataset,$id,$map): string {
+            $data=$dataset->content();abort_unless(isset($data['sourceMaps'][$map],$data['sourceQuests'][$id][$map]),404);
+            return json_encode(['sourceMaps'=>[$map=>$data['sourceMaps'][$map]],'sourceQuests'=>[$id=>[$map=>$data['sourceQuests'][$id][$map]]]],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
+        });
+    }
+
+    private function boss(Request $request,?string $id)
+    {
+        abort_unless($id!==null,422);$mode=$request->input('mode','pve');
+        $catalog=ContentDataset::where('path','guide/bosses.json')->firstOrFail();
+        $reference=ContentDataset::where('path','guide/reference-'.$mode.'.json')->firstOrFail();
+        $key='public-boss-detail-'.hash('sha256',serialize([config('content.directory'),config('database.default'),$catalog->getConnection()->getDatabaseName(),$id,$mode]));
+        $revision=hash('sha256',serialize([$catalog->getRawOriginal('payload'),$reference->getRawOriginal('payload')]));
+        if($request->boolean('revision'))return $this->revisionResponse($key,$revision);
+        return $this->cachedResponse($key,$revision,fn()=>json_encode(app(\App\Services\PageContent::class)->boss($catalog->content(),\App\Services\PublicJson::select($reference->json(),['meta'],['maps'=>fn($row)=>empty($row['cmsArchived'])?$row:null]),$id),JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
     }
 
     private function cachedResponse(string $key,string $revision,\Closure $build)
@@ -104,14 +138,31 @@ final class ContentController
     private function revisionResponse(string $key,string $revision)
     { return response()->json(['revision'=>$this->revision($key,$revision)])->header('Cache-Control','private, no-store'); }
 
-    private function build(ContentDataset $dataset,string $path,Collection $quests,string $view='full',?string $id=null,?Collection $related=null)
+    private function build(ContentDataset $dataset,string $path,Collection $quests,string $view='full',?string $id=null,?string $section=null,?Collection $related=null)
     {
         if ($path === 'home.json') { return $this->home($dataset,$quests,$related??new Collection()); }
         if (!preg_match('~^guide/quests-(pve|regular)\.json$~', $path, $match)) {
-            $raw=$dataset->json();$data=json_decode($raw,true,128,JSON_THROW_ON_ERROR);$changed=false;
+            $raw=$dataset->json();
+            if(preg_match('~^guide/items-(pve|regular)\.json$~',$path,$itemMode)&&in_array($view,['detail','lookup'],true)){
+                $data=\App\Services\PublicJson::select($raw,['meta'],['items'=>static function($row) use($view,$id){
+                    if(!empty($row['cmsArchived'])||($view==='detail'&&($row['id']??null)!==$id))return null;
+                    return $view==='lookup'?array_intersect_key($row,array_flip(['id','name'])):$row;
+                }]);unset($raw);$data['catalog']=false;
+                if($view==='lookup')$data['lookup']=true;
+                else{abort_if(empty($data['items']),404);$data=app(\App\Services\PageContent::class)->item($data,$id,$itemMode[1]);}
+                return response()->json($data)->header('Cache-Control','private, no-store');
+            }
+            if($section!==null){
+                $fields=['items'=>['traders'],'ammo'=>[],'needed'=>[],'crafts'=>['crafts','hideout','traders'],'barters'=>['barters','traders'],'hideout'=>['hideout'],'bosses'=>['maps'],'traders'=>['traders','barters'],'achievements'=>['achievements'],'btr'=>['maps']];
+                $collections=array_fill_keys($fields[$section],static fn($row)=>empty($row['cmsArchived'])?$row:null);
+                $data=\App\Services\PublicJson::select($raw,['meta'],$collections);unset($raw);$data=PublicCatalog::dataset($data,$path,$view,$id,$section);
+                return response()->json($data)->header('Cache-Control','private, no-store');
+            }
+            $data=json_decode($raw,true,128,JSON_THROW_ON_ERROR);$changed=false;
             foreach(['pois','items','maps','traders'] as $field){if(is_array($data[$field]??null)){$filtered=array_filter($data[$field],fn($row)=>!is_array($row)||(empty($row['cmsArchived'])&&($field!=='pois'||($row['sourceStatus']??null)!=='unverified-coordinates')));if(count($filtered)!==count($data[$field])){$data[$field]=array_values($filtered);$changed=true;}}}
             if(array_is_list($data)){$filtered=array_filter($data,fn($row)=>!is_array($row)||empty($row['cmsArchived']));if(count($filtered)!==count($data)){$data=array_values($filtered);$changed=true;}}
-            if($view!=='full'){$data=PublicCatalog::dataset($data,$path,$view,$id);$changed=true;}
+            if($view!=='full'){$data=PublicCatalog::dataset($data,$path,$view,$id,$section);$changed=true;
+                if($view==='detail'&&preg_match('~^guide/items-(pve|regular)\.json$~',$path,$itemMode)){$data=app(\App\Services\PageContent::class)->item($data,$id,$itemMode[1]);}}
             if($changed){return response()->json($data)->header('Cache-Control','private, no-store');}
             return response($raw, 200, ['Content-Type' => 'application/json; charset=utf-8', 'Cache-Control' => 'private, no-store']);
         }
@@ -124,7 +175,10 @@ final class ContentController
             $goals=array_values(array_filter($task['objectives']??[],fn($goal)=>empty($goal['cmsArchived'])));
             if(count($goals)!==count($task['objectives']??[])){$task['objectives']=$goals;$raw=json_encode($task,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);}
             if($view==='catalog'){$raw=json_encode(PublicCatalog::quest($task),JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);}
-            if($view==='detail'){$data=PublicCatalog::detailItems($data,$task);}
+            if($view==='detail'){
+                $data=app(\App\Services\PageContent::class)->quest($data,$task,$match[1]);
+                $task=$data['selectedTask'];unset($data['selectedTask']);$raw=json_encode($task,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
+            }
             $tasks[] = $raw;
             $trader = $task['trader'] ?? null;
             if (is_array($trader) && isset($trader['id']) && !isset($seen[$trader['id']])) {
