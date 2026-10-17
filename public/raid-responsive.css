@@ -5,7 +5,7 @@
 .raid-artwork-label { display: grid; gap: 4px; margin-top: 12px; color: var(--muted); font-size: 13px; }
 .raid-sidebar .raid-artwork-label select { margin-top: 0; }
 
-@media (max-width: 850px), (max-width: 1000px) and (max-height: 520px) {
+@media (max-width: 1100px) {
   .raid-page:not(.raid-embed) .topbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; height: auto; min-height: 0; padding: 8px 10px; }
   .raid-page:not(.raid-embed) .topbar .brand { grid-column: 1; grid-row: 1; margin: 0; }
   .raid-page:not(.raid-embed) .topbar .header-right { display: flex; grid-column: 2; grid-row: 1; margin: 0; }
@@ -13,7 +13,7 @@
   .raid-page:not(.raid-embed) .topbar .atlas-modes a { flex: 1 0 auto; min-height: 44px; padding: 12px 10px; white-space: nowrap; overflow-wrap: normal; font-size: 13px; text-align: center; }
 }
 
-@media (max-width: 700px), (max-width: 1000px) and (max-height: 520px) {
+@media (max-width: 1100px) {
   .raid-page:not(.raid-embed) .topbar { grid-template-columns: 44px minmax(0, 1fr) auto; }
   .raid-page:not(.raid-embed) .topbar .mobile-menu { display: flex; grid-column: 1; grid-row: 1; width: 44px; height: 44px; }
   .raid-page:not(.raid-embed) .topbar .brand { grid-column: 2; gap: 7px; white-space: normal; }

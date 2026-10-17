@@ -63,3 +63,16 @@ body[data-page="quests"] #quest-filters-close { flex-shrink: 0; }
   body[data-page="quests"] .quest-mobile-filter-dialog .quest-primary-filters > * { grid-column: 1 / -1; }
   body[data-page="quests"] .quest-mobile-filter-dialog .quest-primary-filters > #quest-reset { grid-column: 1 / -1; }
 }
+
+
+/* На планшете дополнительные фильтры занимают собственную строку и не накрывают квесты. */
+@media (min-width: 701px) and (max-width: 1100px) {
+  body[data-page="quests"] .quest-primary-filters > .quest-filter-more[open] { grid-column: 1 / -1 !important; }
+  body[data-page="quests"] .quest-filter-more[open] .quest-secondary-filters {
+    position: static;
+    width: 100%;
+    max-width: none;
+    margin-top: 12px;
+    box-sizing: border-box;
+  }
+}

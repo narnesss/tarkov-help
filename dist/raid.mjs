@@ -25,7 +25,7 @@ const prefsKey = 'kord-atlas-raid-view-v1';
 const original = read(progressKey) || {};
 let saved = { checked: Array.isArray(original.checked) ? original.checked.filter(x => typeof x === 'string') : [], notes: original.notes && typeof original.notes === 'object' && !Array.isArray(original.notes) ? original.notes : {} };
 const embedded=pageParams().get('embed')==='quest';if(embedded)document.body.classList.add('raid-embed');
-const compactRaid=()=>!embedded&&(innerWidth<=700||(innerWidth<=1000&&innerHeight<=520));
+const compactRaid=()=>!embedded&&innerWidth<=1100;
 const prefs = embedded?{}:read(prefsKey)||{};
 const loosePrefs=new LooseLootPreferences(prefs.looseLoot);
 let itemCatalog={},looseFilter;
@@ -87,7 +87,15 @@ function pointLatLng(p){
  return L.latLng(position.z,position.x);
 }
 function artworkBounds(){const d=definition.documentMap||sourcePixelMap();return d?L.latLngBounds([-d.height,0],[0,d.width]):bounds(definition.bounds);}
-function focusPoint(p) { leaflet.setView(pointLatLng(p),Math.max(leaflet.getZoom(),(definition.documentMap||sourcePixelMap())?1:5),{animate:false}); }
+function focusPoint(p) {
+ const position=pointLatLng(p);leaflet.setView(position,Math.max(leaflet.getZoom(),(definition.documentMap||sourcePixelMap())?1:5),{animate:false});
+ // На планшете центрируем метку в видимой части карты над карточкой.
+ if(compactRaid()&&!$('raid-detail').hidden){
+  const map=$('raid-map').getBoundingClientRect(),panel=$('raid-detail').getBoundingClientRect();
+  const height=Math.max(60,Math.min(map.height,panel.top-map.top)),target=L.point(map.width/2,height/2);
+  leaflet.panBy(leaflet.latLngToContainerPoint(position).subtract(target),{animate:false});
+ }
+}
 function bounds(raw) { return L.latLngBounds([raw[0][1],raw[0][0]],[raw[1][1],raw[1][0]]); }
 function createCrs(map) {
   return L.extend({}, L.CRS.Simple, {
@@ -365,7 +373,7 @@ async function showPoi(p, center = false) {
   const neighbors=visible.filter(x=>x.id!==p.id&&leaflet.latLngToContainerPoint(pointLatLng(x)).distanceTo(screen)<iconSize*.8);
   $('poi-overlap').replaceChildren();
   if(neighbors.length){$('poi-overlap').append(el('span',`Метки рядом / под значком: ${neighbors.length}`));for(const other of neighbors){const b=el('button',`${pointTitle(other)} · ${floorName(other.floor)}`);b.prepend(iconImage(other));b.onclick=()=>showPoi(other,false);$('poi-overlap').append(b);}}
-  if(center)focusPoint(p);
+  if(center||focus&&compactRaid())focusPoint(p);
   setUrl();renderList();
   if(focus){$('raid-detail').scrollTop=0;$('poi-close').focus({preventScroll:true});}
 }
@@ -380,7 +388,7 @@ function drawRoute(){
 }
 
 async function start() {
-  new ResizeObserver(()=>{updateSidebarAccess();leaflet?.invalidateSize({animate:false,pan:false});}).observe($('raid-map'));
+  new ResizeObserver(()=>{updateSidebarAccess();leaflet?.invalidateSize({animate:false,pan:false});if(selected&&compactRaid())focusPoint(selected);}).observe($('raid-map'));
   if(!globalThis.L)throw new Error('Не удалось загрузить модуль карты');
   const [sourceMaps,names,calibration,qIndex,btr,looseCatalog]=await loadContentBundle('raid-base');itemCatalog=looseCatalog.items;questIndex=qIndex;btrReference=btr;
   maps=localizeDisplay(sourceMaps).map(m=>({...m,documentMap:calibration[m.id]}));itemNames=names;
