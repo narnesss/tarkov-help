@@ -4,6 +4,12 @@ declare(strict_types=1);
 // Метаданные публичных Blade-страниц.
 return json_decode(<<<'JSON'
 {
+  "important-items": {
+    "title": "Важные предметы — Tarkov Compass",
+    "description": "Что сохранить для квестов и убежища: количества, поиск в рейде, крафты и условия использования предметов.",
+    "styles": ["style.css", "site-ui.css", "controls.css", "important-items.css"],
+    "body_attributes": "class=\"important-items-page\" data-page=\"important-items\""
+  },
   "account": {
     "title": "Личный кабинет — Escape from Tarkov Wiki",
     "description": "Твой прогресс квестов, убежища и достижений в PVE и PVP. Вход и регистрация.",

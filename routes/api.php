@@ -9,6 +9,8 @@ use App\Http\Controllers\PlayerAuthController;
 use App\Http\Middleware\VerifyApiProxy;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/api/content/important-items', \App\Http\Controllers\ImportantItemsController::class)->middleware(VerifyApiProxy::class);
+Route::get('/api/content/time', \App\Http\Controllers\GameTimeController::class)->middleware(VerifyApiProxy::class);
 Route::get('/api/content/data/{path}', ContentController::class)->where('path', '.*')->middleware(VerifyApiProxy::class);
 Route::get('/api/content/bundle/{name}',[ContentController::class,'bundle'])->where('name','quest-extras|raid-base|quest-ui')->middleware(VerifyApiProxy::class);
 Route::get('/api/content/quest/{quest}', ContentQuestController::class)->middleware(VerifyApiProxy::class);
@@ -25,6 +27,7 @@ Route::post('/api/auth/oauth/{provider}/start', [PlayerAuthController::class, 'b
 Route::post('/api/auth/oauth/{provider}/finish', [PlayerAuthController::class, 'finish'])->where('provider','google|discord')->middleware(VerifyApiProxy::class);
 Route::any('/api/{path?}', ApiController::class)->where('path', '(?!content(?:/|$)).*')->middleware(VerifyApiProxy::class);
 if (!config('api.only')) {
+    Route::get('/important-items', \App\Http\Controllers\ImportantItemsController::class);
     // Штатный /up регистрируется Laravel после API-файла; не перехватываем его wildcard.
     Route::get('/{path?}', PageController::class)->where('path', '(?!up$|admin(?:/|$)|api(?:/|$)).*')->name('site.page');
 }

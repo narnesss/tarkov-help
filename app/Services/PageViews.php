@@ -8,7 +8,7 @@ use Illuminate\Contracts\View\Factory;
 /** Кэш общих Blade-страниц; пользовательские данные сюда не передаются. */
 final readonly class PageViews
 {
-    public function __construct(private Repository $cache, private Factory $views) {}
+    public function __construct(private Repository $cache, private Factory $views, private ImportantItems $importantItems) {}
 
     /** Отпечаток исходников совпадает с проверкой Node-сборки. */
     public function fingerprint(): string
@@ -32,6 +32,10 @@ final readonly class PageViews
         $meta = config('pages.'.$page);
         if (!$meta || !in_array($runtime, ['php', 'static'], true)) { throw new \InvalidArgumentException('Unknown page'); }
         $title ??= $meta['title'];
+        if ($page === 'important-items') {
+            $listing = $runtime === 'php' ? $this->importantItems->listing($params, true) : null;
+            return $this->views->make('pages.'.$page, compact('page', 'meta', 'runtime', 'title', 'params', 'listing'))->render();
+        }
         $key = 'site:view:'.$this->fingerprint().':'.hash('sha256', json_encode([$page, $runtime, $title, $params], JSON_THROW_ON_ERROR));
         return $this->cache->remember($key, config('site.cache_ttl'), fn () => $this->views->make('pages.'.$page, ['page' => $page, 'meta' => $meta, 'runtime' => $runtime, 'title' => $title, 'params' => $params])->render());
     }
