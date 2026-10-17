@@ -13,7 +13,7 @@
   <base href="/">
   <title>{{ $title }}</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="legal.css?v=legal-1">
+  <link rel="stylesheet" href="legal.css?v=mobile-legal-20261017">
 @foreach ($meta['styles'] as $style)
   <link rel="stylesheet" href="{{ $style }}?v={{ $style === 'account.css' ? 'profile-3' : ($style === 'documents.css' ? 'mobile-20261016' : ($style === 'raid-responsive.css' ? 'mobile-raid-20261016b' : ($style === 'reference-responsive.css' ? 'mobile-btr-20261017' : 'release-20261016'))) }}">
 @endforeach

@@ -31,8 +31,8 @@ return json_decode(<<<'JSON'
   "privacy": {
     "title": "Конфиденциальность — Tarkov Compass",
     "description": "Как Tarkov Compass использует данные аккаунтов и сохраняет личный прогресс.",
-    "styles": ["style.css", "site-ui.css", "controls.css", "account.css"],
-    "body_attributes": "class=\"account-page\" data-page=\"privacy\""
+    "styles": ["style.css", "site-ui.css"],
+    "body_attributes": "class=\"legal-page\" data-page=\"privacy\""
   },
   "index": {
     "title": "Escape from Tarkov Wiki — карты, квесты и справочник",
