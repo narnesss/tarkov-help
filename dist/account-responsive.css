@@ -1,4 +1,4 @@
-/* Мобильный кабинет и формы: размеры не зависят от длины текста и состояния входа. */
+/* Кабинет и формы на телефонах и планшетах: размеры не зависят от длины текста и состояния входа. */
 .account-page .account-shell,
 .account-page .account-shell :is(form, fieldset, label, section),
 .account-page :is(.account-hero, .account-identity, .account-auth-panel, .account-summary, .account-detail-grid) > * {
@@ -30,7 +30,7 @@
   gap: 10px;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1200px) {
   .account-page .topbar .header-right {
     min-width: 0;
     max-width: 100%;
@@ -56,6 +56,14 @@
     font-size: 16px;
     min-height: 46px;
     scroll-margin-block: 24px;
+  }
+  .account-page .account-auth-tabs button {
+    flex: 1;
+    min-width: 0;
+  }
+  .account-page .legal-checkboxes label {
+    min-height: 44px;
+    padding-block: 6px;
   }
   .account-page .account-summary {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
@@ -133,5 +141,23 @@
   .account-page .account-identity {
     gap: 12px;
     padding: 16px;
+  }
+}
+
+/* Две колонки оставляют слишком узкую форму на планшете в портретной ориентации. */
+@media (min-width: 761px) and (max-width: 1000px) {
+  .account-page .account-auth-panel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .account-page .account-auth-copy,
+  .account-page .account-auth-form {
+    padding: 24px;
+  }
+  .account-page .account-auth-copy h2 {
+    max-width: none;
+  }
+  .account-page .account-auth-form {
+    border-left: 0;
+    border-top: 1px solid var(--line);
   }
 }
