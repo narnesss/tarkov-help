@@ -17,6 +17,7 @@
 @foreach ($meta['styles'] as $style)
   <link rel="stylesheet" href="{{ $style }}?v={{ $style === 'account.css' ? 'profile-3' : ($style === 'documents.css' ? 'mobile-20261016' : ($style === 'raid-responsive.css' ? 'mobile-raid-20261016b' : ($style === 'reference-responsive.css' ? 'mobile-btr-20261017' : 'release-20261016'))) }}">
 @endforeach
+  <link rel="stylesheet" href="site-responsive.css?v=mobile-site-20261017">
   <link rel="modulepreload" href="profile-store.mjs">
   <meta name="wiki-routing" content="pages">
 @if ($params !== [])

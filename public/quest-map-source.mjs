@@ -17,7 +17,7 @@ async function start(){
  for(const [i,point] of points.entries()){
   const position=sourcePoint(point,asset);positions.push(position);
   const icon=L.divIcon({className:'qmap-pin',html:textNode(String(i+1)),iconSize:[30,30],iconAnchor:[15,15]});
-  const marker=L.marker(position,{icon,keyboard:true,title:(i+1)+'. '+point.name}).addTo(map);markers.push(marker);marker.bindTooltip(textNode(point.name),{direction:'top',offset:[0,-16]});const popup=document.createElement('div');popup.className='qmap-popup';popup.textContent=point.name;marker.bindPopup(popup,{autoPan:false});
+  const marker=L.marker(position,{icon,keyboard:true,title:(i+1)+'. '+point.name}).addTo(map);markers.push(marker);marker.bindTooltip(textNode(point.name),{direction:'top',offset:[0,-16]});const popup=document.createElement('div');popup.className='qmap-popup';popup.textContent=point.name;marker.bindPopup(popup,{autoPan:true,autoPanPadding:[16,16],keepInView:true});
  }
  const fit=()=>map.fitBounds(bounds,{padding:[12,12],animate:false}),focus=()=>map.fitBounds(L.latLngBounds(positions),{padding:[65,65],maxZoom:0,animate:false});
  const receiver=new QuestMapFocusReceiver(()=>({questId:params.get('quest'),mode:params.get('mode'),mapId:params.get('map'),viewId:params.get('view')||''}),message=>{

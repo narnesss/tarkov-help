@@ -165,7 +165,7 @@ return json_decode(<<<'JSON'
       "site-ui.css",
       "controls.css"
     ],
-    "body_attributes": "class=\"guide-page\""
+    "body_attributes": "class=\"guide-page not-found-page\""
   }
 }
 JSON, true, 32, JSON_THROW_ON_ERROR);
