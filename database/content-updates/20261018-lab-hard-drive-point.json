@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "id": 2026101801,
+  "description": "Исправлена закладка жёсткого диска квеста «На свет. Доверяй, но проверяй»: закрытая серверная в центре основного уровня вместо большой серверной у края этажа.",
+  "sourceUrl": "https://tarkov-market.com/ru/maps/lab?obj=3a2f18e5-7f74-5042-9848-a973010b1059&view=4c72a924-8043-5a44-ad33-b2a877379cad",
+  "verifiedDate": "2026-10-18",
+  "coordinateNote": "Ручной перенос положения указанного маркера Tarkov Market на собственную составную схему. Числа — проценты схемы, не игровые координаты. Точка вентиляции и ID/цели/прогресс не меняются.",
+  "datasets": {
+    "guide/quest-map-index.json": {
+      "sourceQuests": {
+        "norvinsk-775": {
+          "lab": [
+            {
+              "x": 48.1,
+              "y": 66.8,
+              "name": "Серверная: заложить жёсткий диск",
+              "manual": true,
+              "sourceUrl": "https://tarkov-market.com/ru/maps/lab?obj=3a2f18e5-7f74-5042-9848-a973010b1059&view=4c72a924-8043-5a44-ad33-b2a877379cad",
+              "sourcePointId": "3a2f18e5-7f74-5042-9848-a973010b1059",
+              "coordinateMethod": "manual-schematic-transfer"
+            },
+            {
+              "x": 3.96,
+              "y": 42.79,
+              "name": "Выход «Вентиляционная шахта»",
+              "manual": true
+            }
+          ]
+        }
+      },
+      "modes": {
+        "pve": {
+          "norvinsk-775": [
+            {
+              "id": "the-lab",
+              "sourceKey": "lab",
+              "name": "Лаборатория",
+              "renderer": "source",
+              "points": [
+                {
+                  "x": 48.1,
+                  "y": 66.8,
+                  "name": "Серверная: заложить жёсткий диск",
+                  "manual": true,
+                  "sourceUrl": "https://tarkov-market.com/ru/maps/lab?obj=3a2f18e5-7f74-5042-9848-a973010b1059&view=4c72a924-8043-5a44-ad33-b2a877379cad",
+                  "sourcePointId": "3a2f18e5-7f74-5042-9848-a973010b1059",
+                  "coordinateMethod": "manual-schematic-transfer"
+                },
+                {
+                  "x": 3.96,
+                  "y": 42.79,
+                  "name": "Выход «Вентиляционная шахта»",
+                  "manual": true
+                }
+              ]
+            }
+          ]
+        },
+        "regular": {
+          "norvinsk-775": [
+            {
+              "id": "the-lab",
+              "sourceKey": "lab",
+              "name": "Лаборатория",
+              "renderer": "source",
+              "points": [
+                {
+                  "x": 48.1,
+                  "y": 66.8,
+                  "name": "Серверная: заложить жёсткий диск",
+                  "manual": true,
+                  "sourceUrl": "https://tarkov-market.com/ru/maps/lab?obj=3a2f18e5-7f74-5042-9848-a973010b1059&view=4c72a924-8043-5a44-ad33-b2a877379cad",
+                  "sourcePointId": "3a2f18e5-7f74-5042-9848-a973010b1059",
+                  "coordinateMethod": "manual-schematic-transfer"
+                },
+                {
+                  "x": 3.96,
+                  "y": 42.79,
+                  "name": "Выход «Вентиляционная шахта»",
+                  "manual": true
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}
