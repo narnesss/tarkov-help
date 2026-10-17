@@ -54,7 +54,7 @@ test('полная серверная карточка Тура использу
   const plan=questGalleryPlan(translated);
   assert.equal(plan.frames.length,7);
   for(const frame of plan.frames){
-    assert.ok(frame.url.startsWith('assets/quest-media-ru/'),frame.url);
+    assert.ok(frame.url.startsWith('/assets/quest-media-ru/'),frame.url);
     assert.equal(frame.fullUrl,frame.url);
     assert.ok(frame.originalUrl.startsWith('https://www.eftarkov.com/'));
     assert.ok(frame.objectiveIds.length>0);
@@ -79,7 +79,7 @@ test('все готовые переводы существуют; повтор�
     assert.equal(translated.id,frame.id);
     assert.deepEqual(translated.objectiveIds,frame.objectiveIds);
     assert.equal(translated.originalUrl,source);
-    assert.equal(translated.fullUrl,patch.url);
+    assert.equal(translated.fullUrl,patch.url.replace(/^(?:\.\/)?assets\//,'/assets/'));
     assert.deepEqual(localizeQuestMedia(translated,localization),translated);
     edited++;
   }
@@ -90,9 +90,33 @@ test('оригинал с параметром кэша и все вариант
   const source=Object.keys(localization.images).find(url=>localization.images[url].url);
   const frame={url:source+'?version=2',objectiveIds:['goal']};
   const task={id:'same-quest',gallery:[frame],media:{gallery:[frame]},questContent:{gallery:[frame]},objectives:[{id:'goal',media:[frame]}]};
-  const translated=localizeQuestMediaTask(task,localization),expected=localization.images[source].url;
+  const translated=localizeQuestMediaTask(task,localization),expected=localization.images[source].url.replace(/^(?:\.\/)?assets\//,'/assets/');
   for(const result of [translated.gallery[0],translated.media.gallery[0],translated.questContent.gallery[0],translated.objectives[0].media[0]]){
     assert.equal(result.url,expected);assert.equal(result.fullUrl,expected);assert.equal(result.originalUrl,frame.url);
   }
   assert.deepEqual(localizeQuestMedia({url:'https://elsewhere.test/original.webp'},localization),{url:'https://elsewhere.test/original.webp'});
+});
+
+// Вложенные адреса /quests/... не должны менять адрес переведённого файла.
+test('переведённые изображения доступны с вложенных страниц квестов',()=>{
+  const source='https://wiki.test/original.webp';
+  for(const replacement of ['assets/ru.webp','./assets/ru.webp','/assets/ru.webp']){
+    const result=localizeQuestMedia({url:source},{images:{[source]:{url:replacement}}});
+    for(const page of ['/quests/tour','/quests/batya','/quests/tour/']){
+      assert.equal(new URL(result.url,'https://site.test'+page).href,'https://site.test/assets/ru.webp');
+      assert.equal(result.fullUrl,result.url);
+    }
+  }
+  const custom='https://editor.test/custom.webp';
+  assert.equal(localizeQuestMedia({url:source},{images:{[source]:{url:custom}}}).url,custom);
+});
+
+test('Тур и Батя сохраняют все изображения и связи после перевода',()=>{
+  for(const [slug,count] of [['tour',7],['batya',34]]){
+    const task=story.tasks.find(task=>task.normalizedName===slug);
+    const before=questGalleryPlan(task),after=questGalleryPlan(localizeQuestMediaTask(task,localization));
+    assert.equal(after.frames.length,count);
+    assert.deepEqual(after.frames.map(frame=>frame.objectiveIds),before.frames.map(frame=>frame.objectiveIds));
+    for(const frame of after.frames)assert.ok(!frame.url.startsWith('assets/'),frame.url);
+  }
 });

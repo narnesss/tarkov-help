@@ -1,3 +1,5 @@
+const mediaURL = value => typeof value === 'string' ? value.replace(/^(?:\.\/)?assets\//, '/assets/') : value;
+
 const isPatch = value => !!value && typeof value === 'object' && !Array.isArray(value);
 
 /** Новые файловые переводы дополняют CMS; явно заданная редактором картинка приоритетна. */
@@ -23,8 +25,9 @@ export function localizeQuestMedia(frame, localization) {
     } catch { /* Локальный путь уже переведённой картинки не является внешним источником. */ }
   }
   if (!patch) return frame;
-  const result = {...frame, ...patch, url: patch.url || frame.url,
-    originalUrl: frame.originalUrl || source, fullUrl: patch.url || frame.fullUrl || frame.url};
+  const translatedURL = mediaURL(patch.url);
+  const result = {...frame, ...patch, url: translatedURL || frame.url,
+    originalUrl: frame.originalUrl || source, fullUrl: translatedURL || frame.fullUrl || frame.url};
   for (const field of ['id','objectiveIds','association']) if (Object.hasOwn(frame,field)) result[field] = frame[field];
   return result;
 }

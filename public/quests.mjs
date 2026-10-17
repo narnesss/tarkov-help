@@ -9,7 +9,7 @@ import {rewardLabels,resolveAchievement,rewardAchievementNames,groupRewardLines,
 import {hasQuestRoadmap,questGalleryPlan} from './quest-view-model.mjs?v=guides-20261016b';
 import {resolveGameMode} from './game-mode.mjs';
 import {ruText} from './ru-data.mjs';
-import {questExtras,questUiExtras,questMediaLocalization,enrichQuests,localizeQuestMediaTask} from './quest-extras.mjs?v=media-ru-20261017';
+import {questExtras,questUiExtras,questMediaLocalization,enrichQuests,localizeQuestMediaTask} from './quest-extras.mjs?v=media-links-20261017';
 import {pageDataset} from './page-data.mjs?v=lazy-20261016';
 import {questBriefing} from './quest-briefing.mjs?v=guides-20261016b';
 import {questMapForLocation,questMapURL} from './quest-map-model.mjs?v=guides-20261016b';

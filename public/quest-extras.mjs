@@ -4,13 +4,13 @@ import {loadContentBundle} from './content-bundles.mjs?v=lazy-20261016';
 import {localizeDisplay} from './ru-data.mjs';
 import {assemblyFrames} from './gunsmith-model.mjs';
 import {applyQuestContent} from './quest-content-model.mjs?v=guides-20261016b';
-import {localizeQuestMedia,localizeQuestMediaTask,mergeQuestMediaLocalization} from './quest-media-model.mjs?v=media-ru-20261017';
-import {json} from './guide-common.mjs?v=media-ru-20261017';
+import {localizeQuestMedia,localizeQuestMediaTask,mergeQuestMediaLocalization} from './quest-media-model.mjs?v=media-links-20261017';
+import {json} from './guide-common.mjs?v=media-links-20261017';
 export {localizeQuestMedia,localizeQuestMediaTask,mergeQuestMediaLocalization};
 let loaded;
 let uiLoaded;
 let mediaLoaded;
-export function questMediaLocalization(){return mediaLoaded||=Promise.all([json('data/guide/media-localization.json.gz?v=media-ru-20261017'),json('data/guide/media-localization.json')]).then(([bundled,current])=>mergeQuestMediaLocalization(bundled,current)).catch(error=>{mediaLoaded=null;throw error;});}
+export function questMediaLocalization(){return mediaLoaded||=Promise.all([json('data/guide/media-localization.json.gz?v=media-links-20261017'),json('data/guide/media-localization.json')]).then(([bundled,current])=>mergeQuestMediaLocalization(bundled,current)).catch(error=>{mediaLoaded=null;throw error;});}
 export function questUiExtras(){return uiLoaded||=loadContentBundle('quest-ui').then(([choices,questMaps,rewardSupport,ticketMap,conditions])=>({choices,questMaps,rewardSupport,ticketMap,conditions,uiReady:true})).catch(error=>{uiLoaded=null;throw error;});}
 export function storyGallery(task){const byUrl=new Map();for(const o of task.objectives||[])for(const frame of o.media||[]){if(!frame.url)continue;const old=byUrl.get(frame.url);if(old){if(!old.objectiveIds.includes(o.id))old.objectiveIds.push(o.id);}else byUrl.set(frame.url,{...frame,id:frame.id||frame.originalUrl||frame.url,url:frame.url,fullUrl:frame.url,sourceUrl:frame.sourceUrl||frame.source,objectiveIds:[o.id],association:'objective'});}return [...byUrl.values()];}
 export function questExtras(){return loaded||=loadContentBundle('quest-extras').then(([media,story,conditions,patches,localization,wiki,gunsmith,catalog,questMaps,choices,rewardSupport,questPatch,ticketMap,content])=>{for(const task of Object.values(media.quests||{}))if(task.gallery)task.gallery=task.gallery.map(frame=>localizeQuestMedia(frame,localization));for(const task of story.tasks||[]){for(const objective of task.objectives||[])if(objective.media)objective.media=objective.media.map(frame=>localizeQuestMedia(frame,localization));task.gallery=storyGallery(task);}return {media,story,conditions,patches,wiki,gunsmith,catalog,questMaps,choices,rewardSupport,questPatch,ticketMap,content};}).catch(error=>{loaded=null;throw error;});}
