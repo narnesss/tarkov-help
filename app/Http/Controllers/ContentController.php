@@ -4,14 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\{ContentDataset, Quest};
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
-use App\Services\PublicCatalog;
+use App\Services\{PublicCatalog, PublicContentCache};
 
 /** Собирает и кэширует публичный контент без открытия сессии игрока. */
 final class ContentController
 {
-    private const FORMAT='page-content-counts-20261017-v1';
+    public function __construct(private readonly PublicContentCache $responses) {}
     private const HOME_DATASETS=['raid/maps.json','maps.json','spawns.json','docs.json'];
     public const BUNDLES=[
         'quest-extras'=>[
@@ -38,8 +37,7 @@ final class ContentController
         $database=\Illuminate\Support\Facades\DB::connection();
         $key='public-content-bundle-v1-'.hash('sha256',serialize([$database->getName(),$database->getDatabaseName(),config('content.directory'),$name]));
         $revision=hash('sha256',serialize($datasets->map(fn(ContentDataset $dataset)=>$dataset->getRawOriginal('payload'))->all()));
-        if($request->boolean('revision')){return $this->revisionResponse($key,$revision);}
-        return $this->cachedResponse($key,$revision,function() use($paths,$datasets): string {
+        return $this->responses->respond($request,$key,$revision,function() use($paths,$datasets): string {
             // Не удерживаем распакованные PHP-массивы всех справочников одновременно.
             $files=[];foreach($paths as $path=>$fallback){
                 $raw=$datasets->has($path)?$this->build($datasets[$path],$path,new Collection())->getContent():json_encode($fallback,JSON_THROW_ON_ERROR);
@@ -52,7 +50,7 @@ final class ContentController
     public function __invoke(string $path,Request $request)
     {
         abort_unless(preg_match('~^[a-z0-9][a-z0-9/._-]*\.json$~', $path) && !str_contains($path, '..'), 404);
-        $input=$request->validate(['view'=>['sometimes','string','in:full,catalog,detail,lookup'],'map'=>['sometimes','string','max:128','regex:/^[a-zA-Z0-9_-]+$/D'],'mode'=>['sometimes','string','in:pve,regular'],'section'=>['sometimes','string','in:items,ammo,needed,barters,crafts,hideout,bosses,traders,achievements,btr'],'id'=>['sometimes','prohibited_unless:view,detail','string','max:128','regex:/^[a-zA-Z0-9_-]+$/D']]);
+        $input=$request->validate(['view'=>['sometimes','string','in:full,catalog,detail,lookup'],'map'=>['sometimes','string','max:128','regex:/^[a-zA-Z0-9_-]+$/D'],'mode'=>['sometimes','string','in:pve,regular'],'section'=>['bail','sometimes','string',\Illuminate\Validation\Rule::in(array_keys(PublicCatalog::SECTIONS))],'id'=>['sometimes','prohibited_unless:view,detail','string','max:128','regex:/^[a-zA-Z0-9_-]+$/D']]);
         $request->validate(['revision'=>['sometimes','boolean']]);
         $view=$input['view']??'full';$id=$input['id']??null;
         if($path==='guide/quest-map-index.json'&&$view==='detail'){return $this->sourceMap($request,$id);}
@@ -87,8 +85,7 @@ final class ContentController
             $versions=Quest::where('mode',$questMode??(str_contains($path,'-pve.')?'pve':'regular'))->orderBy('id')->get(['id','quest_id','mode','name','published','payload'])->map(fn($row)=>$row->getAttributes())->all();
         }
         $revision=hash('sha256',serialize([$dataset->getRawOriginal('payload'),$versions,$dependencies,$mediaRevision,$related->map(fn(ContentDataset $row)=>$row->getRawOriginal('payload'))->all()]));
-        if($request->boolean('revision')){return $this->revisionResponse($key,$revision);}
-        return $this->cachedResponse($key,$revision,fn()=>$this->build($dataset,$path,$quests,$view,$id,$input['section']??null,$related)->getContent());
+        return $this->responses->respond($request,$key,$revision,fn()=>$this->build($dataset,$path,$quests,$view,$id,$input['section']??null,$related)->getContent());
     }
 
     private function sourceMap(Request $request,?string $id)
@@ -98,8 +95,7 @@ final class ContentController
         $dataset=ContentDataset::where('path','guide/quest-map-index.json')->firstOrFail();
         $key='public-source-map-'.hash('sha256',serialize([config('content.directory'),$dataset->getConnection()->getDatabaseName(),$id,$map,$mode]));
         $revision=hash('sha256',serialize([$dataset->getRawOriginal('payload'),$quest->revision()]));
-        if($request->boolean('revision'))return $this->revisionResponse($key,$revision);
-        return $this->cachedResponse($key,$revision,function() use($dataset,$id,$map): string {
+        return $this->responses->respond($request,$key,$revision,function() use($dataset,$id,$map): string {
             $data=$dataset->content();abort_unless(isset($data['sourceMaps'][$map],$data['sourceQuests'][$id][$map]),404);
             return json_encode(['sourceMaps'=>[$map=>$data['sourceMaps'][$map]],'sourceQuests'=>[$id=>[$map=>$data['sourceQuests'][$id][$map]]]],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
         });
@@ -112,38 +108,8 @@ final class ContentController
         $reference=ContentDataset::where('path','guide/reference-'.$mode.'.json')->firstOrFail();
         $key='public-boss-detail-'.hash('sha256',serialize([config('content.directory'),config('database.default'),$catalog->getConnection()->getDatabaseName(),$id,$mode]));
         $revision=hash('sha256',serialize([$catalog->getRawOriginal('payload'),$reference->getRawOriginal('payload')]));
-        if($request->boolean('revision'))return $this->revisionResponse($key,$revision);
-        return $this->cachedResponse($key,$revision,fn()=>json_encode(app(\App\Services\PageContent::class)->boss($catalog->content(),\App\Services\PublicJson::select($reference->json(),['meta'],['maps'=>fn($row)=>empty($row['cmsArchived'])?$row:null]),$id),JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
+        return $this->responses->respond($request,$key,$revision,fn()=>json_encode(app(\App\Services\PageContent::class)->boss($catalog->content(),\App\Services\PublicJson::select($reference->json(),['meta'],['maps'=>fn($row)=>empty($row['cmsArchived'])?$row:null]),$id),JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
     }
-
-    private function cachedResponse(string $key,string $revision,\Closure $build)
-    {
-        $revision=$this->revision($key,$revision);
-        // Старые клиенты по-прежнему получают полный JSON или отдельный revision=1.
-        if (hash_equals($revision, (string) request()->header('X-Wiki-Content-Revision', ''))) {
-            return response()->json(['revision' => $revision])->withHeaders([
-                'Cache-Control' => 'private, no-store', 'X-Wiki-Content-Revision' => $revision,
-                'X-Wiki-Content-Unchanged' => '1', 'X-Wiki-Content-Cache' => 'VALIDATED',
-            ]);
-        }
-        // Кэшируем только публичный JSON, без Response, cookies, сессии и личного прогресса.
-        // Один сжатый слот на путь: новые редакции не накапливают файлы на хостинге.
-        $status='MISS';$json=null;
-        try{
-            $entry=Cache::get($key);
-            if(is_array($entry)&&($entry['revision']??null)===$revision&&is_string($entry['gzip']??null)){$json=@gzdecode($entry['gzip']);}
-        }catch(\Throwable $error){report($error);$status='BYPASS';}
-        if(is_string($json)){$status='HIT';}
-        else{
-            $json=\App\Services\PublicMedia::json($build());
-            try{Cache::put($key,['revision'=>$revision,'gzip'=>gzencode($json,1)],config('content.public_cache_ttl',86400));}catch(\Throwable $error){report($error);$status='BYPASS';}
-        }
-        return response($json,200,['Content-Type'=>'application/json; charset=utf-8','Cache-Control'=>'private, no-store','X-Wiki-Content-Cache'=>$status,'X-Wiki-Content-Revision'=>$revision]);
-    }
-    private function revision(string $key,string $revision): string
-    { return hash('sha256',self::FORMAT."\0".$key."\0".$revision."\0".\App\Services\PublicMedia::revision()); }
-    private function revisionResponse(string $key,string $revision)
-    { return response()->json(['revision'=>$this->revision($key,$revision)])->header('Cache-Control','private, no-store'); }
 
     private function build(ContentDataset $dataset,string $path,Collection $quests,string $view='full',?string $id=null,?string $section=null,?Collection $related=null)
     {
@@ -160,16 +126,14 @@ final class ContentController
                 return response()->json($data)->header('Cache-Control','private, no-store');
             }
             if($section!==null){
-                $fields=['items'=>['traders'],'ammo'=>[],'needed'=>[],'crafts'=>['crafts','hideout','traders'],'barters'=>['barters','traders'],'hideout'=>['hideout'],'bosses'=>['maps'],'traders'=>['traders','barters'],'achievements'=>['achievements'],'btr'=>['maps']];
-                $collections=array_fill_keys($fields[$section],static fn($row)=>empty($row['cmsArchived'])?$row:null);
+                $collections=array_fill_keys(PublicCatalog::SECTIONS[$section],static fn($row)=>empty($row['cmsArchived'])?$row:null);
                 $data=\App\Services\PublicJson::select($raw,['meta'],$collections);unset($raw);$data=PublicCatalog::dataset($data,$path,$view,$id,$section);
                 return response()->json($data)->header('Cache-Control','private, no-store');
             }
             $data=json_decode($raw,true,128,JSON_THROW_ON_ERROR);$changed=false;
             foreach(['pois','items','maps','traders'] as $field){if(is_array($data[$field]??null)){$filtered=array_filter($data[$field],fn($row)=>!is_array($row)||(empty($row['cmsArchived'])&&($field!=='pois'||($row['sourceStatus']??null)!=='unverified-coordinates')));if(count($filtered)!==count($data[$field])){$data[$field]=array_values($filtered);$changed=true;}}}
             if(array_is_list($data)){$filtered=array_filter($data,fn($row)=>!is_array($row)||empty($row['cmsArchived']));if(count($filtered)!==count($data)){$data=array_values($filtered);$changed=true;}}
-            if($view!=='full'){$data=PublicCatalog::dataset($data,$path,$view,$id,$section);$changed=true;
-                if($view==='detail'&&preg_match('~^guide/items-(pve|regular)\.json$~',$path,$itemMode)){$data=app(\App\Services\PageContent::class)->item($data,$id,$itemMode[1]);}}
+            if($view!=='full'){$data=PublicCatalog::dataset($data,$path,$view,$id,$section);$changed=true;}
             if($changed){return response()->json($data)->header('Cache-Control','private, no-store');}
             return response($raw, 200, ['Content-Type' => 'application/json; charset=utf-8', 'Cache-Control' => 'private, no-store']);
         }

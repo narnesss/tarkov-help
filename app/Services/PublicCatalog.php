@@ -5,6 +5,12 @@ namespace App\Services;
 /** Облегчённые публичные представления; исходные файлы и стабильные ID не изменяются. */
 final class PublicCatalog
 {
+    public const SECTIONS = [
+        'items' => ['traders'], 'ammo' => [], 'needed' => [],
+        'crafts' => ['crafts', 'hideout', 'traders'], 'barters' => ['barters', 'traders'],
+        'hideout' => ['hideout'], 'bosses' => ['maps'], 'traders' => ['traders', 'barters'],
+        'achievements' => ['achievements'], 'btr' => ['maps'],
+    ];
     private static function fields(array $value,array $keys): array
     { return array_intersect_key($value,array_flip($keys)); }
     private static function reference(mixed $value): mixed
@@ -40,8 +46,7 @@ final class PublicCatalog
             unset($data['mapMetadata']);$data['maps']=array_map(fn($map)=>self::fields($map,['id','name','normalizedName','bosses']),$data['maps']??[]);
         }
         if($section!==null){
-            $fields=['items'=>['traders'],'ammo'=>[],'needed'=>[],'crafts'=>['crafts','hideout','traders'],'barters'=>['barters','traders'],'hideout'=>['hideout'],'bosses'=>['maps'],'traders'=>['traders','barters'],'achievements'=>['achievements'],'btr'=>['maps']];
-            $data=self::fields($data,['meta',...($fields[$section]??[])]);
+            $data=self::fields($data,['meta',...(self::SECTIONS[$section]??[])]);
         }
         return $data;
     }
@@ -51,10 +56,5 @@ final class PublicCatalog
         if($view==='catalog'){$data=self::fields($data,['meta','maps','traders','questItems','catalogSummary','storyCount','wikiCoverage','cms']);$data['catalog']=true;}
         if($view==='lookup'){$data=self::fields($data,['meta','maps','questItems','cms']);$data['lookup']=true;}
         return $data;
-    }
-    public static function detailItems(array $data,array $task): array
-    {
-        $ids=[];$visit=function($value) use(&$visit,&$ids){if(is_array($value)){foreach($value as $child){$visit($child);}}elseif(is_string($value)){$ids[$value]=true;}};$visit($task);
-        $data['items']=array_values(array_filter($data['items']??[],fn($item)=>isset($ids[$item['id']??''])));return $data;
     }
 }
