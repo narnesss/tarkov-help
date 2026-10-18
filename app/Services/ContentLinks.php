@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\{ContentDataset, ContentReference, ReferenceOptions};
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Validation\ValidationException;
 use Orchid\Screen\Fields\Relation;
 
@@ -111,29 +112,45 @@ final class ContentLinks
         $values = array_map(fn ($id) => $this->referenceId($id, $field), $values);
         $references = ContentReference::where('kind', $specification['kind'])->where('variant', $specification['variant'])
             ->whereIn('id', $values)->get()->keyBy('id');
+        // Проверяем все ссылки до открытия файлов, чтобы отказ не выполнял лишнюю работу.
+        foreach ($values as $id) {
+            $reference = $references->get($id);
+            if ($reference === null || (!$reference->active && !array_key_exists($reference->value, $oldById))) { $this->invalid($field); }
+        }
+        $template = $old[0] ?? null;
+        $new = $references->filter(fn ($reference) => !array_key_exists($reference->value, $oldById));
+        $entities = is_array($template) ? $this->entities($new, $template) : [];
         $results = [];
         foreach ($values as $id) {
-            $reference = $references->get((int) $id);
-            if ($reference === null || (!$reference->active && !array_key_exists($reference->value, $oldById))) { $this->invalid($field); }
-            if (array_key_exists($reference->value, $oldById)) { $results[] = $oldById[$reference->value]; continue; }
-            $template = $old[0] ?? null;
-            $results[] = is_array($template) ? $this->entity($reference, $template) : $reference->value;
+            $reference = $references->get($id);
+            $results[] = $oldById[$reference->value] ?? $entities[$id] ?? $reference->value;
         }
         return $specification['multiple'] ? $results : ($results[0] ?? null);
     }
 
-    private function entity(ContentReference $reference, array $template): array
+    /** Читает каждый источник один раз и сохраняет только выбранные поля, не весь каталог. */
+    private function entities(Collection $references, array $template): array
     {
-        $entity = null;
-        if ($reference->source_dataset_id !== null) {
-            $entity = ContentDataset::find($reference->source_dataset_id)?->content();
-            foreach (ContentFields::parts($reference->source_pointer) as $part) { $entity = is_array($entity) ? ($entity[$part] ?? null) : null; }
+        $entities = [];
+        foreach ($references as $reference) {
+            // Старые имя/иконка не должны переехать к новой сущности.
+            $entities[$reference->id] = ['id' => $reference->value, 'name' => $reference->label];
         }
-        if (is_array($entity) && ($entity['id'] ?? null) === $reference->value) {
-            return array_intersect_key($entity, $template + ['id' => null, 'name' => null]);
+        $groups = $references->whereNotNull('source_dataset_id')->groupBy('source_dataset_id');
+        if ($groups->isEmpty()) { return $entities; }
+        $datasets = ContentDataset::whereIn('id', $groups->keys()->all())->get(['id', 'payload']);
+        foreach ($datasets as $dataset) {
+            $document = $dataset->content();
+            foreach ($groups[$dataset->id] as $reference) {
+                $entity = $document;
+                foreach (ContentFields::parts($reference->source_pointer) as $part) { $entity = is_array($entity) ? ($entity[$part] ?? null) : null; }
+                if (is_array($entity) && ($entity['id'] ?? null) === $reference->value) {
+                    $entities[$reference->id] = array_intersect_key($entity, $template + ['id' => null, 'name' => null]);
+                }
+            }
+            unset($document, $entity);
         }
-        // При смене сущности старые имя/иконка не должны переехать к новому ID.
-        return ['id' => $reference->value, 'name' => $reference->label];
+        return $entities;
     }
 
     private function referenceId(mixed $id, string $field): int

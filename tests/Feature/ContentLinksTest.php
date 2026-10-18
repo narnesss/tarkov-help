@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace Tests\Feature;
 
-use App\Models\ContentReference;
+use App\Models\{ContentDataset, ContentReference};
 use App\Services\{ContentFields, ContentLinks};
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -79,4 +79,36 @@ final class ContentLinksTest extends TestCase
         }
         $this->expectException(ValidationException::class);$links->resolve([PHP_INT_MAX], [], self::SPEC, 'items');
     }
+
+    public function test_replacement_metadata_is_loaded_in_two_queries_across_catalogs(): void
+    {
+        $ids = [];$expected = [];
+        foreach (['a', 'b'] as $group) {
+            $items = [];
+            for ($i = 0; $i < 100; $i++) { $items[] = ['id' => $group.'-'.$i, 'name' => 'Предмет '.$group.$i, 'iconLink' => '/'.$group.$i.'.png', 'extra' => 'Не копировать']; }
+            $dataset = new ContentDataset(['path' => 'catalog-'.$group.'.json']);$dataset->setContent(['items' => $items]);
+            ContentDataset::withoutEvents(fn () => $dataset->save());
+            foreach ($items as $i => $item) {
+                $reference = ContentReference::create(['kind' => 'item', 'variant' => 'default', 'value' => $item['id'], 'label' => $item['name'],
+                    'search_text' => '', 'source_dataset_id' => $dataset->id, 'source_pointer' => '/items/'.$i]);
+                $ids[] = $reference->id;$expected[] = array_intersect_key($item, array_flip(['id', 'name', 'iconLink']));
+            }
+        }
+        $original = [['id' => 'old', 'name' => 'Прежнее имя', 'iconLink' => '/old.png', 'custom' => 'Прежнее поле']];
+        $saved = $this->queries(fn () => (new ContentLinks)->resolve(array_reverse($ids), $original, self::SPEC, 'items'), 2);
+        $this->assertSame(array_reverse($expected), $saved);
+    }
+
+    public function test_invalid_choice_is_rejected_before_opening_any_source_file(): void
+    {
+        $dataset = new ContentDataset(['path' => 'broken-source.json', 'payload' => '@file:'.str_repeat('0', 64)]);
+        ContentDataset::withoutEvents(fn () => $dataset->save());
+        $reference = ContentReference::create(['kind' => 'item', 'variant' => 'default', 'value' => 'valid', 'label' => 'Имя',
+            'search_text' => '', 'source_dataset_id' => $dataset->id, 'source_pointer' => '/items/0']);
+        $this->queries(function () use ($reference): void {
+            try { (new ContentLinks)->resolve([$reference->id, PHP_INT_MAX], [['id' => 'old']], self::SPEC, 'items');$this->fail('Чужая ссылка принята'); }
+            catch (ValidationException $error) { $this->assertArrayHasKey('items', $error->errors()); }
+        }, 1);
+    }
+
 }
