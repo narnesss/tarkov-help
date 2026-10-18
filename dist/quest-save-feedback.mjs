@@ -1,5 +1,5 @@
 import {profileStore} from './profile-store.mjs?v=loading-20261018';
-import {el, action} from './guide-common.mjs?v=loading-20261018';
+import {el, action} from './guide-common.mjs?v=previews-20261019';
 /** Reflect the adapter's real local/server result; retry sends the latest value. */
 export class QuestSaveFeedback {
   constructor(key) {

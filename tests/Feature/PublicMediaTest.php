@@ -27,6 +27,35 @@ final class PublicMediaTest extends TestCase
         $this->assertFileExists(public_path(ltrim($asset,'/')));
     }
 
+    public function test_gallery_previews_preserve_originals_and_invalidate_cache_without_data_writes(): void
+    {
+        $source=array_key_first(config('public-media.previews'));$asset=config('public-media.previews')[$source];
+        $thumb=preg_replace('~(/revision/latest)(\\?|$)~','$1/scale-to-width-down/960$2',$source);
+        $frame=['id'=>'stable-frame','url'=>$thumb,'fullUrl'=>$source,'originalUrl'=>$source,
+            'sourceUrl'=>$thumb,'caption'=>'Подпись с "кавычками"','objectiveIds'=>['goal'],'association'=>'objective'];
+        foreach([0,JSON_UNESCAPED_SLASHES,JSON_PRETTY_PRINT] as $flags){
+            $expected=$frame;$expected['url']=$asset;
+            $this->assertSame($expected,json_decode(PublicMedia::json(json_encode($frame,$flags|JSON_THROW_ON_ERROR)),true,flags:JSON_THROW_ON_ERROR));
+            $custom=$frame;$custom['url']='https://editor.example/photo.webp';
+            $this->assertSame($custom,json_decode(PublicMedia::json(json_encode($custom,JSON_THROW_ON_ERROR)),true,flags:JSON_THROW_ON_ERROR));
+        }
+        // Новая редакторская версия того же файла не должна получать устаревшее превью.
+        $newVersion=['url'=>$thumb.'&changed=1'];
+        $this->assertSame($newVersion,json_decode(PublicMedia::json(json_encode($newVersion,JSON_THROW_ON_ERROR)),true,flags:JSON_THROW_ON_ERROR));
+        $payload=['id'=>'media-quest','name'=>'Квест','objectives'=>[['id'=>'goal','media'=>[$frame]]]];
+        Quest::create(['quest_id'=>'media-quest','mode'=>'pve','name'=>'Квест','published'=>true,'payload'=>$payload]);
+        $dataset=new ContentDataset(['path'=>'guide/quests-pve.json']);$dataset->setContent(['tasks'=>[]]);ContentDataset::withoutEvents(fn()=>$dataset->save());
+        $url='/api/content/data/guide/quests-pve.json?view=detail&id=media-quest';
+        $this->getJson($url)->assertOk()->assertJsonPath('tasks.0.objectives.0.media.0.url',$asset)
+            ->assertJsonPath('tasks.0.objectives.0.media.0.fullUrl',$frame['fullUrl']);
+        $revision=$this->getJson($url)->assertHeader('X-Wiki-Content-Cache','HIT')->headers->get('X-Wiki-Content-Revision');
+        config(['public-media.previews'=>[]]);
+        $fresh=$this->getJson($url)->assertJsonPath('tasks.0.objectives.0.media.0.url',$thumb);
+        $this->assertNotSame($revision,$fresh->headers->get('X-Wiki-Content-Revision'));
+        $this->assertSame($payload,Quest::where('quest_id','media-quest')->firstOrFail()->payload);
+        $this->assertFileExists(public_path(ltrim($asset,'/')));
+    }
+
     public function test_catalog_details_and_quest_rewards_use_same_copy_without_data_writes(): void
     {
         $source=array_key_first(config('public-media.aliases'));$asset=config('public-media.aliases')[$source];

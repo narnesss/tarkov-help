@@ -1,6 +1,6 @@
 import {siteHref} from './site-routes.mjs?v=page-content-20261017';
-import {action,el,external,image,readStorage,writeStorage,toast} from './guide-common.mjs?v=loading-20261018';
-import {galleryBlock} from './gallery.mjs?v=loading-20261018';
+import {action,el,external,image,readStorage,writeStorage,toast} from './guide-common.mjs?v=previews-20261019';
+import {galleryBlock} from './gallery.mjs?v=previews-20261019';
 import {BUILD_VIEWS,assemblyFrames,shoppingRows,shoppingText} from './gunsmith-model.mjs?v=page-content-20261017';
 
 /** Assembly presentation and personal shopping marks, separate from game goals. */

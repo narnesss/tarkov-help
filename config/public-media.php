@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'previews' => require __DIR__.'/media-previews.php',
     // Точные копии нестабильных внешних изображений; редакторские URL не подменяются.
     'aliases' => [
         'https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/c/c9/TerraGroup_employee%27s_package_icon.png/revision/latest?cb=20261016185408'

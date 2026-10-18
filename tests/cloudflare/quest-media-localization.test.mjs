@@ -120,3 +120,11 @@ test('Тур и Батя сохраняют все изображения и с�
     for(const frame of after.frames)assert.ok(!frame.url.startsWith('assets/'),frame.url);
   }
 });
+
+
+test('сюжетная галерея сохраняет оригинал отдельно от локального превью',()=>{
+ const frame={id:'stable',url:'/assets/preview.webp',fullUrl:'https://source.example/full.png',caption:'Фото'};
+ const [result]=storyGallery({objectives:[{id:'first',media:[frame]},{id:'second',media:[frame]}]});
+ assert.equal(result.fullUrl,frame.fullUrl);assert.equal(result.url,frame.url);
+ assert.equal(result.id,frame.id);assert.deepEqual(result.objectiveIds,['first','second']);
+});

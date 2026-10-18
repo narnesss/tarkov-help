@@ -9,7 +9,7 @@ export const num=value=>Number(value||0).toLocaleString('ru-RU',{maximumFraction
 export const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function safeURL(value){try{const u=new URL(value,globalThis.document?.baseURI||location.href);return ['http:','https:'].includes(u.protocol)?u.href:'';}catch{return '';}}
 export function external(label,url){const href=publicLinkURL(url);if(!href)return document.createDocumentFragment();const raw=safeURL(url);if(href!==raw)label=href===PUBLIC_WIKI?'Русская Wiki ↗':href===PUBLIC_HELP?'Tarkov.help ↗':label;const a=el('a',label,'guide-link');a.href=href;a.target='_blank';a.rel='noopener noreferrer';return a;}
-export function image(url,alt='',className=''){const i=el('img','',className);i.src=safeURL(url);i.alt=alt;i.loading='lazy';i.onerror=()=>{i.hidden=true;};return i;}
+export function image(url,alt='',className='',fallback=''){const i=el('img','',className),source=safeURL(url),original=fallback?safeURL(fallback):'';i.alt=alt;i.loading='lazy';i.onerror=()=>{if(original&&i.src!==original){i.src=original;return;}i.hidden=true;};i.src=source;return i;}
 let compressionManifest;
 const preloaded=createJsonPreloader(loadJson);
 export function preloadJson(url){

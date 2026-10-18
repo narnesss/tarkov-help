@@ -1,4 +1,4 @@
-import {cached} from './guide-common.mjs?v=loading-20261018';
+import {cached} from './guide-common.mjs?v=previews-20261019';
 import {marketDay,normalizePrices} from './price-model.mjs?v=page-content-20261017';
 
 /** Static Drop refreshes directly once per Moscow day; server builds use a shared cache. */

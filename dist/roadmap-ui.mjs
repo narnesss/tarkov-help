@@ -1,4 +1,4 @@
-import {action,el,external} from './guide-common.mjs?v=loading-20261018';
+import {action,el,external} from './guide-common.mjs?v=previews-20261019';
 import {readPersonal,writePersonal} from './profile-store.mjs?v=loading-20261018';
 import {TICKET_ROUTES,clampView,edgeRoute,findNodes,layoutGraph,zoomAt} from './roadmap-model.mjs?v=page-content-20261017';
 

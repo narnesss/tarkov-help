@@ -33,3 +33,17 @@ test('относительные медиа используют base стран
     if(previousLocation===undefined)delete globalThis.location;else globalThis.location=previousLocation;
   }
 });
+
+
+test('галерея использует оригинал при отказе превью ровно один раз',()=>{
+ const previousDocument=globalThis.document;
+ try{
+  globalThis.document={baseURI:'https://wiki.example/',createElement:()=>({})};
+  const img=image('/preview.webp','Подпись','','/original.webp');
+  assert.equal(img.src,'https://wiki.example/preview.webp');img.onerror();
+  assert.equal(img.src,'https://wiki.example/original.webp');assert.notEqual(img.hidden,true);
+  img.onerror();assert.equal(img.hidden,true);
+  const unsafe=image('/preview.webp','','','javascript:alert(1)');unsafe.onerror();
+  assert.equal(unsafe.src,'https://wiki.example/preview.webp');assert.equal(unsafe.hidden,true);
+ }finally{if(previousDocument===undefined)delete globalThis.document;else globalThis.document=previousDocument;}
+});
