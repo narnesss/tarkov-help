@@ -79,10 +79,16 @@ final class ContentLinks
     public function selected(mixed $value, array $specification): mixed
     {
         $values = $specification['multiple'] ? $value : [$value]; $ids = [];
+        $wanted = array_values(array_filter(array_map(
+            static fn ($original) => is_array($original) ? ($original['id'] ?? null) : $original, $values
+        ), static fn ($id) => is_string($id) && $id !== ''));
+        if ($wanted === []) { return $specification['multiple'] ? [] : null; }
+        $references = ContentReference::where('kind', $specification['kind'])->where('variant', $specification['variant'])
+            ->whereIn('value', $wanted)->get()->keyBy('value');
         foreach ($values as $original) {
             $id = is_array($original) ? ($original['id'] ?? null) : $original;
             if (!is_string($id) || $id === '') { continue; }
-            $reference = ContentReference::where('kind', $specification['kind'])->where('variant', $specification['variant'])->where('value', $id)->first();
+            $reference = $references->get($id);
             // Старая связь остаётся доступной даже при удалении записи из источника.
             if ($reference === null) {
                 $label = is_array($original) ? ($original['name'] ?? $original['shortName'] ?? null) : null;
@@ -100,10 +106,14 @@ final class ContentLinks
         if (!is_array($values) || count($values) > 200 || count(array_unique($values, SORT_REGULAR)) !== count($values)) { $this->invalid($field); }
         $old = $specification['multiple'] ? $original : [$original]; $oldById = [];
         foreach ($old as $value) { $id = is_array($value) ? ($value['id'] ?? '') : $value; if (is_string($id)) { $oldById[$id] = $value; } }
+        // Проверяем весь ввод до SQL и читаем выбранные связи одним запросом.
+        if ($values === []) { return $specification['multiple'] ? [] : null; }
+        $values = array_map(fn ($id) => $this->referenceId($id, $field), $values);
+        $references = ContentReference::where('kind', $specification['kind'])->where('variant', $specification['variant'])
+            ->whereIn('id', $values)->get()->keyBy('id');
         $results = [];
         foreach ($values as $id) {
-            if (!is_scalar($id) || !ctype_digit((string) $id)) { $this->invalid($field); }
-            $reference = ContentReference::whereKey($id)->where('kind', $specification['kind'])->where('variant', $specification['variant'])->first();
+            $reference = $references->get((int) $id);
             if ($reference === null || (!$reference->active && !array_key_exists($reference->value, $oldById))) { $this->invalid($field); }
             if (array_key_exists($reference->value, $oldById)) { $results[] = $oldById[$reference->value]; continue; }
             $template = $old[0] ?? null;
@@ -124,6 +134,15 @@ final class ContentLinks
         }
         // При смене сущности старые имя/иконка не должны переехать к новому ID.
         return ['id' => $reference->value, 'name' => $reference->label];
+    }
+
+    private function referenceId(mixed $id, string $field): int
+    {
+        if ((!is_int($id) && !is_string($id)) || !ctype_digit((string) $id)) { $this->invalid($field); }
+        $digits = ltrim((string) $id, '0');
+        $number = (int) $digits;
+        if ((string) $number !== ($digits === '' ? '0' : $digits)) { $this->invalid($field); }
+        return $number;
     }
 
     private function invalid(string $field): never

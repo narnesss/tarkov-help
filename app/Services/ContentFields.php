@@ -25,8 +25,12 @@ final class ContentFields
     {
         $entries = [];
         $section = $this->section($document, $path);
+        $offset = (max(1, $page) - 1) * self::PAGE_SIZE;
+        $position = 0;
         foreach ($section as $key => $value) {
             if(is_string($key)&&str_starts_with($key,'cms')){continue;}
+            if ($position++ < $offset) { continue; }
+            if (count($entries) === self::PAGE_SIZE) { break; }
             $child = $path.'/'.str_replace(['~', '/'], ['~0', '~1'], (string) $key);
             $label = is_int($key) ? 'Запись '.($key + 1) : $this->label((string) $key);
             if (preg_match('/^[a-f0-9]{24,64}$/', (string) $key)) { $label = 'Запись'; }
@@ -40,7 +44,7 @@ final class ContentFields
                     || ($key === 'mapName' && array_key_exists('map', $section)) || ($key === 'docName' && array_key_exists('doc', $section))
                     || (is_string($value) && preg_match('/^[a-f0-9]{24,64}$/', $value)))];
         }
-        return array_slice($entries, (max(1, $page) - 1) * self::PAGE_SIZE, self::PAGE_SIZE);
+        return $entries;
     }
 
     public function apply(array $document, string $path, int $page, array $fields, array $context = []): array

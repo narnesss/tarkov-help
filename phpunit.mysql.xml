@@ -22,6 +22,7 @@
     <file>tests/Feature/PublicMediaTest.php</file>
     <file>tests/Feature/ContentBundleTest.php</file>
     <file>tests/Feature/ContentReferencesTest.php</file>
+    <file>tests/Feature/ContentLinksTest.php</file>
   <file>tests/Feature/ImportantItemsTest.php</file></testsuite></testsuites>
   <php>
     <env name="LEGAL_CONSENT_REQUIRED" value="false" force="true"/>
