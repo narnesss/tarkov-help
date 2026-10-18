@@ -76,5 +76,5 @@
   <noscript><p>Для входа и отображения личного прогресса включи JavaScript.</p></noscript>
   <p class="profile-help"><a class="account-link" href="privacy.html">Как используются данные профиля</a></p>
 </main>
-<script type="module" src="bootstrap.mjs?v=world-media-20261017"></script>
+<script type="module" src="bootstrap.mjs?v=loading-20261018"></script>
 @endsection

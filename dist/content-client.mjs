@@ -1,4 +1,4 @@
-import {publicCachedResponse} from './public-content-cache.mjs?v=page-content-20261017';
+import {publicCachedResponse} from './public-content-cache.mjs?v=loading-20261018';
 
 const metadata=/^data\/(?:page-routes|navigation-routes|site-render-routes|view-export|compressed)\.json$/;
 /** Игровые данные читаются только у backend; ошибка API не подменяется снимком в frontend. */

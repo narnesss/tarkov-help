@@ -26,7 +26,9 @@
 @endif
 @endforeach
   <link rel="stylesheet" href="site-responsive.css?v=desktop-20261017">
-  <link rel="modulepreload" href="profile-store.mjs">
+@foreach (app(\App\Services\PageModules::class)->preloads($page) as $module)
+  <link rel="modulepreload" href="{{ $module }}" @if ($module === ($meta['module'] ?? null)) data-page-module @endif>
+@endforeach
   <meta name="wiki-routing" content="pages">
 @if ($params !== [])
   <script type="application/json" id="wiki-page-params">{!! json_encode($params, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) !!}</script>

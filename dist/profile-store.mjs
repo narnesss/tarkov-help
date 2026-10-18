@@ -124,13 +124,14 @@ export class ProfileStore {
     if (runtime !== 'php') return;
     this.server = true;
     this.sessionConfirmed=false;
-    const session = await this.api('/api/session'); this.csrf = session.csrf; this.sessionConfirmed=true;
+    const session = await this.api('/api/session', {headers:{'X-Wiki-Include-State':'1'}}); this.csrf = session.csrf; this.sessionConfirmed=true;
     const previousGuest = this.meta.serverProfile && !this.meta.serverProfile.authenticated ? this.meta.serverProfile : null;
     const localGuest = previousGuest && previousGuest.id !== session.profile.id && !session.profile.authenticated
       ? {state: Object.fromEntries(this.keys(previousGuest.id).map(k => [k, this.raw(this.key(k, previousGuest.id))?.value]))}
       : this.export();
     this.profile = session.profile; this.meta.serverProfile=this.profile; this.persistMeta(); this.memory.clear();
-    const {state} = await this.api('/api/state');
+    const {state} = session.state && typeof session.state==='object' && (!Array.isArray(session.state)||session.state.length===0)
+      ? session : await this.api('/api/state');
     // Only the first anonymous server profile imports the existing browser profile.
     if (!session.profile.authenticated && (!this.meta.serverMigrated || previousGuest && previousGuest.id !== session.profile.id) && !Object.keys(state).length) {
       for (const [key, value] of Object.entries(localGuest.state)) this.write(key, value);

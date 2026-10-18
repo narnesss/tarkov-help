@@ -1,4 +1,4 @@
-import {readPersonal} from './profile-store.mjs?v=page-content-20261017';
+import {readPersonal} from './profile-store.mjs?v=loading-20261018';
 
 // Только подсветка уже выполненного: список и пагинация приходят готовым HTML.
 export function showCompletedRequirements() {

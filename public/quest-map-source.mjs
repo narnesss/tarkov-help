@@ -1,6 +1,6 @@
-import {pageDataset} from './page-data.mjs?v=media-paths-20261017';
+import {pageDataset} from './page-data.mjs?v=loading-20261018';
 import {pageParams,initializeSiteRoutes} from './site-routes.mjs?v=page-content-20261017';
-import {external} from './guide-common.mjs?v=media-paths-20261017';import {sourcePoint} from './quest-map-model.mjs?v=page-content-20261017';
+import {external} from './guide-common.mjs?v=loading-20261018';import {sourcePoint} from './quest-map-model.mjs?v=page-content-20261017';
 import {QuestMapFocusReceiver} from './quest-map-messages.mjs?v=page-content-20261017';
 const $=id=>document.getElementById(id),textNode=text=>{const n=document.createElement('span');n.textContent=text;return n;};
 function showError(message){const root=$('qmap-loading');root.hidden=false;root.replaceChildren(textNode(message));const retry=document.createElement('button');retry.textContent='Повторить';retry.type='button';retry.onclick=()=>location.reload();root.append(retry);}

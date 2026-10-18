@@ -10,6 +10,14 @@ if (!is_file($package.'/public/admin-responsive.css')
     || hash_file('sha256',$package.'/public/admin-responsive.css') !== hash_file('sha256',$root.'/public/admin-responsive.css')) {
     throw new RuntimeException('Мобильные стили Orchid не попали в API-пакет.');
 }
+foreach (['*.mjs', 'vendor/*.mjs'] as $pattern) {
+    foreach (glob($root.'/public/'.$pattern) as $source) {
+        $target=$package.'/public/'.substr($source,strlen($root.'/public/'));
+        if (!is_file($target) || hash_file('sha256',$source)!==hash_file('sha256',$target)) {
+            throw new RuntimeException('Исходник графа preload не попал в API-пакет.');
+        }
+    }
+}
 $run = function (array $command) use ($package): string {
     $process = proc_open($command, [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['file', 'php://stderr', 'w']], $pipes, $package);
     if (!is_resource($process)) { throw new RuntimeException('Не удалось запустить проверку.'); }

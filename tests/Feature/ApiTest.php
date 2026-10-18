@@ -41,6 +41,19 @@ final class ApiTest extends TestCase
         $this->write($a, ['value' => ['query' => 'updated'], 'version' => 1])->assertOk()->assertJsonPath('version', 2);
     }
 
+    public function test_session_can_include_only_current_owners_state_without_changing_legacy_response(): void
+    {
+        $a = $this->identity(); $b = $this->identity();
+        $this->write($a, ['value' => ['query' => 'owner-only'], 'version' => 0])->assertOk();
+        $this->withCookie('eft_session', $a[0])->getJson('/api/session')->assertJsonMissingPath('state');
+        $response = $this->withCookie('eft_session', $a[0])->getJson('/api/session', ['X-Wiki-Include-State' => '1'])->assertOk()
+            ->assertJsonPath('profile.id', $a[2])->assertJsonPath('state.wiki-ui-v1.value.query', 'owner-only')->assertJsonPath('state.wiki-ui-v1.version', 1);
+        $this->assertSame($a[1], $response->json('csrf'));
+        $this->assertTrue($response->headers->hasCacheControlDirective('no-store'));
+        $this->withCookie('eft_session', $b[0])->getJson('/api/session', ['X-Wiki-Include-State' => '1'])->assertOk()->assertJsonPath('state', []);
+        $this->assertDatabaseCount('users', 2); $this->assertDatabaseCount('user_state', 1);
+    }
+
     public function test_csrf_and_origin_checks_run_in_the_laravel_http_pipeline(): void
     {
         $this->putJson('/api/state/wiki-ui-v1', ['value' => [], 'version' => 0])->assertUnauthorized();

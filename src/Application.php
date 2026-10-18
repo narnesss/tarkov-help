@@ -28,9 +28,11 @@ final readonly class Application
         }
     }
 
-    private function withSession(Session $session): Response
+    private function withSession(Session $session, bool $includeState = false): Response
     {
-        $response = Response::json($session->publicData($this->secret));
+        $data = $session->publicData($this->secret);
+        if ($includeState) { $data['state'] = (object) $this->states->all($session->userId); }
+        $response = Response::json($data);
         $response->headers['Set-Cookie'] = 'eft_session=' . $session->token . '; Path=/; Max-Age=2592000; HttpOnly; SameSite=Lax' . ($this->secure ? '; Secure' : '');
         return $response;
     }
@@ -53,7 +55,7 @@ final readonly class Application
         $path = rtrim($request->path, '/') ?: '/';
         if ($path === '/api/session' && $request->method === 'GET') {
             $session = $this->accounts->session($request->cookies['eft_session'] ?? null) ?? $this->accounts->guest();
-            return $this->withSession($session);
+            return $this->withSession($session, ($request->headers['x-wiki-include-state'] ?? '') === '1');
         }
         if (str_starts_with($path, '/api/auth/')) {
             if ($request->method !== 'POST') { throw new HttpError(405, 'Нужен запрос POST.'); }

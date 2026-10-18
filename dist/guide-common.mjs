@@ -1,7 +1,7 @@
-import {readPersonal,writePersonal} from './profile-store.mjs?v=page-content-20261017';
+import {readPersonal,writePersonal} from './profile-store.mjs?v=loading-20261018';
 import {ruText,localizeDisplay} from './ru-data.mjs?v=page-content-20261017';
 import {publicLinkURL,PUBLIC_HELP,PUBLIC_WIKI} from './public-links.mjs?v=page-content-20261017';
-import {contentResponse} from './content-client.mjs?v=page-content-20261017';
+import {contentResponse} from './content-client.mjs?v=loading-20261018';
 import {createJsonPreloader} from './json-preload.mjs?v=page-content-20261017';
 export const $=id=>document.getElementById(id);
 export const el=(tag,text='',className='')=>{const n=document.createElement(tag);n.textContent=ruText(text);n.className=className;return n;};

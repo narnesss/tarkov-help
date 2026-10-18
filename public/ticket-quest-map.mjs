@@ -1,5 +1,5 @@
-import {el,action} from './guide-common.mjs?v=media-paths-20261017';
-import {readPersonal,writePersonal} from './profile-store.mjs?v=page-content-20261017';
+import {el,action} from './guide-common.mjs?v=loading-20261018';
+import {readPersonal,writePersonal} from './profile-store.mjs?v=loading-20261018';
 
 const endings={savior:'Спаситель',debtor:'Должник',survivor:'Выживший',fallen:'Падший'};
 const visible=(nodes,mode)=>(nodes||[]).filter(node=>!node.modes||node.modes.includes(mode));

@@ -1,5 +1,5 @@
 import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs?v=page-content-20261017';
-import {readPersonal,writePersonal} from './profile-store.mjs?v=page-content-20261017';
+import {readPersonal,writePersonal} from './profile-store.mjs?v=loading-20261018';
 const storePersonal=(key,value)=>{if(!writePersonal(key,value))throw new Error('Локальное сохранение недоступно');};
 import { STORAGE_KEY, FLOOR_NAMES, filterSpawns, sanitizeProgress, fitTransform, zoomTransform, hasCoordinates } from './model.mjs?v=page-content-20261017';
 import {documentViewport,documentPointPosition,documentLevelSvg,documentFloors} from './document-map.mjs?v=page-content-20261017';
@@ -38,7 +38,7 @@ function safeRead(key) {
   return readPersonal(key);
 }
 async function fetchData(path) {
-  const {contentResponse}=await import('./content-client.mjs?v=page-content-20261017');
+  const {contentResponse}=await import('./content-client.mjs?v=loading-20261018');
   const content=await contentResponse(path);if(content)return content.json();
   const response = await fetch(path);
   if (!response.ok) throw new Error('Не удалось загрузить ' + path);

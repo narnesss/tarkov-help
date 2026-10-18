@@ -119,6 +119,13 @@ final class ContentController
     private function cachedResponse(string $key,string $revision,\Closure $build)
     {
         $revision=$this->revision($key,$revision);
+        // Старые клиенты по-прежнему получают полный JSON или отдельный revision=1.
+        if (hash_equals($revision, (string) request()->header('X-Wiki-Content-Revision', ''))) {
+            return response()->json(['revision' => $revision])->withHeaders([
+                'Cache-Control' => 'private, no-store', 'X-Wiki-Content-Revision' => $revision,
+                'X-Wiki-Content-Unchanged' => '1', 'X-Wiki-Content-Cache' => 'VALIDATED',
+            ]);
+        }
         // Кэшируем только публичный JSON, без Response, cookies, сессии и личного прогресса.
         // Один сжатый слот на путь: новые редакции не накапливают файлы на хостинге.
         $status='MISS';$json=null;
@@ -129,7 +136,7 @@ final class ContentController
         if(is_string($json)){$status='HIT';}
         else{
             $json=\App\Services\PublicMedia::json($build());
-            try{Cache::put($key,['revision'=>$revision,'gzip'=>gzencode($json,1)],600);}catch(\Throwable $error){report($error);$status='BYPASS';}
+            try{Cache::put($key,['revision'=>$revision,'gzip'=>gzencode($json,1)],config('content.public_cache_ttl',86400));}catch(\Throwable $error){report($error);$status='BYPASS';}
         }
         return response($json,200,['Content-Type'=>'application/json; charset=utf-8','Cache-Control'=>'private, no-store','X-Wiki-Content-Cache'=>$status,'X-Wiki-Content-Revision'=>$revision]);
     }

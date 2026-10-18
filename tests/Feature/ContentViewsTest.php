@@ -37,6 +37,19 @@ final class ContentViewsTest extends TestCase
         $detail=$this->getJson($url.'?view=detail&id=stable')->assertOk()->assertJsonCount(1,'tasks')->assertJsonCount(1,'items')->assertJsonPath('items.0.id','used')->assertJsonPath('tasks.0.objectives.0.media.0.url','https://example.test/image.jpg');
         $this->assertSame($full->json('tasks.0'),$detail->json('tasks.0'));$this->assertDatabaseCount('users',0);$this->assertDatabaseCount('user_state',0);
     }
+    public function test_conditional_public_read_survives_ten_minutes_and_rechecks_edits_and_unpublishing(): void
+    {
+        $quest=$this->fixtures();$url='/api/content/data/guide/quests-pve.json?view=detail&id=stable';
+        $first=$this->getJson($url)->assertOk();$revision=$first->headers->get('X-Wiki-Content-Revision');
+        $this->travel(11)->minutes();
+        $this->getJson($url)->assertOk()->assertHeader('X-Wiki-Content-Cache','HIT');
+        $this->getJson($url,['X-Wiki-Content-Revision'=>$revision])->assertOk()->assertHeader('X-Wiki-Content-Unchanged','1')->assertHeaderMissing('Set-Cookie')->assertExactJson(['revision'=>$revision]);
+        $payload=$quest->payload;$payload['name']='Изменено';$quest->payload=$payload;$quest->save();
+        $this->getJson($url,['X-Wiki-Content-Revision'=>$revision])->assertOk()->assertHeaderMissing('X-Wiki-Content-Unchanged')->assertJsonPath('tasks.0.name','Изменено');
+        $quest->published=false;$quest->save();$this->getJson($url,['X-Wiki-Content-Revision'=>$revision])->assertNotFound();
+        $this->assertDatabaseCount('users',0);$this->assertDatabaseCount('user_state',0);
+    }
+
     public function test_edits_modes_unpublishing_and_wrong_query_cannot_return_stale_details(): void
     {
         $quest=$this->fixtures();$url='/api/content/data/guide/quests-pve.json';

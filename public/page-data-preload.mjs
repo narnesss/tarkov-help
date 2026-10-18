@@ -1,6 +1,6 @@
-import {preloadJson} from './guide-common.mjs?v=media-paths-20261017';
+import {preloadJson} from './guide-common.mjs?v=loading-20261018';
 import {pageParams} from './site-routes.mjs?v=page-content-20261017';
-import {preloadPageView} from './page-data.mjs?v=media-paths-20261017';
+import {preloadPageView} from './page-data.mjs?v=loading-20261018';
 
 // Загружается только публичный набор. Профиль и прогресс подтверждаются отдельно до запуска UI.
 export function preloadPageData(page,{params=pageParams(),preload=(path,options)=>options?preloadPageView(path,options):preloadJson(path)}={}){

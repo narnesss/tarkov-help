@@ -1,4 +1,4 @@
-import {profileStore} from './profile-store.mjs?v=page-content-20261017';
+import {profileStore} from './profile-store.mjs?v=loading-20261018';
 import {siteHref} from './site-routes.mjs?v=page-content-20261017';
 import {renderProfileNavigation} from './profile-navigation.mjs?v=page-content-20261017';
 

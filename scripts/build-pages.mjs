@@ -9,11 +9,13 @@ const readJSON=name=>JSON.parse(fs.readFileSync(path.join(publicDir,name),'utf8'
 const escape=value=>String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#x27;'}[ch]));
 export function routePlan(){return readJSON('data/site-render-routes.json');}
 export function sourceFingerprint(){
- const names=['public/data/page-routes.json', 'config/pages.php','config/legal.php','app/Services/PageCatalog.php','app/Services/PageViews.php','app/Console/Commands/ExportSite.php'];
+ const names=['public/data/page-routes.json', 'config/pages.php','config/legal.php','app/Services/PageCatalog.php','app/Services/PageViews.php','app/Services/PageModules.php','app/Console/Commands/ExportSite.php'];
  function walk(dir){for(const item of fs.readdirSync(path.join(root,dir),{withFileTypes:true})){
   const name=dir+'/'+item.name;if(item.isDirectory())walk(name);else names.push(name);
  }}
- walk('resources/views');const hash=createHash('sha256');
+ walk('resources/views');
+ for(const dir of ['public','public/vendor'])for(const file of fs.readdirSync(path.join(root,dir)))if(file.endsWith('.mjs'))names.push(dir+'/'+file);
+ const hash=createHash('sha256');
  for(const name of names.sort()){hash.update(name+'\0'+fs.readFileSync(path.join(root,name),'utf8').replaceAll('\r\n','\n')+'\0');}
  return hash.digest('hex');
 }

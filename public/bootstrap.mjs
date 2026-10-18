@@ -1,6 +1,6 @@
-import {profileStore} from './profile-store.mjs?v=page-content-20261017';
+import {profileStore} from './profile-store.mjs?v=loading-20261018';
 import {serverProfiles} from './profile-runtime.mjs?v=page-content-20261017';
-import {mountProfile} from './profile-ui.mjs?v=page-content-20261017';
+import {mountProfile} from './profile-ui.mjs?v=loading-20261018';
 import {observeHeader} from './layout.mjs?v=page-content-20261017';
 import {initializeSiteRoutes,siteHref} from './site-routes.mjs?v=page-content-20261017';
 
@@ -13,7 +13,7 @@ const entry = document.body.dataset.page;
 try {
   const initializing=profileStore.initialize(runtime);
   if(['quests','raid','reference'].includes(entry)){
-    await import('./page-data-preload.mjs?v=media-paths-20261017').then(module=>module.preloadPageData(entry)).catch(()=>{});
+    await import('./page-data-preload.mjs?v=loading-20261018').then(module=>module.preloadPageData(entry)).catch(()=>{});
   }
   await initializing;
 }
@@ -35,8 +35,9 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 if (entry === 'index' && ['map','point'].some(key=>new URLSearchParams(location.search).has(key))) {
   location.replace(siteHref('documents.html'+location.search+location.hash));
 } else {
-const modules = {'important-items':'./important-items.mjs?v=important-items-20261017',index: './home.mjs?v=media-paths-20261017', documents: './app.mjs?v=page-content-20261017', raid: './raid.mjs?v=media-paths-20261017', quests: './quests.mjs?v=media-paths-20261017', reference: './reference.mjs?v=world-media-20261017', boss: './boss.mjs?v=media-paths-20261017', account: './account.mjs?v=media-paths-20261017'};
-if (modules[entry]) await import(modules[entry]);
+const modules = {'important-items':'./important-items.mjs?v=loading-20261018',index: './home.mjs?v=loading-20261018', documents: './app.mjs?v=loading-20261018', raid: './raid.mjs?v=loading-20261018', quests: './quests.mjs?v=loading-20261018', reference: './reference.mjs?v=loading-20261018', boss: './boss.mjs?v=loading-20261018', account: './account.mjs?v=loading-20261018'};
+const pageModule=document.querySelector('link[data-page-module]')?.getAttribute('href')||modules[entry];
+if (pageModule) await import(pageModule.startsWith('.')?pageModule:'./'+pageModule);
 
 }
 

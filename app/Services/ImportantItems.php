@@ -57,7 +57,7 @@ final class ImportantItems
             $reference = PublicJson::select($datasets[$paths[1]]->json(), ['hideout', 'crafts']);
             $items = PublicJson::select($datasets[$paths[2]]->json(), [], ['items' => static fn (array $item): array => array_intersect_key($item, array_flip(['id', 'name', 'shortName', 'iconLink', 'cmsArchived']))]);
             $rows = self::aggregate($tasks, $reference, $items);
-            Cache::put($key, ['revision' => $revision, 'rows' => $rows], 600);
+            Cache::put($key, ['revision' => $revision, 'rows' => $rows], config('content.public_cache_ttl', 86400));
             return $rows;
         }
         abort(503, 'Справочник временно недоступен.');

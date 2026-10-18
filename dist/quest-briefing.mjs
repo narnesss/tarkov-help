@@ -1,4 +1,4 @@
-import {el} from './guide-common.mjs?v=media-paths-20261017';
+import {el} from './guide-common.mjs?v=loading-20261018';
 
 export function questBriefing(task){
  const briefing=task.questContent?.briefing;

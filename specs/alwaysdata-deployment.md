@@ -438,3 +438,5 @@ Free alwaysdata предназначен для некоммерческого �
 - https://developers.cloudflare.com/workers/static-assets/routing/worker-script/
 - https://developers.cloudflare.com/workers/wrangler/configuration/
 - https://developers.cloudflare.com/workers/runtime-apis/request/
+
+Оптимизация preload 2026-10-18: API-пакет содержит публичные MJS верхнего уровня и `public/vendor/*.mjs`, чтобы PageModules мог собрать те же ссылки для серверного HTML `/important-items`. Карты, изображения, dist и личные данные не добавляются. Упаковочная проверка сверяет SHA каждого исходника графа с релизом.

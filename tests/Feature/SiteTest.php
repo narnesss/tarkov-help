@@ -24,6 +24,24 @@ final class SiteTest extends TestCase
         $this->assertCount(7058, $this->app->make(PageCatalog::class)->routes());
     }
 
+    public function test_preloads_match_selected_module_graph_without_other_page_entrypoints(): void
+    {
+        $urls=app(\App\Services\PageModules::class)->preloads('reference');
+        $this->assertContains(config('pages.reference.module'),$urls);
+        $this->assertCount(count(array_unique($urls)),$urls);
+        foreach(['public-content-cache.mjs','profile-store.mjs','reference-loader.mjs'] as $module){
+            $this->assertCount(1,array_filter($urls,fn($url)=>strtok($url,'?')===$module));
+        }
+        foreach(['raid.mjs','app.mjs','quests.mjs','account.mjs'] as $module){
+            $this->assertCount(0,array_filter($urls,fn($url)=>strtok($url,'?')===$module));
+        }
+        $html=$this->get('/reference/items/5447a9cd4bdc2dbd208b4567')->assertOk()->getContent();
+        $this->assertStringContainsString('href="'.config('pages.reference.module').'"  data-page-module',$html);
+        $views=app(PageViews::class);$before=$views->fingerprint();$file=public_path('reference.mjs');$source=file_get_contents($file);
+        try{file_put_contents($file,$source."\n// Проверка зависимости preload\n");$this->assertNotSame($before,$views->fingerprint());}
+        finally{file_put_contents($file,$source);}
+    }
+
     public function test_head_and_etag_revalidation_do_not_return_page_body(): void
     {
         $page = $this->get('/raid/shoreline?mode=pve');

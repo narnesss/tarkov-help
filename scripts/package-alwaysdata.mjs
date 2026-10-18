@@ -18,6 +18,10 @@ for (const name of ['app', 'config', 'routes', 'src', 'resources/views', 'databa
   'public/admin-user-validation.mjs', 'public/admin-content-validation.mjs', 'public/password-policy.mjs',
   'public/admin-responsive.css',
   'artisan', 'composer.json', 'composer.lock', 'deployment/alwaysdata']) copy(name);
+// PHP собирает граф preload из тех же публичных модулей; карты и изображения не копируются.
+for (const dir of ['public', 'public/vendor']) for (const name of fs.readdirSync(path.join(root, dir))) {
+  if (name.endsWith('.mjs')) copy(dir+'/'+name);
+}
 fs.cpSync(prepareContentSeed(), path.join(output, 'database/content-seed'), {recursive: true});
 // Архив собирают и на Windows; Linux sh не принимает CRLF.
 for (const name of fs.readdirSync(path.join(output, 'deployment/alwaysdata')).filter(name => name.endsWith('.sh'))) {

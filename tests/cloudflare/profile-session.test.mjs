@@ -23,3 +23,27 @@ test('обновление имени сохраняет аккаунт, CSRF и
   assert.throws(()=>applyPlayerProfile(store,{profile:{id:'player',authenticated:false,name:'Гость'}}),/Сессия/);
   assert.equal(store.profile.authenticated,true);assert.equal(store.profile.id,'player');
 });
+
+test('начальная загрузка получает только прогресс подтверждённого владельца одним запросом',async()=>{
+ const calls=[],store=new ProfileStore({storage:storage(),request:async(path,options)=>{
+  calls.push(path);assert.equal(options.headers['X-Wiki-Include-State'],'1');
+  return {ok:true,json:async()=>({csrf:'same',profile:{id:'owner',name:'Игрок',authenticated:true},state:{'kord-achievements-pve':{value:['earned'],version:7}}})};
+ }});
+ await store.initialize('php');assert.deepEqual(calls,['/api/session']);assert.equal(store.profile.id,'owner');assert.equal(store.csrf,'same');assert.deepEqual(store.read('kord-achievements-pve'),['earned']);assert.equal(store.record('kord-achievements-pve').version,7);
+});
+
+test('новый клиент сохраняет совместимость с прежним API сессии',async()=>{
+ const calls=[],store=new ProfileStore({storage:storage(),request:async path=>{
+  calls.push(path);return {ok:true,json:async()=>path==='/api/session'?{csrf:'same',profile:{id:'owner',authenticated:true}}:{state:{'kord-achievements-pve':{value:['old-api'],version:3}}}};
+ }});
+ await store.initialize('php');assert.deepEqual(calls,['/api/session','/api/state']);assert.deepEqual(store.read('kord-achievements-pve'),['old-api']);
+});
+
+test('пустой прогресс старого JSON-адаптера не вызывает лишний запрос',async()=>{
+ for(const state of [{},[]]){
+  const calls=[],store=new ProfileStore({storage:storage(),request:async path=>{
+   calls.push(path);return {ok:true,json:async()=>({csrf:'same',profile:{id:'empty-owner',authenticated:false},state})};
+  }});
+  await store.initialize('php');assert.deepEqual(calls,['/api/session']);assert.deepEqual(store.keys(),[]);
+ }
+});

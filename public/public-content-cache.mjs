@@ -18,11 +18,12 @@ export async function publicCachedResponse(url,{request=globalThis.fetch,signal,
  const options={signal,cache:'no-store',credentials:'omit'};
  if(!/^\/api\/content\/(?:data\/(?!wiki\/)[a-z0-9/._-]+\.json|bundle\/(?:quest-extras|raid-base|quest-ui))(?:\?|$)/.test(url)||!cache.available)return request(url,options);
  let saved;try{saved=await cache.get(url);}catch{/* Ошибка IndexedDB не мешает обычной загрузке. */}
- if(saved&&typeof saved.text==='string'&&/^[a-f0-9]{64}$/.test(saved.revision)){
-  const check=await request(url+(url.includes('?')?'&':'?')+'revision=1',options);
-  if(check.ok){const value=await check.json();if(value.revision===saved.revision)return new Response(saved.text,{headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','X-Wiki-Browser-Cache':'HIT'}});}
+ const reusable=saved&&typeof saved.text==='string'&&/^[a-f0-9]{64}$/.test(saved.revision);
+ // Один запрос одновременно проверяет версию и получает свежий JSON при изменении.
+ const response=await request(url,reusable?{...options,headers:{'X-Wiki-Content-Revision':saved.revision}}:options),revision=response.headers.get('X-Wiki-Content-Revision');
+ if(reusable&&response.ok&&response.headers.get('X-Wiki-Content-Unchanged')==='1'&&revision===saved.revision){
+  return new Response(saved.text,{headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','X-Wiki-Browser-Cache':'HIT','X-Wiki-Content-Revision':revision}});
  }
- const response=await request(url,options),revision=response.headers.get('X-Wiki-Content-Revision');
  if(response.ok&&/^[a-f0-9]{64}$/.test(revision??'')&&response.headers.get('Content-Type')?.includes('application/json')){
   response.clone().text().then(text=>cache.put(url,{revision,text})).catch(()=>{});
  }
