@@ -2,12 +2,16 @@
 declare(strict_types=1);
 namespace App\Services;
 
+use Illuminate\Filesystem\Filesystem;
 use RuntimeException;
 
 /** Неизменяемые версии контента вне релизов: SQL хранит только ссылку на файл. */
 final class ContentFiles
 {
-    public function __construct(private readonly string $directory) {}
+    public function __construct(
+        private readonly string $directory,
+        private readonly Filesystem $files = new Filesystem,
+    ) {}
 
     public static function forDatabase(string $database): self
     {
@@ -31,7 +35,13 @@ final class ContentFiles
             if (!is_dir(dirname($path)) && !mkdir(dirname($path), 0700, true) && !is_dir(dirname($path))) {
                 throw new RuntimeException('Не удалось создать каталог контента.');
             }
-            if (file_put_contents($temporary, gzencode($json, 6), LOCK_EX) === false || !rename($temporary, $path)) {
+            $gzip = gzencode($json, 6);
+            if ($gzip === false || $this->files->put($temporary, $gzip, true) !== strlen($gzip)) {
+                throw new RuntimeException('Не удалось полностью записать файл контента.');
+            }
+            // Ссылка возвращается только после проверки временного файла и атомарного rename.
+            $this->verifiedJson($temporary, $reference);
+            if (!$this->files->move($temporary, $path)) {
                 throw new RuntimeException('Не удалось сохранить файл контента.');
             }
         } finally { umask($mask); if (is_file($temporary)) { unlink($temporary); } }
@@ -40,9 +50,13 @@ final class ContentFiles
 
     public function json(string $reference): string
     {
-        $path = $this->path($reference);
+        return $this->verifiedJson($this->path($reference), $reference);
+    }
+
+    private function verifiedJson(string $path, string $reference): string
+    {
         if (!is_file($path) || is_link($path)) { throw new RuntimeException('Отсутствует файл контента: '.$reference); }
-        $json = @gzdecode(file_get_contents($path));
+        $json = @gzdecode($this->files->get($path));
         if ($json === false || !hash_equals(substr($reference, 6), hash('sha256', $json))) {
             throw new RuntimeException('Файл контента повреждён: '.$reference);
         }
