@@ -15,6 +15,20 @@ final class PublicJsonTest extends TestCase
         foreach([0,JSON_PRETTY_PRINT] as $flags){$result=PublicJson::select(json_encode($source,$flags|JSON_THROW_ON_ERROR),['meta'],['items'=>fn($row)=>$row['id']==='selected'?$row:null]);$this->assertSame(['meta'=>$source['meta'],'items'=>[$source['items'][1]]],$result);}
         $this->assertSame(['items'=>[]],PublicJson::select('{"items":[],"ignore":null}',[],['items'=>fn($row)=>$row]));
     }
+    public function test_long_strings_and_escape_boundaries_match_native_json_without_duplicate_collection_scan(): void
+    {
+        $texts=['', str_repeat('Текст [ ] { } ',10000), '\\', '\\"', '\\\\"', "Перенос\nСтроки\tИ табуляция", '\\u0022', '😀 \" конец'];
+        $source=['skip'=>['large'=>str_repeat('x',100000)],'items'=>array_map(fn($text)=>['text'=>$text,'values'=>[false,null,0,1e-5,[],['nested'=>['value'=>$text]]]],$texts),'tail'=>false];
+        foreach([0,JSON_PRETTY_PRINT,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES] as $flags){
+            $raw=json_encode($source,$flags|JSON_THROW_ON_ERROR);
+            $this->assertSame(['items'=>$source['items'],'tail'=>false],PublicJson::select($raw,['tail'],['items'=>fn($row)=>$row]));
+        }
+        foreach(['{"items":[{"text":"unterminated}', '{"items":[{"text":"bad\\', '{"items":[1,2,', '{"items":[{"value":1}'] as $raw){
+            try{PublicJson::select($raw,[],['items'=>fn($row)=>$row]);$this->fail('Повреждённый JSON принят');}
+            catch(\JsonException){$this->addToAssertionCount(1);}
+        }
+    }
+
     public function test_unfinished_file_is_rejected(): void
     { $this->expectException(\JsonException::class);PublicJson::select('{"items":[{"id":"broken"}',[],['items'=>fn($row)=>$row]); }
 }
