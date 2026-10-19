@@ -20,12 +20,12 @@ final class DocumentMapOverlay
         if(($raid['mapId']??null)===($definition['id']??null))foreach($raid['pois']??[] as $point){
             if(!empty($point['cmsArchived'])||!empty($point['hiddenByDefault'])||($point['sourceStatus']??null)==='unverified-coordinates'
                 ||($point['kind']??null)!=='extract'||!in_array($point['category']??null,['extract-pmc','extract-shared'],true))continue;
-            $position=$this->position($id,$definition,$point['position']??[]);
+            $position=$this->position($id,$definition,$point['position']??[],in_array($point['sourceStatus']??null,['current','editor'],true));
             if($position===null)continue;
             $floor=$this->floor($id,$definition,$point);
             $exits[(string)$point['id']]=['id'=>(string)$point['id'],'name'=>(string)($point['name']??'Выход ЧВК'),
                 ...$position,'floor'=>$floor,'category'=>$point['category'],
-                'conditions'=>array_values(array_filter($point['conditions']??[],is_string(...)))];
+                'conditions'=>array_values(array_filter($point['conditions']??[],static fn($text)=>is_string($text)&&$text!=='Выход связан с рубильником. Проверьте питание в рейде.'))];
         }
         return ['mapId'=>$id,'exits'=>array_values($exits),'access'=>$access];
     }
@@ -59,7 +59,7 @@ final class DocumentMapOverlay
         return ['requiresKey'=>false,'keys'=>[],'source'=>'description'];
     }
 
-    private function position(string $id,array $definition,array $p): ?array
+    private function position(string $id,array $definition,array $p,bool $verified=false): ?array
     {
         if(!isset($p['x'],$p['y'],$p['z'])||!is_numeric($p['x'])||!is_numeric($p['y'])||!is_numeric($p['z'])
             ||!is_finite((float)$p['x'])||!is_finite((float)$p['y'])||!is_finite((float)$p['z']))return null;
@@ -78,13 +78,17 @@ final class DocumentMapOverlay
             $dx=abs($corners[0][0]-$corners[1][0]);$dy=abs($corners[0][1]-$corners[1][1]);if($dx<.0001||$dy<.0001)return null;
             $x=($px-$xmin)/$dx*100;$y=($py-$ymin)/$dy*100;
         }
-        return $x>=0&&$x<=100&&$y>=0&&$y<=100?['x'=>$x,'y'=>$y]:null;
+        $margin=$verified?5:0;
+        if($x<-$margin||$x>100+$margin||$y<-$margin||$y>100+$margin)return null;
+        return ['x'=>$x,'y'=>$y,...($x<0||$x>100||$y<0||$y>100?['outsideArtwork'=>true]:[])];
     }
 
     private function floor(string $id,array $definition,array $point): string
     {
         if(in_array($id,['icebreaker','labyrinth'],true))return 'floor-1';
         $p=$point['position'];$selected=$definition['baseFloor']['id']??'';
+        $override=$point['floorOverride']??null;
+        if(is_string($override)&&in_array($override,[$selected,...array_column($definition['floors']??[],'id')],true))return $this->documentFloor($override);
         foreach($definition['floors']??[] as $floor)foreach($floor['extents']??[] as $extent){
             [$low,$high]=$extent['height']??[-INF,INF];if($p['y']<$low||$p['y']>=$high)continue;
             if(!empty($extent['bounds'])){
@@ -92,6 +96,11 @@ final class DocumentMapOverlay
                 if(!$inside)continue;
             }$selected=$floor['id'];
         }
-        return preg_match('/underground|technical|basement/iu',$selected)?'floor--1':(preg_match('/second/iu',$selected)?'floor-2':(preg_match('/third/iu',$selected)?'floor-3':'floor-1'));
+        return $this->documentFloor($selected);
+    }
+
+    private function documentFloor(string $floor): string
+    {
+        return preg_match('/underground|technical|basement|bunkers/iu',$floor)?'floor--1':(preg_match('/second|2nd/iu',$floor)?'floor-2':(preg_match('/third|3rd/iu',$floor)?'floor-3':'floor-1'));
     }
 }

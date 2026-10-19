@@ -1,11 +1,11 @@
 import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs?v=page-content-20261017';
 import {readPersonal,writePersonal} from './profile-store.mjs?v=loading-20261018';
 const storePersonal=(key,value)=>{if(!writePersonal(key,value))throw new Error('Локальное сохранение недоступно');};
-import { STORAGE_KEY, FLOOR_NAMES, filterSpawns, sanitizeProgress, fitTransform, zoomTransform, hasCoordinates } from './model.mjs?v=page-content-20261017';
+import { STORAGE_KEY, FLOOR_NAMES, filterSpawns, sanitizeProgress, zoomTransform, hasCoordinates } from './model.mjs?v=page-content-20261017';
 import {documentViewport,documentPointPosition,documentLevelSvg,documentFloors} from './document-map.mjs?v=page-content-20261017';
 
 import {image} from './guide-common.mjs?v=documents-access-20261020';
-import {accessLabel,visibleDocumentExits,createDocumentOverlayLoader} from './document-overlays.mjs?v=documents-access-20261020';
+import {accessLabel,visibleDocumentExits,createDocumentOverlayLoader,fitDocumentOverlayView,documentOverlayFloors} from './document-overlays.mjs?v=documents-exits-20261020';
 
 const $ = id => document.getElementById(id);
 const compactViewport = () => innerWidth <= 1200;
@@ -79,6 +79,7 @@ async function start() {
   let mapHeight = 1463;
   let markers = [];
   let overlay=null,overlayMap='',overlayMode=params.get('mode')==='regular'?'regular':params.get('mode')==='pve'?'pve':prefs.exitMode==='regular'?'regular':'pve';
+  let pendingFloor=null;
   const overlayLoader=createDocumentOverlayLoader();
   const showExits=$('document-show-exits');showExits.checked=prefs.showExits!==false;
   $('document-exit-mode').value=overlayMode;
@@ -86,7 +87,7 @@ async function start() {
     overlay=null;overlayMap=state.mapId;const map=overlayMap,mode=overlayMode;
     $('document-overlay-status').textContent='Загрузка выходов и ключей…';$('document-overlay-retry').hidden=true;render();
     try{const data=await overlayLoader(map,mode);if(!data||state.mapId!==map||overlayMode!==mode)return;
-      overlay=data;$('document-overlay-status').textContent=data.available===false?'Данные выходов пока недоступны.':data.exits.length+' выходов ЧВК. Условия эвакуации уточняйте в рейде.';render();
+      overlay=data;if(pendingFloor&&documentOverlayFloors(mapSpawns(),mapById.get(state.mapId),overlay).includes(pendingFloor))state.floor=pendingFloor;pendingFloor=null;buildFloors();persistPrefs();$('document-overlay-status').textContent=data.available===false?'Данные выходов пока недоступны.':data.exits.length+' выходов ЧВК. Условия эвакуации уточняйте в рейде.';render();
     }catch{if(state.mapId!==map||overlayMode!==mode)return;$('document-overlay-status').textContent='Не удалось загрузить выходы и ключи.';$('document-overlay-retry').hidden=false;}
   }
   showExits.addEventListener('change',render);
@@ -208,9 +209,9 @@ async function start() {
   }
 
   function buildFloors() {
-    const values = documentFloors(mapSpawns());
+    const documentLevels=documentFloors(mapSpawns()),values = documentOverlayFloors(mapSpawns(),mapById.get(state.mapId),overlay,pendingFloor);
     $('floor-group').hidden = !values.length || state.allMaps;
-    const entries = [['all', 'Все этажи'], ...values.map(f => [f, FLOOR_NAMES[f] || f])];
+    const entries = [['all', 'Все этажи'], ...values.map(f => [f, (FLOOR_NAMES[f] || f)+(documentLevels.includes(f)?'':' · выходы')])];
     if (mapSpawns().some(s => !s.floor)) entries.push(['unknown', 'Этаж не указан']);
     $('floor-select').replaceChildren(...entries.map(([value, name]) => {
       const option = node('option', '', name); option.value = value; return option;
@@ -224,7 +225,7 @@ async function start() {
     const map = mapById.get(id);
     if (!map) return;
     closeDetails(false, false);
-    state.mapId = id;
+    state.mapId = id;pendingFloor=restoreFloor&&map.documentPanels?.[prefs.floor]?prefs.floor:null;
     state.floor = restoreFloor&&prefs.artworkVersion===2&&typeof prefs.floor==='string'?prefs.floor:map.documentPanels?'floor-1':'all';
     $('map-select').value = id;
     const raidAliases = { streets: 'streets-of-tarkov', groundzero: 'ground-zero', lab: 'the-lab', labyrinth: 'the-labyrinth' };
@@ -272,7 +273,7 @@ async function start() {
     $('list-count').textContent = results.length;
     $('results-total').textContent = results.length;
     $('results-caption').textContent = state.allMaps ? 'Все локации' : 'Точки на локации';
-    $('map-empty').hidden = visible.length > 0;
+    $('map-empty').hidden = visible.length > 0 || visibleDocumentExits(overlay,state.mapId,overlayMode,state.floor,showExits.checked).length>0;
     $('map-empty-text').textContent = state.allMaps && results.length
       ? `На других локациях найдено ${results.length} точек. Откройте вкладку «Точки» или смените карту.`
       : 'Попробуйте изменить запрос или фильтры.';
@@ -358,7 +359,8 @@ async function start() {
       }
     }
     for(const exit of visibleDocumentExits(overlay,state.mapId,overlayMode,state.floor,showExits.checked)){
-      const button=node('button','marker document-exit','↗');button.type='button';button.title=exit.name;
+      const button=node('button','marker document-exit');button.type='button';button.dataset.tip='Выход ЧВК: '+exit.name;
+      const symbol=node('span','document-exit-symbol','↗');symbol.setAttribute('aria-hidden','true');button.append(symbol);
       button.setAttribute('aria-label','Выход ЧВК: '+exit.name);button.addEventListener('click',event=>{event.stopPropagation();openExit(exit,button);});
       fragment.append(button);markers.push({element:button,spawn:exit,x:exit.x,y:exit.y});
     }
@@ -402,6 +404,7 @@ async function start() {
   }
 
   function selectPoint(spawn, center = true, focus = true) {
+    pendingFloor=null;
     if (focus) lastFocus = document.activeElement;
     if (spawn.map !== state.mapId) setMap(spawn.map, { updateUrl: false });
     if(state.floor!=='all'&&spawn.floor&&state.floor!==spawn.floor){state.floor=spawn.floor;buildFloors();render();}
@@ -521,7 +524,7 @@ async function start() {
 
   function fitMap() {
     const rect = $('viewport').getBoundingClientRect();
-    view = fitTransform(rect.width, rect.height, mapWidth, mapHeight, compactViewport() ? 18 : 30);
+    view = fitDocumentOverlayView(rect.width, rect.height, mapWidth, mapHeight, compactViewport() ? 18 : 30);
     baseScale = view.scale;
     applyView();
   }
@@ -534,6 +537,9 @@ async function start() {
     for (const marker of markers) {
       marker.element.style.left = (view.x + marker.x / 100 * mapWidth * view.scale) + 'px';
       marker.element.style.top = (view.y + marker.y / 100 * mapHeight * view.scale) + 'px';
+      if(marker.element.classList.contains('document-exit')){const x=view.x+marker.x/100*mapWidth*view.scale,y=view.y+marker.y/100*mapHeight*view.scale,tipWidth=Math.min(240,rect.width-16);
+        marker.element.style.setProperty('--exit-tooltip-width',tipWidth+'px');marker.element.style.setProperty('--exit-tooltip-shift',Math.max(8+tipWidth/2-x,Math.min(rect.width-8-tipWidth/2-x,0))+'px');marker.element.classList.toggle('tip-below',y<100);
+      }
     }
     $('zoom-level').textContent = Math.round(view.scale / baseScale * 100) + '%';
     drawLink(state.selected);
@@ -641,7 +647,7 @@ async function start() {
   $('map-select').addEventListener('change', event => { setMap(event.target.value); setSidebar(false); });
   $('search').addEventListener('input', event => { state.query = event.target.value; if (state.query) chooseTab('points'); render(); });
   $('all-maps').addEventListener('change', event => { state.allMaps = event.target.checked; state.floor = 'all'; buildFloors(); chooseTab('points'); render(); });
-  $('floor-select').addEventListener('change', event => { state.floor = event.target.value; closeDetails(false,false); buildFloors();render(); });
+  $('floor-select').addEventListener('change', event => { pendingFloor=null;state.floor = event.target.value; closeDetails(false,false); buildFloors();render(); });
   $('show-alts').addEventListener('change', event => { state.showAlts = event.target.checked; persistPrefs(); renderMarkers(); });
   $('document-icon-size').addEventListener('input', event => {
     state.iconSize = documentIconSize(event.target.valueAsNumber);

@@ -101,7 +101,7 @@ final class ContentController
             ->orderBy('p.id')->orderBy('k.key_item_id')->orderBy('k.usage_type')->get(['p.external_id','k.usage_type','i.external_id as item','i.name']);
         $catalog=\Illuminate\Support\Facades\DB::table('wiki_keys as k')->join('wiki_items as i','i.id','=','k.item_id')->where('k.archived',0)->where('i.archived',0)->orderBy('i.id')->get(['i.external_id as id','i.name','i.icon_url as iconLink'])->map(fn($row)=>(array)$row)->all();
         $revision=hash('sha256',serialize([$datasets->map(fn($d)=>$d->getRawOriginal('payload'))->all(),$keys->all(),$catalog,config('document-overlays')]));
-        $key='document-overlays-v1-'.hash('sha256',serialize([config('content.directory'),$datasets['maps.json']->getConnection()->getDatabaseName(),$mapId,$mode]));
+        $key='document-overlays-v2-'.hash('sha256',serialize([config('content.directory'),$datasets['maps.json']->getConnection()->getDatabaseName(),$mapId,$mode]));
         return $this->responses->respond($request,$key,$revision,function() use($datasets,$paths,$mapId,$raidId,$mode,$keys,$catalog): string {
             $map=collect($datasets['maps.json']->content())->first(fn($row)=>($row['id']??null)===$mapId&&empty($row['cmsArchived']));abort_unless($map,404);
             $definition=collect($datasets->get('raid/maps.json')?->content()??[])->firstWhere('id',$raidId)??[];

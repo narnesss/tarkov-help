@@ -20,7 +20,7 @@ final class DocumentMapOverlayTest extends TestCase
         $this->dataset('guide/items-pve.json',['items'=>[['id'=>'door-key','name'=>'Ключ от комнаты','iconLink'=>'/assets/key.webp']]]);
         $this->dataset('spawns.json',[['id'=>'point','map'=>'customs','doc'=>'doc','caption'=>'Комната','x'=>20,'y'=>30,'keyIds'=>['door-key']]]);
         $this->dataset('raid/maps.json',[$definition]);
-        $exit=['id'=>'exit','kind'=>'extract','category'=>'extract-pmc','name'=>'Выход <script>','position'=>['x'=>25,'y'=>0,'z'=>50],'conditions'=>['Условие <img>']];
+        $exit=['id'=>'exit','kind'=>'extract','category'=>'extract-pmc','name'=>'Выход <script>','position'=>['x'=>25,'y'=>0,'z'=>50],'conditions'=>['Выход связан с рубильником. Проверьте питание в рейде.','Условие <img>']];
         $this->dataset('raid/pve/customs.json',['mapId'=>'customs','pois'=>[$exit,[...$exit,'id'=>'scav','category'=>'extract-scav'],[...$exit,'id'=>'outside','position'=>['x'=>999,'y'=>0,'z'=>50]]]]);
         $this->dataset('raid/customs.json',['mapId'=>'customs','pois'=>[[...$exit,'id'=>'pvp']]]);
         app(WikiImporter::class)->rebuild();return $definition;
@@ -45,7 +45,7 @@ final class DocumentMapOverlayTest extends TestCase
         $this->fixtures();$refs=ContentDataset::orderBy('path')->pluck('payload')->all();
         $url='/api/content/data/maps.json?view=documents&map=customs&mode=pve';
         $response=$this->getJson($url)->assertOk()->assertHeaderMissing('Set-Cookie')->assertJsonPath('mapId','customs')->assertJsonPath('mode','pve')
-            ->assertJsonCount(1,'exits')->assertJsonPath('exits.0.id','exit')->assertJsonPath('exits.0.x',fn($x)=>abs($x-75)<.00001)->assertJsonPath('exits.0.y',fn($y)=>abs($y-50)<.00001)
+            ->assertJsonCount(1,'exits')->assertJsonCount(1,'exits.0.conditions')->assertJsonPath('exits.0.conditions.0','Условие <img>')->assertJsonPath('exits.0.id','exit')->assertJsonPath('exits.0.x',fn($x)=>abs($x-75)<.00001)->assertJsonPath('exits.0.y',fn($y)=>abs($y-50)<.00001)
             ->assertJsonPath('access.point.requiresKey',true)->assertJsonPath('access.point.keys.0.name','Ключ от комнаты')->assertJsonPath('access.point.keys.0.iconLink','/assets/key.webp');
         $revision=$response->headers->get('X-Wiki-Content-Revision');$this->getJson($url)->assertHeader('X-Wiki-Content-Cache','HIT');
         $this->getJson(str_replace('mode=pve','mode=regular',$url))->assertJsonPath('exits.0.id','pvp');
@@ -68,4 +68,22 @@ final class DocumentMapOverlayTest extends TestCase
             $this->assertEqualsWithDelta($x,$data['exits'][0]['x'],1);$this->assertEqualsWithDelta($y,$data['exits'][0]['y'],1);
         }
     }
+    public function test_verified_edge_exits_keep_coordinates_and_explicit_floor_wins(): void
+    {
+        $service=new DocumentMapOverlay();
+        foreach(['customs'=>[[[698,-307],[-372,237]],['x'=>140.63,'y'=>3.75,'z'=>-322.83]],'woods'=>[[[646,-914],[-761,442]],['x'=>-142.5,'y'=>-2.37,'z'=>447.58]]] as $id=>[$bounds,$position]){
+            $definition=['id'=>$id,'baseAsset'=>['type'=>'svg'],'bounds'=>$bounds,'coordinateRotation'=>180,'baseFloor'=>['id'=>'Ground_Level']];
+            $point=['id'=>'edge','kind'=>'extract','category'=>'extract-pmc','position'=>$position,'sourceStatus'=>'current'];
+            $result=$service->build(['id'=>$id],[],$definition,['mapId'=>$id,'pois'=>[$point]],[]);
+            $this->assertCount(1,$result['exits']);$this->assertTrue($result['exits'][0]['outsideArtwork']);
+            $this->assertTrue($result['exits'][0]['y']<0||$result['exits'][0]['y']>100);
+            $point['sourceStatus']='unknown';$this->assertCount(0,$service->build(['id'=>$id],[],$definition,['mapId'=>$id,'pois'=>[$point]],[])['exits']);
+        }
+        $definition=['id'=>'streets-of-tarkov','baseAsset'=>['type'=>'svg'],'bounds'=>[[100,0],[0,100]],'coordinateRotation'=>180,'baseFloor'=>['id'=>'Ground_Level'],
+            'floors'=>[['id'=>'Underground_Level','extents'=>[['height'=>[-100,-6]]]]]];
+        $point=['id'=>'checkpoint','kind'=>'extract','category'=>'extract-pmc','position'=>['x'=>20,'y'=>-8.16,'z'=>30],'floorOverride'=>'Ground_Level'];
+        $result=$service->build(['id'=>'streets'],[],$definition,['mapId'=>'streets-of-tarkov','pois'=>[$point]],[]);
+        $this->assertSame('floor-1',$result['exits'][0]['floor']);
+    }
+
 }

@@ -172,3 +172,11 @@ body[data-page="documents"] .location-select select:has(option:checked[value=""]
 .document-required-keys{border-top:1px solid #355043;padding-top:12px}.document-required-keys h2{font-size:15px}.document-required-keys p{font-size:12px;line-height:1.5}.document-required-keys ul{padding:0;list-style:none}.document-required-keys li{margin:12px 0;overflow-wrap:anywhere}.document-required-keys a{display:inline-flex;align-items:center;min-height:44px;color:#e6bd70}.document-key-point{display:block;width:100%;min-height:44px;text-align:left;padding:8px;white-space:normal;overflow-wrap:anywhere;background:transparent;color:inherit;border:1px solid #355043;border-radius:6px;margin-top:4px}
 
 .document-key-card{display:flex!important;align-items:center;gap:10px;min-height:56px;padding:8px;border:1px solid #586c4d;border-radius:8px;background:#18271e;box-sizing:border-box;font-weight:700;line-height:1.4;text-decoration:none}.document-key-icon{width:48px;height:48px;flex:0 0 48px;object-fit:contain}.document-key-card>svg{width:32px;height:32px;flex:0 0 32px;fill:none;stroke:currentColor;stroke-width:2}.document-key-card:focus-visible,.document-key-point:focus-visible{outline:3px solid #c8e49b;outline-offset:3px}
+
+/* Видимый значок масштабируется; сенсорная область остаётся 44×44. */
+#marker-layer .marker.document-exit{width:44px;height:44px;min-width:44px;min-height:44px;padding:0;border:0;background:transparent;box-shadow:none;display:grid;place-items:center;--type:#a7d967}
+.document-exit-symbol{display:grid;place-items:center;width:var(--document-marker-size,24px);height:var(--document-marker-size,24px);box-sizing:border-box;border:2px solid #a7d967;border-radius:6px;background:#153929;color:#e5f5cc;font-size:calc(var(--document-marker-size,24px)*.7);line-height:1;pointer-events:none;box-shadow:0 1px 5px #0008}
+#marker-layer .marker.document-exit:hover:before,#marker-layer .marker.document-exit:focus-visible:before{bottom:calc((44px + var(--document-marker-size,24px))/2 + 8px);z-index:30}
+
+#marker-layer .marker.document-exit:before{box-sizing:border-box;width:var(--exit-tooltip-width,240px);left:calc(50% + var(--exit-tooltip-shift,0px));font-size:13px}
+#marker-layer .marker.document-exit.tip-below:before{bottom:auto;top:calc((44px + var(--document-marker-size,24px))/2 + 8px)}

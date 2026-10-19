@@ -56,7 +56,7 @@ return json_decode(<<<'JSON'
     "body_attributes": "class=\"home-page\" data-page=\"index\""
   },
   "documents": {
-    "module": "app.mjs?v=documents-access-20261020",
+    "module": "app.mjs?v=documents-exits-20261020",
     "title": "Документы — Escape from Tarkov Wiki",
     "description": "Ваш атлас документов Kord Breach: 12 локаций, фотографии мест появления, поиск и личный прогресс.",
     "styles": [
