@@ -33,6 +33,8 @@ final class DocumentMapOverlayTest extends TestCase
         $this->assertSame([$key],$service->access(['caption'=>'В комнате запертой на «Ключ от комнаты»'],null,[$key])['keys']);
         $factory=['id'=>'factory-key','name'=>'Ключ от выхода с Завода','iconLink'=>'/factory-key.webp'];
         $this->assertSame([$factory],$service->access(['caption'=>'Комната запертая на «Ключ от Завода»'],null,[$factory])['keys']);
+        $warehouse=['id'=>'warehouse-key','name'=>'Ключ-карта от склада TerraGroup','iconLink'=>'/warehouse-key.png'];
+        $this->assertSame([$warehouse],$service->access(['caption'=>'Комната закрыта на ключ-карту «Полихим»'],null,[$warehouse])['keys']);
         $this->assertSame('Ключ-карта «Полихим»',$service->access(['caption'=>'Комната закрыта на ключ-карту «Полихим»'])['keys'][0]['name']);
         $this->assertFalse($service->access(['caption'=>'Заперта на ключ','cmsKeyUsages'=>[]])['requiresKey']);
         $this->assertFalse($service->access([], [['item'=>'key','usage_type'=>'optional']])['requiresKey']);

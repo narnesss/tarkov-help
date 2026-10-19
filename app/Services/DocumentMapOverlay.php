@@ -52,7 +52,7 @@ final class DocumentMapOverlay
             $normalize=static fn(string $s)=>trim(preg_replace('/[^\p{L}\d]+/u',' ',str_replace(['ё','labs'],['е',''],mb_strtolower(preg_replace('/ключом|ключа|ключу/iu','ключ',$s)))));
             $text=$normalize($caption);$found=[];
             foreach($catalog as $key){$name=$normalize($key['name']);if(mb_strlen($name)>=12&&str_contains($text,$name))$found[$key['id']]=$key;}
-            $keys=[];foreach($names as $name){$n=$normalize($name);$n=['ключ от завода'=>'ключ от выхода с завода'][$n]??$n;$matches=array_filter($catalog,static fn($key)=>$normalize($key['name'])===$n||(mb_strlen($n)>=6&&str_contains(' '.$normalize($key['name']).' ',' '.$n.' ')));
+            $keys=[];foreach($names as $name){$n=$normalize($name);$n=['ключ от завода'=>'ключ от выхода с завода','полихим'=>'ключ карта от склада terragroup'][$n]??$n;$matches=array_filter($catalog,static fn($key)=>$normalize($key['name'])===$n||(mb_strlen($n)>=6&&str_contains(' '.$normalize($key['name']).' ',' '.$n.' ')));
                 if(count($matches)===1){$key=array_values($matches)[0];$found[$key['id']]=$key;}elseif($found===[]){$keys[]=['id'=>null,'name'=>preg_match('/ключ|карт/iu',$name)?$name:(str_contains(mb_strtolower($caption),'ключ-карт')?'Ключ-карта «'.$name.'»':'Ключ «'.$name.'»')];}}
             return ['requiresKey'=>true,'keys'=>$found!==[]?array_values($found):$keys,'source'=>'description'];
         }
