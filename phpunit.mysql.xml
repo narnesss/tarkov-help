@@ -20,6 +20,7 @@
     <file>tests/Feature/ContentUpdatesTest.php</file>
     <file>tests/Feature/ContentViewsTest.php</file>
     <file>tests/Feature/PublicMediaTest.php</file>
+    <file>tests/Feature/DocumentMapOverlayTest.php</file>
     <file>tests/Feature/ContentBundleTest.php</file>
     <file>tests/Feature/ContentReferencesTest.php</file>
     <file>tests/Feature/ContentLinksTest.php</file>

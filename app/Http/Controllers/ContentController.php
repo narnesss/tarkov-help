@@ -50,9 +50,10 @@ final class ContentController
     public function __invoke(string $path,Request $request)
     {
         abort_unless(preg_match('~^[a-z0-9][a-z0-9/._-]*\.json$~', $path) && !str_contains($path, '..'), 404);
-        $input=$request->validate(['view'=>['sometimes','string','in:full,catalog,detail,lookup'],'map'=>['sometimes','string','max:128','regex:/^[a-zA-Z0-9_-]+$/D'],'mode'=>['sometimes','string','in:pve,regular'],'section'=>['bail','sometimes','string',\Illuminate\Validation\Rule::in(array_keys(PublicCatalog::SECTIONS))],'id'=>['sometimes','prohibited_unless:view,detail','string','max:128','regex:/^[a-zA-Z0-9_-]+$/D']]);
+        $input=$request->validate(['view'=>['sometimes','string','in:full,catalog,detail,lookup,documents'],'map'=>['sometimes','string','max:128','regex:/^[a-zA-Z0-9_-]+$/D'],'mode'=>['sometimes','string','in:pve,regular'],'section'=>['bail','sometimes','string',\Illuminate\Validation\Rule::in(array_keys(PublicCatalog::SECTIONS))],'id'=>['sometimes','prohibited_unless:view,detail','string','max:128','regex:/^[a-zA-Z0-9_-]+$/D']]);
         $request->validate(['revision'=>['sometimes','boolean']]);
         $view=$input['view']??'full';$id=$input['id']??null;
+        if($view==='documents'){abort_unless($path==='maps.json'&&isset($input['map']),422);return $this->documents($request,$input['map'],$input['mode']??'pve');}
         if($path==='guide/quest-map-index.json'&&$view==='detail'){return $this->sourceMap($request,$id);}
         if($path==='guide/bosses.json'&&$view==='detail'){return $this->boss($request,$id);}
         if(isset($input['section'])){abort_unless(preg_match('~^guide/reference-(pve|regular)\.json$~',$path)&&$view==='catalog',422);}
@@ -86,6 +87,28 @@ final class ContentController
         }
         $revision=hash('sha256',serialize([$dataset->getRawOriginal('payload'),$versions,$dependencies,$mediaRevision,$related->map(fn(ContentDataset $row)=>$row->getRawOriginal('payload'))->all()]));
         return $this->responses->respond($request,$key,$revision,fn()=>$this->build($dataset,$path,$quests,$view,$id,$input['section']??null,$related)->getContent());
+    }
+
+    private function documents(Request $request,string $mapId,string $mode)
+    {
+        $raidId=\App\Services\DocumentMapOverlay::ALIASES[$mapId]??$mapId;
+        $paths=['maps.json','spawns.json','raid/maps.json','raid/'.($mode==='pve'?'pve/':'').$raidId.'.json'];
+        $datasets=ContentDataset::whereIn('path',$paths)->orderBy('path')->get()->keyBy('path');
+        abort_unless($datasets->has('maps.json')&&$datasets->has('spawns.json'),404);
+        $keys=\Illuminate\Support\Facades\DB::table('wiki_map_points as p')->join('wiki_key_usages as k','k.point_id','=','p.id')
+            ->join('wiki_items as i','i.id','=','k.key_item_id')->where('p.archived',0)->where('p.active',1)->where('k.archived',0)->where('i.archived',0)
+            ->whereExists(fn($query)=>$query->selectRaw('1')->from('wiki_sources as s')->whereColumn('s.point_id','p.id')->where('s.format','document-point'))
+            ->orderBy('p.id')->orderBy('k.key_item_id')->orderBy('k.usage_type')->get(['p.external_id','k.usage_type','i.external_id as item','i.name']);
+        $catalog=\Illuminate\Support\Facades\DB::table('wiki_keys as k')->join('wiki_items as i','i.id','=','k.item_id')->where('k.archived',0)->where('i.archived',0)->orderBy('i.id')->get(['i.external_id as id','i.name','i.icon_url as iconLink'])->map(fn($row)=>(array)$row)->all();
+        $revision=hash('sha256',serialize([$datasets->map(fn($d)=>$d->getRawOriginal('payload'))->all(),$keys->all(),$catalog,config('document-overlays')]));
+        $key='document-overlays-v1-'.hash('sha256',serialize([config('content.directory'),$datasets['maps.json']->getConnection()->getDatabaseName(),$mapId,$mode]));
+        return $this->responses->respond($request,$key,$revision,function() use($datasets,$paths,$mapId,$raidId,$mode,$keys,$catalog): string {
+            $map=collect($datasets['maps.json']->content())->first(fn($row)=>($row['id']??null)===$mapId&&empty($row['cmsArchived']));abort_unless($map,404);
+            $definition=collect($datasets->get('raid/maps.json')?->content()??[])->firstWhere('id',$raidId)??[];
+            $relations=[];foreach($keys as $row)$relations[$row->external_id][]=array_intersect_key((array)$row,array_flip(['item','name','usage_type']));
+            $data=app(\App\Services\DocumentMapOverlay::class)->build($map,$datasets['spawns.json']->content(),$definition,$datasets->get($paths[3])?->content()??[],$relations,$catalog);
+            return json_encode([...$data,'mode'=>$mode,'available'=>$datasets->has($paths[3])&&$definition!==[]],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
+        });
     }
 
     private function sourceMap(Request $request,?string $id)
