@@ -1,11 +1,11 @@
 import {siteHref,pageParams,canonicalURL} from './site-routes.mjs?v=page-content-20261017';
 import {resolveGameMode} from './game-mode.mjs?v=page-content-20261017';
 import {publicAttribution} from './public-links.mjs?v=page-content-20261017';
-import {$,action,el,empty,external,image,json,num,readStorage,writeStorage,section} from './guide-common.mjs?v=previews-20261019';
+import {$,action,el,empty,external,image,json,num,readStorage,writeStorage,section} from './guide-common.mjs?v=documents-access-20261020';
 import {localizeDisplay} from './ru-data.mjs?v=page-content-20261017';
 import {mapAlias} from './quest-model.mjs?v=page-content-20261017';
 import {normalize} from './model.mjs?v=page-content-20261017';
-import {pageDataset} from './page-data.mjs?v=previews-20261019';
+import {pageDataset} from './page-data.mjs?v=documents-access-20261020';
 import {findBoss,bossSpawns,bossHealth,relatedBosses} from './boss-model.mjs?v=page-content-20261017';
 
 const params=pageParams();

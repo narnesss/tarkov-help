@@ -14,7 +14,7 @@ export async function contentBundleResponse(name,signal,request=globalThis.fetch
  return backendResponse('/api/content/bundle/'+name+(query.size?'?'+query:''),signal,request);
 }
 export async function contentViewResponse(path,options,signal,request=globalThis.fetch){
- if(!/^data\/guide\/(?:(?:quests|items|reference)-(?:pve|regular)|bosses|quest-map-index)\.json$/.test(path))return null;
+ if(path!=='data/maps.json'&&!/^data\/guide\/(?:(?:quests|items|reference)-(?:pve|regular)|bosses|quest-map-index)\.json$/.test(path))return null;
  return backendResponse('/api/content/data/'+path.slice(5)+'?'+new URLSearchParams(options),signal,request);
 }
 export async function contentResponse(value,signal,request=globalThis.fetch){

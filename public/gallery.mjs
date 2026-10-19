@@ -1,5 +1,5 @@
 import {publicAttribution} from './public-links.mjs?v=page-content-20261017';
-import {el,action,image,external,safeURL} from './guide-common.mjs?v=previews-20261019';
+import {el,action,image,external,safeURL} from './guide-common.mjs?v=documents-access-20261020';
 let dialog,entries=[],position=0,previousFocus;
 function prepare(){
  if(dialog)return;

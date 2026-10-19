@@ -1,4 +1,4 @@
-import {el, action} from './guide-common.mjs?v=previews-20261019';
+import {el, action} from './guide-common.mjs?v=documents-access-20261020';
 import {objectiveGroups, objectiveWindow} from './quest-workspace-model.mjs?v=page-content-20261017';
 
 /** All goals stay in source order; the contents only scroll to a goal. */

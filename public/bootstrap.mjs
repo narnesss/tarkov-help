@@ -13,7 +13,7 @@ const entry = document.body.dataset.page;
 try {
   const initializing=profileStore.initialize(runtime);
   if(['quests','raid','reference'].includes(entry)){
-    await import('./page-data-preload.mjs?v=previews-20261019').then(module=>module.preloadPageData(entry)).catch(()=>{});
+    await import('./page-data-preload.mjs?v=documents-access-20261020').then(module=>module.preloadPageData(entry)).catch(()=>{});
   }
   await initializing;
 }
@@ -35,7 +35,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 if (entry === 'index' && ['map','point'].some(key=>new URLSearchParams(location.search).has(key))) {
   location.replace(siteHref('documents.html'+location.search+location.hash));
 } else {
-const modules = {'important-items':'./important-items.mjs?v=loading-20261018',index: './home.mjs?v=previews-20261019', documents: './app.mjs?v=loading-20261018', raid: './raid.mjs?v=previews-20261019', quests: './quests.mjs?v=previews-20261019', reference: './reference.mjs?v=previews-20261019', boss: './boss.mjs?v=previews-20261019', account: './account.mjs?v=previews-20261019'};
+const modules = {'important-items':'./important-items.mjs?v=loading-20261018',index: './home.mjs?v=documents-access-20261020', documents: './app.mjs?v=documents-access-20261020', raid: './raid.mjs?v=documents-access-20261020', quests: './quests.mjs?v=documents-access-20261020', reference: './reference.mjs?v=documents-access-20261020', boss: './boss.mjs?v=documents-access-20261020', account: './account.mjs?v=documents-access-20261020'};
 const pageModule=document.querySelector('link[data-page-module]')?.getAttribute('href')||modules[entry];
 if (pageModule) await import(pageModule.startsWith('.')?pageModule:'./'+pageModule);
 

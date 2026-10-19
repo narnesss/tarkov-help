@@ -1,4 +1,4 @@
-import {el} from './guide-common.mjs?v=previews-20261019';
+import {el} from './guide-common.mjs?v=documents-access-20261020';
 import {questMapPlan,questMapURL,questMapFocusIndexes,questMapForLocation,questMapKey} from './quest-map-model.mjs?v=page-content-20261017';
 import {QUEST_MAP_READY,QUEST_MAP_FOCUS,questMapContextMatches} from './quest-map-messages.mjs?v=page-content-20261017';
 let viewSequence=0;

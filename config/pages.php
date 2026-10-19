@@ -12,7 +12,7 @@ return json_decode(<<<'JSON'
     "body_attributes": "class=\"important-items-page\" data-page=\"important-items\""
   },
   "account": {
-    "module": "account.mjs?v=previews-20261019",
+    "module": "account.mjs?v=documents-access-20261020",
     "title": "Личный кабинет — Escape from Tarkov Wiki",
     "description": "Твой прогресс квестов, убежища и достижений в PVE и PVP. Вход и регистрация.",
     "styles": ["style.css", "site-ui.css", "controls.css", "account.css", "account-responsive.css"],
@@ -43,7 +43,7 @@ return json_decode(<<<'JSON'
     "body_attributes": "class=\"legal-page\" data-page=\"privacy\""
   },
   "index": {
-    "module": "home.mjs?v=previews-20261019",
+    "module": "home.mjs?v=documents-access-20261020",
     "title": "Escape from Tarkov Wiki — карты, квесты и справочник",
     "description": "Подготовьтесь к следующему рейду: интерактивные карты, квесты торговцев, основной сюжет, предметы и личный прогресс в PVE и PVP.",
     "styles": [
@@ -56,7 +56,7 @@ return json_decode(<<<'JSON'
     "body_attributes": "class=\"home-page\" data-page=\"index\""
   },
   "documents": {
-    "module": "app.mjs?v=loading-20261018",
+    "module": "app.mjs?v=documents-access-20261020",
     "title": "Документы — Escape from Tarkov Wiki",
     "description": "Ваш атлас документов Kord Breach: 12 локаций, фотографии мест появления, поиск и личный прогресс.",
     "styles": [
@@ -69,7 +69,7 @@ return json_decode(<<<'JSON'
     "body_attributes": "class=\"\" data-page=\"documents\""
   },
   "raid": {
-    "module": "raid.mjs?v=previews-20261019",
+    "module": "raid.mjs?v=documents-access-20261020",
     "title": "Интерактивные карты — Escape from Tarkov Wiki",
     "description": "13 интерактивных карт Таркова: контейнеры, спавны ЧВК и Диких, выходы, боссы, ключи и квестовые места.",
     "styles": [
@@ -86,7 +86,7 @@ return json_decode(<<<'JSON'
     "body_attributes": "class=\"raid-page\" data-page=\"raid\""
   },
   "quests": {
-    "module": "quests.mjs?v=previews-20261019",
+    "module": "quests.mjs?v=documents-access-20261020",
     "title": "Квесты и цепочки — Escape from Tarkov Wiki",
     "description": "Квесты Таркова по торговцам: условия открытия, цепочки заданий, цели на карте, награды и личный прогресс.",
     "styles": [
@@ -109,7 +109,7 @@ return json_decode(<<<'JSON'
     "body_attributes": "class=\"guide-page\" data-page=\"quests\""
   },
   "quest": {
-    "module": "quests.mjs?v=previews-20261019",
+    "module": "quests.mjs?v=documents-access-20261020",
     "title": "Прохождение квеста — Escape from Tarkov Wiki",
     "description": "Квесты Таркова по торговцам: условия открытия, цепочки заданий, цели на карте, награды и личный прогресс.",
     "styles": [
@@ -132,7 +132,7 @@ return json_decode(<<<'JSON'
     "body_attributes": "class=\"guide-page\" data-page=\"quests\""
   },
   "reference": {
-    "module": "reference.mjs?v=previews-20261019",
+    "module": "reference.mjs?v=documents-access-20261020",
     "title": "Справочник — Escape from Tarkov Wiki",
     "description": "Предметы, патроны, бартеры, крафты, убежище, боссы и предметы для квестов Таркова.",
     "styles": [
@@ -148,7 +148,7 @@ return json_decode(<<<'JSON'
     "body_attributes": "class=\"guide-page\" data-page=\"reference\""
   },
   "boss": {
-    "module": "boss.mjs?v=previews-20261019",
+    "module": "boss.mjs?v=documents-access-20261020",
     "title": "Боссы — Escape from Tarkov Wiki",
     "description": "Боссы Таркова: описание, здоровье по частям тела и места появления в PVP и PVE.",
     "styles": [
@@ -164,7 +164,7 @@ return json_decode(<<<'JSON'
     "body_attributes": "class=\"guide-page\" data-page=\"boss\""
   },
   "quest-map-source": {
-    "module": "quest-map-source.mjs?v=previews-20261019",
+    "module": "quest-map-source.mjs?v=documents-access-20261020",
     "title": "Карта мест выполнения квеста",
     "description": "Карта мест выполнения квеста",
     "styles": [

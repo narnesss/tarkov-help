@@ -16,10 +16,10 @@
   <link rel="stylesheet" href="readability.css?v=release-20261016">
   <link rel="stylesheet" href="site-ui.css?v=release-20261016">
   <link rel="stylesheet" href="controls.css?v=release-20261016">
-  <link rel="stylesheet" href="documents.css?v=tablet-20261017b">
+  <link rel="stylesheet" href="documents.css?v=documents-access-20261020">
   <link rel="stylesheet" href="site-responsive.css?v=desktop-20261017">
   <link rel="modulepreload" href="bootstrap.mjs?v=loading-20261018" >
-  <link rel="modulepreload" href="app.mjs?v=loading-20261018"  data-page-module >
+  <link rel="modulepreload" href="app.mjs?v=documents-access-20261020"  data-page-module >
   <link rel="modulepreload" href="profile-store.mjs?v=loading-20261018" >
   <link rel="modulepreload" href="profile-runtime.mjs?v=page-content-20261017" >
   <link rel="modulepreload" href="profile-ui.mjs?v=loading-20261018" >
@@ -27,7 +27,14 @@
   <link rel="modulepreload" href="site-routes.mjs?v=page-content-20261017" >
   <link rel="modulepreload" href="model.mjs?v=page-content-20261017" >
   <link rel="modulepreload" href="document-map.mjs?v=page-content-20261017" >
+  <link rel="modulepreload" href="guide-common.mjs?v=documents-access-20261020" >
+  <link rel="modulepreload" href="document-overlays.mjs?v=documents-access-20261020" >
   <link rel="modulepreload" href="profile-navigation.mjs?v=page-content-20261017" >
+  <link rel="modulepreload" href="ru-data.mjs?v=page-content-20261017" >
+  <link rel="modulepreload" href="public-links.mjs?v=page-content-20261017" >
+  <link rel="modulepreload" href="content-client.mjs?v=documents-access-20261020" >
+  <link rel="modulepreload" href="json-preload.mjs?v=page-content-20261017" >
+  <link rel="modulepreload" href="public-content-cache.mjs?v=loading-20261018" >
   <meta name="wiki-routing" content="pages">
 <style>
 body[data-content-state="loading"] > :is(main,#app-layout,#raid-layout,.site-legal-footer),
@@ -45,6 +52,7 @@ body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
 <div class="page-boot-status" id="page-boot-status" role="status" aria-live="polite">Загрузка страницы…</div>
 <noscript>Для отображения данных включите JavaScript.</noscript>
 <svg class="svg-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
     <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
@@ -119,6 +127,13 @@ body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
           </div>
           <label class="alt-toggle" id="alt-group" hidden><svg><use href="#i-layers"/></svg><span>Отметки на схемах<small>Связь с основной точкой</small></span><input type="checkbox" id="show-alts" checked></label>
           <label class="document-size-label" for="document-icon-size">Размер значков <span><output id="document-icon-value" for="document-icon-size">24</output> px</span><input id="document-icon-size" type="range" min="16" max="36" step="2" value="24"></label>
+          <section class="document-exit-controls" aria-label="Выходы ЧВК">
+            <label><input type="checkbox" id="document-show-exits" checked> Показывать выходы ЧВК <span aria-hidden="true">↗</span></label>
+            <label for="document-exit-mode">Режим выходов</label><select id="document-exit-mode"><option value="pve">PvE</option><option value="regular">PvP</option></select>
+            <p id="document-overlay-status" role="status">Выходы и ключи загружаются отдельно от документов.</p><button type="button" id="document-overlay-retry" hidden>Повторить загрузку</button>
+            <p>↗ — выход ЧВК или общий выход; замок у документа — для доступа нужен ключ. Нажмите на выход, чтобы посмотреть условия.</p>
+          </section>
+          <section class="document-required-keys" aria-labelledby="document-keys-title"><h2 id="document-keys-title">Ключи для документов</h2><p id="document-keys-status">Выберите документы на этой локации.</p><ul id="document-keys-list"></ul></section>
           <button class="reset-filter" id="reset-filters">Сбросить фильтры</button>
         </section>
         <section id="points-panel" role="tabpanel" aria-labelledby="points-tab" hidden><div class="results-heading"><span id="results-caption">Точки на локации</span><span id="results-total"></span></div><div id="point-list" class="point-list"></div></section>
@@ -150,7 +165,7 @@ body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
         <div class="detail-top"><span class="eyebrow" id="detail-number">ТОЧКА 01</span><button class="icon-button" id="detail-close" aria-label="Закрыть документ"><svg><use href="#i-close"/></svg></button></div>
         <div class="detail-type"><img id="detail-icon" alt=""><div><span>СЕКРЕТНЫЙ ДОКУМЕНТ</span><h2 id="detail-type-name"></h2></div></div>
         <div class="detail-photo"><button class="photo-open" id="photo-open" aria-label="Открыть фотографию на весь экран"><img id="detail-photo" alt=""><span class="photo-expand"><svg><use href="#i-expand"/></svg></span></button><div class="photo-navigation" id="photo-navigation" hidden><button id="photo-prev" aria-label="Предыдущее фото">‹</button><span id="photo-count"></span><button id="photo-next" aria-label="Следующее фото">›</button></div><span id="photo-error" class="photo-error" hidden>Не удалось загрузить фото</span></div>
-        <div class="detail-body"><div class="detail-location"><svg><use href="#i-pin"/></svg><span id="detail-location"></span><span id="detail-floor"></span></div><h3 id="detail-caption"></h3><p class="spawn-note">Место возможного появления. Наличие документа в конкретном рейде не гарантировано.</p><button id="found-button" class="button primary found-button"><svg><use href="#i-check"/></svg><span>Отметить найденным</span></button><div class="detail-actions"><button class="button" id="center-button"><svg><use href="#i-fit"/></svg>На карте</button><button class="button" id="copy-button"><svg><use href="#i-link"/></svg>Ссылка</button></div><label class="note-label" for="point-note">Личная заметка <span id="note-state"></span></label><textarea id="point-note" rows="3" maxlength="2000" placeholder="Например: нужна ключ-карта…"></textarea></div>
+        <div class="detail-body"><div class="detail-location"><svg><use href="#i-pin"/></svg><span id="detail-location"></span><span id="detail-floor"></span></div><div id="detail-access" class="document-access" hidden></div><h3 id="detail-caption"></h3><p class="spawn-note">Место возможного появления. Наличие документа в конкретном рейде не гарантировано.</p><button id="found-button" class="button primary found-button"><svg><use href="#i-check"/></svg><span>Отметить найденным</span></button><div class="detail-actions"><button class="button" id="center-button"><svg><use href="#i-fit"/></svg>На карте</button><button class="button" id="copy-button"><svg><use href="#i-link"/></svg>Ссылка</button></div><label class="note-label" for="point-note">Личная заметка <span id="note-state"></span></label><textarea id="point-note" rows="3" maxlength="2000" placeholder="Например: нужна ключ-карта…"></textarea></div>
         <div class="detail-bottom"><button id="prev-point" class="icon-button" aria-label="Предыдущая точка"><svg class="flip"><use href="#i-arrow"/></svg></button><span id="detail-position"></span><button id="next-point" class="icon-button" aria-label="Следующая точка"><svg><use href="#i-arrow"/></svg></button></div>
       </aside>
     </main>
@@ -163,6 +178,7 @@ body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
   <dialog class="dialog about-dialog" id="about-dialog"><div class="dialog-heading"><div><div class="eyebrow">О ПРОЕКТЕ</div><h2>Всё нужное — на карте.</h2></div><button class="icon-button dialog-close" aria-label="Закрыть"><svg><use href="#i-close"/></svg></button></div><p>Escape from Tarkov Wiki — личный справочник мест появления секретных документов для Kord Breach в Escape from Tarkov.</p><div class="about-stats"><div><strong id="about-maps">—</strong><span>локаций</span></div><div><strong id="about-spawns">—</strong><span>точек</span></div><div><strong id="about-document-types">—</strong><span>типов документов</span></div></div><h3>Как пользоваться</h3><p>Выберите локацию и нужный тип документа. Нажмите на цветную метку, чтобы увидеть точное место на фотографии. Отмечайте найденные точки, добавляйте заметки и переключайтесь на «Осталось».</p><p>Колесо мыши или щипок меняют масштаб. Карту можно перетаскивать. Кнопка ⌖ возвращает общий вид. Уровни схемы переключаются в фильтрах и отображаются на одном плане. Точный этаж здания указан в описании точки.</p><h3>Справочные материалы</h3><ul class="source-list"><li><a href="https://kord-map-mtdv.ru/" target="_blank" rel="noopener noreferrer">Kord Breach — источник точек и схем ↗</a></li><li><a href="https://tarkov.help/ru" target="_blank" rel="noopener noreferrer">Tarkov.help — прохождения ↗</a></li><li><a href="https://escapefromtarkov.fandom.com/ru/wiki/Escape_from_Tarkov_Wiki" target="_blank" rel="noopener noreferrer">Русская Wiki ↗</a></li></ul><p class="muted">Авторы материалов: Metadvij community, Kalle Leskinen, Shebuka и RE3MR. Игровые материалы — Battlestate Games. Карты сохранены с исходными правами; CC BY-NC-SA 4.0.</p><div class="source-version" id="source-version"></div><p class="muted">Данные соответствуют указанной дате. Подложки могут содержать обозначения, не относящиеся к документам. Это неофициальный некоммерческий справочник.</p></dialog>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
   <div class="boot-error" id="boot-error" hidden><h1>Не удалось загрузить карту</h1><p>Проверьте соединение и обновите страницу.</p><button class="button primary" onclick="location.reload()">Попробовать снова</button></div>
-  <script type="module" src="bootstrap.mjs?v=previews-20261019"></script>
+  <script type="module" src="bootstrap.mjs?v=documents-access-20261020"></script>
+<dialog id="document-exit-dialog" class="dialog document-exit-dialog" aria-labelledby="document-exit-title"><div class="dialog-heading"><h2 id="document-exit-title">Выход ЧВК</h2><button type="button" class="icon-button" id="document-exit-close" aria-label="Закрыть информацию о выходе">×</button></div><ul id="document-exit-conditions"></ul><p>Наличие метки не гарантирует доступность выхода в текущем рейде.</p></dialog>
 </body>
 </html>

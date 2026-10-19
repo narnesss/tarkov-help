@@ -4,6 +4,9 @@ const storePersonal=(key,value)=>{if(!writePersonal(key,value))throw new Error('
 import { STORAGE_KEY, FLOOR_NAMES, filterSpawns, sanitizeProgress, fitTransform, zoomTransform, hasCoordinates } from './model.mjs?v=page-content-20261017';
 import {documentViewport,documentPointPosition,documentLevelSvg,documentFloors} from './document-map.mjs?v=page-content-20261017';
 
+import {image} from './guide-common.mjs?v=documents-access-20261020';
+import {accessLabel,visibleDocumentExits,createDocumentOverlayLoader} from './document-overlays.mjs?v=documents-access-20261020';
+
 const $ = id => document.getElementById(id);
 const compactViewport = () => innerWidth <= 1200;
 const documentIconSize = value => typeof value === 'number' && Number.isFinite(value)
@@ -38,7 +41,7 @@ function safeRead(key) {
   return readPersonal(key);
 }
 async function fetchData(path) {
-  const {contentResponse}=await import('./content-client.mjs?v=loading-20261018');
+  const {contentResponse}=await import('./content-client.mjs?v=documents-access-20261020');
   const content=await contentResponse(path);if(content)return content.json();
   const response = await fetch(path);
   if (!response.ok) throw new Error('Не удалось загрузить ' + path);
@@ -75,6 +78,32 @@ async function start() {
   let mapWidth = 2600;
   let mapHeight = 1463;
   let markers = [];
+  let overlay=null,overlayMap='',overlayMode=params.get('mode')==='regular'?'regular':params.get('mode')==='pve'?'pve':prefs.exitMode==='regular'?'regular':'pve';
+  const overlayLoader=createDocumentOverlayLoader();
+  const showExits=$('document-show-exits');showExits.checked=prefs.showExits!==false;
+  $('document-exit-mode').value=overlayMode;
+  async function loadOverlay(){
+    overlay=null;overlayMap=state.mapId;const map=overlayMap,mode=overlayMode;
+    $('document-overlay-status').textContent='Загрузка выходов и ключей…';$('document-overlay-retry').hidden=true;render();
+    try{const data=await overlayLoader(map,mode);if(!data||state.mapId!==map||overlayMode!==mode)return;
+      overlay=data;$('document-overlay-status').textContent=data.available===false?'Данные выходов пока недоступны.':data.exits.length+' выходов ЧВК. Условия эвакуации уточняйте в рейде.';render();
+    }catch{if(state.mapId!==map||overlayMode!==mode)return;$('document-overlay-status').textContent='Не удалось загрузить выходы и ключи.';$('document-overlay-retry').hidden=false;}
+  }
+  showExits.addEventListener('change',render);
+  $('document-exit-mode').addEventListener('change',()=>{overlayMode=$('document-exit-mode').value;setUrl();loadOverlay();});
+  $('document-overlay-retry').addEventListener('click',loadOverlay);
+  $('document-exit-close').addEventListener('click',()=>$('document-exit-dialog').close());
+  let exitFocus;
+  $('document-exit-dialog').addEventListener('close',()=>{if(exitFocus?.isConnected)exitFocus.focus({preventScroll:true});});
+  function lockBadge(access){const badge=node('span','document-lock');badge.append(icon('lock'));badge.title=accessLabel(access);badge.setAttribute('aria-hidden','true');return badge;}
+  function renderAccess(spawn){const box=$('detail-access'),access=overlay?.access?.[spawn.id];box.replaceChildren();box.hidden=!access?.requiresKey;
+    if(box.hidden)return;box.append(node('strong','',accessLabel(access)));
+    for(const key of access.keys||[]){if(!key.id)continue;const link=node('a','',key.name||'Ключ');link.href=siteHref('reference.html?tab=items&item='+encodeURIComponent(key.id)+'&mode='+overlayMode);box.append(link);}
+  }
+  function openExit(exit,button){exitFocus=button;$('document-exit-title').textContent=exit.name;
+    $('document-exit-conditions').replaceChildren(...(exit.conditions?.length?exit.conditions:['Особые условия в источнике не указаны. Проверьте доступность выхода в рейде.']).map(text=>node('li','',text)));
+    $('document-exit-dialog').showModal();
+  }
   let visible = [];
   let results = [];
   let lastFocus = null;
@@ -111,7 +140,7 @@ async function start() {
     }
   }
   function persistPrefs() {
-    try { storePersonal(prefsKey, { map: state.mapId, showAlts: state.showAlts, query:state.query, status:state.status, floor:state.floor, allMaps:state.allMaps, types:[...state.types], tab:state.tab, iconSize:state.iconSize, artworkVersion:2 }); } catch { /* Progress export remains available. */ }
+    try { storePersonal(prefsKey, { map: state.mapId, showAlts: state.showAlts, query:state.query, status:state.status, floor:state.floor, allMaps:state.allMaps, types:[...state.types], tab:state.tab, iconSize:state.iconSize, artworkVersion:2,showExits:showExits.checked,exitMode:overlayMode }); } catch { /* Progress export remains available. */ }
   }
   function applyIconSize() {
     $('document-icon-size').value = state.iconSize;
@@ -122,6 +151,7 @@ async function start() {
     const url = new URL(usesPageRoutes()?'documents.html':location.href,location.origin+'/');
     url.search = '';
     url.searchParams.set('map', state.mapId);
+    url.searchParams.set('mode',overlayMode);
     if (state.selected) url.searchParams.set('point', state.selected.id);
     history.replaceState(null, '', canonicalURL(url));
   }
@@ -230,6 +260,7 @@ async function start() {
     render();
     persistPrefs();
     if (updateUrl) setUrl();
+    loadOverlay();
   }
 
   function render() {
@@ -260,6 +291,19 @@ async function start() {
     renderProgress();
     updateDetailStatus();
     updatePhotoNavigation();
+    if(state.selected)renderAccess(state.selected);
+    renderRequiredKeys();
+  }
+
+  function renderRequiredKeys(){
+    const groups=new Map();let locked=0;
+    for(const point of results.filter(p=>p.map===state.mapId)){const access=overlay?.access?.[point.id];if(!access?.requiresKey)continue;locked++;
+      for(const key of access.keys||[]){const id=key.id||key.name;if(!groups.has(id))groups.set(id,{...key,points:[]});groups.get(id).points.push(point);}}
+    $('document-keys-status').textContent=overlay?(locked?'Документов за закрытыми дверями: '+locked+'. Список учитывает текущие фильтры.':'Для выбранных документов обязательные ключи не указаны.'):'Список ключей загружается…';
+    $('document-keys-list').replaceChildren(...[...groups.values()].map(key=>{const li=node('li'),name=node(key.id?'a':'strong','document-key-card',key.name);
+      if(key.iconLink){const img=image(key.iconLink,'','document-key-icon');img.width=48;img.height=48;name.prepend(img);}else{name.prepend(icon('lock'));}
+      if(key.id)name.href=siteHref('reference.html?tab=items&item='+encodeURIComponent(key.id)+'&mode='+overlayMode);li.append(name);
+      for(const point of key.points){const b=node('button','document-key-point',number(point)+'. '+point.caption);b.type='button';b.addEventListener('click',()=>{setSidebar(false);selectPoint(point);});li.append(b);}return li;}));
   }
 
   function renderList() {
@@ -274,6 +318,7 @@ async function start() {
       const text = node('span', 'card-text');
       text.append(node('strong', '', spawn.caption || doc.name), node('small', '', doc.name));
       if (state.allMaps) text.append(node('span', 'card-map', mapById.get(spawn.map).name));
+      const access=overlay?.access?.[spawn.id];if(access?.requiresKey){text.append(lockBadge(access));button.setAttribute('aria-label',button.getAttribute('aria-label')+'. '+accessLabel(access));}
       button.append(node('span', 'list-number', state.found.has(spawn.id) ? '✓' : number(spawn)), text);
       button.addEventListener('click', () => { setSidebar(false); selectPoint(spawn); });
       fragment.append(button);
@@ -300,8 +345,9 @@ async function start() {
         button.classList.toggle('found', state.found.has(spawn.id));
         button.classList.toggle('active', state.selected?.id === spawn.id);
         button.dataset.tip = `${doc.name} · ${spawn.caption}`;
+        const access=overlay?.access?.[spawn.id];if(access?.requiresKey){button.append(lockBadge(access));button.dataset.tip+=' · '+accessLabel(access);}
         button.dataset.spawn = spawn.id;
-        button.setAttribute('aria-label', `Точка ${number(spawn)}${alternate ? ', на схеме' : ''}: ${doc.name}. ${spawn.caption}`);
+        button.setAttribute('aria-label', `Точка ${number(spawn)}${alternate ? ', на схеме' : ''}: ${doc.name}. ${spawn.caption}${accessLabel(overlay?.access?.[spawn.id])?'. '+accessLabel(overlay.access[spawn.id]):''}`);
         button.addEventListener('click', e => { e.stopPropagation(); selectPoint(spawn, false); });
         button.addEventListener('pointerenter', () => drawLink(spawn));
         button.addEventListener('pointerleave', () => drawLink(state.selected));
@@ -310,6 +356,11 @@ async function start() {
         fragment.append(button);
         markers.push({ element: button, spawn, ...documentPointPosition(spawn,mapById.get(spawn.map),alternate) });
       }
+    }
+    for(const exit of visibleDocumentExits(overlay,state.mapId,overlayMode,state.floor,showExits.checked)){
+      const button=node('button','marker document-exit','↗');button.type='button';button.title=exit.name;
+      button.setAttribute('aria-label','Выход ЧВК: '+exit.name);button.addEventListener('click',event=>{event.stopPropagation();openExit(exit,button);});
+      fragment.append(button);markers.push({element:button,spawn:exit,x:exit.x,y:exit.y});
     }
     $('marker-layer').replaceChildren(fragment);
     applyView();

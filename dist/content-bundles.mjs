@@ -1,4 +1,4 @@
-import {contentBundleResponse} from './content-client.mjs?v=loading-20261018';
+import {contentBundleResponse} from './content-client.mjs?v=documents-access-20261020';
 
 export const PUBLIC_BUNDLES={
   'quest-ui':[['guide/quest-choices.json',{}],['guide/quest-map-index.json'],['guide/quest-reward-support.json',{}],['guide/ticket-map.json'],['guide/quest-conditions.json',{quests:{}}]],
