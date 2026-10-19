@@ -267,4 +267,39 @@ final class ContentUpdatesTest extends TestCase
         $this->assertSame(105,DB::table('wiki_sources')->where('dataset_id',$other->id)->count());
         $this->assertSame($old,DB::table('wiki_map_points')->whereIn('id',array_keys($old))->pluck('location_id','id')->all());
     }
+    private function exitCorrectionFixtures(): array
+    {
+        $this->fixtures();$update=json_decode(file_get_contents(database_path('content-updates/20261020-map-exits.json')),true,flags:JSON_THROW_ON_ERROR);
+        $maps=ContentDataset::where('path','maps.json')->firstOrFail();$data=$maps->content();
+        foreach(['shoreline','lighthouse','streets-of-tarkov'] as $map)$data[]=['id'=>$map,'name'=>$map,'file'=>'map.webp','width'=>1000,'height'=>1000];
+        $maps->setContent($data);$maps->save();
+        foreach($update['datasets'] as $path=>$patch){$raw=json_decode(gzdecode(file_get_contents(public_path('data/'.$path.'.gz'))),true,flags:JSON_THROW_ON_ERROR);
+            $ids=array_column($patch['pointChanges'],'id');$kept=false;$raw['pois']=array_values(array_filter($raw['pois'],function($point)use($ids,&$kept){if(in_array($point['id'],$ids,true))return true;if(!$kept){$kept=true;return true;}return false;}));
+            $this->dataset($path,$raw);
+        }app(WikiImporter::class)->rebuild();return $update;
+    }
+    public function test_exit_corrections_preserve_ids_coordinates_progress_and_update_public_cache(): void
+    {
+        $update=$this->exitCorrectionFixtures();$before=[];foreach(ContentDataset::all() as $row)$before[$row->path]=$row->content();
+        $ids=DB::table('wiki_map_points')->orderBy('id')->pluck('external_id','id')->all();$positions=DB::table('wiki_point_world_positions')->select('id','point_id','world_x','world_y','world_z','order_index')->orderBy('id')->get()->toJson();$progress=DB::table('user_state')->get()->toJson();
+        $url='/api/content/data/raid/pve/shoreline.json';$revision=$this->getJson($url)->assertOk()->headers->get('X-Wiki-Content-Revision');
+        $this->assertTrue(app(ContentUpdates::class)->apply($update)['applied']);$this->assertFalse(app(ContentUpdates::class)->apply($update)['applied']);
+        foreach($update['datasets'] as $path=>$patch){$row=ContentDataset::where('path',$path)->firstOrFail();$after=$row->content();$expected=$before[$path];
+            foreach($patch['pointChanges'] as $change){foreach($expected['pois'] as &$point){if($point['id']===$change['id'])$point=[...$point,...$change['fields']];}unset($point);}
+            $this->assertSame($expected,$after);
+        }
+        $this->assertSame($ids,DB::table('wiki_map_points')->orderBy('id')->pluck('external_id','id')->all());
+        $this->assertSame($positions,DB::table('wiki_point_world_positions')->select('id','point_id','world_x','world_y','world_z','order_index')->orderBy('id')->get()->toJson());$this->assertSame($progress,DB::table('user_state')->get()->toJson());
+        $response=$this->getJson($url)->assertOk();$this->assertNotSame($revision,$response->headers->get('X-Wiki-Content-Revision'));
+        $names=array_column($response->json('pois'),'name');$this->assertContains('Тропа альпиниста',$names);foreach(['Спуск со скалы','Проход через скалы','Временный КПП'] as $name)$this->assertNotContains($name,$names);
+    }
+    public function test_exit_patch_rejects_changed_editor_record_without_partial_writes(): void
+    {
+        $update=$this->exitCorrectionFixtures();$path=array_key_first($update['datasets']);$row=ContentDataset::where('path',$path)->firstOrFail();$data=$row->content();
+        foreach($data['pois'] as &$point){if($point['id']===$update['datasets'][$path]['pointChanges'][0]['id'])$point['name']='Редакторское исправление';}unset($point);$row->setContent($data);$row->save();
+        $refs=ContentDataset::orderBy('path')->pluck('payload')->all();
+        try{app(ContentUpdates::class)->apply($update);$this->fail('Изменённая запись должна остановить пакет');}catch(\RuntimeException $error){$this->assertStringContainsString('Точка уже изменена',$error->getMessage());}
+        $this->assertSame($refs,ContentDataset::orderBy('path')->pluck('payload')->all());$this->assertDatabaseMissing('wiki_projection_states',['owner_type'=>'content-update','owner_id'=>$update['id']]);
+    }
+
 }

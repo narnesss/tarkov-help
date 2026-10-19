@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 1,
+  "id": 2026102001,
+  "description": "Уточнены выходы Берега, активирован автомобильный выход Маяка и исправлен уровень Блокпоста Диких. ID, координаты и связи сохраняются.",
+  "verifiedDate": "2026-10-20",
+  "verification": "Исправления владельца сайта; существующие координаты сохранены. Для каждой записи проверяются прежнее имя и позиция.",
+  "datasets": {
+    "raid/pve/shoreline.json": {
+      "pointChanges": [
+        {
+          "id": "fd880bdc668a7a177b5f2eedde4b40a9661e68b1",
+          "expected": {
+            "name": "Проход через скалы",
+            "position": {
+              "x": -200.8,
+              "y": -13.35,
+              "z": -358.34
+            }
+          },
+          "fields": {
+            "cmsArchived": true,
+            "archiveReason": "Устаревшая метка рядом с действующей Тропой альпиниста; сохранена в архиве."
+          }
+        },
+        {
+          "id": "eeddbe9a8476361059a69eab4c0deeadac93ab5c",
+          "expected": {
+            "name": "Спуск со скалы",
+            "position": {
+              "x": -196.08,
+              "y": -10.27,
+              "z": -360.04
+            }
+          },
+          "fields": {
+            "cmsArchived": true,
+            "archiveReason": "Устаревшая метка рядом с действующей Тропой альпиниста; сохранена в архиве."
+          }
+        },
+        {
+          "id": "818e7812793c8e47a09c62f670ae189c8bd61901",
+          "expected": {
+            "name": "Временный КПП",
+            "position": {
+              "x": -855.85,
+              "y": -59.44,
+              "z": 476.82
+            }
+          },
+          "fields": {
+            "cmsArchived": true,
+            "archiveReason": "Объект не является действующим выходом; исправление владельца сайта."
+          }
+        },
+        {
+          "id": "efc0e77c1e0a83ff35aa27d8a091e31e770338ec",
+          "expected": {
+            "name": "Тропа альпиниста",
+            "position": {
+              "x": -214.3,
+              "y": -1,
+              "z": -361.8
+            }
+          },
+          "fields": {
+            "floorOverride": "Ground_Level"
+          }
+        }
+      ]
+    },
+    "raid/pve/lighthouse.json": {
+      "pointChanges": [
+        {
+          "id": "39a8452ee1c2a3b68737781843c98e69ed1a59aa",
+          "expected": {
+            "name": "Road to Military Base V-Ex",
+            "position": {
+              "x": -328.951263,
+              "y": 16.73,
+              "z": -784.3581
+            }
+          },
+          "fields": {
+            "name": "А-Выход дорога к военной базе",
+            "hiddenByDefault": false,
+            "sourceStatus": "editor"
+          }
+        }
+      ]
+    },
+    "raid/pve/streets-of-tarkov.json": {
+      "pointChanges": [
+        {
+          "id": "f44cf9cd1192e55035944c19fb2745c9c8c58692",
+          "expected": {
+            "name": "Блокпост Диких",
+            "position": {
+              "x": 211.34,
+              "y": -8.16,
+              "z": 82.31
+            }
+          },
+          "fields": {
+            "floorOverride": "Ground_Level"
+          }
+        }
+      ]
+    },
+    "raid/shoreline.json": {
+      "pointChanges": [
+        {
+          "id": "fd880bdc668a7a177b5f2eedde4b40a9661e68b1",
+          "expected": {
+            "name": "Проход через скалы",
+            "position": {
+              "x": -200.8,
+              "y": -13.35,
+              "z": -358.34
+            }
+          },
+          "fields": {
+            "cmsArchived": true,
+            "archiveReason": "Устаревшая метка рядом с действующей Тропой альпиниста; сохранена в архиве."
+          }
+        },
+        {
+          "id": "eeddbe9a8476361059a69eab4c0deeadac93ab5c",
+          "expected": {
+            "name": "Спуск со скалы",
+            "position": {
+              "x": -196.08,
+              "y": -10.27,
+              "z": -360.04
+            }
+          },
+          "fields": {
+            "cmsArchived": true,
+            "archiveReason": "Устаревшая метка рядом с действующей Тропой альпиниста; сохранена в архиве."
+          }
+        },
+        {
+          "id": "818e7812793c8e47a09c62f670ae189c8bd61901",
+          "expected": {
+            "name": "Временный КПП",
+            "position": {
+              "x": -855.85,
+              "y": -59.44,
+              "z": 476.82
+            }
+          },
+          "fields": {
+            "cmsArchived": true,
+            "archiveReason": "Объект не является действующим выходом; исправление владельца сайта."
+          }
+        },
+        {
+          "id": "efc0e77c1e0a83ff35aa27d8a091e31e770338ec",
+          "expected": {
+            "name": "Тропа альпиниста",
+            "position": {
+              "x": -214.3,
+              "y": -1,
+              "z": -361.8
+            }
+          },
+          "fields": {
+            "floorOverride": "Ground_Level"
+          }
+        }
+      ]
+    },
+    "raid/lighthouse.json": {
+      "pointChanges": [
+        {
+          "id": "39a8452ee1c2a3b68737781843c98e69ed1a59aa",
+          "expected": {
+            "name": "Road to Military Base V-Ex",
+            "position": {
+              "x": -328.951263,
+              "y": 16.73,
+              "z": -784.3581
+            }
+          },
+          "fields": {
+            "name": "А-Выход дорога к военной базе",
+            "hiddenByDefault": false,
+            "sourceStatus": "editor"
+          }
+        }
+      ]
+    },
+    "raid/streets-of-tarkov.json": {
+      "pointChanges": [
+        {
+          "id": "f44cf9cd1192e55035944c19fb2745c9c8c58692",
+          "expected": {
+            "name": "Блокпост Диких",
+            "position": {
+              "x": 211.34,
+              "y": -8.16,
+              "z": 82.31
+            }
+          },
+          "fields": {
+            "floorOverride": "Ground_Level"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -47,9 +47,16 @@ final readonly class ContentUpdates
                         if(!in_array($field,['repository','commit','importedAt','spawnCount','mapCount','retiredPointIds','authors','license'],true)){throw new RuntimeException('Недопустимое поле источника.');}
                         $data[$field]=$value;
                     }
-                }elseif(isset($patch['archivePoints'])||isset($patch['pointReviews'])){
+                }elseif(isset($patch['archivePoints'])||isset($patch['pointReviews'])||isset($patch['pointChanges'])){
                     $expected=preg_replace('~^raid/(?:pve/)?|\.json$~','',$path);
                     if(($data['mapId']??null)!==$expected){throw new RuntimeException('Набор принадлежит другой карте.');}
+                    foreach($patch['pointChanges']??[] as $change){$found=false;
+                        if(empty($change['expected'])||array_diff(array_keys($change['fields']??[]),['name','cmsArchived','archiveReason','hiddenByDefault','sourceStatus','floorOverride'])){throw new RuntimeException('Недопустимые поля исправления точки.');}
+                        foreach($data['pois'] as &$point){if($point['id']!==$change['id']){continue;}$found=true;
+                            foreach($change['expected'] as $field=>$value){if(($point[$field]??null)!=$value){throw new RuntimeException('Точка уже изменена: '.$change['id']);}}
+                            $point=[...$point,...$change['fields']];$pointIds[]=$point['id'];
+                        }unset($point);if(!$found){throw new RuntimeException('Исправляемая точка отсутствует: '.$change['id']);}
+                    }
                     foreach($patch['archivePoints']??[] as $id){$found=false;foreach($data['pois'] as &$point){if($point['id']===$id){$point['cmsArchived']=true;$point['archiveReason']=$patch['reason'];$found=true;$pointIds[]=$id;}}unset($point);
                         if(!$found){throw new RuntimeException('Точка отсутствует: '.$id);}}
                     foreach($patch['pointReviews']??[] as $review){$found=false;foreach($data['pois'] as &$point){if($point['id']!==$review['id']){continue;}$found=true;
