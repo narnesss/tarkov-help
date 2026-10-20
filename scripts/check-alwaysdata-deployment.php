@@ -10,6 +10,10 @@ if (!is_file($package.'/public/admin-responsive.css')
     || hash_file('sha256',$package.'/public/admin-responsive.css') !== hash_file('sha256',$root.'/public/admin-responsive.css')) {
     throw new RuntimeException('Мобильные стили Orchid не попали в API-пакет.');
 }
+if (!is_file($package.'/public/admin-document-map.css')
+    || hash_file('sha256',$package.'/public/admin-document-map.css') !== hash_file('sha256',$root.'/public/admin-document-map.css')) {
+    throw new RuntimeException('Стили редактора карт документов не попали в API-пакет.');
+}
 foreach (['*.mjs', 'vendor/*.mjs'] as $pattern) {
     foreach (glob($root.'/public/'.$pattern) as $source) {
         $target=$package.'/public/'.substr($source,strlen($root.'/public/'));

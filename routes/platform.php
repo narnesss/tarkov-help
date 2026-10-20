@@ -5,6 +5,11 @@ use App\Orchid\Screens\{QuestListScreen, QuestEditScreen, QuestFieldsScreen, Dat
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(\App\Http\Middleware\ProtectAdminRoute::class)->group(function (): void {
+Route::get('document-maps/data',[\App\Http\Controllers\DocumentMapEditorController::class,'data'])->name('platform.document-maps.data');
+Route::get('document-maps/audit',[\App\Http\Controllers\DocumentMapEditorController::class,'audit'])->name('platform.document-maps.audit');
+Route::post('document-maps/save',[\App\Http\Controllers\DocumentMapEditorController::class,'save'])->name('platform.document-maps.save');
+Route::get('document-maps/artwork',[\App\Http\Controllers\DocumentMapEditorController::class,'artwork'])->name('platform.document-maps.artwork');
+Route::screen('document-maps',\App\Orchid\Screens\DocumentMapScreen::class)->name('platform.document-maps');
 Route::screen('players/create',\App\Orchid\Screens\PlayerEditScreen::class)->name('platform.players.create');
 Route::screen('players/{player}/edit',\App\Orchid\Screens\PlayerEditScreen::class)->where('player','[a-f0-9]{32}')->name('platform.players.edit');
 Route::screen('players',\App\Orchid\Screens\PlayerListScreen::class)->name('platform.players');

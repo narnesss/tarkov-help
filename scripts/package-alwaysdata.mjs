@@ -16,7 +16,7 @@ const copy = name => {
 for (const name of ['app', 'config', 'routes', 'src', 'resources/views', 'database/migrations', 'database/content-updates',
   'bootstrap/app.php', 'bootstrap/providers.php', 'public/index.php', 'public/.htaccess',
   'public/admin-user-validation.mjs', 'public/admin-content-validation.mjs', 'public/password-policy.mjs',
-  'public/admin-responsive.css',
+  'public/admin-responsive.css', 'public/admin-document-map.css',
   'artisan', 'composer.json', 'composer.lock', 'deployment/alwaysdata']) copy(name);
 // PHP собирает граф preload из тех же публичных модулей; карты и изображения не копируются.
 for (const dir of ['public', 'public/vendor']) for (const name of fs.readdirSync(path.join(root, dir))) {
