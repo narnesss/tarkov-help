@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Guard Orchid создаётся уже в конструкторе LoginController, до route middleware.
         $middleware->prepend(\App\Http\Middleware\AdminSession::class);
         $middleware->append(\App\Http\Middleware\TrackPlayerActivity::class);
+        $middleware->append(\App\Http\Middleware\DeploymentRevision::class);
         // API валидирует исходный JSON сам; не загружаем большой body ради trim/null.
         $middleware->remove([\Illuminate\Foundation\Http\Middleware\TrimStrings::class, \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class]);
     })

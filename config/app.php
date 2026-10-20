@@ -15,6 +15,9 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    // Фиксируется optimize внутри каталога релиза до переключения web root.
+    'release' => is_file(base_path('REVISION')) ? trim(file_get_contents(base_path('REVISION'))) : null,
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

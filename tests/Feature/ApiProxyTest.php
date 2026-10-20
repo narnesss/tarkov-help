@@ -55,7 +55,13 @@ final class ApiProxyTest extends TestCase
 
     public function test_public_health_does_not_require_proxy_secret_or_create_a_session(): void
     {
-        $this->get('/up')->assertOk();
+        $release = str_repeat('a', 40).'-123-1';
+        config(['app.release' => $release]);
+        $response = $this->get('/up')->assertOk()->assertHeader('X-Wiki-Release', $release);
+        $this->assertTrue($response->headers->hasCacheControlDirective('no-store'));
+        $this->getJson('/api/session')->assertForbidden()->assertHeaderMissing('X-Wiki-Release');
+        config(['app.release' => "invalid\r\nInjected: value"]);
+        $this->get('/up')->assertOk()->assertHeaderMissing('X-Wiki-Release');
         $this->assertSame(0, DB::table('users')->count());
     }
 }

@@ -83,6 +83,30 @@ $base = dirname($database).'/host';
 mkdir($base.'/tarkov-api/public', 0700, true);
 mkdir($base.'/tarkov-api/storage/logs', 0700, true);
 mkdir($base.'/tarkov-incoming', 0700, true);
+mkdir($base.'/tarkov-shared', 0700, true);
+mkdir($base.'/bin', 0700, true);
+file_put_contents($base.'/tarkov-shared/alwaysdata-api-key', 'isolated-restart-key-only');
+chmod($base.'/tarkov-shared/alwaysdata-api-key', 0600);
+// API хостинга заменён управляемым ответом; HTTP Laravel проверяется настоящим curl.
+$realCurl = trim($run(['sh', '-c', 'command -v curl']));
+$curlFixture = <<<'SH'
+#!/usr/bin/env bash
+set -eu
+if [[ "$*" = *https://api.alwaysdata.com/* ]]; then
+  cat >/dev/null
+  printf '%s %s\n' "$*" "$(readlink -f "$RESTART_TEST_BASE/tarkov-api")" >> "$RESTART_TEST_BASE/restarts.log"
+  if [[ "$*" = *restart/* && -f "$RESTART_TEST_BASE/retry-restart" ]]; then rm "$RESTART_TEST_BASE/retry-restart"; printf 503
+  elif [[ "$*" = *restart/* && -f "$RESTART_TEST_BASE/fail-restart" ]]; then rm "$RESTART_TEST_BASE/fail-restart"; printf 401; else printf 200; fi
+elif [[ "$*" = *release=*-1-4* ]]; then
+  printf 'HTTP/1.1 200 OK\r\nX-Wiki-Release: old-php-process\r\n\r\n'
+else
+  exec "$RESTART_TEST_CURL" "$@"
+fi
+SH;
+file_put_contents($base.'/bin/curl', str_replace("\r\n", "\n", $curlFixture)); chmod($base.'/bin/curl', 0700);
+$originalPath = getenv('PATH');
+putenv('PATH='.$base.'/bin:'.$originalPath);
+putenv('RESTART_TEST_BASE='.$base); putenv('RESTART_TEST_CURL='.$realCurl);
 file_put_contents($base.'/tarkov-api/.env', $before);
 file_put_contents($base.'/tarkov-api/public/index.php', '<?php http_response_code(503);');
 file_put_contents($base.'/tarkov-api/storage/logs/preserve.txt', 'keep-storage');
@@ -103,6 +127,7 @@ $automatic = function (int $attempt, bool $fail = false) use ($root, $base, $add
     return [proc_close($process), $id, $output];
 };
 try {
+    file_put_contents($base.'/retry-restart', 'retry-once');
     foreach ([1, 2] as $attempt) {
         $previousVendor = realpath($base.'/tarkov-api/vendor');
         if ($attempt === 2) { file_put_contents($previousVendor.'/.deploy-copy-probe', 'previous-release'); }
@@ -132,6 +157,25 @@ try {
     if ($status === 0 || readlink($base.'/tarkov-api') !== $previous || file_get_contents($base.'/tarkov-api/.env') !== $before) {
         throw new RuntimeException('Ошибка HTTP-проверки не вернула предыдущий код.');
     }
+    [$status] = $automatic(4);
+    clearstatcache(true);
+    if ($status === 0 || readlink($base.'/tarkov-api') !== $previous) { throw new RuntimeException('Старый PHP с HTTP 200 ошибочно принят за новый релиз.'); }
+    file_put_contents($base.'/fail-restart', 'fail-once');
+    [$status] = $automatic(5);
+    clearstatcache(true);
+    $restartCalls = file($base.'/restarts.log', FILE_IGNORE_NEW_LINES);
+    $posts = array_values(array_filter($restartCalls, fn ($line) => str_contains($line, '/restart/')));
+    if ($status === 0 || count($posts) !== 9 || readlink($base.'/tarkov-api') !== $previous || !str_ends_with(end($posts), $previous)) {
+        throw new RuntimeException('Отказ перезапуска не вернул и не перезапустил предыдущий код.');
+    }
+    if (str_contains(implode('\n', $restartCalls), 'isolated-restart-key-only')) { throw new RuntimeException('Ключ попал в argv curl.'); }
+    unlink($base.'/tarkov-shared/alwaysdata-api-key');
+    [$status] = $automatic(6);
+    clearstatcache(true);
+    if ($status === 0 || readlink($base.'/tarkov-api') !== $previous || count(file($base.'/restarts.log')) !== count($restartCalls)) {
+        throw new RuntimeException('Отсутствующий API-ключ не остановил релиз до переключения.');
+    }
+    echo "PASS: перезапуск нового/предыдущего PHP, отказ API, старый HTTP 200 и отсутствие ключа.\n";
     // Очистка не должна проходить через storage/.env симлинки в удаляемом релизе.
     $old = $base.'/tarkov-releases/'.str_repeat('b', 40).'-1-1';
     mkdir($old);
@@ -173,5 +217,6 @@ try {
     echo "PASS: production list/check/restore, неизменный .env, сохранение текущего WAL перед восстановлением.\n";
     echo "PASS: автоматические релизы, сохранение .env/storage/SQLite, HTTP-откат, очистка кода и daily/deploy retention.\n";
 } finally {
+    putenv('PATH='.$originalPath); putenv('RESTART_TEST_BASE'); putenv('RESTART_TEST_CURL');
     proc_terminate($server); proc_close($server);
 }

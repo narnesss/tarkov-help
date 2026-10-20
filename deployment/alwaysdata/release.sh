@@ -44,6 +44,9 @@ mkdir "$release"
 tar -xzf "$archive" --no-same-owner --no-same-permissions -C "$release"
 test -f "$release/public/index.php"
 test -f "$release/deployment/alwaysdata/deploy.sh"
+restart_script=$release/deployment/alwaysdata/restart-site.sh
+# Проверяем доступ до миграций и переключения работающего сайта.
+bash "$restart_script" "$base" check
 test ! -e "$release/.env"
 # В пакете storage содержит только пустые каталоги; никаких rm для общих данных.
 if test -n "$(find "$release/storage" -type f -print -quit)"; then
@@ -57,8 +60,8 @@ ln -s "$shared/.env" "$release/.env"
 if test -f "$current/vendor/autoload.php" && cmp -s "$current/composer.lock" "$release/composer.lock" && cmp -s "$current/composer.json" "$release/composer.json"; then
   cp -a "$current/vendor" "$release/vendor"
 fi
-ALWAYSDATA_RELEASE_BASE="$base" sh "$release/deployment/alwaysdata/deploy.sh"
 printf '%s\n' "$release_id" > "$release/REVISION"
+ALWAYSDATA_RELEASE_BASE="$base" sh "$release/deployment/alwaysdata/deploy.sh"
 
 previous=$(readlink -f "$current")
 legacy=$base/tarkov-api-before-releases
@@ -69,7 +72,8 @@ restore() {
   if (( status != 0 )) && $switched; then
     ln -s "$previous" "$base/tarkov-api.rollback.$release_id"
     mv -Tf "$base/tarkov-api.rollback.$release_id" "$current"
-    echo 'Проверка не прошла: возвращён предыдущий код. SQLite не откатывается.' >&2
+    bash "$restart_script" "$base" restart || echo 'Не удалось перезапустить PHP после отката; требуется проверка оператора.' >&2
+    echo 'Проверка не прошла: возвращён предыдущий код. Данные и схема БД не откатываются.' >&2
   fi
   exit "$status"
 }
@@ -86,9 +90,16 @@ else
   mv -Tf "$next" "$current"
 fi
 switched=true
-health_status=$(curl --fail --silent --show-error --retry 3 --retry-delay 2 --max-time 15 \
-  --output /dev/null --write-out '%{http_code}' "$health_url?release=$release_id")
-test "$health_status" = 200 || { echo "Проверка /up вернула HTTP $health_status вместо 200" >&2; exit 1; }
+bash "$restart_script" "$base" restart
+# Одного HTTP 200 недостаточно: старый PHP тоже может отвечать на /up.
+healthy=false
+for attempt in {1..10}; do
+  headers=$(curl --fail --silent --show-error --connect-timeout 3 --max-time 5 \
+    --output /dev/null --dump-header - "$health_url?release=$release_id") || headers=
+  if printf '%s\n' "$headers" | tr -d '\r' | grep -Eiq "^X-Wiki-Release: $release_id$"; then healthy=true; break; fi
+  sleep 2
+done
+$healthy || { echo 'Проверка /up не подтвердила новый PHP-релиз.' >&2; exit 1; }
 echo "Опубликован API: $release_id"
 # Очистка кода не влияет на общие данные и согласованные копии SQLite.
 rm -- "$archive"

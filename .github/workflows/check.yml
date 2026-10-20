@@ -81,6 +81,7 @@ jobs:
           path: build
       - name: Upload and activate the verified API release
         env:
+          ALWAYSDATA_API_KEY: ${{ secrets.ALWAYSDATA_API_KEY }}
           ALWAYSDATA_SSH_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
           ALWAYSDATA_KNOWN_HOSTS: ${{ secrets.ALWAYSDATA_KNOWN_HOSTS }}
         run: bash deployment/alwaysdata/github-deploy.sh
