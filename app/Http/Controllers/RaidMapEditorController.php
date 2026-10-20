@@ -19,10 +19,15 @@ final class RaidMapEditorController
     }
     public function save(Request $request,RaidMapEditor $editor)
     {
-        abort_unless($request->user()?->hasAccess('wiki.content'),403);
-        [$map,$mode]=$this->scope($request,$editor);
-        abort_if(strlen($request->getContent())>262144,413);
-        return response()->json($editor->save($map,$mode,$request->json()->all()));
+        try{
+            abort_unless($request->user()?->hasAccess('wiki.content'),403);
+            [$map,$mode]=$this->scope($request,$editor);
+            abort_if(strlen($request->getContent())>262144,413);
+            return response()->json($editor->save($map,$mode,$request->json()->all(),(string)$request->user()->getAuthIdentifier()));
+        }catch(\Illuminate\Validation\ValidationException|\Symfony\Component\HttpKernel\Exception\HttpException $failure){
+            if($request->user())app(\App\Services\DocumentMapAudit::class)->append((string)$request->user()->getAuthIdentifier(),null,'denied',kind:'raid_request');
+            throw $failure;
+        }
     }
     public function items(Request $request)
     {

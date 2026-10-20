@@ -14,6 +14,11 @@ if (!is_file($package.'/public/admin-document-map.css')
     || hash_file('sha256',$package.'/public/admin-document-map.css') !== hash_file('sha256',$root.'/public/admin-document-map.css')) {
     throw new RuntimeException('Стили редактора карт документов не попали в API-пакет.');
 }
+foreach (['admin-map-editor.css','vendor/leaflet.js','vendor/leaflet.css','vendor/LEAFLET-LICENSE.txt'] as $asset) {
+    if (!is_file($package.'/public/'.$asset) || hash_file('sha256',$package.'/public/'.$asset)!==hash_file('sha256',$root.'/public/'.$asset)) {
+        throw new RuntimeException('Ресурс интерактивного редактора карт не попал в API-пакет: '.$asset);
+    }
+}
 foreach (['*.mjs', 'vendor/*.mjs'] as $pattern) {
     foreach (glob($root.'/public/'.$pattern) as $source) {
         $target=$package.'/public/'.substr($source,strlen($root.'/public/'));

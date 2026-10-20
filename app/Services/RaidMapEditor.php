@@ -36,7 +36,7 @@ final class RaidMapEditor
             'definitionRevision'=>ContentDataset::where('path','raid/maps.json')->firstOrFail()->revision(),'data'=>$dataset->content()];
     }
 
-    public function save(string $map,string $mode,array $input): array
+    public function save(string $map,string $mode,array $input,string $actor): array
     {
         $definition=$this->definition($map);
         $floors=array_values(array_unique([$definition['baseFloor']['id'],...array_column($definition['floors'],'id')]));
@@ -61,14 +61,14 @@ final class RaidMapEditor
         foreach(['x','y','z'] as $axis){$rules['changes.*.position.'.$axis]=['bail','required','numeric',AdminInput::finite(),'between:-10000,10000'];}
         if(array_diff(array_keys($input),['revision','definitionRevision','changes'])){throw ValidationException::withMessages(['changes'=>'Недопустимые поля запроса.']);}
         $valid=Validator::make($input,$rules,AdminInput::messages())->validate();
-        return app(WikiSync::class)->run(fn()=>DB::transaction(function()use($map,$mode,$valid): array {
+        return app(WikiSync::class)->run(fn()=>DB::transaction(function()use($map,$mode,$valid,$actor): array {
             $catalog=ContentDataset::where('path','raid/maps.json')->lockForUpdate()->firstOrFail();
             $dataset=$this->dataset($map,$mode);$dataset=ContentDataset::whereKey($dataset->id)->lockForUpdate()->firstOrFail();
             if(!hash_equals($catalog->revision(),$valid['definitionRevision'])||!hash_equals($dataset->revision(),$valid['revision'])){
                 throw new ConflictHttpException('Карта уже изменилась. Ваши правки сохранены в редакторе. Сравните их с текущей версией.');
             }
             $data=$dataset->content();abort_unless(($data['mapId']??null)===$map,409);
-            $indexes=array_flip(array_column($data['pois'],'id'));$changed=[];
+            $indexes=array_flip(array_column($data['pois'],'id'));$changed=[];$events=[];
             foreach($valid['changes'] as $i=>$change){
                 $index=$indexes[$change['id']]??null;
                 if($change['new']){
@@ -102,9 +102,18 @@ final class RaidMapEditor
                 unset($point['hiddenByDefault'],$point['reviewReason']);
                 if(isset($point['navigator'])){$point['sourceNavigator']=$point['navigator'];unset($point['navigator']);}
                 $data['pois'][$index]=app(WikiSync::class)->reconcileDataset($old,$point);$changed[]=$point['id'];
+                $action=$change['new']?'create':((bool)($old['cmsArchived']??false)!==$point['cmsArchived']?($point['cmsArchived']?'archive':'restore'):'update');
+                $fields=$change['new']?['point']:[];
+                foreach(['name','description','category','lootType','itemIds','position','floorOverride','cmsArchived'] as $field){if(($old[$field]??null)!==($point[$field]??null)){$fields[]=$field;}}
+                $events[$point['id']]=[$action.'_raid_point',implode(',',$fields)];
             }
             $previousRef=(string)$dataset->getRawOriginal('payload');$dataset->setContent($data);$dataset->save();
             app(WikiImporter::class)->changedPoints($dataset,$changed,$previousRef);
+            $pointIds=DB::table('wiki_map_points')->where('mode',$mode)->whereIn('external_id',$changed)->pluck('id','external_id');
+            foreach($changed as $externalId){
+                $pointId=$pointIds[$externalId];
+                app(DocumentMapAudit::class)->append($actor,(int)$pointId,'success',$valid['revision'],$dataset->revision(),...$events[$externalId]);
+            }
             return ['revision'=>$dataset->revision(),'saved'=>$changed];
         }));
     }

@@ -55,6 +55,7 @@ final class RaidMapEditorTest extends TestCase
         $this->assertSame(3,DB::table('wiki_map_points')->count());
         foreach([true,false] as $archived){$this->postJson($this->saveUrl(),$this->payload(['id'=>$patch['changes'][0]['id'],'archived'=>$archived]))->assertOk();}
         $this->assertSame(3,DB::table('wiki_map_points')->count());
+        $this->assertSame(['create_raid_point','archive_raid_point','restore_raid_point'],DB::table('wiki_document_map_audit')->where('result','success')->orderBy('id')->pluck('entity_type')->all());
     }
     public function test_invalid_payloads_and_foreign_ids_never_partially_write(): void
     {
@@ -74,6 +75,32 @@ final class RaidMapEditorTest extends TestCase
         $this->getJson('/admin/map-editor/data')->assertForbidden();$this->postJson($this->saveUrl(),$patch)->assertForbidden();
         $user->permissions=['platform.index'=>true,'wiki.content'=>true];$user->save();
         $this->app['env']='production';$this->postJson($this->saveUrl(),$patch)->assertStatus(419);
+    }
+
+    public function test_audit_tracks_success_and_rejected_batches_without_form_values(): void
+    {
+        $this->fixtures();$patch=$this->payload();
+        $this->postJson($this->saveUrl(),$patch)->assertOk();
+        $this->postJson($this->saveUrl(),$patch)->assertConflict();
+        $invalid=$this->payload();$invalid['changes'][]=[...$invalid['changes'][0],'id'=>'missing'];
+        $this->postJson($this->saveUrl(),$invalid)->assertUnprocessable();
+        $rows=DB::table('wiki_document_map_audit')->orderBy('id')->get();
+        $this->assertSame(['success','denied','denied'],$rows->pluck('result')->all());
+        $this->assertEquals(DB::table('wiki_map_points')->where('mode','regular')->value('id'),$rows[0]->point_id);
+        $this->assertSame('update_raid_point',$rows[0]->entity_type);
+        $this->assertSame($patch['revision'],$rows[0]->revision_before);
+        $this->assertSame(app(RaidMapEditor::class)->snapshot('factory','regular')['revision'],$rows[0]->revision_after);
+        $previous=str_repeat('0',64);
+        foreach($rows as $row){
+            $this->assertSame($previous,$row->previous_hash);$values=(array)$row;$previous=$values['signature'];unset($values['id'],$values['signature']);
+            $this->assertSame($previous,hash_hmac('sha256',implode("\n",array_map(fn($value)=>(string)$value,array_values($values))),config('app.key')));
+        }
+        $this->assertStringNotContainsString('Исправленная',json_encode($rows,JSON_UNESCAPED_UNICODE));
+        $this->assertStringNotContainsString('map@example.test',json_encode($rows));
+        $this->getJson('/admin/document-maps/audit')->assertForbidden();
+        $this->actingAs(User::create(['name'=>'Аудитор','email'=>'raid-auditor@example.test','password'=>bcrypt('local-test'),'permissions'=>['platform.index'=>true,'wiki.audit.read'=>true]]));
+        $this->getJson('/admin/document-maps/audit')->assertOk()->assertJsonCount(3,'events');
+        $this->getJson('/admin/map-editor/data')->assertForbidden();
     }
 
     public function test_catalog_conflict_empty_values_and_item_links_are_checked(): void
