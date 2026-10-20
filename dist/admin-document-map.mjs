@@ -20,7 +20,7 @@ function initialise(root){
  const option=(value,text)=>{const o=document.createElement('option');o.value=value;o.textContent=text;return o;};
  const discard=()=>!state.dirty||confirm('Есть несохранённое положение точки. Отменить эту правку?');
  const endpoint=(name)=>{const url=new URL(root.dataset[name],location.href);url.searchParams.set('map',$('map').value);url.searchParams.set('mode',$('mode').value);return url;};
- function setBusy(value){state.busy=value;$('save').disabled=value||!state.dirty;for(const name of ['reload','map','mode','floor','add-document','add-exit'])$(name).disabled=value;}
+ function setBusy(value){state.busy=value;$('save').disabled=value||!state.dirty;$('cancel').disabled=value||!state.draft;for(const name of ['reload','map','mode','floor','add-document','add-exit'])$(name).disabled=value;}
  function clearErrors(){error('');for(const field of ['x','y','floor','title','documentId']){const input=$(field==='floor'?'point-floor':field==='documentId'?'document':field),message=$(field+'-error');input?.classList.remove('is-invalid');input?.removeAttribute('aria-invalid');if(message)message.hidden=true;}}
  function fieldError(field,text){const input=$(field==='floor'?'point-floor':field==='documentId'?'document':field),message=$(field+'-error');if(input){input.classList.add('is-invalid');input.setAttribute('aria-invalid','true');}if(message){message.textContent=text;message.hidden=false;}}
  async function request(url,options={}){
@@ -52,22 +52,23 @@ function initialise(root){
   if(!state.snapshot)return;
   try{const svg=documentLevelSvg(state.svg,state.snapshot.map,selectedFloor());
    if(state.url)URL.revokeObjectURL(state.url);state.url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));$('image').src=state.url;
-   const size=documentViewport(state.snapshot.map);$('plane').style.aspectRatio=`${size.width}/${size.height}`;$('plane').style.width=(state.zoom*100)+'%';
+   const size=documentViewport(state.snapshot.map);$('plane').style.aspectRatio=`${size.width}/${size.height}`;zoom(state.zoom);
   }catch{error('Не удалось прочитать этаж схемы. Повторите загрузку.');}
  }
  function renderForm(){
-  const draft=state.draft;$('form').hidden=!draft;if(!draft)return;
+  const draft=state.draft;$('form').hidden=!draft;$('save').disabled=state.busy||!state.dirty;$('cancel').disabled=state.busy||!draft;$('stage').classList.toggle('is-placing',state.placing);if(!draft)return;
   $('selected').textContent=draft.pointId?draft.name:(draft.kind==='document'?'Новый документ':'Новый выход ЧВК');
   $('new-fields').hidden=!!draft.pointId;$('document-label').hidden=draft.kind!=='document';
   $('title').value=draft.title||'';$('document').value=draft.documentId||'';$('point-floor').value=draft.floor;
   $('x').value=Number.isFinite(draft.x)?Number(draft.x.toFixed(4)):'';$('y').value=Number.isFinite(draft.y)?Number(draft.y.toFixed(4)):'';
   $('details').hidden=!draft.pointId;if(draft.pointId)$('details').href='/admin/wiki/map_points/'+draft.pointId+'/edit';
   $('save').disabled=state.busy||!state.dirty;$('stage').classList.toggle('is-placing',state.placing);
-  $('place').textContent=state.placing?'Нажмите на нужное место схемы':'Указать место на схеме';
+  $('place').textContent=state.placing?'Нажмите на нужное место схемы':'Переместить следующим нажатием';
  }
  function renderList(){
   if(!state.snapshot)return;const query=$('search').value.trim().toLocaleLowerCase(),kind=$('kind-filter').value;
   const rows=state.snapshot.points.filter(p=>(kind==='all'||p.kind===kind)&&p.name.toLocaleLowerCase().includes(query));
+  if($('count'))$('count').textContent='Точек в списке: '+rows.length+' из '+state.snapshot.points.length;
   $('points').replaceChildren();
   if(!rows.length){const p=document.createElement('p');p.textContent='Подходящих точек нет.';$('points').append(p);}
   for(const point of rows){const button=document.createElement('button');button.type='button';button.textContent=(point.kind==='exit'?'↗ ':'● ')+point.name+(point.order?' · позиция '+(point.order+1):'')+' · '+(point.floor?floorName(point.floor):'не размещён')+(point.kind==='exit'&&!point.independent?' · автопривязка':'');
@@ -125,7 +126,15 @@ function initialise(root){
   }catch(failure){if(epoch!==state.epoch)return;error(failure.message);for(const [field,messages]of Object.entries(failure.fields||{}))fieldError(field,messages[0]);if(failure.status===409)$('rebase').hidden=false;status('Сохранение не подтверждено. Правка остаётся в форме.');}
   finally{if(epoch===state.epoch)setBusy(false);}
  };
- for(const [name,factor]of [['zoom-in',1.5],['zoom-out',1/1.5]])$(name).onclick=()=>{state.zoom=Math.max(1,Math.min(6,state.zoom*factor));$('plane').style.width=state.zoom*100+'%';$('zoom').textContent=Math.round(state.zoom*100)+'%';};
+ function zoom(value){
+  state.zoom=Math.max(1,Math.min(6,value));
+  if(state.snapshot){const size=documentViewport(state.snapshot.map),stage=$('stage'),style=getComputedStyle(stage),width=stage.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight),height=stage.clientHeight-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom);
+   const fit=Math.min(1,height/Math.max(1,width)*size.width/size.height);$('plane').style.width=(state.zoom*fit*100)+'%';}
+  $('zoom').textContent=Math.round(state.zoom*100)+'%';
+ }
+ for(const [name,factor]of [['zoom-in',1.5],['zoom-out',1/1.5]])$(name).onclick=()=>zoom(state.zoom*factor);
+ if($('fit'))$('fit').onclick=()=>{zoom(1);$('stage').scrollTo({left:0,top:0});};
+ new ResizeObserver(()=>zoom(state.zoom)).observe($('stage'));
  window.addEventListener('beforeunload',event=>{if(state.dirty){event.preventDefault();event.returnValue='';}});
  document.addEventListener('turbo:before-visit',event=>{if(!discard())event.preventDefault();});
  const query=new URLSearchParams(location.search);if([...$('map').options].some(o=>o.value===query.get('map')))$('map').value=query.get('map');if(['pve','regular'].includes(query.get('mode')))$('mode').value=query.get('mode');
