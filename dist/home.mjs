@@ -5,6 +5,7 @@ import {normalize} from './model.mjs?v=page-content-20261017';
 import {siteHref,canonicalURL} from './site-routes.mjs?v=page-content-20261017';
 import {questHref,catalogHref} from './quest-catalog-model.mjs?v=page-content-20261017';
 const $=id=>document.getElementById(id);
+const traderImages=new Map([...document.querySelectorAll('[data-home-trader-image]')].map(img=>[img.dataset.homeTraderImage,img.getAttribute('src')]));
 let mode=resolveGameMode(new URLSearchParams(location.search).get('mode'),readStorage('kord-atlas-game-mode')),home,searchSequence=0;const itemIndexes=new Map();
 const arrow=()=>{const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),use=document.createElementNS('http://www.w3.org/2000/svg','use');use.setAttribute('href','#home-arrow');svg.setAttribute('aria-hidden','true');svg.append(use);return svg;};
 async function loadHome(){ return json('data/home.json'); }
@@ -49,7 +50,8 @@ function traders(){
  if(!home)return;const root=$('home-traders');root.replaceChildren();
  for(const trader of home.modes[mode].traders.slice(0,8)){
   const link=el('a','','home-trader');link.dataset.homeLink='quests.html?trader='+encodeURIComponent(trader.id);link.href=catalogHref(trader.id,mode);
-  if(trader.image){const img=el('img');img.src=trader.image;img.alt='';img.width=58;img.height=64;img.loading='lazy';link.append(img);}
+  const image=traderImages.get(trader.id)||trader.image;
+  if(image){const img=el('img');img.src=image;img.alt='';img.width=58;img.height=64;img.loading='lazy';link.append(img);}
   link.append(el('strong',trader.name),el('span',count(trader.total)+' '+word(trader.total,'задание','задания','заданий')));root.append(link);
  }
 }

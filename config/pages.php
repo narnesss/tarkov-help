@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 // Метаданные публичных Blade-страниц.
-return json_decode(<<<'JSON'
+$pages = json_decode(<<<'JSON'
 {
   "important-items": {
     "module": "important-items.mjs?v=loading-20261018",
@@ -187,3 +187,11 @@ return json_decode(<<<'JSON'
   }
 }
 JSON, true, 32, JSON_THROW_ON_ERROR);
+
+// Версия главной меняется вместе с модулем; переводы строк не зависят от ОС сборки.
+$homeModule = public_path('home.mjs');
+if (is_file($homeModule)) {
+    $pages['index']['module'] = 'home.mjs?v='.substr(hash('sha256', str_replace("\r\n", "\n", file_get_contents($homeModule))), 0, 12);
+}
+
+return $pages;
