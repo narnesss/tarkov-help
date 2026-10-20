@@ -8,6 +8,42 @@ use Illuminate\Filesystem\Filesystem;
 /** Очистка незавершённого кода не должна затрагивать работающий релиз и приватные ссылки. */
 final class ReleasePruningTest extends TestCase
 {
+    public function test_deploy_frees_quota_before_creating_remote_key_or_uploading_archive(): void
+    {
+        $root=sys_get_temp_dir().'/wiki-quota-'.bin2hex(random_bytes(8));mkdir($root.'/bin',0700,true);
+        $ssh=<<<'SH'
+#!/usr/bin/env bash
+set -eu
+command=${!#}
+if [[ $command = *'php /dev/stdin'* ]]; then
+ cat >/dev/null; touch "$QUOTA_TEST_ROOT/freed"; echo cleanup >> "$QUOTA_TEST_ROOT/events"
+elif [[ $command = *'.alwaysdata-api-key'* ]]; then
+ test -f "$QUOTA_TEST_ROOT/freed" || { echo 'Disk quota exceeded' >&2; exit 65; }
+ cat >/dev/null; echo key >> "$QUOTA_TEST_ROOT/events"
+elif [[ $command = *'mkdir -p'* ]]; then
+ echo directory >> "$QUOTA_TEST_ROOT/events"
+elif [[ $command = *'bash -s --'* ]]; then
+ cat >/dev/null; echo activate >> "$QUOTA_TEST_ROOT/events"
+else exit 66; fi
+SH;
+        $scp=<<<'SH'
+#!/usr/bin/env bash
+set -eu
+test -f "$QUOTA_TEST_ROOT/freed" || exit 67
+echo upload >> "$QUOTA_TEST_ROOT/events"
+SH;
+        foreach(['ssh'=>$ssh,'scp'=>$scp] as $name=>$source){file_put_contents($root.'/bin/'.$name,str_replace("\r\n","\n",$source));chmod($root.'/bin/'.$name,0700);}
+        try{
+            $process=new \Symfony\Component\Process\Process(['bash',base_path('deployment/alwaysdata/github-deploy.sh')],base_path(),[
+                'PATH'=>$root.'/bin:'.getenv('PATH'),'QUOTA_TEST_ROOT'=>$root,'RUNNER_TEMP'=>$root,
+                'ALWAYSDATA_SSH_KEY'=>'isolated-ssh-key','ALWAYSDATA_KNOWN_HOSTS'=>'isolated-host',
+                'ALWAYSDATA_API_KEY'=>'isolated-api-key-only','GITHUB_SHA'=>str_repeat('a',40),'GITHUB_RUN_ID'=>'1','GITHUB_RUN_ATTEMPT'=>'1',
+            ]);$process->setTimeout(15);$process->run();
+            $this->assertSame(0,$process->getExitCode(),$process->getErrorOutput());
+            $this->assertSame(['cleanup','key','directory','upload','activate'],file($root.'/events',FILE_IGNORE_NEW_LINES));
+            $this->assertStringNotContainsString('isolated-api-key-only',$process->getOutput().$process->getErrorOutput());
+        }finally{(new Filesystem())->deleteDirectory($root);}
+    }
     public function test_pruning_keeps_active_preparing_and_three_completed_releases_without_following_links(): void
     {
         $root=sys_get_temp_dir().'/wiki-prune-'.bin2hex(random_bytes(8));$base=$root.'/tarkov-releases';mkdir($base,0700,true);mkdir($root.'/shared');file_put_contents($root.'/shared/secret','сохранить');

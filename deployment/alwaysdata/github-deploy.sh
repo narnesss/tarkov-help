@@ -57,10 +57,10 @@ fi
 # Освобождаем место до загрузки/копирования vendor. Тот же flock исключает чужой текущий релиз.
 : "${ALWAYSDATA_API_KEY:?Добавьте GitHub secret ALWAYSDATA_API_KEY для перезапуска PHP}"
 [[ $ALWAYSDATA_API_KEY =~ ^[A-Za-z0-9._~-]{16,256}$ ]] || { echo 'Некорректный API-ключ alwaysdata' >&2; exit 1; }
+ssh "${ssh_options[@]}" "$target" 'if test -d "$HOME/tarkov-releases"; then flock -w 600 "$HOME/tarkov-deploy.lock" php /dev/stdin "$HOME/tarkov-releases" "$HOME/tarkov-api" "$HOME/tarkov-api"; fi' < deployment/alwaysdata/prune-releases.php
 # Секрет передаётся только через stdin SSH и атомарно сохраняется вне web root и релизов.
 printf '%s\n' "$ALWAYSDATA_API_KEY" | ssh "${ssh_options[@]}" "$target" 'set -eu; umask 077; mkdir -p "$HOME/tarkov-shared"; key_tmp=$(mktemp "$HOME/tarkov-shared/.alwaysdata-api-key.XXXXXX"); trap '\''rm -f -- "$key_tmp"'\'' EXIT; cat > "$key_tmp"; chmod 600 "$key_tmp"; mv -f "$key_tmp" "$HOME/tarkov-shared/alwaysdata-api-key"'
 unset ALWAYSDATA_API_KEY
-ssh "${ssh_options[@]}" "$target" 'if test -d "$HOME/tarkov-releases"; then flock -w 600 "$HOME/tarkov-deploy.lock" php /dev/stdin "$HOME/tarkov-releases" "$HOME/tarkov-api" "$HOME/tarkov-api"; fi' < deployment/alwaysdata/prune-releases.php
 ssh "${ssh_options[@]}" "$target" 'umask 077; mkdir -p "$HOME/tarkov-incoming"'
 scp "${ssh_options[@]}" build/alwaysdata-api.tar.gz "$target:tarkov-incoming/$release_id.tar.gz"
 ssh "${ssh_options[@]}" "$target" "bash -s -- '$release_id'" < deployment/alwaysdata/release.sh
