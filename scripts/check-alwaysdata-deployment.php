@@ -138,6 +138,9 @@ try {
             throw new RuntimeException('Релиз не переключился.');
         }
         if ($attempt === 2) {
+            if(trim(file_get_contents($base.'/tarkov-api/PUBLISHED'))!==$id||file_exists($base.'/tarkov-api/.publication-pending')){
+                throw new RuntimeException('Успешный релиз не отмечен после проверки нового PHP.');
+            }
             $copiedProbe=$base.'/tarkov-api/vendor/.deploy-copy-probe';
             if (!is_file($copiedProbe) || fileinode($copiedProbe) === fileinode($previousVendor.'/.deploy-copy-probe')) {
                 throw new RuntimeException('Зависимости не скопированы независимо от предыдущего релиза.');
@@ -179,13 +182,33 @@ try {
     // Очистка не должна проходить через storage/.env симлинки в удаляемом релизе.
     $old = $base.'/tarkov-releases/'.str_repeat('b', 40).'-1-1';
     mkdir($old);
+    // Сбой после REVISION, но до optimize: не должен занимать место успешного релиза.
+    file_put_contents($old.'/REVISION',basename($old));
+    file_put_contents($base.'/tarkov-incoming/'.basename($old).'.tar.gz','abandoned-code-only');
     symlink($base.'/tarkov-shared/storage', $old.'/storage');
     symlink($base.'/tarkov-shared/.env', $old.'/.env');
     touch($old, 1);
+    $legacy=$base.'/tarkov-releases/'.str_repeat('c',40).'-1-1';
+    mkdir($legacy.'/bootstrap/cache',0700,true);
+    file_put_contents($legacy.'/REVISION',basename($legacy));
+    file_put_contents($legacy.'/bootstrap/cache/config.php','<?php return [];');
+    $linked=$base.'/tarkov-releases/'.str_repeat('d',40).'-1-1';
+    mkdir($linked);symlink($base.'/tarkov-shared/storage/logs/preserve.txt',$base.'/tarkov-incoming/'.basename($linked).'.tar.gz');
+    file_put_contents($base.'/tarkov-incoming/unrelated.tar.gz','preserve-unrelated');
     $run([PHP_BINARY, $root.'/deployment/alwaysdata/prune-releases.php', $base.'/tarkov-releases', $previous, $previous]);
-    if (is_dir($old) || file_get_contents($base.'/tarkov-shared/.env') !== $before ||
+    if (is_dir($old) || is_file($base.'/tarkov-incoming/'.basename($old).'.tar.gz') || file_get_contents($base.'/tarkov-shared/.env') !== $before ||
         file_get_contents($base.'/tarkov-shared/storage/logs/preserve.txt') !== 'keep-storage') {
         throw new RuntimeException('Очистка старого кода затронула общие данные.');
+    }
+    if(!is_dir($legacy)||is_dir($linked)||!is_link($base.'/tarkov-incoming/'.basename($linked).'.tar.gz')
+        ||file_get_contents($base.'/tarkov-incoming/unrelated.tar.gz')!=='preserve-unrelated'){
+        throw new RuntimeException('Очистка не сохранила прежний успешный релиз, ссылку или посторонний архив.');
+    }
+    foreach([3,4,5] as $failedAttempt){
+        $failedId=str_repeat('a',40).'-1-'.$failedAttempt;
+        if(is_dir($base.'/tarkov-releases/'.$failedId)||is_file($base.'/tarkov-incoming/'.$failedId.'.tar.gz')){
+            throw new RuntimeException('Неудачный релиз после optimize сохранён как завершённый.');
+        }
     }
     // Команда ежедневного бэкапа доступна и без dev-пакетов в опубликованном API.
     $run([PHP_BINARY, $base.'/tarkov-api/artisan', 'wiki:backup', '--no-interaction']);

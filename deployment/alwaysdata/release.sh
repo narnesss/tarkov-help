@@ -61,6 +61,7 @@ if test -f "$current/vendor/autoload.php" && cmp -s "$current/composer.lock" "$r
   cp -a "$current/vendor" "$release/vendor"
 fi
 printf '%s\n' "$release_id" > "$release/REVISION"
+printf '%s\n' "$release_id" > "$release/.publication-pending"
 ALWAYSDATA_RELEASE_BASE="$base" sh "$release/deployment/alwaysdata/deploy.sh"
 
 previous=$(readlink -f "$current")
@@ -100,6 +101,7 @@ for attempt in {1..10}; do
   sleep 2
 done
 $healthy || { echo 'Проверка /up не подтвердила новый PHP-релиз.' >&2; exit 1; }
+mv "$release/.publication-pending" "$release/PUBLISHED"
 echo "Опубликован API: $release_id"
 # Очистка кода не влияет на общие данные и согласованные копии SQLite.
 rm -- "$archive"
