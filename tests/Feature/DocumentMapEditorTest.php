@@ -35,6 +35,77 @@ final class DocumentMapEditorTest extends TestCase
             'kind'=>$point['kind'],'pointId'=>$point['pointId'],'positionId'=>$point['positionId'],'floor'=>$point['floor'],
             'x'=>$point['x'],'y'=>$point['y'],...$changes]);
     }
+    private function remove(array $snapshot,array $point,array $changes=[])
+    {
+        return $this->postJson('/admin/document-maps/remove',['map'=>'customs','mode'=>'pve','version'=>$snapshot['version'],
+            'kind'=>$point['kind'],'pointId'=>$point['pointId'],...$changes]);
+    }
+    public function test_archive_removes_all_document_positions_and_preserves_identity_and_relations(): void
+    {
+        $snapshot=$this->fixtures();$point=collect($snapshot['points'])->firstWhere('kind','document');
+        $this->assertTrue($snapshot['capabilities']['archivePoint']);
+        $preserved=[];foreach(['wiki_point_positions','wiki_point_documents','wiki_media_links','wiki_point_world_positions','wiki_sources'] as $table){
+            $preserved[$table]=DB::table($table)->orderBy($table==='wiki_point_documents'?'rowid':'id')->get()->toJson();
+        }
+        $other=DB::table('wiki_map_points')->where('id','!=',$point['pointId'])->orderBy('id')->get()->toJson();
+        $response=$this->remove($snapshot,$point)->assertOk();
+        $this->assertFalse(collect($response->json('snapshot.points'))->contains('pointId',$point['pointId']));
+        $this->assertFalse(collect(app(DocumentMapEditor::class)->snapshot('customs','regular')['points'])->contains('pointId',$point['pointId']));
+        $this->assertDatabaseHas('wiki_map_points',['id'=>$point['pointId'],'external_id'=>'stable-document','active'=>0,'archived'=>1]);
+        foreach($preserved as $table=>$rows)$this->assertSame($rows,DB::table($table)->orderBy($table==='wiki_point_documents'?'rowid':'id')->get()->toJson());
+        $this->assertSame($other,DB::table('wiki_map_points')->where('id','!=',$point['pointId'])->orderBy('id')->get()->toJson());
+        $published=ContentDataset::where('path','spawns.json')->first()->content()[0];
+        $this->assertTrue($published['cmsArchived']);$this->assertSame('stable-document',$published['id']);
+        $this->assertSame(['/original.webp'],$published['images']);$this->assertArrayHasKey('x2',$published);
+        $this->remove($snapshot,$point)->assertStatus(409);
+        $this->assertDatabaseHas('wiki_document_map_audit',['point_id'=>$point['pointId'],'entity_type'=>'archive_document','changed_fields'=>'active,archived','result'=>'success']);
+        app(WikiImporter::class)->rebuild();
+        $this->assertDatabaseHas('wiki_map_points',['id'=>$point['pointId'],'archived'=>1]);
+        $this->assertDatabaseCount('wiki_point_positions',2);
+    }
+    public function test_archive_exit_invalidates_public_overlay_and_raid_without_losing_positions(): void
+    {
+        $snapshot=$this->fixtures();$point=collect($snapshot['points'])->firstWhere('kind','exit');
+        $snapshot=$this->save($snapshot,$point,['floor'=>'floor-2','x'=>0,'y'=>100])->assertOk()->json('snapshot');
+        $positions=DB::table('wiki_document_exit_positions')->get()->toJson();$world=DB::table('wiki_point_world_positions')->get()->toJson();
+        $url='/api/content/data/maps.json?view=documents&map=customs&mode=pve';
+        $revision=$this->getJson($url)->assertJsonCount(1,'exits')->headers->get('X-Wiki-Content-Revision');
+        $this->remove($snapshot,$point)->assertOk();
+        $after=$this->getJson($url)->assertOk()->assertJsonCount(0,'exits');
+        $this->assertNotSame($revision,$after->headers->get('X-Wiki-Content-Revision'));
+        $this->getJson(str_replace('mode=pve','mode=regular',$url))->assertJsonPath('exits.0.id','other-mode');
+        $this->assertTrue(ContentDataset::where('path','raid/pve/customs.json')->first()->content()['pois'][0]['cmsArchived']);
+        $this->assertSame($positions,DB::table('wiki_document_exit_positions')->get()->toJson());
+        $this->assertSame($world,DB::table('wiki_point_world_positions')->get()->toJson());
+    }
+    public function test_archive_validates_ownership_types_permissions_csrf_and_stale_version(): void
+    {
+        $snapshot=$this->fixtures();$point=collect($snapshot['points'])->firstWhere('kind','exit');
+        $before=DB::table('wiki_map_points')->orderBy('id')->get()->toJson();$refs=ContentDataset::orderBy('path')->pluck('payload')->all();
+        foreach([['pointId'=>[]],['pointId'=>0],['pointId'=>999999],['pointId'=>'1e999'],['kind'=>[]],['kind'=>'document'],
+            ['pointId'=>DB::table('wiki_map_points')->where('external_id','other-mode')->value('id')],['version'=>[]],['unexpected'=>'value']] as $patch){
+            $this->remove($snapshot,$point,$patch)->assertUnprocessable();
+        }
+        $this->remove($snapshot,$point,['version'=>str_repeat('0',64)])->assertStatus(409);
+        $this->assertSame($before,DB::table('wiki_map_points')->orderBy('id')->get()->toJson());
+        $this->assertSame($refs,ContentDataset::orderBy('path')->pluck('payload')->all());
+        $this->app['env']='local';
+        try{$this->remove($snapshot,$point)->assertStatus(419);}finally{$this->app['env']='testing';}
+        $this->actingAs(User::create(['name'=>'Без прав','email'=>'no-delete@example.test','password'=>bcrypt('test'),'permissions'=>['platform.index'=>true]]));
+        $this->remove($snapshot,$point)->assertForbidden();
+        $this->app['auth']->forgetGuards();$this->app['auth']->logout();$this->remove($snapshot,$point)->assertUnauthorized();
+        $this->assertSame($before,DB::table('wiki_map_points')->orderBy('id')->get()->toJson());
+    }
+    public function test_archive_rolls_back_point_and_publication_when_audit_write_fails(): void
+    {
+        $snapshot=$this->fixtures();$point=collect($snapshot['points'])->firstWhere('kind','document');
+        $before=DB::table('wiki_map_points')->orderBy('id')->get()->toJson();$refs=ContentDataset::orderBy('path')->pluck('payload')->all();
+        DB::listen(function($query){if(str_starts_with(strtolower($query->sql),'insert into')&&str_contains($query->sql,'wiki_document_map_audit'))throw new \RuntimeException('Изолированный отказ записи аудита');});
+        $this->remove($snapshot,$point)->assertStatus(500);
+        $this->assertSame($before,DB::table('wiki_map_points')->orderBy('id')->get()->toJson());
+        $this->assertSame($refs,ContentDataset::orderBy('path')->pluck('payload')->all());
+        $this->assertDatabaseCount('wiki_document_map_audit',0);
+    }
     public function test_document_drag_converts_floor_percent_and_preserves_ids_links_and_alternate_position(): void
     {
         $snapshot=$this->fixtures();$point=collect($snapshot['points'])->firstWhere('kind','document');

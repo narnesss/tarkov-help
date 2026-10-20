@@ -8,6 +8,7 @@ Route::middleware(\App\Http\Middleware\ProtectAdminRoute::class)->group(function
 Route::get('document-maps/data',[\App\Http\Controllers\DocumentMapEditorController::class,'data'])->name('platform.document-maps.data');
 Route::get('document-maps/audit',[\App\Http\Controllers\DocumentMapEditorController::class,'audit'])->name('platform.document-maps.audit');
 Route::post('document-maps/save',[\App\Http\Controllers\DocumentMapEditorController::class,'save'])->name('platform.document-maps.save');
+Route::post('document-maps/remove',[\App\Http\Controllers\DocumentMapEditorController::class,'remove'])->name('platform.document-maps.remove');
 Route::get('document-maps/artwork',[\App\Http\Controllers\DocumentMapEditorController::class,'artwork'])->name('platform.document-maps.artwork');
 Route::screen('document-maps',\App\Orchid\Screens\DocumentMapScreen::class)->name('platform.document-maps');
 Route::get('map-editor/data',[\App\Http\Controllers\RaidMapEditorController::class,'data'])->name('platform.map-editor.data');

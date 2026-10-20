@@ -44,6 +44,18 @@ final class DocumentMapEditorController
         }
     }
 
+    public function remove(Request $request,DocumentMapEditor $editor)
+    {
+        try{
+            $selection=$this->selection($request);
+            return response()->json($editor->remove($selection['map'],$selection['mode'],
+                $request->except(['map','mode','_token']),(string)$request->user()->getAuthIdentifier()));
+        }catch(\Illuminate\Validation\ValidationException|\Symfony\Component\HttpKernel\Exception\HttpException $failure){
+            if($request->user())app(\App\Services\DocumentMapAudit::class)->append((string)$request->user()->getAuthIdentifier(),null,'denied',kind:'archive_request');
+            throw $failure;
+        }
+    }
+
     public function artwork(Request $request,DocumentMapEditor $editor)
     {
         $selection=$this->selection($request);

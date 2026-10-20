@@ -4,6 +4,7 @@
 .dme input,.dme select{width:100%;min-width:0;min-height:44px;padding:8px;border:1px solid #8994a3;border-radius:6px;background:#fff;color:#1c2430;font:inherit}
 .dme button{min-height:44px;padding:8px 12px;border:1px solid #8291a2;border-radius:6px;color:#152b42;background:#edf1f6;font:inherit;white-space:normal;overflow-wrap:anywhere}
 .dme button:disabled{opacity:.55}.dme :focus-visible{outline:3px solid #155ca7;outline-offset:2px}
+.dme button.dme-danger{background:#a82031;color:#fff;border-color:#8c1524}.dme dialog{width:min(480px,calc(100% - 32px));max-height:85vh;overflow:auto;padding:20px;border:1px solid #8994a3;border-radius:12px;background:#fff;color:#242932}.dme dialog::backdrop{background:#10182199}.dme dialog h2{margin:0 0 12px}.dme dialog p{white-space:pre-line;line-height:1.5}.dme dialog .dme-actions{margin:16px 0 0}.dme dialog .dme-actions button{flex:1 1 140px}
 .dme-toolbar,.dme-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:12px}.dme-toolbar label{flex:1 1 145px}
 .dme-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;grid-template-areas:'canvas inspector';gap:16px}
 .dme-panel{grid-area:inspector;min-width:0;max-height:72vh;overflow:auto;padding:4px;display:flex;flex-direction:column;gap:10px}

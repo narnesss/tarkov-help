@@ -12,7 +12,7 @@ const root=globalThis.document?.getElementById('document-map-editor');
 if(root)initialise(root);
 
 function initialise(root){
- const $=id=>root.querySelector('#dme-'+id),state={snapshot:null,svg:'',draft:null,dirty:false,placing:false,epoch:0,zoom:1,url:null,busy:false};
+ const $=id=>root.querySelector('#dme-'+id),state={snapshot:null,svg:'',draft:null,dirty:false,placing:false,epoch:0,zoom:1,url:null,busy:false,pendingDelete:null};
  let controller;
  const status=text=>{$('status').textContent=text;},error=text=>{$('error').textContent=text;$('error').hidden=!text;};
  const floorName=floor=>'Уровень схемы '+floor.replace('floor-','').replace('-','−');
@@ -20,7 +20,8 @@ function initialise(root){
  const option=(value,text)=>{const o=document.createElement('option');o.value=value;o.textContent=text;return o;};
  const discard=()=>!state.dirty||confirm('Есть несохранённое положение точки. Отменить эту правку?');
  const endpoint=(name)=>{const url=new URL(root.dataset[name],location.href);url.searchParams.set('map',$('map').value);url.searchParams.set('mode',$('mode').value);return url;};
- function setBusy(value){state.busy=value;$('save').disabled=value||!state.dirty;$('cancel').disabled=value||!state.draft;for(const name of ['reload','map','mode','floor','add-document','add-exit'])$(name).disabled=value;}
+ function renderRemove(){if($('remove')){$('remove').hidden=!(root.dataset.remove&&state.snapshot?.capabilities?.archivePoint&&state.draft?.pointId);$('remove').disabled=state.busy;}}
+ function setBusy(value){state.busy=value;$('save').disabled=value||!state.dirty;$('cancel').disabled=value||!state.draft;for(const name of ['reload','map','mode','floor','add-document','add-exit','place','x','y','point-floor','title','document','rebase'])$(name).disabled=value;renderRemove();}
  function clearErrors(){error('');for(const field of ['x','y','floor','title','documentId']){const input=$(field==='floor'?'point-floor':field==='documentId'?'document':field),message=$(field+'-error');input?.classList.remove('is-invalid');input?.removeAttribute('aria-invalid');if(message)message.hidden=true;}}
  function fieldError(field,text){const input=$(field==='floor'?'point-floor':field==='documentId'?'document':field),message=$(field+'-error');if(input){input.classList.add('is-invalid');input.setAttribute('aria-invalid','true');}if(message){message.textContent=text;message.hidden=false;}}
  async function request(url,options={}){
@@ -56,7 +57,7 @@ function initialise(root){
   }catch{error('Не удалось прочитать этаж схемы. Повторите загрузку.');}
  }
  function renderForm(){
-  const draft=state.draft;$('form').hidden=!draft;$('save').disabled=state.busy||!state.dirty;$('cancel').disabled=state.busy||!draft;$('stage').classList.toggle('is-placing',state.placing);if(!draft)return;
+  const draft=state.draft;$('form').hidden=!draft;$('save').disabled=state.busy||!state.dirty;$('cancel').disabled=state.busy||!draft;$('stage').classList.toggle('is-placing',state.placing);renderRemove();if(!draft)return;
   $('selected').textContent=draft.pointId?draft.name:(draft.kind==='document'?'Новый документ':'Новый выход ЧВК');
   $('new-fields').hidden=!!draft.pointId;$('document-label').hidden=draft.kind!=='document';
   $('title').value=draft.title||'';$('document').value=draft.documentId||'';$('point-floor').value=draft.floor;
@@ -126,6 +127,34 @@ function initialise(root){
   }catch(failure){if(epoch!==state.epoch)return;error(failure.message);for(const [field,messages]of Object.entries(failure.fields||{}))fieldError(field,messages[0]);if(failure.status===409)$('rebase').hidden=false;status('Сохранение не подтверждено. Правка остаётся в форме.');}
   finally{if(epoch===state.epoch)setBusy(false);}
  };
+ if($('remove')){
+  $('remove').onclick=()=>{
+   if(state.busy||!state.draft?.pointId||!state.snapshot?.capabilities?.archivePoint)return;
+   const point=state.draft;
+   state.pendingDelete={pointId:point.pointId,kind:point.kind,version:state.snapshot.version,epoch:state.epoch};
+   $('delete-message').textContent='Удалить точку «'+point.name+'»?\nОна исчезнет со всех этажей и во всех режимах, где используется, включая альтернативные позиции.'
+    +(point.kind==='exit'?' Выход также исчезнет с интерактивной карты.':'')
+    +'\nТочка будет отправлена в архив; её связи сохранятся.'+(state.dirty?' Несохранённое положение не будет применено.':'');
+   $('delete-dialog').showModal();
+  };
+  $('delete-cancel').onclick=()=>$('delete-dialog').close();
+  $('delete-dialog').onclose=()=>{state.pendingDelete=null;};
+  $('delete-confirm').onclick=async()=>{
+   const pending=state.pendingDelete;$('delete-dialog').close();
+   if(!pending||state.busy||pending.epoch!==state.epoch||pending.pointId!==state.draft?.pointId)return;
+   const {epoch,...payload}=pending;clearErrors();setBusy(true);status('Удаление точки…');
+   try{
+    const result=await request(endpoint('remove'),{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':$('token').value},body:JSON.stringify(payload)});
+    if(epoch!==state.epoch)return;
+    state.snapshot=result.snapshot;state.draft=null;state.dirty=false;state.placing=false;$('rebase').hidden=true;
+    render();status('Точка удалена с карт и отправлена в архив. Изменение доступно на сайте.');$('stage').focus();
+   }catch(failure){
+    if(epoch!==state.epoch)return;error(failure.message);
+    if(failure.status===409)$('rebase').hidden=false;
+    status('Удаление не подтверждено. Выбранная точка и несохранённая правка остаются в форме.');
+   }finally{if(epoch===state.epoch)setBusy(false);}
+  };
+ }
  function zoom(value){
   state.zoom=Math.max(1,Math.min(6,value));
   if(state.snapshot){const size=documentViewport(state.snapshot.map),stage=$('stage'),style=getComputedStyle(stage),width=stage.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight),height=stage.clientHeight-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom);

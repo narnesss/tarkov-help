@@ -79,7 +79,7 @@ final class DocumentMapEditor
         }
         $version=hash('sha256',serialize([$map,$points->all(),$positions->all(),$documents->all(),$exits->all(),
             $datasets->map(fn($dataset)=>$dataset->getRawOriginal('payload'))->all()]));
-        return ['map'=>$map,'mode'=>$mode,'version'=>$version,'points'=>$rows,
+        return ['map'=>$map,'mode'=>$mode,'version'=>$version,'points'=>$rows,'capabilities'=>['archivePoint'=>true],
             'floors'=>array_keys($map['documentPanels']??['floor-1'=>[]]),
             'documents'=>DB::table('wiki_documents')->where('archived',0)->orderBy('name')->get(['id','name'])->all()];
     }
@@ -144,6 +144,33 @@ final class DocumentMapEditor
             }
             $after=$this->snapshot($mapId,$mode);
             app(DocumentMapAudit::class)->append($actor,$pointId,'success',$values['version'],$after['version'],($selected?'move_':'create_').$kind);
+            return ['pointId'=>$pointId,'snapshot'=>$after];
+        }));
+    }
+
+    /** Архивирует всю точку, сохраняя её ID, позиции и связи для восстановления. */
+    public function remove(string $mapId,string $mode,array $input,string $actor): array
+    {
+        $values=Validator::make($input,[
+            'version'=>['bail','required','string','size:64'],
+            'kind'=>['bail','required','string',Rule::in(['document','exit'])],
+            'pointId'=>['bail','required','integer','min:1'],
+        ])->validate();
+        if(array_diff(array_keys($input),array_keys($values)))throw ValidationException::withMessages(['form'=>'Недопустимые поля формы.']);
+        return app(WikiSync::class)->run(fn()=>DB::transaction(function() use($mapId,$mode,$values,$actor){
+            $snapshot=$this->snapshot($mapId,$mode);
+            abort_unless(hash_equals($snapshot['version'],$values['version']),409,'Карта уже изменилась. Точка не удалена. Загрузите свежие данные перед повторным удалением.');
+            $pointId=(int)$values['pointId'];
+            $selected=collect($snapshot['points'])->first(fn($row)=>$row['pointId']===$pointId&&$row['kind']===$values['kind']);
+            abort_unless($selected,422,'Точка не относится к выбранной карте и режиму.');
+            $before=DB::table('wiki_map_points')->where('id',$pointId)->firstOrFail();
+            $updated=DB::table('wiki_map_points')->where('id',$pointId)->where('revision',$before->revision)
+                ->where('archived',0)->where('active',1)->increment('revision',1,['active'=>0,'archived'=>1]);
+            abort_unless($updated===1,409,'Точка уже изменилась. Обновите карту перед повторным удалением.');
+            app(WikiPublisher::class)->publish('map_points',$pointId,(array)$before);
+            $after=$this->snapshot($mapId,$mode);
+            app(DocumentMapAudit::class)->append($actor,$pointId,'success',$values['version'],$after['version'],
+                'archive_'.$values['kind'],'active,archived');
             return ['pointId'=>$pointId,'snapshot'=>$after];
         }));
     }

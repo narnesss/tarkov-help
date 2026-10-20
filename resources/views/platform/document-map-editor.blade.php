@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="{{ asset('admin-document-map.css') }}?v={{ substr(hash_file('sha256', public_path('admin-document-map.css')),0,12) }}">
 @endpush
 <section id="document-map-editor" class="dme" aria-label="Визуальный редактор карт документов"
- data-read="{{ route('platform.document-maps.data') }}" data-save="{{ route('platform.document-maps.save') }}"
+ data-read="{{ route('platform.document-maps.data') }}" data-save="{{ route('platform.document-maps.save') }}" data-remove="{{ route('platform.document-maps.remove') }}"
  data-artwork="{{ route('platform.document-maps.artwork') }}">
  <input type="hidden" id="dme-token" value="{{ csrf_token() }}">
  <div class="dme-toolbar">
@@ -52,11 +52,20 @@
     <p id="dme-x-error" class="dme-error" hidden></p><p id="dme-y-error" class="dme-error" hidden></p>
     <p>Координаты считаются от выбранного этажа. Для небольшого сдвига выделенного значка используйте стрелки клавиатуры; Shift — шаг 0,1%.</p>
     <button type="button" id="dme-place">Переместить следующим нажатием</button>
+    <button type="button" id="dme-remove" class="dme-danger" hidden>Удалить точку</button>
     <a id="dme-details" target="_blank" rel="noopener" hidden>Открыть подробную карточку</a>
    </section>
    <p id="dme-count"></p>
    <div id="dme-points" class="dme-points" role="group" aria-label="Список точек"></div>
   </aside>
  </div>
+ <dialog id="dme-delete-dialog" aria-labelledby="dme-delete-heading" aria-describedby="dme-delete-message">
+  <h2 id="dme-delete-heading">Удалить точку?</h2>
+  <p id="dme-delete-message"></p>
+  <div class="dme-actions">
+   <button type="button" id="dme-delete-cancel" autofocus>Отмена</button>
+   <button type="button" id="dme-delete-confirm" class="dme-danger">Удалить точку</button>
+  </div>
+ </dialog>
 </section>
 <script type="module" src="{{ asset('admin-document-map.mjs') }}?v={{ substr(hash_file('sha256', public_path('admin-document-map.mjs')),0,12) }}"></script>
