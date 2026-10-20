@@ -100,13 +100,22 @@ final class ContentController
             ->whereExists(fn($query)=>$query->selectRaw('1')->from('wiki_sources as s')->whereColumn('s.point_id','p.id')->where('s.format','document-point'))
             ->orderBy('p.id')->orderBy('k.key_item_id')->orderBy('k.usage_type')->get(['p.external_id','k.usage_type','i.external_id as item','i.name']);
         $catalog=\Illuminate\Support\Facades\DB::table('wiki_keys as k')->join('wiki_items as i','i.id','=','k.item_id')->where('k.archived',0)->where('i.archived',0)->orderBy('i.id')->get(['i.external_id as id','i.name','i.icon_url as iconLink'])->map(fn($row)=>(array)$row)->all();
-        $revision=hash('sha256',serialize([$datasets->map(fn($d)=>$d->getRawOriginal('payload'))->all(),$keys->all(),$catalog,config('document-overlays')]));
-        $key='document-overlays-v2-'.hash('sha256',serialize([config('content.directory'),$datasets['maps.json']->getConnection()->getDatabaseName(),$mapId,$mode]));
-        return $this->responses->respond($request,$key,$revision,function() use($datasets,$paths,$mapId,$raidId,$mode,$keys,$catalog): string {
+        $placements=app(\App\Services\DocumentExitPositions::class)->forMap($mapId,$mode);
+        $revision=hash('sha256',serialize([$datasets->map(fn($d)=>$d->getRawOriginal('payload'))->all(),$keys->all(),$catalog,config('document-overlays'),$placements]));
+        $key='document-overlays-v3-'.hash('sha256',serialize([config('content.directory'),$datasets['maps.json']->getConnection()->getDatabaseName(),$mapId,$mode]));
+        return $this->responses->respond($request,$key,$revision,function() use($datasets,$paths,$mapId,$raidId,$mode,$keys,$catalog,$placements): string {
             $map=collect($datasets['maps.json']->content())->first(fn($row)=>($row['id']??null)===$mapId&&empty($row['cmsArchived']));abort_unless($map,404);
             $definition=collect($datasets->get('raid/maps.json')?->content()??[])->firstWhere('id',$raidId)??[];
             $relations=[];foreach($keys as $row)$relations[$row->external_id][]=array_intersect_key((array)$row,array_flip(['item','name','usage_type']));
             $data=app(\App\Services\DocumentMapOverlay::class)->build($map,$datasets['spawns.json']->content(),$definition,$datasets->get($paths[3])?->content()??[],$relations,$catalog);
+            $exits=array_column($data['exits'],null,'id');
+            foreach($placements as $placement){
+                if(!isset($map['documentPanels'][$placement['floor']]))continue;
+                $old=$exits[$placement['id']]??[];
+                $exits[$placement['id']]=[...$old,...$placement,'category'=>$old['category']??$placement['category'],'conditions'=>$old['conditions']??[]];
+                unset($exits[$placement['id']]['outsideArtwork']);
+            }
+            $data['exits']=array_values($exits);
             return json_encode([...$data,'mode'=>$mode,'available'=>$datasets->has($paths[3])&&$definition!==[]],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
         });
     }

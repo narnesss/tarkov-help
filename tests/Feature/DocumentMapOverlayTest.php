@@ -86,4 +86,22 @@ final class DocumentMapOverlayTest extends TestCase
         $this->assertSame('floor-1',$result['exits'][0]['floor']);
     }
 
+    public function test_independent_sql_exit_position_overrides_only_the_document_view(): void
+    {
+        $this->fixtures();$maps=\App\Models\ContentDataset::where('path','maps.json')->first();$data=$maps->content();
+        $data[0]['documentPanels']=['floor-1'=>['x'=>0,'y'=>0,'width'=>100,'height'=>100],'floor--1'=>['x'=>0,'y'=>0,'width'=>100,'height'=>100]];
+        $maps->setContent($data);$maps->save();$mapId=DB::table('wiki_maps')->where('slug','documents')->value('id');
+        $pointId=DB::table('wiki_map_points')->where('external_id','exit')->where('mode','pve')->value('id');
+        $layer=app(\App\Services\WikiStore::class)->put('map_layers',['map_id'=>$mapId,'external_id'=>'floor--1'],['name'=>'Подземный этаж']);
+        $url='/api/content/data/maps.json?view=documents&map=customs&mode=pve';
+        $revision=$this->getJson($url)->assertOk()->headers->get('X-Wiki-Content-Revision');
+        $before=serialize(DB::table('wiki_point_world_positions')->get()->all());
+        DB::table('wiki_document_exit_positions')->insert(['point_id'=>$pointId,'map_id'=>$mapId,'layer_id'=>$layer,'x_percent'=>25,'y_percent'=>10]);
+        $response=$this->getJson($url)->assertOk()->assertJsonCount(1,'exits')->assertJsonPath('exits.0.id','exit')
+            ->assertJsonPath('exits.0.x',25)->assertJsonPath('exits.0.y',10)->assertJsonPath('exits.0.floor','floor--1');
+        $this->assertNotSame($revision,$response->headers->get('X-Wiki-Content-Revision'));
+        $this->getJson(str_replace('mode=pve','mode=regular',$url))->assertJsonPath('exits.0.id','pvp');
+        $this->assertSame($before,serialize(DB::table('wiki_point_world_positions')->get()->all()));
+    }
+
 }

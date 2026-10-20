@@ -39,6 +39,10 @@ try {
     DB::table('wiki_map_points')->insert(['id'=>9,'location_id'=>7,'title'=>'Архивная точка','external_id'=>'point','search_text'=>'архивная точка','archived'=>1]);
     DB::table('wiki_key_usages')->insert(['point_id'=>9,'key_item_id'=>37,'usage_type'=>'unlock']);
     DB::table('wiki_point_positions')->insert(['point_id'=>9,'location_id'=>7,'map_id'=>8,'x_percent'=>12.123456789012345,'y_percent'=>99.98765432109876,'archived'=>1]);
+    DB::table('wiki_map_layers')->insert(['id'=>10,'map_id'=>8,'external_id'=>'floor--1','name'=>'Подземный этаж']);
+    DB::table('wiki_document_exit_positions')->insert(['id'=>17,'point_id'=>9,'map_id'=>8,'layer_id'=>10,'x_percent'=>23.1234567890123,'y_percent'=>78.9876543210987,'revision'=>4]);
+    DB::table('wiki_document_map_audit')->insert(['event_id'=>'00000000-0000-4000-8000-000000000001','actor_ref'=>(string)$editor->id,'point_id'=>9,'entity_type'=>'move_exit','result'=>'success',
+        'revision_before'=>str_repeat('a',64),'revision_after'=>str_repeat('b',64),'changed_fields'=>'floor,x_percent,y_percent','recorded_at'=>1792454400,'previous_hash'=>str_repeat('0',64),'signature'=>str_repeat('c',64)]);
     $access=$directory.'/access.json';file_put_contents($access,json_encode(['host'=>$host,'port'=>3306,'database'=>'tarkov_transfer_test','username'=>'tarkov_transfer_test','password'=>'local-transfer-test-only','unix_socket'=>$socket],JSON_THROW_ON_ERROR));chmod($access,0600);
     $migration=new MysqlMigration($access);$result=$migration->run();
     if($result['activated']||$result['rows']<10){throw new RuntimeException('Пробный перенос не подтверждён.');}
