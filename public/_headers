@@ -10,6 +10,8 @@
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 /assets/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+/assets/raid-maps/*
+  Access-Control-Allow-Origin: *
 /data/*
   Cache-Control: public, max-age=300, stale-while-revalidate=600
 /api/*

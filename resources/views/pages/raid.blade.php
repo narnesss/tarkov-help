@@ -1,4 +1,7 @@
 @extends('layouts.site')
+@section('import-map')
+  <script type="importmap">{!! json_encode(['imports' => collect(['raid-map-geometry.mjs','raid-model.mjs'])->mapWithKeys(fn ($file) => ['/'.$file => '/'.$file.'?v='.hash('sha256', str_replace("\r\n", "\n", file_get_contents(public_path($file))))])->all()], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR) !!}</script>
+@endsection
 @section('content')
 @include('headers.' . $page)
 

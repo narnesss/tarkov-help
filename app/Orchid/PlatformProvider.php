@@ -25,6 +25,7 @@ final class PlatformProvider extends OrchidServiceProvider
             Menu::make('Предметы')->icon('bs.box')->route('platform.wiki.list','items')->permission('wiki.content'),
             Menu::make('Точки карты')->icon('bs.geo-alt')->route('platform.wiki.list','map_points')->permission('wiki.content'),
             Menu::make('Редактор карт документов')->icon('bs.map')->route('platform.document-maps')->permission('wiki.content'),
+            Menu::make('Редактор карт')->icon('bs.map')->route('platform.map-editor')->permission('wiki.content'),
             Menu::make('Данные сайта')->icon('bs.database')->route('platform.datasets')->permission('wiki.content'),
             Menu::make('Пользователи')->icon('bs.people')->route('platform.players')->permission('wiki.users'),
         ];

@@ -50,6 +50,28 @@ final class ContentUpdatesTest extends TestCase
                 'guide/quest-content.json'=>['quests'=>['source'=>['walkthrough'=>['paragraphs'=>['Новая инструкция']]]]]]];
     }
 
+    public function test_raid_coordinate_patch_preserves_ids_links_and_rejects_editor_conflicts(): void
+    {
+        [, $map]=$this->fixtures();$pointId=DB::table('wiki_map_points')->where('external_id','correct-point')->value('id');
+        $state=DB::table('user_state')->first();
+        $patch=['schemaVersion'=>1,'id'=>2026102098,'datasets'=>['raid/ground-zero.json'=>['raidPointRecords'=>[
+            ['id'=>'correct-point','expected'=>['position'=>['x'=>3,'y'=>0,'z'=>4]],'fields'=>['position'=>['x'=>0,'y'=>5,'z'=>8]]],
+            ['id'=>'individual','expected'=>null,'fields'=>['category'=>'spawn-pmc','kind'=>'spawn','name'=>'Спавн ЧВК','gameMode'=>'regular','sourceMapId'=>'ground-zero','position'=>['x'=>9,'y'=>0,'z'=>5]]],
+            ['id'=>'wrong-copy','expected'=>['position'=>['x'=>1,'y'=>0,'z'=>2]],'fields'=>['cmsArchived'=>true]],
+        ]]]];
+        $ref=$map->getRawOriginal('payload');app(ContentUpdates::class)->apply($patch,true);$this->assertSame($ref,$map->fresh()->getRawOriginal('payload'));
+        app(ContentUpdates::class)->apply($patch);
+        $this->assertEquals(0,DB::table('wiki_point_world_positions')->where('point_id',$pointId)->where('archived',0)->value('world_x'));
+        $this->assertSame($pointId,DB::table('wiki_map_points')->where('external_id','correct-point')->value('id'));
+        $this->assertDatabaseHas('wiki_map_points',['external_id'=>'wrong-copy','archived'=>1]);
+        $this->assertDatabaseHas('wiki_map_points',['external_id'=>'individual','archived'=>0]);
+        $this->assertFalse(app(ContentUpdates::class)->apply($patch)['applied']);$this->assertEquals($state,DB::table('user_state')->first());
+        $patch['id']++;$patch['datasets']['raid/ground-zero.json']['raidPointRecords'][0]['fields']['position']['x']=50;
+        $ref=$map->fresh()->getRawOriginal('payload');
+        try{app(ContentUpdates::class)->apply($patch);$this->fail('Ожидался конфликт координат');}catch(\RuntimeException $e){$this->assertStringContainsString('Запись уже изменена',$e->getMessage());}
+        $this->assertSame($ref,$map->fresh()->getRawOriginal('payload'));
+    }
+
     public function test_additive_item_catalog_preserves_editor_values_and_resolves_new_quest_links(): void
     {
         [$quest]=$this->fixtures();$dataset=ContentDataset::where('path','guide/quests-pve.json')->firstOrFail();

@@ -39,7 +39,15 @@ final readonly class ContentUpdates
                 if(!preg_match('~^(spawns|maps|source|guide/(?:quest-(?:map-index|content)|(?:quests|items)-(?:pve|regular))|raid/(?:pve/)?[a-z-]+)\.json$~',$path)){throw new RuntimeException('Недопустимый набор обновления.');}
                 $dataset=ContentDataset::where('path',$path)->lockForUpdate()->firstOrFail();$data=$dataset->content();
                 $pointIds=[];$addedReferences=[];
-                if(in_array($path,['spawns.json','maps.json'],true)){
+                if($path==='raid/maps.json'&&isset($patch['records'])){
+                    $data=$this->records($data,$patch['records'],$path);
+                }elseif(isset($patch['raidPointRecords'])){
+                    $expected=preg_replace('~^raid/(?:pve/)?|\.json$~','',$path);
+                    if(($data['mapId']??null)!==$expected){throw new RuntimeException('Набор принадлежит другой карте.');}
+                    $before=$data['pois'];$data['pois']=$this->records($before,$patch['raidPointRecords'],'raid-points');
+                    $data['pois']=app(WikiSync::class)->reconcileDataset($before,$data['pois']);
+                    $pointIds=array_column($patch['raidPointRecords'],'id');
+                }elseif(in_array($path,['spawns.json','maps.json'],true)){
                     $data=$this->records($data,$patch['records']??[],$path);
                     if($path==='spawns.json'){$pointIds=array_column($patch['records'],'id');}
                 }elseif($path==='source.json'){
@@ -128,6 +136,8 @@ final readonly class ContentUpdates
         $indexes=[];foreach($data as $i=>$row){if(isset($indexes[$row['id']])){throw new RuntimeException('Повтор ID в наборе.');}$indexes[$row['id']]=$i;}
         $allowed=$path==='maps.json'?['file','width','height','type','coordinateSource','coordinateDate','documentPanels','layeredFile']:
             ['map','mapName','doc','docName','caption','floor','x','y','x2','y2','images','originalImages','cmsArchived','cmsPositions','cmsMedia','cmsDocuments','archiveReason','sourcePointId','coordinateSource','coordinateDate','sourceCoordinates'];
+        if($path==='raid/maps.json'){$allowed=['transform','bounds','svgBounds','heightRange','floors','coordinateSource','floorPolicy'];}
+        if($path==='raid-points'){$allowed=['position','name','description','category','kind','lootType','containerId','itemIds','itemNames','keyIds','keyNames','sourceId','sourceZone','faction','hazardType','weaponId','bossId','questId','objectiveId','outline','targetMapId','gameMode','sourceMapId','sourceStatus','coordinateSource','coordinateDate','cmsArchived','archiveReason','hiddenByDefault'];}
         $seen=[];
         foreach($patches as $patch){
             $id=$patch['id'];if(isset($seen[$id])){throw new RuntimeException('Повтор ID в обновлении.');}$seen[$id]=true;

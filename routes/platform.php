@@ -10,6 +10,10 @@ Route::get('document-maps/audit',[\App\Http\Controllers\DocumentMapEditorControl
 Route::post('document-maps/save',[\App\Http\Controllers\DocumentMapEditorController::class,'save'])->name('platform.document-maps.save');
 Route::get('document-maps/artwork',[\App\Http\Controllers\DocumentMapEditorController::class,'artwork'])->name('platform.document-maps.artwork');
 Route::screen('document-maps',\App\Orchid\Screens\DocumentMapScreen::class)->name('platform.document-maps');
+Route::get('map-editor/data',[\App\Http\Controllers\RaidMapEditorController::class,'data'])->name('platform.map-editor.data');
+Route::get('map-editor/items',[\App\Http\Controllers\RaidMapEditorController::class,'items'])->name('platform.map-editor.items');
+Route::post('map-editor/points',[\App\Http\Controllers\RaidMapEditorController::class,'save'])->middleware('throttle:60,1')->name('platform.map-editor.save');
+Route::screen('map-editor',\App\Orchid\Screens\MapEditorScreen::class)->name('platform.map-editor');
 Route::screen('players/create',\App\Orchid\Screens\PlayerEditScreen::class)->name('platform.players.create');
 Route::screen('players/{player}/edit',\App\Orchid\Screens\PlayerEditScreen::class)->where('player','[a-f0-9]{32}')->name('platform.players.edit');
 Route::screen('players',\App\Orchid\Screens\PlayerListScreen::class)->name('platform.players');

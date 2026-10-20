@@ -18,6 +18,7 @@
     <file>tests/Feature/ContentManagementTest.php</file>
     <file>tests/Feature/ContentCacheTest.php</file>
     <file>tests/Feature/ContentUpdatesTest.php</file>
+    <file>tests/Feature/RaidMapEditorTest.php</file>
     <file>tests/Feature/ContentViewsTest.php</file>
     <file>tests/Feature/PublicMediaTest.php</file>
     <file>tests/Feature/DocumentMapOverlayTest.php</file>

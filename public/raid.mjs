@@ -16,6 +16,7 @@ import {bindMapTooltip} from './raid-tooltip.mjs?v=page-content-20261017';
 import {scopedRaidPoints} from './raid-scope.mjs?v=page-content-20261017';
 import {QuestMapFocusReceiver} from './quest-map-messages.mjs?v=page-content-20261017';
 import { CATEGORIES, LOOT_NAMES, titleOf, validPosition, floorOf, poiFloor, filterPois, projectPosition, projectRaster, rasterRegion, iconPath, displayPosition } from './raid-model.mjs?v=page-content-20261017';
+import {rasterTileLayer} from './raid-map-geometry.mjs';
 
 const $ = id => document.getElementById(id);
 const el = (tag, text = '', cls = '') => { const n = document.createElement(tag); n.textContent = ruText(text); n.className = cls; return n; };
@@ -189,7 +190,7 @@ async function loadArtwork() {
     }
     next = L.svgOverlay(svg,bounds(definition.svgBounds || definition.bounds),{interactive:false,pane:'artwork'});
   } else if(asset.type==='tiles') {
-    next=L.tileLayer(asset.path,{tileSize:asset.tileSize||256,minNativeZoom:asset.minNativeZoom??definition.minZoom,maxNativeZoom:asset.maxNativeZoom??definition.maxZoom,maxZoom:8,noWrap:true,bounds:bounds(definition.bounds),pane:'artwork',crossOrigin:false});
+    next=rasterTileLayer(L,asset.path,{tileSize:asset.tileSize||256,minNativeZoom:asset.minNativeZoom??definition.minZoom,maxNativeZoom:asset.maxNativeZoom??definition.maxZoom,maxZoom:8,noWrap:true,bounds:bounds(definition.bounds),pane:'artwork',crossOrigin:false});
     let failed=0,loaded=0;
     next.on('tileerror',()=>{if(token!==artworkId||id!==requestId)return;failed++;if(!loaded)$('raid-floor-note').textContent='Не удалось загрузить схему этажа. Координаты точек сохранены. Попробуйте другой этаж или альтернативную схему.';});
     next.on('tileload',()=>{if(token!==artworkId||id!==requestId)return;loaded++;if(failed)$('raid-floor-note').textContent='Часть карты ещё загружается.';});
@@ -201,7 +202,7 @@ async function loadArtwork() {
       const baseSvg=new DOMParser().parseFromString(svgCache.get(baseAsset.path),'image/svg+xml').documentElement;
       baseSvg.setAttribute('preserveAspectRatio','none');
       for(const child of [...baseSvg.children])if(child.localName==='g'&&child.id)child.style.display=child.id===baseAsset.baseLayer?'':'none';
-      next=L.layerGroup([L.svgOverlay(baseSvg,bounds(definition.bounds),{interactive:false,pane:'artwork'}),next]);
+      next=L.layerGroup([L.svgOverlay(baseSvg,bounds(definition.svgBounds || definition.bounds),{interactive:false,pane:'artwork'}),next]);
     }
   } else {
     await new Promise((resolve,reject) => { const image = new Image(); image.onload = resolve; image.onerror = () => reject(new Error('Не удалось загрузить изображение этажа')); image.src = asset.path; });

@@ -194,4 +194,6 @@ if (is_file($homeModule)) {
     $pages['index']['module'] = 'home.mjs?v='.substr(hash('sha256', str_replace("\r\n", "\n", file_get_contents($homeModule))), 0, 12);
 }
 
+// Правки отображения карты получают новую версию ресурса при каждом экспорте.
+$pages['raid']['module'] = 'raid.mjs?v='.hash('sha256', str_replace("\r\n", "\n", file_get_contents(dirname(__DIR__).'/public/raid.mjs')));
 return $pages;
