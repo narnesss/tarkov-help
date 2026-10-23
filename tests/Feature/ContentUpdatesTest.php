@@ -394,4 +394,27 @@ final class ContentUpdatesTest extends TestCase
         $this->assertSame($positions,DB::table('wiki_point_world_positions')->orderBy('id')->get(['id','point_id','world_x','world_y','world_z','order_index'])->toJson());
     }
 
+    public function test_ground_zero_pve_mode_correction_keeps_ids_progress_and_rejects_concurrent_mode_changes(): void
+    {
+        $this->fixtures();$path='raid/pve/ground-zero.json';
+        $packet=json_decode(file_get_contents(database_path('content-updates/20261023-map-ground-zero-pve.json')),true,flags:JSON_THROW_ON_ERROR);
+        $records=array_values(array_filter($packet['datasets'][$path]['raidPointRecords'],static fn($record)=>isset($record['fields']['gameMode'])));$this->assertCount(100,$records);
+        $legacy=[];foreach($records as $record)$legacy[]=['id'=>$record['id'],'kind'=>'spawn','category'=>'spawn-pmc','name'=>'Прежний спавн',...$record['expected']];
+        $row=$this->dataset($path,['mapId'=>'ground-zero','pois'=>$legacy]);app(WikiImporter::class)->dataset($row);$original=$row->content();
+        $ids=DB::table('wiki_map_points')->orderBy('id')->get(['id','external_id','mode'])->toJson();
+        $positions=DB::table('wiki_point_world_positions')->orderBy('id')->get(['id','point_id','world_x','world_y','world_z','order_index'])->toJson();
+        DB::table('user_state')->insert(['user_id'=>'player','state_key'=>'groundzero-points','value'=>json_encode(['checked'=>[$legacy[0]['id']]],JSON_THROW_ON_ERROR),'version'=>5,'updated_at'=>1]);
+        $state=DB::table('user_state')->orderBy('state_key')->get()->toJson();$packet['datasets']=[$path=>['raidPointRecords'=>$records]];
+        $edited=$original;$edited['pois'][1]['gameMode']='all';$row->setContent($edited);$row->save();$ref=$row->getRawOriginal('payload');
+        try{app(ContentUpdates::class)->apply($packet);$this->fail('Изменённый режим должен остановить пакет');}catch(\RuntimeException $error){$this->assertStringContainsString('gameMode',$error->getMessage());}
+        $this->assertSame($ref,$row->fresh()->getRawOriginal('payload'));$this->assertSame('regular',$row->fresh()->content()['pois'][0]['gameMode']);
+        $this->assertDatabaseMissing('wiki_projection_states',['owner_type'=>'content-update','owner_id'=>$packet['id']]);
+        $row->setContent($original);$row->save();$this->assertTrue(app(ContentUpdates::class)->apply($packet)['applied']);$this->assertFalse(app(ContentUpdates::class)->apply($packet)['applied']);
+        $points=$row->fresh()->content()['pois'];$this->assertCount(100,$points);$this->assertSame(array_column($legacy,'id'),array_column($points,'id'));
+        foreach($points as $point){$this->assertSame('pve',$point['gameMode']);$this->assertSame('current',$point['sourceStatus']);$this->assertFalse($point['hiddenByDefault']);}
+        $this->assertSame($ids,DB::table('wiki_map_points')->orderBy('id')->get(['id','external_id','mode'])->toJson());
+        $this->assertSame($positions,DB::table('wiki_point_world_positions')->orderBy('id')->get(['id','point_id','world_x','world_y','world_z','order_index'])->toJson());
+        $this->assertSame($state,DB::table('user_state')->orderBy('state_key')->get()->toJson());
+    }
+
 }

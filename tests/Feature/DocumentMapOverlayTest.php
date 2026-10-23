@@ -367,4 +367,27 @@ final class DocumentMapOverlayTest extends TestCase
         $this->assertSame(array_map($geometry,$byMode['regular']),array_map($geometry,$byMode['pve']));
     }
 
+    public function test_ground_zero_document_exits_keep_six_current_positions_and_mode_specific_costs(): void
+    {
+        $definition=collect(json_decode(file_get_contents(public_path('data/raid/maps.json')),true,flags:JSON_THROW_ON_ERROR))->firstWhere('id','ground-zero');
+        $this->assertSame('ground-zero',DocumentMapOverlay::ALIASES['groundzero']);$service=new DocumentMapOverlay();$byMode=[];
+        $landmarks=['Спуск в подвал в Nakatani'=>[76.18391,94.06967],'Блокпост Диких (Совм.)'=>[64.30460,9.11066],
+            'Офис продаж Tartowers'=>[16.72414,52.74385],'Проспект Мира (Сигнал)'=>[8.84195,17.51844],
+            'Пункт МЧС'=>[27.97989,5.43852],'А-Выход полицейский кордон'=>[77.15805,48.96311]];
+        foreach(['regular','pve'] as $mode){
+            $raid=json_decode(gzdecode(file_get_contents(public_path('data/raid/'.($mode==='pve'?'pve/':'').'ground-zero.json.gz'))),true,flags:JSON_THROW_ON_ERROR);$before=$raid;
+            $exits=array_column($service->build(['id'=>'groundzero'],[],$definition,$raid,[])['exits'],null,'name');$this->assertCount(6,$exits);
+            foreach($landmarks as $name=>[$x,$y]){
+                $this->assertSame('floor-1',$exits[$name]['floor'],$mode.': '.$name);
+                $this->assertEqualsWithDelta($x,$exits[$name]['x'],.00001);$this->assertEqualsWithDelta($y,$exits[$name]['y'],.00001);
+                $this->assertSame(collect($raid['pois'])->firstWhere('id',$exits[$name]['id'])['conditions'],$exits[$name]['conditions']);
+            }
+            $this->assertArrayNotHasKey('Подвал в Pinewood (Совм.)',$exits);$this->assertArrayNotHasKey('Южный пост ООН',$exits);
+            $this->assertSame([$mode==='regular'?'Требуется: Рубли ×20 000':'Требуется: Рубли ×5 000'],$exits['А-Выход полицейский кордон']['conditions']);
+            $this->assertCount(3,array_filter($exits,static fn($exit)=>$exit['category']==='extract-shared'));
+            $this->assertSame($before,$raid);$byMode[$mode]=$exits;
+        }
+        $geometry=static fn($exit)=>array_diff_key($exit,['conditions'=>true]);$this->assertSame(array_map($geometry,$byMode['regular']),array_map($geometry,$byMode['pve']));
+    }
+
 }

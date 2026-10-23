@@ -32,18 +32,28 @@ test('обратная калибровка и явный этаж совмес�
   assert.equal(poiFloor(map,point),'upper');assert.equal(floorHeight(map,'upper',{x:1,y:0,z:1}),4.01);
   assert.throws(()=>worldCoordinates({...map,sourceCalibrations:{base:{matrix:[1,2,0,2,4,0]}}},'base',{lat:0,lng:0},0));
 });
-test('пакеты сверки соответствуют seed, сохраняют категории и используют существующие иконки',()=>{
+test('последовательные пакеты сверки соответствуют seed, сохраняют категории и используют существующие иконки',()=>{
   const base=new URL('../../',import.meta.url);let additions=0,moves=0,archives=0;
   const updates=fs.readdirSync(new URL('database/content-updates/',base)).filter(f=>f.endsWith('.json')).map(f=>JSON.parse(fs.readFileSync(new URL('database/content-updates/'+f,base))));
   assert.equal(new Set(updates.map(u=>u.id)).size,updates.length,'ID всех выпусков должны быть уникальны');
+  const finalFields=new Map();
+  for(const update of updates.sort((a,b)=>a.id-b.id))for(const [relative,patch] of Object.entries(update.datasets||{})){
+    if(!/^raid\/(?:pve\/)?[a-z-]+\.json$/.test(relative))continue;
+    const records=finalFields.get(relative)||new Map();finalFields.set(relative,records);
+    for(const record of patch.raidPointRecords||[])records.set(record.id,{...records.get(record.id),...record.fields});
+  }
   for(const map of maps)for(const mode of ['regular','pve']){
     const update=JSON.parse(fs.readFileSync(new URL(`database/content-updates/20261020-map-${map.id}-${mode}.json`,base)));
     const relative=`raid/${mode==='pve'?'pve/':''}${map.id}.json`,file=new URL('public/data/'+relative,base),gz=new URL(file.href+'.gz');
     const dataset=JSON.parse(fs.existsSync(gz)?zlib.gunzipSync(fs.readFileSync(gz)):fs.readFileSync(file));
     assert.equal(dataset.mapId,map.id);const points=new Map(dataset.pois.map(p=>[p.id,p]));assert.equal(points.size,dataset.pois.length);
+    for(const [id,fields] of finalFields.get(relative)){
+      const point=points.get(id);assert.ok(point,id);
+      for(const [key,value] of Object.entries(fields))assert.deepEqual(point[key],value,`${map.id}/${id}/${key}`);
+      assert.ok(fs.existsSync(new URL('public/'+iconPath(point),base)));
+    }
     for(const patch of update.datasets[relative].raidPointRecords){
       const point=points.get(patch.id);assert.ok(point,patch.id);
-      for(const [key,value] of Object.entries(patch.fields))assert.deepEqual(point[key],value,`${map.id}/${patch.id}/${key}`);
       if(patch.expected===null){additions++;assert.equal(point.sourceMapId,map.id);assert.equal(point.gameMode,mode);assert.ok(fs.existsSync(new URL('public/'+iconPath(point),base)));}
       else if(patch.fields.position)moves++;
       if(patch.fields.cmsArchived)archives++;
