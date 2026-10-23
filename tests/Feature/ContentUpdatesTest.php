@@ -350,4 +350,48 @@ final class ContentUpdatesTest extends TestCase
         $this->assertSame($refs,ContentDataset::orderBy('path')->pluck('payload')->all());$this->assertDatabaseMissing('wiki_projection_states',['owner_type'=>'content-update','owner_id'=>$update['id']]);
     }
 
+    public function test_customs_door_packages_restore_key_relations_and_reject_editor_bypass_atomically(): void
+    {
+        $this->dataset('maps.json',[['id'=>'customs','name'=>'Таможня']]);
+        $keys=['6aa2f73005eae7bedb0ad83e'=>'Ключ от поста охраны','6aa2f6565d82e97ee9076820'=>'Ключ ЗБ-1013'];
+        $this->dataset('raid/item-names.json',$keys);$rows=[];$packets=[];
+        foreach(['regular','pve'] as $mode){
+            $packet=json_decode(file_get_contents(database_path('content-updates/20261023-map-customs-'.$mode.'.json')),true,flags:JSON_THROW_ON_ERROR);
+            $path='raid/'.($mode==='pve'?'pve/':'').'customs.json';
+            $patches=array_values(array_filter($packet['datasets'][$path]['raidPointRecords'],static fn($record)=>isset($record['fields']['keyIds'])));
+            $this->assertCount(2,$patches);$points=[];
+            foreach($patches as $patch){$points[]=['id'=>$patch['id'],'kind'=>'locked-door','category'=>'locked-door','name'=>'Дверь','gameMode'=>$mode,...$patch['expected']];}
+            $rows[$mode]=$this->dataset($path,['mapId'=>'customs','pois'=>$points]);
+            $packet['datasets']=[$path=>['raidPointRecords'=>$patches]];$packets[$mode]=$packet;
+        }
+        app(WikiImporter::class)->rebuild();
+        $ids=DB::table('wiki_map_points')->orderBy('id')->get(['id','external_id','mode'])->toJson();
+        $positions=DB::table('wiki_point_world_positions')->orderBy('id')->get(['id','point_id','world_x','world_y','world_z','order_index'])->toJson();
+        foreach(['regular','pve'] as $mode){
+            $url='/api/content/data/raid/'.($mode==='pve'?'pve/':'').'customs.json';
+            $old=$this->getJson($url)->assertOk()->assertJsonPath('pois.0.keyIds',[]);
+            $row=$rows[$mode];$original=$row->content();$edited=$original;
+            $edited['pois'][1]['cmsKeyUsages']=[['item'=>array_key_first($keys),'usage_type'=>'bypass','notes'=>'Правка редактора']];
+            $row->setContent($edited);$row->save();$ref=$row->getRawOriginal('payload');
+            try{app(ContentUpdates::class)->apply($packets[$mode]);$this->fail('Редакторский обход должен остановить пакет');}
+            catch(\RuntimeException $error){$this->assertStringContainsString('cmsKeyUsages',$error->getMessage());}
+            $this->assertSame($ref,$row->fresh()->getRawOriginal('payload'));
+            $this->assertSame([],$row->fresh()->content()['pois'][0]['keyIds']);
+            $this->assertDatabaseMissing('wiki_projection_states',['owner_type'=>'content-update','owner_id'=>$packets[$mode]['id']]);
+            $row->setContent($original);$row->save();
+            $this->assertTrue(app(ContentUpdates::class)->apply($packets[$mode])['applied']);
+            $this->assertFalse(app(ContentUpdates::class)->apply($packets[$mode])['applied']);
+            $new=$this->getJson($url)->assertOk();
+            $this->assertNotSame($old->headers->get('X-Wiki-Content-Revision'),$new->headers->get('X-Wiki-Content-Revision'));
+            foreach($packets[$mode]['datasets'] as $dataset)foreach($dataset['raidPointRecords'] as $index=>$patch){
+                $new->assertJsonPath('pois.'.$index.'.keyIds',$patch['fields']['keyIds']);
+                $point=DB::table('wiki_map_points')->where('external_id',$patch['id'])->where('mode',$mode)->value('id');
+                $item=DB::table('wiki_items')->where('external_id',$patch['fields']['keyIds'][0])->value('id');
+                $this->assertDatabaseHas('wiki_key_usages',['point_id'=>$point,'key_item_id'=>$item,'usage_type'=>'unlock','archived'=>0]);
+            }
+        }
+        $this->assertSame($ids,DB::table('wiki_map_points')->orderBy('id')->get(['id','external_id','mode'])->toJson());
+        $this->assertSame($positions,DB::table('wiki_point_world_positions')->orderBy('id')->get(['id','point_id','world_x','world_y','world_z','order_index'])->toJson());
+    }
+
 }

@@ -312,4 +312,32 @@ final class DocumentMapOverlayTest extends TestCase
         $this->assertSame($byMode['regular'],$byMode['pve']);
     }
 
+    public function test_customs_document_map_keeps_all_eleven_exits_and_explicit_floors_in_both_modes(): void
+    {
+        $definition=collect(json_decode(file_get_contents(public_path('data/raid/maps.json')),true,flags:JSON_THROW_ON_ERROR))->firstWhere('id','customs');
+        $service=new DocumentMapOverlay();$byMode=[];
+        $landmarks=['Перекресток'=>['floor-1',96.66636,40.55331],'Блокпост ВС РФ'=>['floor-1',66.19159,30.98346],
+            'Подвал котельной (Совм.)'=>['floor-1',55.23645,48.41544],'Проход через ЖД пути (Сигнал)'=>['floor-1',52.09065,-2.90993],
+            'ЗБ-1013'=>['floor-1',46.45047,28.29228],'ЗБ-1011'=>['floor--1',7.14953,33.18382],
+            'Трейлерный парк'=>['floor-1',94.77103,13.57904],'А-Выход у общаги'=>['floor-1',48.31028,95.63419],
+            'Старая заправка'=>['floor-1',36.22523,24.42647],'Лодка Контрабандистов'=>['floor-1',69.11308,78.98346],
+            'Бункер Контрабандистов (ЗБ-1012)'=>['floor-1',22.01215,35.79963]];
+        foreach(['regular','pve'] as $mode){
+            $raid=json_decode(gzdecode(file_get_contents(public_path('data/raid/'.($mode==='pve'?'pve/':'').'customs.json.gz'))),true,flags:JSON_THROW_ON_ERROR);$before=$raid;
+            $exits=array_column($service->build(['id'=>'customs'],[],$definition,$raid,[])['exits'],null,'name');
+            $this->assertCount(11,$exits);
+            foreach($landmarks as $name=>[$floor,$x,$y]){
+                $this->assertSame($floor,$exits[$name]['floor'],$mode.': '.$name);
+                $this->assertEqualsWithDelta($x,$exits[$name]['x'],.00001);$this->assertEqualsWithDelta($y,$exits[$name]['y'],.00001);
+                $original=collect($raid['pois'])->firstWhere('id',$exits[$name]['id']);
+                $conditions=array_values(array_filter($original['conditions'],static fn($text)=>$text!=='Выход связан с рубильником. Проверьте питание в рейде.'));
+                $this->assertSame($conditions,$exits[$name]['conditions']);
+            }
+            $this->assertTrue($exits['Проход через ЖД пути (Сигнал)']['outsideArtwork']);
+            $this->assertCount(1,array_filter($exits,static fn($exit)=>$exit['category']==='extract-shared'));
+            $this->assertSame($before,$raid);$byMode[$mode]=$exits;
+        }
+        $this->assertSame($byMode['regular'],$byMode['pve']);
+    }
+
 }
