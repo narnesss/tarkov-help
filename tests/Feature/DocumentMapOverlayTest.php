@@ -126,6 +126,29 @@ final class DocumentMapOverlayTest extends TestCase
         $this->assertSame($byMode['regular'],$byMode['pve']);
     }
 
+    public function test_labyrinth_document_map_projects_both_exits_from_tiles_in_both_modes(): void
+    {
+        $definition=collect(json_decode(file_get_contents(public_path('data/raid/maps.json')),true,flags:JSON_THROW_ON_ERROR))->firstWhere('id','the-labyrinth');
+        $this->assertSame('the-labyrinth',DocumentMapOverlay::ALIASES['labyrinth']);
+        $this->assertSame('tiles',$definition['baseAsset']['type']);
+        $service=new DocumentMapOverlay();$byMode=[];
+        foreach(['regular','pve'] as $mode){
+            $path=public_path('data/raid/'.($mode==='pve'?'pve/':'').'the-labyrinth.json.gz');
+            $raid=json_decode(gzdecode(file_get_contents($path)),true,flags:JSON_THROW_ON_ERROR);$before=$raid;
+            $exits=array_column($service->build(['id'=>'labyrinth'],[],$definition,$raid,[])['exits'],null,'name');
+            $this->assertCount(2,$exits);
+            foreach(['Путь наверх'=>[64.85246,43.88459],'Тропа Ариадны'=>[37.18720,65.25384]] as $name=>[$x,$y]){
+                $this->assertSame('floor-1',$exits[$name]['floor']);
+                $this->assertEqualsWithDelta($x,$exits[$name]['x'],.00001);
+                $this->assertEqualsWithDelta($y,$exits[$name]['y'],.00001);
+            }
+            $this->assertSame([],$exits['Путь наверх']['conditions']);
+            $this->assertSame(['Требуется: Ключ с меткой Ариадны'],$exits['Тропа Ариадны']['conditions']);
+            $this->assertSame($before,$raid);$byMode[$mode]=$exits;
+        }
+        $this->assertSame($byMode['regular'],$byMode['pve']);
+    }
+
     public function test_shoreline_document_exit_keeps_its_own_floor_on_both_api_generations(): void
     {
         $definition=['id'=>'shoreline','baseAsset'=>['type'=>'svg'],'bounds'=>[[504,-415],[-1056,618]],'coordinateRotation'=>180,
