@@ -149,6 +149,32 @@ final class DocumentMapOverlayTest extends TestCase
         $this->assertSame($byMode['regular'],$byMode['pve']);
     }
 
+    public function test_lab_document_map_projects_all_seven_exits_onto_three_levels_in_both_modes(): void
+    {
+        $definition=collect(json_decode(file_get_contents(public_path('data/raid/maps.json')),true,flags:JSON_THROW_ON_ERROR))->firstWhere('id','the-lab');
+        $this->assertSame('the-lab',DocumentMapOverlay::ALIASES['lab']);
+        $this->assertSame('tiles',$definition['baseAsset']['type']);
+        $service=new DocumentMapOverlay();$byMode=[];
+        $landmarks=['Ангар'=>['floor-1',90.91075,56.29672],'Парковка'=>['floor-1',6.78547,26.84566],
+            'Грузовой лифт'=>['floor-2',24.11736,84.67709],'Лифт медблока'=>['floor--1',46.83369,84.42665],
+            'Вентиляционная шахта'=>['floor--1',28.24448,68.59755],'Центральный лифт'=>['floor--1',50.11247,2.07950],
+            'Накопительный коллектор'=>['floor--1',77.01885,79.30341]];
+        foreach(['regular','pve'] as $mode){
+            $path=public_path('data/raid/'.($mode==='pve'?'pve/':'').'the-lab.json.gz');
+            $raid=json_decode(gzdecode(file_get_contents($path)),true,flags:JSON_THROW_ON_ERROR);$before=$raid;
+            $exits=array_column($service->build(['id'=>'lab'],[],$definition,$raid,[])['exits'],null,'name');
+            $this->assertCount(7,$exits);
+            foreach($landmarks as $name=>[$floor,$x,$y]){
+                $this->assertSame($floor,$exits[$name]['floor'],$mode.': '.$name);
+                $this->assertEqualsWithDelta($x,$exits[$name]['x'],.00001);
+                $this->assertEqualsWithDelta($y,$exits[$name]['y'],.00001);
+            }
+            $this->assertCount(3,array_filter($exits,static fn($exit)=>$exit['category']==='extract-shared'));
+            $this->assertSame($before,$raid);$byMode[$mode]=$exits;
+        }
+        $this->assertSame($byMode['regular'],$byMode['pve']);
+    }
+
     public function test_shoreline_document_exit_keeps_its_own_floor_on_both_api_generations(): void
     {
         $definition=['id'=>'shoreline','baseAsset'=>['type'=>'svg'],'bounds'=>[[504,-415],[-1056,618]],'coordinateRotation'=>180,
