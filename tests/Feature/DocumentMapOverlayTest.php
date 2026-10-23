@@ -149,6 +149,34 @@ final class DocumentMapOverlayTest extends TestCase
         $this->assertSame($byMode['regular'],$byMode['pve']);
     }
 
+    public function test_lighthouse_document_map_keeps_all_seven_current_exits_in_both_modes(): void
+    {
+        $definition=collect(json_decode(file_get_contents(public_path('data/raid/maps.json')),true,flags:JSON_THROW_ON_ERROR))->firstWhere('id','lighthouse');
+        $this->assertSame('svg',$definition['baseAsset']['type']);
+        $service=new DocumentMapOverlay();$byMode=[];
+        $landmarks=['Бронепоезд'=>[47.99340,7.45908],'Южная дорога'=>[76.49057,82.33314],
+            'Тропа через перевал'=>[66.36887,54.17934],'Проход у озера'=>[84.17830,20.59257],
+            'Северный блокпост'=>[37.76698,0.49565],'Боковой тоннель (Совм.)'=>[55.02830,76.38479],
+            'Переход на Берег'=>[82.96226,50.87638]];
+        foreach(['regular','pve'] as $mode){
+            $path=public_path('data/raid/'.($mode==='pve'?'pve/':'').'lighthouse.json.gz');
+            $raid=json_decode(gzdecode(file_get_contents($path)),true,flags:JSON_THROW_ON_ERROR);$before=$raid;
+            $exits=array_column($service->build(['id'=>'lighthouse'],[],$definition,$raid,[])['exits'],null,'name');
+            $this->assertCount(7,$exits);
+            foreach($landmarks as $name=>[$x,$y]){
+                $this->assertSame('floor-1',$exits[$name]['floor'],$mode.': '.$name);
+                $this->assertEqualsWithDelta($x,$exits[$name]['x'],.00001);
+                $this->assertEqualsWithDelta($y,$exits[$name]['y'],.00001);
+                $original=collect($raid['pois'])->firstWhere('id',$exits[$name]['id']);
+                $this->assertSame($original['conditions'],$exits[$name]['conditions']);
+            }
+            $this->assertArrayNotHasKey('Road to Military Base V-Ex',$exits);
+            $this->assertCount(2,array_filter($exits,static fn($exit)=>$exit['category']==='extract-shared'));
+            $this->assertSame($before,$raid);$byMode[$mode]=$exits;
+        }
+        $this->assertSame($byMode['regular'],$byMode['pve']);
+    }
+
     public function test_woods_document_map_keeps_all_ten_exits_and_the_verified_edge_in_both_modes(): void
     {
         $definition=collect(json_decode(file_get_contents(public_path('data/raid/maps.json')),true,flags:JSON_THROW_ON_ERROR))->firstWhere('id','woods');
