@@ -104,6 +104,28 @@ final class DocumentMapOverlayTest extends TestCase
         $this->assertSame($before,serialize(DB::table('wiki_point_world_positions')->get()->all()));
     }
 
+    public function test_factory_document_map_keeps_all_seven_pmc_exits_on_their_floors_in_both_modes(): void
+    {
+        $definition=collect(json_decode(file_get_contents(public_path('data/raid/maps.json')),true,flags:JSON_THROW_ON_ERROR))->firstWhere('id','factory');
+        $service=new DocumentMapOverlay();$byMode=[];
+        foreach(['regular','pve'] as $mode){
+            $path=public_path('data/raid/'.($mode==='pve'?'pve/':'').'factory.json.gz');
+            $raid=json_decode(gzdecode(file_get_contents($path)),true,flags:JSON_THROW_ON_ERROR);
+            $exits=array_column($service->build(['id'=>'factory'],[],$definition,$raid,[])['exits'],null,'name');
+            $this->assertCount(7,$exits);
+            foreach(['Ворота у медицинской палатки','Ворота 3','Ворота во дворе','Ворота 2','Ворота 0'] as $name){
+                $this->assertSame('floor-1',$exits[$name]['floor'],$mode.': '.$name);
+            }
+            foreach(['Подвалы','Проход Контрабандистов'] as $name)$this->assertSame('floor--1',$exits[$name]['floor']);
+            $this->assertArrayNotHasKey('Офисное окно',$exits);
+            $this->assertTrue($exits['Ворота во дворе']['outsideArtwork']);
+            $this->assertEqualsWithDelta(-1.16755,$exits['Ворота во дворе']['x'],.00001);
+            $this->assertEqualsWithDelta(3.10842,$exits['Ворота 3']['x'],.00001);
+            $byMode[$mode]=$exits;
+        }
+        $this->assertSame($byMode['regular'],$byMode['pve']);
+    }
+
     public function test_shoreline_document_exit_keeps_its_own_floor_on_both_api_generations(): void
     {
         $definition=['id'=>'shoreline','baseAsset'=>['type'=>'svg'],'bounds'=>[[504,-415],[-1056,618]],'coordinateRotation'=>180,
