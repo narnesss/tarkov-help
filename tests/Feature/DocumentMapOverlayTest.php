@@ -149,6 +149,36 @@ final class DocumentMapOverlayTest extends TestCase
         $this->assertSame($byMode['regular'],$byMode['pve']);
     }
 
+    public function test_woods_document_map_keeps_all_ten_exits_and_the_verified_edge_in_both_modes(): void
+    {
+        $definition=collect(json_decode(file_get_contents(public_path('data/raid/maps.json')),true,flags:JSON_THROW_ON_ERROR))->firstWhere('id','woods');
+        $this->assertSame('svg',$definition['baseAsset']['type']);
+        $service=new DocumentMapOverlay();$byMode=[];
+        $landmarks=['ЗБ-016'=>[73.57214,68.21829],'Проход у ЛЭП (Сигнал)'=>[5.11798,61.11652],
+            'Окраины'=>[21.10590,93.84808],'Южный пост ООН'=>[84.01706,88.55236],
+            'Ворота ВС РФ'=>[56.04122,100.41150],'ЗБ-014'=>[14.12651,71.64159],
+            'Мост дружбы (Совм.)'=>[39.29140,5.16372],'ЖД-мост к Таркову'=>[97.82729,76.94100],
+            'Северный пост ООН'=>[85.52381,62.45944],'А-Выход на мосту'=>[80.40725,30.23156]];
+        foreach(['regular','pve'] as $mode){
+            $path=public_path('data/raid/'.($mode==='pve'?'pve/':'').'woods.json.gz');
+            $raid=json_decode(gzdecode(file_get_contents($path)),true,flags:JSON_THROW_ON_ERROR);$before=$raid;
+            $exits=array_column($service->build(['id'=>'woods'],[],$definition,$raid,[])['exits'],null,'name');
+            $this->assertCount(10,$exits);
+            foreach($landmarks as $name=>[$x,$y]){
+                $this->assertSame('floor-1',$exits[$name]['floor'],$mode.': '.$name);
+                $this->assertEqualsWithDelta($x,$exits[$name]['x'],.00001);
+                $this->assertEqualsWithDelta($y,$exits[$name]['y'],.00001);
+                $original=collect($raid['pois'])->firstWhere('id',$exits[$name]['id']);
+                $this->assertSame($original['conditions'],$exits[$name]['conditions']);
+            }
+            $this->assertTrue($exits['Ворота ВС РФ']['outsideArtwork']);
+            $this->assertCount(1,array_filter($exits,static fn($exit)=>$exit['category']==='extract-shared'));
+            $this->assertSame($before,$raid);
+            $byMode[$mode]=array_map(static fn($exit)=>array_intersect_key($exit,array_flip(['id','x','y','floor','category','outsideArtwork'])),$exits);
+        }
+        $this->assertSame($byMode['regular'],$byMode['pve']);
+    }
+
     public function test_lab_document_map_projects_all_seven_exits_onto_three_levels_in_both_modes(): void
     {
         $definition=collect(json_decode(file_get_contents(public_path('data/raid/maps.json')),true,flags:JSON_THROW_ON_ERROR))->firstWhere('id','the-lab');
