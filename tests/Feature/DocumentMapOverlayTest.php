@@ -104,4 +104,19 @@ final class DocumentMapOverlayTest extends TestCase
         $this->assertSame($before,serialize(DB::table('wiki_point_world_positions')->get()->all()));
     }
 
+    public function test_shoreline_document_exit_keeps_its_own_floor_on_both_api_generations(): void
+    {
+        $definition=['id'=>'shoreline','baseAsset'=>['type'=>'svg'],'bounds'=>[[504,-415],[-1056,618]],'coordinateRotation'=>180,
+            'baseFloor'=>['id'=>'Ground_Level'],'floors'=>[['id'=>'Second_Floor','extents'=>[['height'=>[-1,2]]]]]];
+        $point=['id'=>'trail','name'=>'Тропа альпиниста','kind'=>'extract','category'=>'extract-pmc',
+            'position'=>['x'=>-214.3,'y'=>-1,'z'=>-361.8],'documentFloorOverride'=>'Ground_Level'];
+        $service=new DocumentMapOverlay();
+        foreach([[],['floorOverride'=>'Second_Floor'],['documentFloorOverride'=>'Прежний этаж','floorOverride'=>'Ground_Level']] as $legacy){
+            $result=$service->build(['id'=>'shoreline'],[],$definition,['mapId'=>'shoreline','pois'=>[[...$point,...$legacy]]],[]);
+            $this->assertCount(1,$result['exits']);$this->assertSame('floor-1',$result['exits'][0]['floor']);
+            $this->assertEqualsWithDelta(46.04487,$result['exits'][0]['x'],.00001);
+            $this->assertEqualsWithDelta(5.15005,$result['exits'][0]['y'],.00001);
+        }
+    }
+
 }

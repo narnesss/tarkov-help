@@ -137,7 +137,7 @@ final readonly class ContentUpdates
         $allowed=$path==='maps.json'?['file','width','height','type','coordinateSource','coordinateDate','documentPanels','layeredFile']:
             ['map','mapName','doc','docName','caption','floor','x','y','x2','y2','images','originalImages','cmsArchived','cmsPositions','cmsMedia','cmsDocuments','archiveReason','sourcePointId','coordinateSource','coordinateDate','sourceCoordinates'];
         if($path==='raid/maps.json'){$allowed=['transform','bounds','svgBounds','heightRange','floors','coordinateSource','floorPolicy'];}
-        if($path==='raid-points'){$allowed=['position','name','description','category','kind','lootType','containerId','itemIds','itemNames','keyIds','keyNames','sourceId','sourceZone','faction','hazardType','weaponId','bossId','questId','objectiveId','outline','targetMapId','gameMode','sourceMapId','sourceStatus','coordinateSource','coordinateDate','cmsArchived','archiveReason','hiddenByDefault'];}
+        if($path==='raid-points'){$allowed=['position','name','description','category','kind','lootType','containerId','itemIds','itemNames','keyIds','keyNames','sourceId','sourceZone','faction','hazardType','weaponId','bossId','questId','objectiveId','outline','targetMapId','gameMode','sourceMapId','sourceStatus','sourceNote','coordinateSource','coordinateDate','cmsArchived','archiveReason','hiddenByDefault'];}
         $seen=[];
         foreach($patches as $patch){
             $id=$patch['id'];if(isset($seen[$id])){throw new RuntimeException('Повтор ID в обновлении.');}$seen[$id]=true;

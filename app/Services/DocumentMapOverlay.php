@@ -87,8 +87,9 @@ final class DocumentMapOverlay
     {
         if(in_array($id,['icebreaker','labyrinth'],true))return 'floor-1';
         $p=$point['position'];$selected=$definition['baseFloor']['id']??'';
-        $override=$point['floorOverride']??null;
-        if(is_string($override)&&in_array($override,[$selected,...array_column($definition['floors']??[],'id')],true))return $this->documentFloor($override);
+        foreach([$point['documentFloorOverride']??null,$point['floorOverride']??null] as $override){
+            if(is_string($override)&&in_array($override,[$selected,...array_column($definition['floors']??[],'id')],true))return $this->documentFloor($override);
+        }
         foreach($definition['floors']??[] as $floor)foreach($floor['extents']??[] as $extent){
             [$low,$high]=$extent['height']??[-INF,INF];if($p['y']<$low||$p['y']>=$high)continue;
             if(!empty($extent['bounds'])){

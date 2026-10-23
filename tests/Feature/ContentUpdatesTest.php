@@ -72,6 +72,28 @@ final class ContentUpdatesTest extends TestCase
         $this->assertSame($ref,$map->fresh()->getRawOriginal('payload'));
     }
 
+    public function test_confirmed_spawn_becomes_visible_without_changing_ids_progress_or_editor_notes(): void
+    {
+        [, $map]=$this->fixtures();$data=$map->content();
+        $data['pois'][1]=[...$data['pois'][1],'sourceStatus'=>'supplemental','hiddenByDefault'=>true,'sourceNote'=>'Не подтверждена'];
+        $map->setContent($data);$map->save();app(WikiImporter::class)->dataset($map);
+        $pointId=DB::table('wiki_map_points')->where('external_id','correct-point')->value('id');$state=DB::table('user_state')->first();
+        $patch=['schemaVersion'=>1,'id'=>2026102301,'datasets'=>['raid/ground-zero.json'=>['raidPointRecords'=>[[
+            'id'=>'correct-point','expected'=>['position'=>['x'=>3,'y'=>0,'z'=>4],'sourceStatus'=>'supplemental','hiddenByDefault'=>true,'sourceNote'=>'Не подтверждена'],
+            'fields'=>['sourceStatus'=>'current','hiddenByDefault'=>false,'sourceNote'=>null,'coordinateSource'=>'https://tarkov.dev/map/ground-zero','coordinateDate'=>'2026-10-23'],
+        ]]]]];
+        $ref=$map->getRawOriginal('payload');app(ContentUpdates::class)->apply($patch,true);$this->assertSame($ref,$map->fresh()->getRawOriginal('payload'));
+        $data['pois'][1]['sourceNote']='Новая заметка редактора';$map->setContent($data);$map->save();$edited=$map->getRawOriginal('payload');
+        try{app(ContentUpdates::class)->apply($patch);$this->fail('Ожидался конфликт заметки');}catch(\RuntimeException $e){$this->assertStringContainsString('sourceNote',$e->getMessage());}
+        $this->assertSame($edited,$map->fresh()->getRawOriginal('payload'));$this->assertDatabaseMissing('wiki_projection_states',['owner_type'=>'content-update','owner_id'=>2026102301]);
+        $data['pois'][1]['sourceNote']='Не подтверждена';$map->setContent($data);$map->save();app(WikiImporter::class)->dataset($map);
+        app(ContentUpdates::class)->apply($patch);
+        $this->getJson('/api/content/data/raid/ground-zero.json')->assertOk()->assertJsonPath('pois.1.id','correct-point')
+            ->assertJsonPath('pois.1.hiddenByDefault',false)->assertJsonPath('pois.1.sourceStatus','current')->assertJsonPath('pois.1.sourceNote',null);
+        $this->assertSame($pointId,DB::table('wiki_map_points')->where('external_id','correct-point')->value('id'));
+        $this->assertEquals($state,DB::table('user_state')->first());$this->assertFalse(app(ContentUpdates::class)->apply($patch)['applied']);
+    }
+
     public function test_additive_item_catalog_preserves_editor_values_and_resolves_new_quest_links(): void
     {
         [$quest]=$this->fixtures();$dataset=ContentDataset::where('path','guide/quests-pve.json')->firstOrFail();
@@ -297,6 +319,10 @@ final class ContentUpdatesTest extends TestCase
         $maps->setContent($data);$maps->save();
         foreach($update['datasets'] as $path=>$patch){$raw=json_decode(gzdecode(file_get_contents(public_path('data/'.$path.'.gz'))),true,flags:JSON_THROW_ON_ERROR);
             $ids=array_column($patch['pointChanges'],'id');$kept=false;$raw['pois']=array_values(array_filter($raw['pois'],function($point)use($ids,&$kept){if(in_array($point['id'],$ids,true))return true;if(!$kept){$kept=true;return true;}return false;}));
+            // Актуальный seed уже включает архив; регрессия проверяет переход со старой версии.
+            foreach($patch['pointChanges'] as $change){foreach($raw['pois'] as &$point){if($point['id']===$change['id']){
+                foreach(array_keys($change['fields']) as $field){unset($point[$field]);}$point=[...$point,...$change['expected']];
+            }}unset($point);}
             $this->dataset($path,$raw);
         }app(WikiImporter::class)->rebuild();return $update;
     }

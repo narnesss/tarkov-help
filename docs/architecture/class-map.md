@@ -1,5 +1,9 @@
 # Карта классов Tarkov Wiki
 
+- Сверка Берега 2026102301–2026102302 подтверждает совпавшие supplemental-спавны через
+  ContentUpdates, без новых ID. DocumentMapOverlay учитывает самостоятельный
+  documentFloorOverride перед игровым floorOverride; SQL-позиции редактора остаются приоритетными.
+
 - DocumentMapScreen / DocumentMapEditorController / DocumentMapEditor — закрытый визуальный
   редактор схем документов. GET возвращает текущую схему и типизированные позиции, POST
   проверяет wiki.content, web-CSRF, карту/режим/этаж, конечные проценты и CAS всего снимка.
