@@ -1,27 +1,3 @@
-.dme{padding:16px;background:#fff;color:#242932;border:1px solid #d6dae0;border-radius:12px;min-width:0}
-.dme [hidden]{display:none!important}.dme *{box-sizing:border-box}
-.dme label{display:grid;gap:5px;min-width:0;font-weight:600}
-.dme input,.dme select{width:100%;min-width:0;min-height:44px;padding:8px;border:1px solid #8994a3;border-radius:6px;background:#fff;color:#1c2430;font:inherit}
-.dme button{min-height:44px;padding:8px 12px;border:1px solid #8291a2;border-radius:6px;color:#152b42;background:#edf1f6;font:inherit;white-space:normal;overflow-wrap:anywhere}
-.dme button:disabled{opacity:.55}.dme :focus-visible{outline:3px solid #155ca7;outline-offset:2px}
-.dme button.dme-danger{background:#a82031;color:#fff;border-color:#8c1524}.dme dialog{width:min(480px,calc(100% - 32px));max-height:85vh;overflow:auto;padding:20px;border:1px solid #8994a3;border-radius:12px;background:#fff;color:#242932}.dme dialog::backdrop{background:#10182199}.dme dialog h2{margin:0 0 12px}.dme dialog p{white-space:pre-line;line-height:1.5}.dme dialog .dme-actions{margin:16px 0 0}.dme dialog .dme-actions button{flex:1 1 140px}
-.dme-toolbar,.dme-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:12px}.dme-toolbar label{flex:1 1 145px}
-.dme-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;grid-template-areas:'canvas inspector';gap:16px}
-.dme-panel{grid-area:inspector;min-width:0;max-height:72vh;overflow:auto;padding:4px;display:flex;flex-direction:column;gap:10px}
-.dme-canvas-panel{grid-area:canvas;min-width:0;position:relative}
-.dme-points{display:grid;gap:6px}.dme-points button{text-align:left;flex-shrink:0;height:auto;line-height:1.45}
-.dme-points button[aria-pressed=true]{background:#dceafd;border-color:#155ca7}
-.dme #dme-form{display:grid;gap:10px}.dme h2{font-size:17px;overflow-wrap:anywhere}.dme p{overflow-wrap:anywhere}
-.dme-panel p,.dme #dme-hint{font-size:13px;line-height:1.5;margin:0}.dme #dme-hint{margin-top:8px}
-.dme-coordinates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.dme-error{color:#a31c28;margin:4px 0}.dme .is-invalid{border:2px solid #b92434;background:#fff0f0;color:#352222}
-.dme-stage{position:relative;height:72vh;min-height:360px;max-height:900px;overflow:hidden;background:#20272b;border-radius:8px;overscroll-behavior:contain;isolation:isolate;touch-action:none;font:inherit}
-.dme-plane{position:absolute;margin:0;aspect-ratio:1}.dme-plane>img{position:absolute;width:100%;height:100%;inset:0;object-fit:fill;user-select:none;pointer-events:none}
-.dme-marker{position:absolute;transform:translate(-50%,-50%);width:44px;height:44px!important;min-height:44px!important;display:grid;place-items:center;padding:0!important;background:transparent!important;border:0!important;touch-action:none;z-index:1}
-.dme-marker>span{display:grid;place-items:center;width:27px;height:27px;border-radius:50%;border:2px solid #f3dc91;background:#5b481f;color:white;font-weight:bold;text-shadow:0 1px #111}
-.dme-marker[data-kind=exit]>span{border-radius:6px;background:#264b2d;border-color:#b8ee78}
-.dme-marker[aria-pressed=true]{outline:3px solid #f2c65b;outline-offset:0;border-radius:6px;z-index:2}
-.dme-zoom{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:6px;z-index:3;border-radius:6px;background:#fff;padding:4px;box-shadow:0 1px 5px #0005}.dme-zoom button{width:44px;padding:0;font-size:22px}.dme-zoom output{min-width:44px;text-align:center}
-.dme-stage.is-placing{cursor:crosshair}.dme #dme-save{background:#185c45;color:#fff}.dme #dme-rebase{margin-bottom:12px;background:#fff1ca;border-color:#9e7410}.dme #dme-status{margin:12px 0}.dme #dme-new-fields{display:grid;gap:8px}
-@media(max-width:1100px){.dme-layout{grid-template-columns:minmax(0,1fr);grid-template-areas:'canvas' 'inspector'}.dme-panel{max-height:none}.dme-stage{height:58vh;min-height:340px}.dme-points{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:480px){.dme{padding:8px}.dme-toolbar{gap:8px}.dme-toolbar label{flex-basis:120px}.dme-actions{gap:6px}.dme-actions button{flex:1 1 125px}.dme-points{grid-template-columns:1fr}.dme-stage{height:52vh;min-height:300px}.dme-coordinates{grid-template-columns:1fr}.dme-layout{gap:10px}}
+.document-map-editor .me-coordinates{grid-template-columns:repeat(2,minmax(0,1fr))}
+.document-map-editor #dme-details{display:block;margin:0 4px 10px 0}
+@media(max-width:480px){.document-map-editor .me-coordinates{grid-template-columns:1fr}}

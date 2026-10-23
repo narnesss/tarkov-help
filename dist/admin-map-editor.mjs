@@ -1,3 +1,4 @@
+import {createEditorMap,editorMarkerIcon,editorListButton} from './admin-map-ui.mjs';
 import {CATEGORIES,LOOT_NAMES,titleOf,iconPath,poiFloor as sourceFloor,validPosition} from './raid-model.mjs';
 import {mapCrs,pointCoordinates,worldCoordinates,sourceCalibration,floorHeight,rasterTileLayer} from './raid-map-geometry.mjs';
 import {discardPointDraft} from './admin-map-drafts.mjs';
@@ -35,8 +36,7 @@ function changed(){
   pending.set(selected.id,draft(selected));controls();status(`Несохранённых точек: ${pending.size}`);return true;
 }
 function canEdit(point=selected){if(busy||!point)return false;if(!pending.has(point.id)&&pending.size>=100){status('Сохраните текущие 100 изменений перед следующими.',true);fields();return false;}return true;}
-function markerIcon(point){const n=element('span'),img=element('img');img.src=asset(iconPath(point));img.alt='';n.append(img);
-  return L.divIcon({html:n,className:'me-marker'+(point.id===selected?.id?' is-selected':'')+(pending.has(point.id)?' is-dirty':'')+(point.cmsArchived?' is-archived':''),iconSize:[44,44],iconAnchor:[22,22]});}
+function markerIcon(point){return editorMarkerIcon(L,asset(iconPath(point)),{selected:point.id===selected?.id,dirty:pending.has(point.id),archived:!!point.cmsArchived});}
 function visible(){const query=$('search').value.toLocaleLowerCase('ru');return points.filter(p=>validPosition(p.position)&&CATEGORIES[p.category]&&
   (floor()==='all'||poiFloor(snapshot.definition,p)===floor())&&($('category').value==='all'||p.category===$('category').value)&&
   ($('archived').checked||!p.cmsArchived)&&(!query||[titleOf(p),p.name,p.description,p.id].join(' ').toLocaleLowerCase('ru').includes(query)));}
@@ -50,7 +50,7 @@ function render(){
       point.floorOverride=poiFloor(snapshot.definition,point);point.position=position;point.editorPosition=true;changed();render();fields();markers.getLayers().find(m=>m.options.poiId===point.id)?.getElement().focus({preventScroll:true});
     });
   }
-  for(const p of list.slice(0,limit)){const b=element('button'),img=element('img');b.type='button';img.src=asset(iconPath(p));img.alt='';b.append(img,element('span',titleOf(p)));if(p.id===selected?.id)b.classList.add('is-selected');b.onclick=()=>{select(p);map.panTo(pointCoordinates(snapshot.definition,floor(),p));};$('list').append(b);}
+  for(const p of list.slice(0,limit)){const b=editorListButton(asset(iconPath(p)),titleOf(p),{selected:p.id===selected?.id,dirty:pending.has(p.id),archived:!!p.cmsArchived});b.onclick=()=>{select(p);map.panTo(pointCoordinates(snapshot.definition,floor(),p));};$('list').append(b);}
   $('more').hidden=list.length<=limit;
 }
 function select(point){const previous=selected?.id;clearErrors();selected=point;fields();for(const marker of markers.getLayers()){if(![previous,point.id].includes(marker.options.poiId))continue;const p=points.find(p=>p.id===marker.options.poiId);if(p)marker.setIcon(markerIcon(p));}}
@@ -95,7 +95,7 @@ async function load(){
   try{const data=await request(root.dataset.endpoint+'?'+scope());if(token!==epoch)return;snapshot=data;loadedScope={map:$('map').value,mode:$('mode').value};
     points=structuredClone(data.data.pois);pending.clear();selected=null;conflict=null;placing=false;$('conflict').hidden=true;
     $('floor').replaceChildren(option('all','Все этажи'),...floors().map(f=>option(f.id,f.name)));$('point-floor').replaceChildren(...floors().map(f=>option(f.id,f.name)));
-    if(map)map.remove();artwork=null;map=L.map($('canvas'),{crs:mapCrs(L,data.definition),minZoom:-5,maxZoom:8,zoomControl:true});map.createPane('artwork').style.zIndex=200;markers=L.layerGroup().addTo(map);
+    if(map)map.remove();artwork=null;map=createEditorMap(L,$('canvas'),{crs:mapCrs(L,data.definition)});markers=L.layerGroup().addTo(map);
     map.on('click',event=>{
       if(!placing||busy)return;
       if(placing==='new'){
