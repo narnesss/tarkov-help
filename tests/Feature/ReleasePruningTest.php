@@ -17,6 +17,7 @@ set -eu
 command=${!#}
 case "$command" in
   "bash -s -- 'storage-check'"|"bash -s -- 'storage-clean'") ;;
+  *'php /dev/stdin'*) printf '%s\n' "$command" >> "$STORAGE_TEST_ROOT/commands"; cat > "$STORAGE_TEST_ROOT/prune-script"; exit ;;
   *) exit 66 ;;
 esac
 printf '%s\n' "$command" >> "$STORAGE_TEST_ROOT/commands"
@@ -31,10 +32,30 @@ SH;
                     'GITHUB_SHA'=>str_repeat('a',40),'GITHUB_RUN_ID'=>'1','GITHUB_RUN_ATTEMPT'=>'1','ALWAYSDATA_API_KEY'=>false,
                 ]);$process->setTimeout(15);$process->run();$this->assertSame($mode==='storage-unknown'?1:0,$process->getExitCode(),$process->getErrorOutput());
             }
-            $this->assertSame(["bash -s -- 'storage-check'","bash -s -- 'storage-clean'"],file($root.'/commands',FILE_IGNORE_NEW_LINES));
+            $commands=file($root.'/commands',FILE_IGNORE_NEW_LINES);$this->assertCount(4,$commands);
+            $this->assertSame("bash -s -- 'storage-check'",$commands[0]);$this->assertSame("bash -s -- 'storage-clean'",$commands[2]);
+            $this->assertStringContainsString('--dry-run',$commands[1]);$this->assertStringNotContainsString('--dry-run',$commands[3]);
+            $this->assertStringContainsString('"$HOME/tarkov-releases"',$commands[1]);
+            $this->assertSame(file_get_contents(base_path('deployment/alwaysdata/prune-releases.php')),file_get_contents($root.'/prune-script'));
             $script=file_get_contents($root.'/script');$this->assertStringContainsString('composer clear-cache --no-interaction',$script);
-            $this->assertStringContainsString('prune-releases.php',$script);$this->assertStringContainsString('flock -w 60',$script);
+$this->assertStringContainsString('flock -w 60',$script);
             $this->assertDoesNotMatchRegularExpression('/\b(?:rm|migrate|restore|scp)\b/',$script);
+        }finally{(new Filesystem())->deleteDirectory($root);}
+    }
+
+    public function test_pruning_checks_without_deletion_and_removes_only_aged_orphan_code_archives(): void
+    {
+        $root=sys_get_temp_dir().'/wiki-orphan-'.bin2hex(random_bytes(8));$base=$root.'/tarkov-releases';mkdir($base,0700,true);mkdir($root.'/tarkov-incoming');mkdir($root.'/tarkov-data');file_put_contents($root.'/tarkov-data/keep','данные');
+        $id=static fn($i)=>sprintf('%040x-%d-1',$i,$i);$active=$base.'/'.$id(1);mkdir($active);file_put_contents($active.'/REVISION',$id(1));file_put_contents($active.'/PUBLISHED',$id(1));
+        $archive=static fn($i)=>$root.'/tarkov-incoming/'.$id($i).'.tar.gz';foreach([1,2,3,5] as $i){file_put_contents($archive($i),'архив');touch($archive($i),$i===3?time():1);}
+        symlink($root.'/tarkov-data/keep',$archive(4));symlink($root.'/tarkov-data',$base.'/'.$id(5));file_put_contents($root.'/tarkov-incoming/manual.tar.gz','сохранить');
+        try{
+            foreach([true,false] as $dry){
+                $process=new \Symfony\Component\Process\Process([PHP_BINARY,base_path('deployment/alwaysdata/prune-releases.php'),$base,$active,$active,...($dry?['--dry-run']:[])]);$process->mustRun();
+                if($dry){$this->assertFileExists($archive(2));$this->assertStringContainsString('Проверка без удаления',$process->getOutput());}else{$this->assertFileDoesNotExist($archive(2));}
+                foreach([1,3,4,5] as $i)$this->assertFileExists($archive($i));
+                $this->assertDirectoryExists($active);$this->assertSame('данные',file_get_contents($root.'/tarkov-data/keep'));$this->assertSame('сохранить',file_get_contents($root.'/tarkov-incoming/manual.tar.gz'));
+            }
         }finally{(new Filesystem())->deleteDirectory($root);}
     }
 

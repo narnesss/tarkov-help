@@ -46,12 +46,11 @@ report() {
 report
 if [[ $mode = storage-clean ]]; then
   composer clear-cache --no-interaction
-  if test -d "$HOME/tarkov-releases"; then
-    php "$HOME/tarkov-api/deployment/alwaysdata/prune-releases.php" "$HOME/tarkov-releases" "$HOME/tarkov-api" "$HOME/tarkov-api"
-  fi
   report
 fi
 STORAGE
+  dry_run=; if [[ $mode = storage-check ]]; then dry_run=--dry-run; fi
+  ssh "${ssh_options[@]}" "$target" "if test -d \"\$HOME/tarkov-releases\"; then flock -w 60 \"\$HOME/tarkov-deploy.lock\" php /dev/stdin \"\$HOME/tarkov-releases\" \"\$HOME/tarkov-api\" \"\$HOME/tarkov-api\" '$dry_run'; fi" < deployment/alwaysdata/prune-releases.php
   exit
 fi
 if [[ $mode = oauth-transfer ]]; then
