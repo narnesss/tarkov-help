@@ -340,4 +340,31 @@ final class DocumentMapOverlayTest extends TestCase
         $this->assertSame($byMode['regular'],$byMode['pve']);
     }
 
+    public function test_streets_document_map_keeps_twelve_exits_and_mode_specific_taxi_costs(): void
+    {
+        $definition=collect(json_decode(file_get_contents(public_path('data/raid/maps.json')),true,flags:JSON_THROW_ON_ERROR))->firstWhere('id','streets-of-tarkov');
+        $this->assertSame('streets-of-tarkov',DocumentMapOverlay::ALIASES['streets']);$service=new DocumentMapOverlay();$byMode=[];
+        $landmarks=['Упавший кран'=>['floor-1',17.72471,68.64571],'Место крушения'=>['floor-1',1.70149,84.75937],
+            'Разрушенный дом'=>['floor-1',94.26368,77.36638],'Подвал в Pinewood (Совм.)'=>['floor-1',72.51741,43.51632],
+            'Лифт в стилобате'=>['floor-1',60.98507,26.94680],'Улица Климова (Сигнал)'=>['floor-1',97.24876,40.89359],
+            'Двор-колодец'=>['floor-1',78.52570,96.14631],'КПП у выставочного центра'=>['floor-1',18.22222,22.97944],
+            'Подвал Контрабандистов'=>['floor-1',40.96352,41.71826],'Река в коллекторе'=>['floor-1',97.85075,62.21040],
+            'Блокпост Диких'=>['floor--1',18.51741,45.62394],'А-выход Такси на Приморском'=>['floor-1',53.92869,91.44256]];
+        foreach(['regular','pve'] as $mode){
+            $raid=json_decode(gzdecode(file_get_contents(public_path('data/raid/'.($mode==='pve'?'pve/':'').'streets-of-tarkov.json.gz'))),true,flags:JSON_THROW_ON_ERROR);$before=$raid;
+            $exits=array_column($service->build(['id'=>'streets'],[],$definition,$raid,[])['exits'],null,'name');
+            $this->assertCount(12,$exits);
+            foreach($landmarks as $name=>[$floor,$x,$y]){
+                $this->assertSame($floor,$exits[$name]['floor'],$mode.': '.$name);
+                $this->assertEqualsWithDelta($x,$exits[$name]['x'],.00001);$this->assertEqualsWithDelta($y,$exits[$name]['y'],.00001);
+                $this->assertSame(collect($raid['pois'])->firstWhere('id',$exits[$name]['id'])['conditions'],$exits[$name]['conditions']);
+            }
+            $this->assertSame([$mode==='regular'?'Требуется: Рубли ×20 000':'Требуется: Рубли ×5 000'],$exits['А-выход Такси на Приморском']['conditions']);
+            $this->assertCount(1,array_filter($exits,static fn($exit)=>$exit['category']==='extract-shared'));
+            $this->assertSame($before,$raid);$byMode[$mode]=$exits;
+        }
+        $geometry=static fn($exit)=>array_diff_key($exit,['conditions'=>true]);
+        $this->assertSame(array_map($geometry,$byMode['regular']),array_map($geometry,$byMode['pve']));
+    }
+
 }
