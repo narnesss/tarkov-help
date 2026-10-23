@@ -456,3 +456,7 @@ Runner передаёт ключ через stdin проверенного SSH-�
 Перезапуск PHP-сайта alwaysdata также перезапускает другие Apache-сайты того же аккаунта, если они есть. Ручной Restart остаётся аварийным действием. Для отката механизма вернуть согласованный предыдущий код release/workflow, сохранив shared, `.env`, APP_KEY и БД. Удаление/отзыв ключа — отдельное действие владельца; обычный откат его не удаляет.
 
 Официальные источники: [перезапуск сайта](https://help.alwaysdata.com/en/docs/web-hosting/sites/restart-a-site/), [пример API](https://help.alwaysdata.com/en/docs/development/api/examples/).
+
+## Квота файлов перед релизом
+
+Ручной workflow `Inspect and clean reproducible deployment files` работает только с main и прежними SSH-секретами в alwaysdata-production, под общей блокировкой деплоя. Действие check выводит квоту и размеры известных каталогов. clean дополнительно вызывает штатный `composer clear-cache --no-interaction` и прежний проверенный prune-releases.php: удаляются воспроизводимый кэш и незавершённый код, сохраняются текущий и три завершённых релиза. SQL, CONTENT_DIRECTORY, shared, аккаунты и резервные копии не удаляются. Сначала проверить размеры; при отсутствии достаточного места не повторять деплой вслепую.

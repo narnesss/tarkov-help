@@ -8,6 +8,36 @@ use Illuminate\Filesystem\Filesystem;
 /** Очистка незавершённого кода не должна затрагивать работающий релиз и приватные ссылки. */
 final class ReleasePruningTest extends TestCase
 {
+    public function test_storage_maintenance_uses_only_fixed_commands_and_never_uploads_or_activates(): void
+    {
+        $root=sys_get_temp_dir().'/wiki-storage-'.bin2hex(random_bytes(8));mkdir($root.'/bin',0700,true);
+        $ssh=<<<'SH'
+#!/usr/bin/env bash
+set -eu
+command=${!#}
+case "$command" in
+  "bash -s -- 'storage-check'"|"bash -s -- 'storage-clean'") ;;
+  *) exit 66 ;;
+esac
+printf '%s\n' "$command" >> "$STORAGE_TEST_ROOT/commands"
+cat > "$STORAGE_TEST_ROOT/script"
+SH;
+        file_put_contents($root.'/bin/ssh',$ssh);chmod($root.'/bin/ssh',0700);
+        try{
+            foreach(['storage-check','storage-clean','storage-unknown'] as $mode){
+                $process=new \Symfony\Component\Process\Process(['bash',base_path('deployment/alwaysdata/github-deploy.sh'),$mode],base_path(),[
+                    'PATH'=>$root.'/bin:'.getenv('PATH'),'STORAGE_TEST_ROOT'=>$root,'RUNNER_TEMP'=>$root,
+                    'ALWAYSDATA_SSH_KEY'=>'isolated-key','ALWAYSDATA_KNOWN_HOSTS'=>'isolated-host',
+                    'GITHUB_SHA'=>str_repeat('a',40),'GITHUB_RUN_ID'=>'1','GITHUB_RUN_ATTEMPT'=>'1','ALWAYSDATA_API_KEY'=>false,
+                ]);$process->setTimeout(15);$process->run();$this->assertSame($mode==='storage-unknown'?1:0,$process->getExitCode(),$process->getErrorOutput());
+            }
+            $this->assertSame(["bash -s -- 'storage-check'","bash -s -- 'storage-clean'"],file($root.'/commands',FILE_IGNORE_NEW_LINES));
+            $script=file_get_contents($root.'/script');$this->assertStringContainsString('composer clear-cache --no-interaction',$script);
+            $this->assertStringContainsString('prune-releases.php',$script);$this->assertStringContainsString('flock -w 60',$script);
+            $this->assertDoesNotMatchRegularExpression('/\b(?:rm|migrate|restore|scp)\b/',$script);
+        }finally{(new Filesystem())->deleteDirectory($root);}
+    }
+
     public function test_deploy_frees_quota_before_creating_remote_key_or_uploading_archive(): void
     {
         $root=sys_get_temp_dir().'/wiki-quota-'.bin2hex(random_bytes(8));mkdir($root.'/bin',0700,true);

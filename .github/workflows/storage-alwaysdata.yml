@@ -1,0 +1,36 @@
+name: Inspect and clean reproducible deployment files
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'check — только размеры; clean — кэш Composer и незавершённый код'
+        type: choice
+        options: [check, clean]
+        default: check
+        required: true
+permissions:
+  contents: read
+jobs:
+  storage:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: alwaysdata-production
+      cancel-in-progress: false
+    environment: alwaysdata-production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Inspect or clean reproducible deployment files
+        env:
+          ALWAYSDATA_SSH_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
+          ALWAYSDATA_KNOWN_HOSTS: ${{ secrets.ALWAYSDATA_KNOWN_HOSTS }}
+          STORAGE_ACTION: ${{ inputs.action }}
+        run: |
+          case "$STORAGE_ACTION" in
+            check) bash deployment/alwaysdata/github-deploy.sh storage-check ;;
+            clean) bash deployment/alwaysdata/github-deploy.sh storage-clean ;;
+            *) exit 2 ;;
+          esac

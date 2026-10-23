@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 umask 077
 mode=${1:-deploy}
-[[ $mode = deploy || $mode = backup || $mode = restore || $mode = test-restore || $mode = mysql-transfer || $mode = oauth-transfer ]] || { echo 'Неизвестный режим' >&2; exit 1; }
+[[ $mode = deploy || $mode = backup || $mode = restore || $mode = test-restore || $mode = mysql-transfer || $mode = oauth-transfer || $mode = storage-check || $mode = storage-clean ]] || { echo 'Неизвестный режим' >&2; exit 1; }
 if [[ $mode = restore ]]; then
   [[ ${RESTORE_ACTION:-} = list || ${RESTORE_ACTION:-} = check || ${RESTORE_ACTION:-} = restore ]] || exit 1
   if [[ $RESTORE_ACTION != list ]]; then
@@ -30,6 +30,30 @@ unset ALWAYSDATA_SSH_KEY ALWAYSDATA_KNOWN_HOSTS
 ssh_options=(-i "$ssh_dir/key" -o BatchMode=yes -o IdentitiesOnly=yes
   -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$ssh_dir/known_hosts" -o ConnectTimeout=20)
 target=narnes@ssh-narnes.alwaysdata.net
+if [[ $mode = storage-check || $mode = storage-clean ]]; then
+  # Только размеры известных каталогов; SQL, content, shared и личные файлы не удаляются.
+  ssh "${ssh_options[@]}" "$target" "bash -s -- '$mode'" <<'STORAGE'
+set -euo pipefail
+mode=$1
+exec 9>"$HOME/tarkov-deploy.lock"
+flock -w 60 9
+report() {
+  quota -s 2>/dev/null || true
+  for directory in tarkov-releases tarkov-incoming tarkov-shared tarkov-data .cache/composer .composer/cache; do
+    if test -d "$HOME/$directory"; then du -sk -- "$HOME/$directory"; fi
+  done
+}
+report
+if [[ $mode = storage-clean ]]; then
+  composer clear-cache --no-interaction
+  if test -d "$HOME/tarkov-releases"; then
+    php "$HOME/tarkov-api/deployment/alwaysdata/prune-releases.php" "$HOME/tarkov-releases" "$HOME/tarkov-api" "$HOME/tarkov-api"
+  fi
+  report
+fi
+STORAGE
+  exit
+fi
 if [[ $mode = oauth-transfer ]]; then
   [[ ${OAUTH_ACTION:-} = prepare || ${OAUTH_ACTION:-} = apply || ${OAUTH_ACTION:-} = cleanup ]] || exit 1
   [[ ${OAUTH_CIPHERTEXT:-} =~ ^[A-Za-z0-9+/=]*$ ]] || exit 1
