@@ -60,18 +60,19 @@ for(const mode of ['regular','pve']){
       const positions=[...(objective.possibleLocations||[]).filter(l=>l.map===m.id).flatMap(l=>l.positions.map(position=>({position}))),...(objective.zones||[]).filter(z=>z.map===m.id)];
       for(const p of positions)add('quest','quest',p,{name:taskNames.get(q.id)||'Квестовое место',questId:q.id,objectiveId:objective.id,description:payload.pois.find(p=>p.objectiveId===objective.id)?.description||'',...(p.outline?{outline:p.outline}:{}),...(objective.questItem?{itemIds:[objective.questItem]}:{})});
     }
+    const sameMode=point=>!point.gameMode||point.gameMode==='all'||point.gameMode===mode;
     const identity=p=>p.category==='quest'?p.questId+'/'+p.objectiveId:p.category==='loot'?p.containerId:p.category==='loose-loot'?[...(p.itemIds||[])].sort().join(','):p.category==='locked-door'?[...(p.keyIds||[])].sort().join(','):p.category==='stationary-weapon'?p.weaponId:'';
     // Только однозначный внешний ID или точная позиция того же типа. Центроиды спавнов разбираются по исходным позициям.
     const distinctSource=[...new Map(source.map(p=>[p.category+'\0'+identity(p)+'\0'+positionKey(p.position),p])).values()];
     for(const p of distinctSource){
       // Явный архив и ручная позиция не отменяются повторным импортом источника.
-      const protectedPoint=payload.pois.find(old=>((old.cmsArchived&&!old.archiveReason?.startsWith('Усреднённая группа заменена'))||old.editorPosition||old.sourceStatus==='editor')&&old.category===p.category&&
+      const protectedPoint=payload.pois.find(old=>sameMode(old)&&((old.cmsArchived&&!old.archiveReason?.startsWith('Усреднённая группа заменена'))||old.editorPosition||old.sourceStatus==='editor')&&old.category===p.category&&
         ((p.sourceId&&old.sourceId===p.sourceId&&!['spawn','boss-zone'].includes(p.kind))||
         !(old.sourcePoints?.length>1)&&identity(old)===identity(p)&&distance(old.position,p.position)<.08));
       if(protectedPoint){used.add(protectedPoint.id);continue;}
-      let matches=payload.pois.filter(old=>!used.has(old.id)&&!old.cmsArchived&&!old.editorPosition&&old.sourceStatus!=='editor'&&old.category===p.category&&
+      let matches=payload.pois.filter(old=>sameMode(old)&&!used.has(old.id)&&!old.cmsArchived&&!old.editorPosition&&old.sourceStatus!=='editor'&&old.category===p.category&&
         ((p.sourceId&&old.sourceId===p.sourceId&&!['spawn','boss-zone'].includes(p.kind))||identity(old)===identity(p)&&distance(old.position,p.position)<.08));
-      if(matches.length===0&&['spawn','boss-zone'].includes(p.kind))matches=payload.pois.filter(old=>!used.has(old.id)&&!old.cmsArchived&&!old.editorPosition&&old.category===p.category&&
+      if(matches.length===0&&['spawn','boss-zone'].includes(p.kind))matches=payload.pois.filter(old=>sameMode(old)&&!used.has(old.id)&&!old.cmsArchived&&!old.editorPosition&&old.category===p.category&&
         (old.sourcePoints||[]).some(v=>Math.hypot(v[0]-p.position.x,v[1]-p.position.z)<.08));
       matches.sort((a,b)=>distance(a.position,p.position)-distance(b.position,p.position));
       const old=matches.length===1||matches.length>1&&distance(matches[0].position,p.position)<.00001?matches[0]:null;
@@ -90,7 +91,7 @@ for(const mode of ['regular','pve']){
         changes.push({id,expected:null,fields});payload.pois.push({id,...fields});used.add(id);
       }
     }
-    for(const old of original.pois){if(used.has(old.id)||old.cmsArchived||old.editorPosition||!old.navigator||!['spawn','boss-zone'].includes(old.kind))continue;
+    for(const old of original.pois){if(!sameMode(old)||used.has(old.id)||old.cmsArchived||old.editorPosition||!old.navigator||!['spawn','boss-zone'].includes(old.kind))continue;
       const fields={cmsArchived:true,archiveReason:'Усреднённая группа заменена отдельными позициями tarkov.dev; ID и связи сохранены.'};changes.push({id:old.id,expected:{position:old.position,sourceStatus:old.sourceStatus??null},fields});Object.assign(payload.pois.find(p=>p.id===old.id),fields);
     }
     const summary={map:definition.id,mode,source:source.length,confirmed:changes.filter(x=>x.fields.hiddenByDefault===false).length,added:changes.filter(x=>x.expected===null).length,addedKinds:Object.fromEntries([...new Set(changes.filter(x=>x.expected===null).map(x=>x.fields.kind))].map(k=>[k,changes.filter(x=>x.expected===null&&x.fields.kind===k).length])),moved:changes.filter(x=>x.expected&&x.fields.position).length,archivedAggregates:changes.filter(x=>x.fields.cmsArchived).length};report.push(summary);

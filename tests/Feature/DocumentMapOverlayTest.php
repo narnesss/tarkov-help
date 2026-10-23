@@ -289,4 +289,27 @@ final class DocumentMapOverlayTest extends TestCase
         }
     }
 
+    public function test_reserve_document_map_keeps_all_seven_exits_on_surface_and_in_bunkers_in_both_modes(): void
+    {
+        $definition=collect(json_decode(file_get_contents(public_path('data/raid/maps.json')),true,flags:JSON_THROW_ON_ERROR))->firstWhere('id','reserve');
+        $service=new DocumentMapOverlay();$byMode=[];
+        $landmarks=['Бронепоезд'=>['floor-1',25.02872,23.39744],'Выход в сторону Леса'=>['floor-1',42.64696,9.60440],
+            'Спуск со скалы'=>['floor-1',50.37838,88.35714],'Канализационный люк'=>['floor-1',42.03041,64.18498],
+            'Д-2'=>['floor--1',69.33784,81.73077],'Гермозатвор бункера'=>['floor--1',38.35811,15.28571],
+            'Дикие места (Совм.)'=>['floor-1',70.42230,24.06777]];
+        foreach(['regular','pve'] as $mode){
+            $raid=json_decode(gzdecode(file_get_contents(public_path('data/raid/'.($mode==='pve'?'pve/':'').'reserve.json.gz'))),true,flags:JSON_THROW_ON_ERROR);$before=$raid;
+            $exits=array_column($service->build(['id'=>'reserve'],[],$definition,$raid,[])['exits'],null,'name');
+            $this->assertCount(7,$exits);
+            foreach($landmarks as $name=>[$floor,$x,$y]){
+                $this->assertSame($floor,$exits[$name]['floor'],$mode.': '.$name);
+                $this->assertEqualsWithDelta($x,$exits[$name]['x'],.00001);$this->assertEqualsWithDelta($y,$exits[$name]['y'],.00001);
+                $this->assertSame(collect($raid['pois'])->firstWhere('id',$exits[$name]['id'])['conditions'],$exits[$name]['conditions']);
+            }
+            $this->assertCount(4,array_filter($exits,static fn($exit)=>$exit['category']==='extract-shared'));
+            $this->assertSame($before,$raid);$byMode[$mode]=$exits;
+        }
+        $this->assertSame($byMode['regular'],$byMode['pve']);
+    }
+
 }

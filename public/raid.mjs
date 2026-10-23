@@ -356,7 +356,7 @@ async function showPoi(p, center = false) {
   for(const condition of p.conditions||[])info.append(el('p',condition));
   if(p.trader)info.append(el('p',`Торговец: ${p.trader} · Уровень от ${p.minLevel}`));
   if(p.category==='loot'||p.category==='loose-loot')info.append(el('p','Возможное место лута. Наличие и содержимое меняются между рейдами.'));
-  if(p.kind==='boss-zone')info.append(el('p',`Шанс спавна: ${Math.round(p.spawnChance*100)}%. Данные от ${p.snapshotDate||definition.snapshotDate}; текущий шанс может отличаться.`));
+  if(p.kind==='boss-zone'&&Number.isFinite(p.spawnChance))info.append(el('p',`Шанс спавна: ${Math.round(p.spawnChance*100)}%. Данные от ${p.snapshotDate||definition.snapshotDate}; текущий шанс может отличаться.`));
   if(p.kind==='extract')info.append(el('p','Доступность выхода и условия проверьте в текущем рейде.'));
   if(p.transferItem){const id=p.transferItem.itemId;info.append(el('p',`Требуется: ${id==='5449016a4bdc2d6f028b456f'?'Рубли':itemNames[id]||'предмет для выхода'} × ${p.transferItem.count.toLocaleString('ru')}`));}
   for(const id of p.keyIds||[])info.append(link(itemNames[id]||'Информация о ключе ↗',siteHref(`reference.html?tab=items&item=${encodeURIComponent(id)}&mode=${gameMode}`)),el('br'));

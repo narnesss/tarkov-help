@@ -23,6 +23,7 @@ test('сверка подтверждает скрытые спавны выбр
   for(const mode of ['regular','pve']){
    const relative='public/data/raid/'+(mode==='pve'?'pve/':'');
    write(relative+'shoreline.json',{mapId:'shoreline',pois:[
+    {id:'foreign-spawn',kind:'spawn',category:'spawn-pmc',position:spawn.position,gameMode:mode==='pve'?'regular':'pve',sourceStatus:'supplemental',hiddenByDefault:true,navigator:{layer:'spawns'}},
     {id:'stable-spawn',kind:'spawn',category:'spawn-pmc',name:'Спавн',position:spawn.position,sourceStatus:'supplemental',hiddenByDefault:true,sourceNote:'Не подтверждена',gameMode:mode,custom:'Сохранить'},
     {id:'old-exit',kind:'extract',category:'extract-pmc',position:raw.extracts[0].position,sourceId:'old-exit',cmsArchived:true},
     {id:'editor',kind:'spawn',category:'spawn-pmc',position:{x:50,y:0,z:50},sourceStatus:'editor',hiddenByDefault:true}
@@ -40,7 +41,7 @@ test('сверка подтверждает скрытые спавны выбр
   assert.deepEqual(run(true).map(x=>x.confirmed),[1,1]);
   for(const [index,mode] of ['regular','pve'].entries()){
    const p=read('public/data/raid/'+(mode==='pve'?'pve/':'')+'shoreline.json').pois;
-   assert.equal(p.length,3);assert.equal(p[0].id,'stable-spawn');assert.equal(p[0].hiddenByDefault,false);assert.equal(p[0].sourceStatus,'current');assert.equal(p[0].sourceNote,null);assert.equal(p[0].custom,'Сохранить');
+   assert.equal(p.length,4);const foreign=p.shift();assert.equal(foreign.id,'foreign-spawn');assert.equal(foreign.hiddenByDefault,true);assert.equal(foreign.sourceStatus,'supplemental');assert.equal(foreign.cmsArchived,undefined);assert.equal(p[0].id,'stable-spawn');assert.equal(p[0].hiddenByDefault,false);assert.equal(p[0].sourceStatus,'current');assert.equal(p[0].sourceNote,null);assert.equal(p[0].custom,'Сохранить');
    assert.equal(p[1].cmsArchived,true);assert.equal(p[2].sourceStatus,'editor');assert.equal(p[2].hiddenByDefault,true);
    assert.deepEqual(scopedRaidPoints({mapId:'shoreline',pois:p},'shoreline',mode).filter(x=>!x.hiddenByDefault).map(x=>x.id),['stable-spawn']);
    const patch=read('database/content-updates/20261023-map-shoreline-'+mode+'.json');assert.equal(patch.id,2026102301+index);assert.equal(patch.source.mode,mode);assert.match(patch.source.sha256,/^[a-f0-9]{64}$/);
