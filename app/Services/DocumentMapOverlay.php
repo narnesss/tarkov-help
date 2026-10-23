@@ -88,7 +88,7 @@ final class DocumentMapOverlay
         if(in_array($id,['icebreaker','labyrinth'],true))return 'floor-1';
         $p=$point['position'];$selected=$definition['baseFloor']['id']??'';
         foreach([$point['documentFloorOverride']??null,$point['floorOverride']??null] as $override){
-            if(is_string($override)&&in_array($override,[$selected,...array_column($definition['floors']??[],'id')],true))return $this->documentFloor($override);
+            if(is_string($override)&&in_array($override,[$selected,...array_column($definition['floors']??[],'id')],true))return $this->documentFloor($id,$override);
         }
         foreach($definition['floors']??[] as $floor)foreach($floor['extents']??[] as $extent){
             [$low,$high]=$extent['height']??[-INF,INF];if($p['y']<$low||$p['y']>=$high)continue;
@@ -97,11 +97,13 @@ final class DocumentMapOverlay
                 if(!$inside)continue;
             }$selected=$floor['id'];
         }
-        return $this->documentFloor($selected);
+        return $this->documentFloor($id,$selected);
     }
 
-    private function documentFloor(string $floor): string
+    private function documentFloor(string $map,string $floor): string
     {
+        $alias=config('document-overlays.floorAliases.'.$map.'.'.$floor);
+        if(is_string($alias))return $alias;
         return preg_match('/underground|technical|basement|bunkers/iu',$floor)?'floor--1':(preg_match('/second|2nd/iu',$floor)?'floor-2':(preg_match('/third|3rd/iu',$floor)?'floor-3':'floor-1'));
     }
 }

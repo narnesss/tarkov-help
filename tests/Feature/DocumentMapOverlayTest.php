@@ -149,6 +149,47 @@ final class DocumentMapOverlayTest extends TestCase
         $this->assertSame($byMode['regular'],$byMode['pve']);
     }
 
+    public function test_interchange_document_exits_use_parking_level_in_both_modes(): void
+    {
+        $definition=collect(json_decode(file_get_contents(public_path('data/raid/maps.json')),true,flags:JSON_THROW_ON_ERROR))->firstWhere('id','interchange');
+        $service=new DocumentMapOverlay();$byMode=[];
+        $landmarks=['Безопасная комната'=>[62.63143,55.99770],'Выход на железной дороге'=>[11.94762,.92281],
+            'КПП МЧС'=>[89.19108,81.65207],'Лагерь Диких (Совм.)'=>[67.45684,42.50115],
+            'Тропа к реке (Сигнал)'=>[-1.54219,59.13594],'А-Выход у ТЭЦ'=>[87.38021,8.55645],
+            'Дыра в заборе'=>[79.33269,46.65668]];
+        foreach(['regular','pve'] as $mode){
+            $raid=json_decode(gzdecode(file_get_contents(public_path('data/raid/'.($mode==='pve'?'pve/':'').'interchange.json.gz'))),true,flags:JSON_THROW_ON_ERROR);$before=$raid;
+            $exits=array_column($service->build(['id'=>'interchange'],[],$definition,$raid,[])['exits'],null,'name');
+            $this->assertCount(7,$exits);
+            foreach($landmarks as $name=>[$x,$y]){
+                $this->assertSame('floor--1',$exits[$name]['floor'],$mode.': '.$name);
+                $this->assertEqualsWithDelta($x,$exits[$name]['x'],.00001);$this->assertEqualsWithDelta($y,$exits[$name]['y'],.00001);
+                $this->assertSame(collect($raid['pois'])->firstWhere('id',$exits[$name]['id'])['conditions'],$exits[$name]['conditions']);
+            }
+            $this->assertTrue($exits['Тропа к реке (Сигнал)']['outsideArtwork']);
+            $this->assertCount(1,array_filter($exits,static fn($exit)=>$exit['category']==='extract-shared'));
+            $this->assertSame($before,$raid);$byMode[$mode]=$exits;
+        }
+        $this->assertSame($byMode['regular'],$byMode['pve']);
+    }
+
+    public function test_interchange_floor_aliases_keep_mall_levels_separate_and_invalidate_cached_overlay(): void
+    {
+        $definition=collect(json_decode(file_get_contents(public_path('data/raid/maps.json')),true,flags:JSON_THROW_ON_ERROR))->firstWhere('id','interchange');
+        $points=[];foreach(['parking'=>23,'first'=>28,'second'=>35] as $id=>$height)$points[]=['id'=>$id,'kind'=>'extract','category'=>'extract-pmc','sourceStatus'=>'current','position'=>['x'=>-47.73,'y'=>$height,'z'=>44.06]];
+        $points[]=[...$points[2],'id'=>'override','documentFloorOverride'=>'First_Floor','floorOverride'=>'Ground_Level'];
+        $this->dataset('maps.json',[['id'=>'interchange','name'=>'Развязка']]);$this->dataset('spawns.json',[]);
+        $this->dataset('raid/maps.json',[$definition]);$this->dataset('raid/pve/interchange.json',['mapId'=>'interchange','pois'=>$points]);
+        $url='/api/content/data/maps.json?view=documents&map=interchange&mode=pve';$aliases=config('document-overlays.floorAliases');
+        config(['document-overlays.floorAliases'=>[]]);
+        $old=$this->getJson($url)->assertOk()->assertJsonPath('exits.0.floor','floor-1');
+        $this->getJson($url)->assertHeader('X-Wiki-Content-Cache','HIT');
+        config(['document-overlays.floorAliases'=>$aliases]);
+        $new=$this->getJson($url)->assertOk()->assertJsonPath('exits.0.floor','floor--1')->assertJsonPath('exits.1.floor','floor-1')
+            ->assertJsonPath('exits.2.floor','floor-2')->assertJsonPath('exits.3.floor','floor-1');
+        $this->assertNotSame($old->headers->get('X-Wiki-Content-Revision'),$new->headers->get('X-Wiki-Content-Revision'));
+    }
+
     public function test_lighthouse_document_map_keeps_all_seven_current_exits_in_both_modes(): void
     {
         $definition=collect(json_decode(file_get_contents(public_path('data/raid/maps.json')),true,flags:JSON_THROW_ON_ERROR))->firstWhere('id','lighthouse');
