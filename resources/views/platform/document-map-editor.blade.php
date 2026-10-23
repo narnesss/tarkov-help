@@ -1,5 +1,6 @@
 @push('head')
 <meta name="turbo-visit-control" content="reload">
+<link rel="stylesheet" href="/vendor/leaflet.css">
 <link rel="stylesheet" href="{{ asset('admin-document-map.css') }}?v={{ substr(hash_file('sha256', public_path('admin-document-map.css')),0,12) }}">
 @endpush
 <section id="document-map-editor" class="dme" aria-label="Визуальный редактор карт документов"
@@ -28,10 +29,10 @@
 
   <div class="dme-canvas-panel">
    <div class="dme-zoom" role="group" aria-label="Масштаб схемы"><button type="button" id="dme-zoom-out" aria-label="Уменьшить схему">−</button><output id="dme-zoom">100%</output><button type="button" id="dme-zoom-in" aria-label="Увеличить схему">+</button></div>
-   <div id="dme-stage" class="dme-stage" tabindex="0" aria-label="Схема карты. Прокрутка для перемещения; кнопки плюс и минус меняют масштаб.">
+   <div id="dme-stage" class="dme-stage" tabindex="0" aria-label="Схема карты. Перетаскивайте фон для перемещения; колесо, жест двумя пальцами и кнопки плюс и минус меняют масштаб.">
     <div id="dme-plane" class="dme-plane"><img id="dme-image" alt="Схема выбранного этажа" draggable="false"><div id="dme-markers"></div></div>
    </div>
-   <p id="dme-hint">На телефоне и планшете увеличьте схему кнопкой «+». Для точной установки можно выбрать точку из списка.</p>
+   <p id="dme-hint">Перетаскивайте фон карты мышью или пальцем. Масштабируйте колесом, жестом двумя пальцами или кнопками «+» и «−». Стрелки перемещают карту; выбранную метку можно двигать отдельно.</p>
   </div>
   <aside class="dme-panel" aria-label="Точки и редактирование">
    <p id="dme-help">Выберите точку на карте или в списке. Для новой точки нажмите «Поставить документ» или «Поставить выход ЧВК», затем нужное место. Изменения публикуются после сохранения. Выходы перемещаются независимо от интерактивных карт.</p>
@@ -52,6 +53,7 @@
     <p id="dme-x-error" class="dme-error" hidden></p><p id="dme-y-error" class="dme-error" hidden></p>
     <p>Координаты считаются от выбранного этажа. Для небольшого сдвига выделенного значка используйте стрелки клавиатуры; Shift — шаг 0,1%.</p>
     <button type="button" id="dme-place">Переместить следующим нажатием</button>
+    <button type="button" id="dme-cancel-point" disabled>Отменить правки выбранной точки</button>
     <button type="button" id="dme-remove" class="dme-danger" hidden>Удалить точку</button>
     <a id="dme-details" target="_blank" rel="noopener" hidden>Открыть подробную карточку</a>
    </section>
@@ -68,4 +70,5 @@
   </div>
  </dialog>
 </section>
+<script src="/vendor/leaflet.js"></script>
 <script type="module" src="{{ asset('admin-document-map.mjs') }}?v={{ substr(hash_file('sha256', public_path('admin-document-map.mjs')),0,12) }}"></script>

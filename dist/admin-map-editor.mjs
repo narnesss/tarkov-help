@@ -1,5 +1,6 @@
 import {CATEGORIES,LOOT_NAMES,titleOf,iconPath,poiFloor as sourceFloor,validPosition} from './raid-model.mjs';
 import {mapCrs,pointCoordinates,worldCoordinates,sourceCalibration,floorHeight,rasterTileLayer} from './raid-map-geometry.mjs';
+import {discardPointDraft} from './admin-map-drafts.mjs';
 
 const root=document.getElementById('map-editor'),$=id=>document.getElementById('me-'+id),L=window.L;
 const element=(tag,text='')=>{const n=document.createElement(tag);n.textContent=text;return n;};
@@ -23,6 +24,7 @@ function controls(){
   $('save').disabled=busy||!dirty()||!!conflict||!!root.querySelector('.me-coordinates .is-invalid');$('discard').disabled=busy||!dirty();
   for(const id of ['map','mode','floor','add','fit','rebase','server','retry'])$(id).disabled=busy||!snapshot;
   for(const input of $('fields').querySelectorAll('input,textarea,select,button'))input.disabled=busy;
+  $('discard-point').disabled=busy||!selected||(!pending.has(selected.id)&&!$('fields').querySelector('.is-invalid'));
   $('type').disabled=busy||!selected?.isNew;$('loot').disabled=busy||!selected?.isNew;
   $('save').textContent=`Сохранить${dirty()?' ('+pending.size+')':''}`;
 }
@@ -53,7 +55,7 @@ function render(){
 }
 function select(point){const previous=selected?.id;clearErrors();selected=point;fields();for(const marker of markers.getLayers()){if(![previous,point.id].includes(marker.options.poiId))continue;const p=points.find(p=>p.id===marker.options.poiId);if(p)marker.setIcon(markerIcon(p));}}
 function fields(){
-  $('fields').hidden=!selected;$('help').hidden=!!selected;if(!selected)return;
+  $('fields').hidden=!selected;$('help').hidden=!!selected;if(!selected){controls();return;}
   $('name').value=selected.name||titleOf(selected);$('description').value=selected.description||'';$('type').value=selected.category;$('type').disabled=!selected.isNew;
   $('loot-label').hidden=selected.category!=='loot';$('loot').value=selected.lootType||'wooden-crate';$('loot').disabled=!selected.isNew;
   $('point-floor').value=poiFloor(snapshot.definition,selected);for(const axis of ['x','y','z'])$(axis).value=Number(selected.position[axis].toFixed(5));
@@ -110,6 +112,11 @@ async function load(){
   finally{if(token===epoch){busy=false;controls();render();}}
 }
 function clearErrors(){for(const n of root.querySelectorAll('.me-error'))n.textContent='';for(const n of root.querySelectorAll('.is-invalid')){n.classList.remove('is-invalid');n.removeAttribute('aria-invalid');}}
+function showConflict(){
+  if(!conflict||!dirty()){conflict=null;$('conflict').hidden=true;return;}
+  const fields=p=>({name:p.name,description:p.description,position:p.position,floor:p.floorOverride||p.floor,archived:!!(p.cmsArchived||p.archived)});
+  $('differences').textContent=[...pending.values()].map(c=>{const server=conflict.data.pois.find(p=>p.id===c.id);return `${c.name}\nМои правки: ${JSON.stringify(fields(c),null,2)}\nСервер: ${server?JSON.stringify(fields(server),null,2):'точка отсутствует'}`;}).join('\n\n');$('conflict').hidden=false;
+}
 function showErrors(errors,changes){
   const entries=Object.entries(errors||{}),first=entries[0]?.[0].match(/^changes\.(\d+)\./);if(first){selected=points.find(p=>p.id===changes[Number(first[1])].id);fields();}
   for(const [key,messages] of entries){const field=key.split('.').slice(2).join('.'),id=field.startsWith('position')?'position':({category:'type',floor:'point-floor',lootType:'loot'}[field]||field);
@@ -123,7 +130,7 @@ async function save(){
   }catch(error){
     status(error.status===419?'Сессия истекла. Правки остаются здесь; войдите в админку в другой вкладке и повторите сохранение.':error.message,true);
     if(error.status===422)showErrors(error.data.errors,changes);
-    if(error.status===409){try{conflict=await request(root.dataset.endpoint+'?'+scope());$('differences').textContent=changes.map(c=>{const old=conflict.data.pois.find(p=>p.id===c.id),fields=p=>({name:p.name,description:p.description,position:p.position,floor:p.floorOverride||p.floor,archived:!!(p.cmsArchived||p.archived)});return `${c.name}\nМои правки: ${JSON.stringify(fields(c),null,2)}\nСервер: ${old?JSON.stringify(fields(old),null,2):'точка отсутствует'}`;}).join('\n\n');$('conflict').hidden=false;}catch{status('Не удалось получить новую версию. Ваши правки сохранены; повторите сохранение.',true);}}
+    if(error.status===409){try{conflict=await request(root.dataset.endpoint+'?'+scope());showConflict();}catch{status('Не удалось получить новую версию. Ваши правки сохранены; повторите сохранение.',true);}}
   }finally{busy=false;controls();render();}
 }
 for(const [key,[name]] of Object.entries(CATEGORIES)){ $('category').append(option(key,name));$('type').append(option(key,name)); }
@@ -136,6 +143,7 @@ $('add').onclick=()=>{if(floor()==='all'){status('Сначала выберит�
 $('place').onclick=()=>{placing='move';status('Нажмите новое место точки на карте.');};
 $('archive').onclick=()=>{if(!canEdit())return;selected.cmsArchived=!selected.cmsArchived;changed();render();fields();};
 $('discard').onclick=()=>{if(window.confirm('Отменить все несохранённые правки?'))load();};
+$('discard-point').onclick=()=>{if(busy||!selected)return;selected=discardPointDraft(points,snapshot.data.pois,pending,selected.id);placing=false;$('add').setAttribute('aria-pressed','false');clearErrors();showConflict();render();fields();controls();status('Правки выбранной точки отменены.'+(dirty()?` Осталось несохранённых точек: ${pending.size}`:''));};
 for(const id of ['name','description'])$(id).oninput=()=>{if(!canEdit())return;$(id).classList.remove('is-invalid');$(id).removeAttribute('aria-invalid');$(id+'-error').textContent='';selected[id]=$(id).value;changed();};
 for(const axis of ['x','y','z'])$(axis).oninput=()=>{if(!canEdit())return;const n=Number($(axis).value);if($(axis).value===''||!Number.isFinite(n)||Math.abs(n)>10000){$(axis).classList.add('is-invalid');$(axis).setAttribute('aria-invalid','true');$('position-error').textContent='Введите число от −10000 до 10000.';controls();return;}$(axis).classList.remove('is-invalid');$(axis).removeAttribute('aria-invalid');if(!['x','y','z'].some(a=>$(a).classList.contains('is-invalid')))$('position-error').textContent='';selected.position[axis]=n;selected.editorPosition=true;selected.floorOverride=$('point-floor').value;changed();render();};
 $('point-floor').onchange=()=>{if(!canEdit())return;selected.floorOverride=$('point-floor').value;selected.editorPosition=true;selected.position.y=floorHeight(snapshot.definition,selected.floorOverride,selected.position);changed();render();fields();};

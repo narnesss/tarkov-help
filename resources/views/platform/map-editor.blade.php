@@ -45,6 +45,7 @@
                 <span id="me-position-error" class="me-error"></span>
                 <p>Перетащите метку. С клавиатуры: выберите метку и нажимайте стрелки (Shift — шаг 10 м). Координаты можно ввести вручную.</p>
                 <button id="me-place" type="button">Переместить следующим нажатием</button>
+                <button id="me-discard-point" type="button" disabled>Отменить правки выбранной точки</button>
                 <button id="me-archive" type="button">В архив</button>
             </div>
             <p id="me-count"></p>
@@ -54,5 +55,5 @@
     </div>
 </section>
 <script src="/vendor/leaflet.js"></script>
-<script type="importmap">{!! json_encode(['imports' => collect(['raid-model.mjs', 'raid-map-geometry.mjs'])->mapWithKeys(fn ($file) => ['/'.$file => '/'.$file.'?v='.hash_file('sha256', public_path($file))])->all()], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR) !!}</script>
+<script type="importmap">{!! json_encode(['imports' => collect(['raid-model.mjs', 'raid-map-geometry.mjs', 'admin-map-drafts.mjs'])->mapWithKeys(fn ($file) => ['/'.$file => '/'.$file.'?v='.hash_file('sha256', public_path($file))])->all()], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR) !!}</script>
 <script type="module" src="/admin-map-editor.mjs?v={{ hash_file('sha256', public_path('admin-map-editor.mjs')) }}"></script>

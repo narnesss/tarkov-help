@@ -172,7 +172,7 @@ final class DocumentMapEditorTest extends TestCase
     }
     public function test_artwork_uses_a_whitelisted_path_and_has_private_security_headers(): void
     {
-        $this->fixtures();$this->get('/admin/document-maps?map=customs')->assertOk()->assertSee('Сохранить положение')->assertSee('data-form-need-prevents-form-abandonment-value="false"',false);
+        $this->fixtures();$this->get('/admin/document-maps?map=customs')->assertOk()->assertSee('Сохранить положение')->assertSee('Отменить правки выбранной точки')->assertSee('/vendor/leaflet.js',false)->assertSee('data-form-need-prevents-form-abandonment-value="false"',false);
         $this->get('/admin/document-maps/artwork?map=customs&mode=pve')->assertOk()->assertHeader('Content-Type','image/svg+xml')->assertHeader('X-Content-Type-Options','nosniff');
         $this->getJson('/admin/document-maps/artwork?map[]=customs&mode=pve')->assertUnprocessable();
     }

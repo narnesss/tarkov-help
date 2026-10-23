@@ -13,6 +13,14 @@ if(root)initialise(root);
 
 function initialise(root){
  const $=id=>root.querySelector('#dme-'+id),state={snapshot:null,svg:'',draft:null,dirty:false,placing:false,epoch:0,zoom:1,url:null,busy:false,pendingDelete:null};
+ const L=window.L,view=L.map($('stage'),{crs:L.CRS.Simple,zoomControl:false,attributionControl:false,zoomAnimation:false,zoomSnap:0,zoomDelta:.5,minZoom:-20,maxZoom:20});
+ let bounds,fitZoom=0,artworkId;
+ view.getPane('overlayPane').append($('plane'));
+ function positionPlane(){if(!bounds)return;const topLeft=view.latLngToLayerPoint(bounds.getNorthWest()),bottomRight=view.latLngToLayerPoint(bounds.getSouthEast());L.DomUtil.setPosition($('plane'),topLeft);$('plane').style.width=(bottomRight.x-topLeft.x)+'px';$('plane').style.height=(bottomRight.y-topLeft.y)+'px';}
+ function zoomLimits(){view.setMinZoom(-20);view.setMaxZoom(20);fitZoom=view.getBoundsZoom(bounds,false,L.point(56,56));view.setMinZoom(fitZoom-1);view.setMaxZoom(fitZoom+Math.log2(6));}
+ function fit(){if(!bounds)return;view.invalidateSize({pan:false});zoomLimits();view.fitBounds(bounds,{padding:[28,28]});state.zoom=1;$('zoom').textContent='100%';positionPlane();}
+ view.on('zoom viewreset',positionPlane);
+ view.on('zoom',()=>{state.zoom=2**(view.getZoom()-fitZoom);$('zoom').textContent=Math.round(state.zoom*100)+'%';});
  let controller;
  const status=text=>{$('status').textContent=text;},error=text=>{$('error').textContent=text;$('error').hidden=!text;};
  const floorName=floor=>'Уровень схемы '+floor.replace('floor-','').replace('-','−');
@@ -21,7 +29,7 @@ function initialise(root){
  const discard=()=>!state.dirty||confirm('Есть несохранённое положение точки. Отменить эту правку?');
  const endpoint=(name)=>{const url=new URL(root.dataset[name],location.href);url.searchParams.set('map',$('map').value);url.searchParams.set('mode',$('mode').value);return url;};
  function renderRemove(){if($('remove')){$('remove').hidden=!(root.dataset.remove&&state.snapshot?.capabilities?.archivePoint&&state.draft?.pointId);$('remove').disabled=state.busy;}}
- function setBusy(value){state.busy=value;$('save').disabled=value||!state.dirty;$('cancel').disabled=value||!state.draft;for(const name of ['reload','map','mode','floor','add-document','add-exit','place','x','y','point-floor','title','document','rebase'])$(name).disabled=value;renderRemove();}
+ function setBusy(value){state.busy=value;$('save').disabled=value||!state.dirty;$('cancel').disabled=value||!state.draft;$('cancel-point').disabled=value||!state.dirty;for(const name of ['reload','map','mode','floor','add-document','add-exit','place','x','y','point-floor','title','document','rebase'])$(name).disabled=value;renderRemove();}
  function clearErrors(){error('');for(const field of ['x','y','floor','title','documentId']){const input=$(field==='floor'?'point-floor':field==='documentId'?'document':field),message=$(field+'-error');input?.classList.remove('is-invalid');input?.removeAttribute('aria-invalid');if(message)message.hidden=true;}}
  function fieldError(field,text){const input=$(field==='floor'?'point-floor':field==='documentId'?'document':field),message=$(field+'-error');if(input){input.classList.add('is-invalid');input.setAttribute('aria-invalid','true');}if(message){message.textContent=text;message.hidden=false;}}
  async function request(url,options={}){
@@ -53,11 +61,12 @@ function initialise(root){
   if(!state.snapshot)return;
   try{const svg=documentLevelSvg(state.svg,state.snapshot.map,selectedFloor());
    if(state.url)URL.revokeObjectURL(state.url);state.url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));$('image').src=state.url;
-   const size=documentViewport(state.snapshot.map);$('plane').style.aspectRatio=`${size.width}/${size.height}`;zoom(state.zoom);
+   const size=documentViewport(state.snapshot.map);bounds=L.latLngBounds([[0,0],[size.height,size.width]]);
+   if(artworkId!==state.snapshot.map.id){artworkId=state.snapshot.map.id;fit();}else positionPlane();
   }catch{error('Не удалось прочитать этаж схемы. Повторите загрузку.');}
  }
  function renderForm(){
-  const draft=state.draft;$('form').hidden=!draft;$('save').disabled=state.busy||!state.dirty;$('cancel').disabled=state.busy||!draft;$('stage').classList.toggle('is-placing',state.placing);renderRemove();if(!draft)return;
+  const draft=state.draft;$('form').hidden=!draft;$('save').disabled=state.busy||!state.dirty;$('cancel').disabled=state.busy||!draft;$('cancel-point').disabled=state.busy||!state.dirty;$('stage').classList.toggle('is-placing',state.placing);renderRemove();if(!draft)return;
   $('selected').textContent=draft.pointId?draft.name:(draft.kind==='document'?'Новый документ':'Новый выход ЧВК');
   $('new-fields').hidden=!!draft.pointId;$('document-label').hidden=draft.kind!=='document';
   $('title').value=draft.title||'';$('document').value=draft.documentId||'';$('point-floor').value=draft.floor;
@@ -82,13 +91,14 @@ function initialise(root){
    const button=document.createElement('button');button.type='button';button.className='dme-marker';button.dataset.kind=point.kind;button.style.left=point.x+'%';button.style.top=point.y+'%';
    button.setAttribute('aria-label',(point.kind==='exit'?'Выход ЧВК: ':'Документ: ')+(point.name||point.title||'Новая точка'));button.title=button.getAttribute('aria-label');
    button.setAttribute('aria-pressed',String(state.draft&&pointKey(state.draft)===pointKey(point)||false));const symbol=document.createElement('span');symbol.textContent=point.kind==='exit'?'↗':'●';button.append(symbol);
+   L.DomEvent.disableClickPropagation(button);
    button.addEventListener('pointerdown',event=>{
     if(state.busy||!select(point,false))return;event.preventDefault();event.stopPropagation();button.setPointerCapture(event.pointerId);let moved=false;
     const move=e=>{const position=mapPercent(e.clientX,e.clientY,$('plane').getBoundingClientRect());if(!position)return;moved=true;Object.assign(state.draft,position);state.dirty=true;button.style.left=position.x+'%';button.style.top=position.y+'%';renderForm();};
     const end=()=>{button.removeEventListener('pointermove',move);button.removeEventListener('pointerup',end);button.removeEventListener('pointercancel',end);renderList();if(moved)status('Положение изменено. Нажмите «Сохранить положение».');};
     button.addEventListener('pointermove',move);button.addEventListener('pointerup',end);button.addEventListener('pointercancel',end);
    });
-   button.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)||state.busy)return;if(!select(point,false))return;event.preventDefault();const step=event.shiftKey?.1:1;const x=state.draft.x+(event.key==='ArrowLeft'?-step:event.key==='ArrowRight'?step:0),y=state.draft.y+(event.key==='ArrowUp'?-step:event.key==='ArrowDown'?step:0);if(validCoordinates({x,y})){Object.assign(state.draft,{x,y});state.dirty=true;button.style.left=x+'%';button.style.top=y+'%';renderForm();}});
+   button.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)||state.busy)return;if(!select(point,false))return;event.preventDefault();event.stopPropagation();const step=event.shiftKey?.1:1;const x=state.draft.x+(event.key==='ArrowLeft'?-step:event.key==='ArrowRight'?step:0),y=state.draft.y+(event.key==='ArrowUp'?-step:event.key==='ArrowDown'?step:0);if(validCoordinates({x,y})){Object.assign(state.draft,{x,y});state.dirty=true;button.style.left=x+'%';button.style.top=y+'%';renderForm();}});
    button.onclick=()=>{if(!state.draft||pointKey(state.draft)!==pointKey(point))select(point);};$('markers').append(button);
   }
  }
@@ -103,15 +113,16 @@ function initialise(root){
  function add(kind){if(state.busy||!state.snapshot||!discard())return;clearErrors();state.draft={kind,pointId:null,positionId:null,title:'',name:'',floor:selectedFloor(),x:null,y:null};state.dirty=true;state.placing=true;render();$('title').focus();status('Введите название, выберите документ при необходимости и укажите место на схеме.');}
  $('add-document').onclick=()=>add('document');$('add-exit').onclick=()=>add('exit');
  $('place').onclick=()=>{if(state.busy||!state.draft)return;state.placing=!state.placing;renderForm();status(state.placing?'Нажмите на нужное место схемы.':'Установка отменена.');};
- $('plane').onclick=event=>{if(!state.placing||!state.draft||event.target.closest('button'))return;const point=mapPercent(event.clientX,event.clientY,$('plane').getBoundingClientRect());if(!point)return;Object.assign(state.draft,point,{floor:selectedFloor()});state.dirty=true;state.placing=false;renderForm();renderMarkers();status('Место выбрано. Нажмите «Сохранить положение».');};
- for(const axis of ['x','y'])$(axis).oninput=()=>{if(!state.draft)return;state.draft[axis]=$(axis).value===''?null:Number($(axis).value);state.dirty=true;$('save').disabled=state.busy;renderMarkers();};
- $('title').oninput=()=>{if(state.draft){state.draft.title=$('title').value;state.dirty=true;}};
- $('document').onchange=()=>{if(state.draft){state.draft.documentId=$('document').value?Number($('document').value):null;state.dirty=true;}};
+ view.on('click',({originalEvent:event})=>{if(state.busy||!state.placing||!state.draft||event.target.closest('button'))return;const point=mapPercent(event.clientX,event.clientY,$('plane').getBoundingClientRect());if(!point)return;Object.assign(state.draft,point,{floor:selectedFloor()});state.dirty=true;state.placing=false;renderForm();renderMarkers();status('Место выбрано. Нажмите «Сохранить положение».');});
+ for(const axis of ['x','y'])$(axis).oninput=()=>{if(!state.draft)return;state.draft[axis]=$(axis).value===''?null:Number($(axis).value);state.dirty=true;$('save').disabled=state.busy;$('cancel-point').disabled=state.busy;renderMarkers();};
+ $('title').oninput=()=>{if(state.draft){state.draft.title=$('title').value;state.dirty=true;$('cancel-point').disabled=state.busy;}};
+ $('document').onchange=()=>{if(state.draft){state.draft.documentId=$('document').value?Number($('document').value):null;state.dirty=true;$('cancel-point').disabled=state.busy;}};
  $('point-floor').onchange=()=>{if(state.draft){state.draft.floor=$('point-floor').value;$('floor').value=state.draft.floor;state.dirty=true;render();}};
  $('floor').onchange=()=>{if(!discard()){$('floor').value=state.draft.floor;return;}state.draft=null;state.dirty=false;state.placing=false;render();};
- for(const name of ['map','mode'])$(name).onchange=()=>{if(!discard()){$('map').value=state.snapshot.map.id;$('mode').value=state.snapshot.mode;return;}state.draft=null;state.dirty=false;state.zoom=1;load();};
+ for(const name of ['map','mode'])$(name).onchange=()=>{if(!discard()){$('map').value=state.snapshot.map.id;$('mode').value=state.snapshot.mode;return;}state.draft=null;state.dirty=false;load();};
  $('search').oninput=renderList;$('kind-filter').onchange=renderList;
  $('cancel').onclick=()=>{state.draft=null;state.dirty=false;state.placing=false;clearErrors();render();status('Несохранённая правка отменена.');};
+ $('cancel-point').onclick=()=>{if(state.busy||!state.draft)return;const original=state.snapshot.points.find(p=>pointKey(p)===pointKey(state.draft));state.draft=original?{...original}:null;state.dirty=false;state.placing=false;if(original?.floor)$('floor').value=original.floor;$('rebase').hidden=true;clearErrors();render();status(original?'Правки выбранной точки отменены.':'Создание новой точки отменено.');};
  $('reload').onclick=()=>{if(discard()){state.draft=null;state.dirty=false;load();}};
  $('rebase').onclick=()=>load(true);
  $('save').onclick=async()=>{
@@ -155,15 +166,9 @@ function initialise(root){
    }finally{if(epoch===state.epoch)setBusy(false);}
   };
  }
- function zoom(value){
-  state.zoom=Math.max(1,Math.min(6,value));
-  if(state.snapshot){const size=documentViewport(state.snapshot.map),stage=$('stage'),style=getComputedStyle(stage),width=stage.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight),height=stage.clientHeight-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom);
-   const fit=Math.min(1,height/Math.max(1,width)*size.width/size.height);$('plane').style.width=(state.zoom*fit*100)+'%';}
-  $('zoom').textContent=Math.round(state.zoom*100)+'%';
- }
- for(const [name,factor]of [['zoom-in',1.5],['zoom-out',1/1.5]])$(name).onclick=()=>zoom(state.zoom*factor);
- if($('fit'))$('fit').onclick=()=>{zoom(1);$('stage').scrollTo({left:0,top:0});};
- new ResizeObserver(()=>zoom(state.zoom)).observe($('stage'));
+ for(const [name,delta]of [['zoom-in',.5],['zoom-out',-.5]])$(name).onclick=()=>{if(bounds)view.setZoom(view.getZoom()+delta);};
+ if($('fit'))$('fit').onclick=fit;
+ new ResizeObserver(()=>{if(!bounds)return;const relative=state.zoom;view.invalidateSize({pan:false});zoomLimits();view.setZoom(fitZoom+Math.log2(relative));positionPlane();}).observe($('stage'));
  window.addEventListener('beforeunload',event=>{if(state.dirty){event.preventDefault();event.returnValue='';}});
  document.addEventListener('turbo:before-visit',event=>{if(!discard())event.preventDefault();});
  const query=new URLSearchParams(location.search);if([...$('map').options].some(o=>o.value===query.get('map')))$('map').value=query.get('map');if(['pve','regular'].includes(query.get('mode')))$('mode').value=query.get('mode');

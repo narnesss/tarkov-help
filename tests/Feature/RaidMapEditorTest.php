@@ -35,7 +35,7 @@ final class RaidMapEditorTest extends TestCase
     public function test_move_publishes_coordinates_and_floor_preserving_ids_and_other_mode(): void
     {
         $this->fixtures();$id=DB::table('wiki_map_points')->where('mode','regular')->value('id');$pve=ContentDataset::where('path','raid/pve/factory.json')->value('payload');
-        $this->get('/admin/map-editor')->assertOk()->assertSee('Переместить следующим нажатием');
+        $this->get('/admin/map-editor')->assertOk()->assertSee('Переместить следующим нажатием')->assertSee('Отменить правки выбранной точки')->assertSee('admin-map-drafts.mjs',false);
         $this->getJson('/admin/map-editor/data?map=factory&mode=regular')->assertOk()->assertHeader('Cache-Control','no-store, private');
         $patch=$this->payload();$this->postJson($this->saveUrl(),$patch)->assertOk()->assertJsonPath('saved.0','stable');
         $point=ContentDataset::where('path','raid/factory.json')->first()->content()['pois'][0];
