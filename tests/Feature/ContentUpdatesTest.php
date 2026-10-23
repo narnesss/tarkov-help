@@ -394,6 +394,36 @@ final class ContentUpdatesTest extends TestCase
         $this->assertSame($positions,DB::table('wiki_point_world_positions')->orderBy('id')->get(['id','point_id','world_x','world_y','world_z','order_index'])->toJson());
     }
 
+    public function test_later_coordinate_date_does_not_hide_geometry_source_or_invalid_date_conflicts(): void
+    {
+        [, $map]=$this->fixtures();$original=$map->content();$source='https://tarkov.dev/map/ground-zero';
+        $packet=['schemaVersion'=>1,'id'=>2026102401,'datasets'=>['raid/ground-zero.json'=>['raidPointRecords'=>[[
+            'id'=>'correct-point','expected'=>['position'=>['x'=>0,'y'=>0,'z'=>0]],
+            'fields'=>['position'=>['x'=>3,'y'=>0,'z'=>4],'coordinateSource'=>$source,'coordinateDate'=>'2026-10-20'],
+        ]]]]];
+        foreach([['position'=>['x'=>4,'y'=>0,'z'=>4]],['coordinateSource'=>'https://example.test/other'],['coordinateDate'=>'2026-02-31'],['coordinateDate'=>'2026-10-19']] as $change){
+            $data=$original;$data['pois'][1]=[...$data['pois'][1],'coordinateSource'=>$source,'coordinateDate'=>'2026-10-23',...$change];
+            $map->setContent($data);$map->save();$ref=$map->getRawOriginal('payload');
+            try{app(ContentUpdates::class)->apply($packet);$this->fail('Ожидался конфликт, дата не должна его скрывать');}catch(\RuntimeException $error){$this->assertStringContainsString('Запись уже изменена',$error->getMessage());}
+            $this->assertSame($ref,$map->fresh()->getRawOriginal('payload'));
+            $this->assertDatabaseMissing('wiki_projection_states',['owner_type'=>'content-update','owner_id'=>$packet['id']]);
+        }
+    }
+
+    public function test_older_coordinate_package_keeps_later_verification_in_current_seed(): void
+    {
+        [, $map]=$this->fixtures();
+        $seed=json_decode(gzdecode(file_get_contents(public_path('data/raid/ground-zero.json.gz'))),true,flags:JSON_THROW_ON_ERROR);
+        $map->setContent($seed);$map->save();app(WikiImporter::class)->dataset($map);
+        $ids=DB::table('wiki_map_points')->orderBy('id')->get(['id','external_id','mode'])->toJson();$state=DB::table('user_state')->get()->toJson();
+        $packet=json_decode(file_get_contents(database_path('content-updates/20261020-map-ground-zero-regular.json')),true,flags:JSON_THROW_ON_ERROR);
+        $this->assertTrue(app(ContentUpdates::class)->apply($packet)['applied']);
+        $this->assertSame($seed,$map->fresh()->content());
+        $this->assertSame($ids,DB::table('wiki_map_points')->orderBy('id')->get(['id','external_id','mode'])->toJson());
+        $this->assertSame($state,DB::table('user_state')->get()->toJson());
+        $this->assertFalse(app(ContentUpdates::class)->apply($packet)['applied']);
+    }
+
     public function test_ground_zero_pve_mode_correction_keeps_ids_progress_and_rejects_concurrent_mode_changes(): void
     {
         $this->fixtures();$path='raid/pve/ground-zero.json';

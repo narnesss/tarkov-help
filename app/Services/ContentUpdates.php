@@ -145,7 +145,13 @@ final readonly class ContentUpdates
             foreach($patch['fields'] as $field=>$value){if(!in_array($field,$allowed,true)){throw new RuntimeException('Недопустимое поле записи: '.$field);}}
             // Новый сервер может импортировать уже актуальный seed до первого применения пакета.
             $current=$index===null?null:$data[$index];$ready=$current!==null;
-            foreach($patch['fields'] as $field=>$value){if(($current[$field]??null)!=$value){$ready=false;break;}}
+            foreach($patch['fields'] as $field=>$value){
+                if(($current[$field]??null)==$value){continue;}
+                // Точные координаты того же источника уже могут иметь более свежую дату сверки.
+                if($path==='raid-points'&&$field==='coordinateDate'&&isset($patch['fields']['position'],$patch['fields']['coordinateSource'])
+                    &&($current['coordinateSource']??null)===$patch['fields']['coordinateSource']&&$this->laterCoordinateDate($current[$field]??null,$value)){continue;}
+                $ready=false;break;
+            }
             if($ready){continue;}
             if(($index===null)!==($expected===null)){throw new RuntimeException('Изменился состав точек: '.$id);}
             foreach($expected??[] as $field=>$value){if(($data[$index][$field]??null)!=$value){throw new RuntimeException('Запись уже изменена редактором: '.$id.' / '.$field);}}
@@ -153,6 +159,14 @@ final readonly class ContentUpdates
             else{$data[$index]=[...$data[$index],...$patch['fields']];}
         }
         return $data;
+    }
+
+    private function laterCoordinateDate(mixed $current,mixed $published): bool
+    {
+        foreach([$current,$published] as $date){
+            if(!is_string($date)||!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/D',$date,$parts)||!checkdate((int)$parts[2],(int)$parts[3],(int)$parts[1])){return false;}
+        }
+        return $current>$published;
     }
 
     private function gallery(array $before,array $added): array
