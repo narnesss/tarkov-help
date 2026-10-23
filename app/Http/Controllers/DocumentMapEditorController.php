@@ -20,7 +20,8 @@ final class DocumentMapEditorController
     public function data(Request $request,DocumentMapEditor $editor)
     {
         $selection=$this->selection($request);
-        return response()->json($editor->snapshot($selection['map'],$selection['mode']));
+        $values=$request->validate(['archived'=>['sometimes','boolean']]);
+        return response()->json($editor->snapshot($selection['map'],$selection['mode'],(bool)($values['archived']??false)));
     }
 
     public function audit(Request $request)
@@ -52,6 +53,18 @@ final class DocumentMapEditorController
                 $request->except(['map','mode','_token']),(string)$request->user()->getAuthIdentifier()));
         }catch(\Illuminate\Validation\ValidationException|\Symfony\Component\HttpKernel\Exception\HttpException $failure){
             if($request->user())app(\App\Services\DocumentMapAudit::class)->append((string)$request->user()->getAuthIdentifier(),null,'denied',kind:'archive_request');
+            throw $failure;
+        }
+    }
+
+    public function batch(Request $request,DocumentMapEditor $editor)
+    {
+        try{
+            $selection=$this->selection($request);
+            return response()->json($editor->saveBatch($selection['map'],$selection['mode'],
+                $request->except(['map','mode','_token']),(string)$request->user()->getAuthIdentifier()));
+        }catch(\Illuminate\Validation\ValidationException|\Symfony\Component\HttpKernel\Exception\HttpException $failure){
+            if($request->user())app(\App\Services\DocumentMapAudit::class)->append((string)$request->user()->getAuthIdentifier(),null,'denied',kind:'document_batch_request');
             throw $failure;
         }
     }

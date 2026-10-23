@@ -40,6 +40,100 @@ final class DocumentMapEditorTest extends TestCase
         return $this->postJson('/admin/document-maps/remove',['map'=>'customs','mode'=>'pve','version'=>$snapshot['version'],
             'kind'=>$point['kind'],'pointId'=>$point['pointId'],...$changes]);
     }
+
+    private function batch(array $snapshot,array $changes)
+    {
+        return $this->postJson('/admin/document-maps/points',['map'=>'customs','mode'=>'pve','version'=>$snapshot['version'],'changes'=>$changes]);
+    }
+
+    private function change(array $point,array $patch=[]): array
+    {
+        return [...array_intersect_key($point,array_flip(['kind','pointId','positionId','floor','x','y'])),...$patch];
+    }
+
+    public function test_batch_saves_multiple_positions_atomically_and_keeps_legacy_client_compatible(): void
+    {
+        $snapshot=$this->fixtures();$document=collect($snapshot['points'])->firstWhere('kind','document');$exit=collect($snapshot['points'])->firstWhere('kind','exit');
+        $world=DB::table('wiki_point_world_positions')->get()->toJson();$links=DB::table('wiki_point_documents')->get()->toJson();
+        $changes=[$this->change($document,['x'=>0,'y'=>100]),$this->change($exit,['floor'=>'floor-2','x'=>70,'y'=>30])];
+        $response=$this->batch($snapshot,$changes)->assertOk()->assertJsonCount(2,'applied');
+        $fresh=$response->json('snapshot');$this->assertNotSame($snapshot['version'],$fresh['version']);
+        $this->assertEquals(0,collect($fresh['points'])->firstWhere('positionId',$document['positionId'])['x']);
+        $this->assertSame($world,DB::table('wiki_point_world_positions')->get()->toJson());$this->assertSame($links,DB::table('wiki_point_documents')->get()->toJson());
+        $this->getJson('/api/content/data/maps.json?view=documents&map=customs&mode=pve')->assertJsonPath('exits.0.x',70)->assertJsonPath('exits.0.floor','floor-2');
+        $this->batch($snapshot,$changes)->assertStatus(409);
+        $this->save($fresh,$exit,['x'=>60,'y'=>40])->assertOk();
+        $this->save($fresh,$exit,['x'=>[]])->assertUnprocessable()->assertJsonValidationErrors('x');
+        $this->assertDatabaseCount('wiki_map_points',3);
+    }
+
+    public function test_invalid_batch_never_partially_saves_and_rejects_duplicate_positions(): void
+    {
+        $snapshot=$this->fixtures();$point=collect($snapshot['points'])->firstWhere('kind','document');$exit=collect($snapshot['points'])->firstWhere('kind','exit');
+        $before=DB::table('wiki_point_positions')->orderBy('id')->get()->toJson();$refs=ContentDataset::orderBy('path')->pluck('payload')->all();
+        $valid=$this->change($point,['x'=>80]);$foreign=DB::table('wiki_map_points')->where('external_id','other-mode')->value('id');
+        foreach([['x'=>[]],['x'=>'1e999'],['floor'=>[]],['floor'=>'floor-99'],['pointId'=>$foreign],['title'=>['array']],
+            ['title'=>'<script>bad</script>'],['title'=>str_repeat('a',256)],['description'=>'<img src=x>'],['unexpected'=>'value'],['archived'=>[]]] as $patch){
+            $this->batch($snapshot,[$valid,$this->change($exit,$patch)])->assertUnprocessable();
+        }
+        $this->batch($snapshot,[$valid,$valid])->assertUnprocessable();
+        foreach([[],array_fill(0,101,$valid),['bad']] as $changes)$this->batch($snapshot,$changes)->assertUnprocessable();
+        $this->assertSame($before,DB::table('wiki_point_positions')->orderBy('id')->get()->toJson());
+        $this->assertSame($refs,ContentDataset::orderBy('path')->pluck('payload')->all());$this->assertDatabaseCount('wiki_document_exit_positions',0);
+        $this->batch($snapshot,[$valid,$this->change($snapshot['points'][1],['floor'=>'floor-2'])])->assertUnprocessable();
+    }
+
+    public function test_batch_archive_restore_and_details_preserve_identity_and_alternatives(): void
+    {
+        $snapshot=$this->fixtures();$document=collect($snapshot['points'])->firstWhere('kind','document');$exit=collect($snapshot['points'])->firstWhere('kind','exit');
+        $snapshot=$this->batch($snapshot,[$this->change($document,['archived'=>true]),$this->change($exit,['archived'=>true])])->assertOk()->json('snapshot');
+        $this->assertTrue(collect($snapshot['points'])->every(fn($point)=>$point['archived']));
+        $this->getJson('/admin/document-maps/data?map=customs&mode=pve')->assertJsonCount(0,'points')->assertJsonPath('version',$snapshot['version']);
+        $this->getJson('/admin/document-maps/data?map=customs&mode=pve&archived=1')->assertJsonCount(3,'points');
+        $this->getJson('/admin/document-maps/data?map=customs&mode=pve&archived[]=1')->assertUnprocessable();
+        $this->batch($snapshot,[$this->change($document,['archived'=>false,'title'=>'  Название «0»  ','description'=>"  Строка\nещё строка  "]),
+            $this->change($exit,['archived'=>false,'title'=>'0'])])->assertOk();
+        $this->assertDatabaseHas('wiki_map_points',['id'=>$document['pointId'],'title'=>'Название «0»','description'=>"Строка\nещё строка",'active'=>1,'archived'=>0]);
+        $this->assertDatabaseHas('wiki_map_points',['id'=>$exit['pointId'],'title'=>'0','active'=>1,'archived'=>0]);
+        $audit=DB::table('wiki_document_map_audit')->where('entity_type','restore_document')->value('changed_fields');
+        $this->assertContains('active',explode(',',$audit));$this->assertContains('archived',explode(',',$audit));
+        $this->assertDatabaseCount('wiki_point_positions',2);$this->assertDatabaseCount('wiki_point_documents',1);
+        $data=ContentDataset::where('path','spawns.json')->first()->content()[0];$this->assertSame('stable-document',$data['id']);$this->assertSame('Название «0»',$data['caption']);
+        $this->assertSame(['/original.webp'],$data['images']);$this->assertArrayHasKey('x2',$data);
+    }
+
+    public function test_batch_new_points_have_distinct_ids_and_retry_does_not_duplicate(): void
+    {
+        $snapshot=$this->fixtures();$documentId=DB::table('wiki_documents')->value('id');
+        $changes=[['clientId'=>'editor-one','kind'=>'document','title'=>'0','documentId'=>$documentId,'floor'=>'floor-1','x'=>0,'y'=>0],
+            ['clientId'=>'editor-two','kind'=>'exit','title'=>'Выход','floor'=>'floor-2','x'=>100,'y'=>100]];
+        $response=$this->batch($snapshot,$changes)->assertOk()->assertJsonPath('applied.0.clientId','editor-one')->assertJsonPath('applied.1.clientId','editor-two');
+        $this->assertNotSame($response->json('applied.0.pointId'),$response->json('applied.1.pointId'));$this->assertNotNull($response->json('applied.0.positionId'));
+        $this->batch($snapshot,$changes)->assertStatus(409);$this->assertDatabaseCount('wiki_map_points',5);
+        $fresh=$response->json('snapshot');$this->assertSame('editor-one',collect($fresh['points'])->firstWhere('pointId',$response->json('applied.0.pointId'))['clientId']);
+        $this->batch($fresh,$changes)->assertStatus(409);$this->assertDatabaseCount('wiki_map_points',5);
+        $created=collect($fresh['points'])->firstWhere('pointId',$response->json('applied.0.pointId'));
+        $this->batch($fresh,[$this->change($created,['clientId'=>'rebased-one','x'=>15])])->assertOk();$this->assertDatabaseCount('wiki_map_points',5);
+    }
+
+    public function test_second_audit_failure_rolls_back_entire_batch_and_published_references(): void
+    {
+        $snapshot=$this->fixtures();$document=collect($snapshot['points'])->firstWhere('kind','document');$exit=collect($snapshot['points'])->firstWhere('kind','exit');
+        $before=DB::table('wiki_point_positions')->orderBy('id')->get()->toJson();$refs=ContentDataset::orderBy('path')->pluck('payload')->all();$events=0;
+        DB::listen(function($query) use(&$events){if(str_starts_with(strtolower($query->sql),'insert into')&&str_contains($query->sql,'wiki_document_map_audit')&&++$events===2)throw new \RuntimeException('Изолированный отказ второго аудита');});
+        $this->batch($snapshot,[$this->change($document,['x'=>90]),$this->change($exit,['x'=>80])])->assertStatus(500);
+        $this->assertSame($before,DB::table('wiki_point_positions')->orderBy('id')->get()->toJson());$this->assertSame($refs,ContentDataset::orderBy('path')->pluck('payload')->all());
+        $this->assertDatabaseCount('wiki_document_map_audit',0);$this->assertDatabaseCount('wiki_document_exit_positions',0);
+    }
+
+    public function test_batch_requires_permission_and_csrf_without_writing(): void
+    {
+        $snapshot=$this->fixtures();$change=$this->change($snapshot['points'][0],['x'=>80]);$this->app['env']='local';
+        try{$this->batch($snapshot,[$change])->assertStatus(419);}finally{$this->app['env']='testing';}
+        $this->actingAs(User::create(['name'=>'Без прав','email'=>'no-batch@example.test','password'=>bcrypt('test'),'permissions'=>['platform.index'=>true]]));
+        $this->batch($snapshot,[$change])->assertForbidden();$this->app['auth']->forgetGuards();$this->app['auth']->logout();$this->batch($snapshot,[$change])->assertUnauthorized();
+        $this->assertDatabaseCount('wiki_document_exit_positions',0);
+    }
     public function test_archive_removes_all_document_positions_and_preserves_identity_and_relations(): void
     {
         $snapshot=$this->fixtures();$point=collect($snapshot['points'])->firstWhere('kind','document');
