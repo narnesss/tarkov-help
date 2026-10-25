@@ -11,6 +11,7 @@
       "/", "/index.html", "/account", "/account.html", "/privacy", "/privacy.html",
       "/documents", "/documents.html", "/documents/*", "/raid", "/raid.html", "/raid/*",
       "/quests", "/quests.html", "/quests/*", "/quest", "/quest.html",
+      "/robots.txt", "/sitemap.xml", "/sitemaps/*",
       "/reference", "/reference.html", "/reference/*", "/boss", "/boss.html", "/boss/*"
     ],
     "html_handling": "drop-trailing-slash",

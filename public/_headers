@@ -16,11 +16,14 @@
   Cache-Control: public, max-age=300, stale-while-revalidate=600
 /api/*
   Cache-Control: private, no-store
+  X-Robots-Tag: noindex, nofollow
 /profile-runtime.mjs
   Cache-Control: private, no-store
 /account
   Cache-Control: private, no-store
   Referrer-Policy: no-referrer
+  X-Robots-Tag: noindex, nofollow
 /account.html
   Cache-Control: private, no-store
   Referrer-Policy: no-referrer
+  X-Robots-Tag: noindex, nofollow

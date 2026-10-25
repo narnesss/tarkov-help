@@ -14,6 +14,7 @@ final readonly class PageViews
     public function fingerprint(): string
     {
         $names = ['public/data/page-routes.json', 'config/pages.php', 'config/legal.php', 'app/Services/PageCatalog.php', 'app/Services/PageViews.php', 'app/Services/PageModules.php', 'app/Console/Commands/ExportSite.php'];
+        array_push($names, 'config/site.php', 'app/Services/PageSeo.php', 'app/Services/SiteMap.php');
         foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(resource_path('views'), \FilesystemIterator::SKIP_DOTS)) as $file) {
             if ($file->isFile()) { $names[] = 'resources/views/'.substr($file->getPathname(), strlen(resource_path('views')) + 1); }
         }
@@ -30,16 +31,26 @@ final readonly class PageViews
     }
 
     /** Рендерит публичную оболочку; runtime, маршрут и исходники разделяют cache keys. */
-    public function render(string $page, string $runtime = 'php', ?string $title = null, array $params = []): string
+    public function render(string $page, string $runtime = 'php', ?string $title = null, array $params = [], array $serverContent = []): string
     {
         $meta = config('pages.'.$page);
         if (!$meta || !in_array($runtime, ['php', 'static'], true)) { throw new \InvalidArgumentException('Unknown page'); }
         $title ??= $meta['title'];
+        $seoService = app(PageSeo::class);
+        $seo = $seoService->metadata($page, $params, $title);
+        if (isset($serverContent['description'])) { $seo = $seoService->withDescription($seo, $serverContent['description']); }
+        $title = $seo['title'];
+        if ($serverContent !== []) {
+            $view = (int) ($serverContent['number'] ?? $params['page'] ?? 1) > 1 && isset($serverContent['pages'])
+                ? (isset($serverContent['entity']) ? 'entity-directory' : 'quest-directory') : $page;
+            return $this->views->make('pages.'.$view, compact('page', 'meta', 'runtime', 'title', 'params', 'seo', 'serverContent'))->render();
+        }
         if ($page === 'important-items') {
             $listing = $runtime === 'php' ? $this->importantItems->listing($params, true) : null;
-            return $this->views->make('pages.'.$page, compact('page', 'meta', 'runtime', 'title', 'params', 'listing'))->render();
+            return $this->views->make('pages.'.$page, compact('page', 'meta', 'runtime', 'title', 'params', 'listing', 'seo', 'serverContent'))->render();
         }
         $key = 'site:view:'.$this->fingerprint().':'.hash('sha256', json_encode([$page, $runtime, $title, $params], JSON_THROW_ON_ERROR));
-        return $this->cache->remember($key, config('site.cache_ttl'), fn () => $this->views->make('pages.'.$page, ['page' => $page, 'meta' => $meta, 'runtime' => $runtime, 'title' => $title, 'params' => $params])->render());
+        $data = compact('page', 'meta', 'runtime', 'title', 'params', 'seo', 'serverContent');
+        return $this->cache->remember($key, config('site.cache_ttl'), fn () => $this->views->make('pages.'.$page, $data)->render());
     }
 }

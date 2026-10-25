@@ -15,6 +15,7 @@ const copy = name => {
 };
 for (const name of ['app', 'config', 'routes', 'src', 'resources/views', 'database/migrations', 'database/content-updates',
   'bootstrap/app.php', 'bootstrap/providers.php', 'public/index.php', 'public/.htaccess',
+  'public/data/page-routes.json',
   'public/admin-user-validation.mjs', 'public/admin-content-validation.mjs', 'public/password-policy.mjs',
   'public/admin-responsive.css', 'public/admin-document-map.css', 'public/admin-map-editor.css',
   'public/vendor/leaflet.js', 'public/vendor/leaflet.css', 'public/vendor/LEAFLET-LICENSE.txt',

@@ -5,9 +5,23 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#101412">
   <meta name="wiki-runtime" content="static">
-  <meta name="description" content="13 интерактивных карт Таркова: контейнеры, спавны ЧВК и Диких, выходы, боссы, ключи и квестовые места.">
+<!-- SEO:START -->
+<meta name="description" content="Карта «Лабиринт» в Escape from Tarkov: выходы, места появления, контейнеры и квестовые точки. Фильтры объектов и уровни карты.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://tarkov-compass.narnesss.workers.dev/raid/the-labyrinth">
+  <meta property="og:url" content="https://tarkov-compass.narnesss.workers.dev/raid/the-labyrinth">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Tarkov Compass">
+  <meta property="og:title" content="Лабиринт — карта, выходы и квесты Таркова | Tarkov Compass">
+  <meta property="og:description" content="Карта «Лабиринт» в Escape from Tarkov: выходы, места появления, контейнеры и квестовые точки. Фильтры объектов и уровни карты.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Лабиринт — карта, выходы и квесты Таркова | Tarkov Compass">
+  <meta name="twitter:description" content="Карта «Лабиринт» в Escape from Tarkov: выходы, места появления, контейнеры и квестовые точки. Фильтры объектов и уровни карты.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://tarkov-compass.narnesss.workers.dev/#website","url":"https://tarkov-compass.narnesss.workers.dev/","name":"Tarkov Compass","inLanguage":"ru"},{"@type":"WebPage","@id":"https://tarkov-compass.narnesss.workers.dev/raid/the-labyrinth#webpage","url":"https://tarkov-compass.narnesss.workers.dev/raid/the-labyrinth","name":"Лабиринт — карта, выходы и квесты Таркова | Tarkov Compass","description":"Карта «Лабиринт» в Escape from Tarkov: выходы, места появления, контейнеры и квестовые точки. Фильтры объектов и уровни карты.","inLanguage":"ru","isPartOf":{"@id":"https://tarkov-compass.narnesss.workers.dev/#website"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Tarkov Compass","item":"https://tarkov-compass.narnesss.workers.dev/"},{"@type":"ListItem","position":2,"name":"Карты","item":"https://tarkov-compass.narnesss.workers.dev/raid"},{"@type":"ListItem","position":3,"name":"Лабиринт","item":"https://tarkov-compass.narnesss.workers.dev/raid/the-labyrinth"}]}]}</script>
+<!-- SEO:END -->
   <base href="/">
-  <title>Лабиринт — Escape from Tarkov Wiki</title>
+  <title>Лабиринт — карта, выходы и квесты Таркова | Tarkov Compass</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <script type="importmap">{"imports":{"\/raid-map-geometry.mjs":"\/raid-map-geometry.mjs?v=ed46930cce8c7966b4df64457425e21b1b35f89fa6d6399bf15d0e42d056ebb0","\/raid-model.mjs":"\/raid-model.mjs?v=90d8c0130da141ffa6fba5e2d9f18ca424cbf21a799a2c7a835e34eaef5a5b89"}}</script>
   <link rel="stylesheet" href="game-clock.css?v=important-items-20261017">
@@ -23,20 +37,21 @@
   <link rel="stylesheet" href="controls.css?v=release-20261016">
   <link rel="stylesheet" href="raid-responsive.css?v=tablet-20261017b">
   <link rel="stylesheet" href="site-responsive.css?v=desktop-20261017">
-  <link rel="modulepreload" href="bootstrap.mjs?v=432953184e3a4e0f" >
-  <link rel="modulepreload" href="raid.mjs?v=d557af1b83bfacaf6958bcf0529205c10fcd66ace435756172b17056e08bd95b"  data-page-module >
+  <link rel="modulepreload" href="bootstrap.mjs?v=e971ad7b2223c7ad" >
+  <link rel="modulepreload" href="raid.mjs?v=af19b88643b65a4af40e4bda9495757c1127bc638195f358264ac74a2d114017"  data-page-module >
   <link rel="modulepreload" href="profile-store.mjs?v=loading-20261018" >
   <link rel="modulepreload" href="profile-runtime.mjs?v=page-content-20261017" >
   <link rel="modulepreload" href="profile-ui.mjs?v=loading-20261018" >
   <link rel="modulepreload" href="layout.mjs?v=page-content-20261017" >
   <link rel="modulepreload" href="site-routes.mjs?v=page-content-20261017" >
+  <link rel="modulepreload" href="page-seo.mjs?v=35639628025177d5" >
   <link rel="modulepreload" href="public-links.mjs?v=page-content-20261017" >
   <link rel="modulepreload" href="loose-loot-ui.mjs?v=documents-access-20261020" >
   <link rel="modulepreload" href="loose-loot-model.mjs?v=page-content-20261017" >
   <link rel="modulepreload" href="game-mode.mjs?v=page-content-20261017" >
   <link rel="modulepreload" href="ru-data.mjs?v=page-content-20261017" >
   <link rel="modulepreload" href="quest-extras.mjs?v=documents-access-20261020" >
-  <link rel="modulepreload" href="page-data.mjs?v=documents-access-20261020" >
+  <link rel="modulepreload" href="page-data.mjs?v=5caeaa51b59039d9" >
   <link rel="modulepreload" href="quest-view-model.mjs?v=page-content-20261017" >
   <link rel="modulepreload" href="gallery.mjs?v=30118b56f9594fd5" >
   <link rel="modulepreload" href="guide-common.mjs?v=documents-access-20261020" >
@@ -67,13 +82,33 @@ body[data-content-state="error"] > :is(main,#app-layout,#raid-layout,.site-legal
 .reference-detail-layout > .reference-main { flex: 1; min-height: 0; width: 100%; }
 body[data-content-state="ready"] > .page-boot-status { display: none; }
 body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
+body[data-server-content][data-content-state] > :is(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: visible; }
+body[data-server-content] > .page-boot-status { display: none; }
+body[data-server-content][data-content-state="error"] > .page-boot-status { display: block; position: static; padding: 16px; }
+body[data-content-state="ready"] [data-seo-fallback] { display: none; }
+.seo-reading { padding: 20px; max-width: 100%; overflow-wrap: anywhere; }
+.seo-reading li { margin-block: 8px; }
+.seo-reading a { display: inline-flex; align-items: center; min-height: 44px; }
+.seo-quest-list { columns: 2 260px; padding-inline-start: 22px; }
+.seo-entity { width: min(100%, 1200px); margin-inline: auto; }
+.seo-entity h1 { margin-block: 12px; font-size: clamp(24px, 4vw, 38px); line-height: 1.2; }
+.seo-entity-links { columns: 2 260px; padding-inline-start: 22px; }
+.seo-pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
+.seo-modes { display: flex; flex-wrap: wrap; gap: 8px; }
+.seo-modes a { min-width: 44px; justify-content: center; }
+.seo-modes [aria-current="page"] { font-weight: 700; text-decoration: underline; }
+.seo-directory { width: min(100%, 1200px); margin-inline: auto; padding: 20px; }
+.seo-directory > .seo-entity { padding: 0; }
+body[data-server-entity]:not([data-content-state="ready"]) { height: auto; min-height: 100dvh; overflow: auto; }
+body[data-server-entity]:not([data-content-state="ready"]) > main:not(.seo-directory) { display: none; }
+body[data-server-entity]:not([data-content-state="ready"]) > :is(#app-layout,#raid-layout) { position: absolute; inset-inline: 0; top: var(--header-height, 76px); visibility: hidden; pointer-events: none; }
+body[data-server-entity]:not([data-content-state="ready"]) > .boot-error { position: static; inset: auto; min-height: 0; }
 </style>
 <script type="application/json" id="wiki-page-params">{"map": "the-labyrinth"}</script>
 </head>
-<body class="raid-page" data-page="raid"  data-content-state="loading" >
+<body class="raid-page" data-page="raid"    data-content-state="loading" >
 <div class="page-boot-status" id="page-boot-status" role="status" aria-live="polite">Загрузка страницы…</div>
-<noscript>Для отображения данных включите JavaScript.</noscript>
-<header class="topbar">
+<noscript>Для отображения интерактивных данных включите JavaScript.</noscript><header class="topbar">
   <button class="icon-button mobile-menu" id="raid-menu" aria-label="Открыть фильтры" aria-expanded="false">☰</button>
   <a class="brand" href="index.html" aria-label="Tarkov Compass — главная">
     <img class="site-logo" src="assets/site-logo.svg?v=brand-20261017" width="40" height="40" alt="">
@@ -132,6 +167,6 @@ body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
   <dialog id="raid-about-dialog" class="dialog raid-about-dialog"><div class="dialog-heading"><h2>Интерактивные карты</h2><button id="raid-about-close" class="icon-button" aria-label="Закрыть">×</button></div><p>Выберите локацию, этаж и нужные слои. Отметки и заметки сохраняются в вашем профиле.</p><ul class="source-list"><li><a href="https://tarkov.help/ru" target="_blank" rel="noopener noreferrer">Tarkov.help — прохождения ↗</a></li><li><a href="https://escapefromtarkov.fandom.com/ru/wiki/Escape_from_Tarkov_Wiki" target="_blank" rel="noopener noreferrer">Русская Wiki ↗</a></li></ul><p class="muted">Авторы карт: Shebuka, RE3MR, Jindouz, xTycho, NepPure и участники сообщества. Игровые материалы — Battlestate Games. Карты распространяются на условиях CC BY-NC-SA 4.0; исходные права сохранены.</p></dialog>
   <div class="toast" id="raid-toast" role="status" hidden></div>
   <script src="vendor/leaflet.js"></script>
-  <script type="module" src="bootstrap.mjs?v=432953184e3a4e0f"></script>
+  <script type="module" src="bootstrap.mjs?v=e971ad7b2223c7ad"></script>
 </body>
 </html>

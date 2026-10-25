@@ -43,7 +43,7 @@ jobs:
         env:
           API_ONLY: 'true'
         run: |
-          php artisan route:list --json | php -r '$routes = json_decode(stream_get_contents(STDIN), true, flags: JSON_THROW_ON_ERROR); foreach ($routes as $route) { if (!in_array($route["uri"], ["up", "api/{path?}", "api/content/data/{path}", "api/content/bundle/{name}", "api/content/quest/{quest}", "api/content/important-items", "api/content/time", "api/player-navigation", "api/auth/options", "api/auth/profile", "api/auth/email", "api/auth/email/send", "api/auth/email/verify", "api/auth/password/request", "api/auth/password/reset", "api/auth/oauth/{provider}/start", "api/auth/oauth/{provider}/finish"]) && !str_starts_with($route["uri"], "admin")) { throw new RuntimeException("Unexpected public route: ".$route["uri"]); } }'
+          php artisan route:list --json | php -r '$routes = json_decode(stream_get_contents(STDIN), true, flags: JSON_THROW_ON_ERROR); foreach ($routes as $route) { if (!in_array($route["uri"], ["up", "api/{path?}", "api/content/data/{path}", "api/content/bundle/{name}", "api/content/quest/{quest}", "api/content/seo", "api/content/important-items", "api/content/time", "api/player-navigation", "api/auth/options", "api/auth/profile", "api/auth/email", "api/auth/email/send", "api/auth/email/verify", "api/auth/password/request", "api/auth/password/reset", "api/auth/oauth/{provider}/start", "api/auth/oauth/{provider}/finish"]) && !str_starts_with($route["uri"], "admin")) { throw new RuntimeException("Unexpected public route: ".$route["uri"]); } }'
       - name: Repeat production deploy without losing APP_KEY or SQLite
         run: php scripts/check-alwaysdata-deployment.php
       - name: Isolated SQLite restore round trip

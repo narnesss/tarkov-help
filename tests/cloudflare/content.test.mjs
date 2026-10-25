@@ -10,6 +10,7 @@ test('новый опубликованный квест открывается 
   const saved=globalThis.fetch;
   try{
     globalThis.fetch=async(url,options)=>{
+      if(url.pathname==='/api/content/seo')return Response.json({error:'Not found'},{status:404});
       assert.equal(url.href,'https://origin.test/api/content/quest/new-quest');
       assert.equal(options.headers['X-Wiki-Proxy-Token'],env.API_PROXY_TOKEN);
       assert.equal(options.headers['X-Wiki-Client-IP'],'198.51.100.1');
@@ -18,7 +19,7 @@ test('новый опубликованный квест открывается 
     };
     const reply=await worker.fetch(new Request(origin+'/quests/new-quest',{headers:{'CF-Connecting-IP':'198.51.100.1'}}),env);
     assert.equal(reply.status,200);assert.equal(await reply.text(),'quest shell');assert.equal(reply.headers.get('Cache-Control'),'private, no-store');
-    globalThis.fetch=async()=>Response.json({exists:false});
+    globalThis.fetch=async url=>url.pathname==='/api/content/seo'?Response.json({error:'Not found'},{status:404}):Response.json({exists:false});
     assert.equal((await worker.fetch(new Request(origin+'/quests/draft'),env)).status,404);
     assert.equal((await worker.fetch(new Request(origin+'/quests/new-quest'),{...env,API_ENABLED:'false'})).status,404);
   }finally{globalThis.fetch=saved;}

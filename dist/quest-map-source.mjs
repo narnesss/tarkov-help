@@ -1,4 +1,4 @@
-import {pageDataset} from './page-data.mjs?v=documents-access-20261020';
+import {pageDataset} from './page-data.mjs?v=5caeaa51b59039d9';
 import {pageParams,initializeSiteRoutes} from './site-routes.mjs?v=page-content-20261017';
 import {external} from './guide-common.mjs?v=documents-access-20261020';import {sourcePoint} from './quest-map-model.mjs?v=page-content-20261017';
 import {QuestMapFocusReceiver} from './quest-map-messages.mjs?v=page-content-20261017';

@@ -11,6 +11,7 @@ const escape=value=>String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;
 export function routePlan(){return readJSON('data/site-render-routes.json');}
 export function sourceFingerprint(){
  const names=['public/data/page-routes.json', 'config/pages.php','config/legal.php','app/Services/PageCatalog.php','app/Services/PageViews.php','app/Services/PageModules.php','app/Console/Commands/ExportSite.php'];
+ names.push('config/site.php','app/Services/PageSeo.php','app/Services/SiteMap.php');
  function walk(dir){for(const item of fs.readdirSync(path.join(root,dir),{withFileTypes:true})){
   const name=dir+'/'+item.name;if(item.isDirectory())walk(name);else names.push(name);
  }}
@@ -39,12 +40,14 @@ export function build(){
   if(item.isDirectory())copy(source);else write(target,fs.readFileSync(source));
  }}
  copy(publicDir);
- const routes=routePlan(),templates={};
+ const routes=routePlan(),templates={},seoPages=readJSON('data/seo-export.json');
  for(const entry of Object.values(routes))templates[entry.template]??=fs.readFileSync(path.join(dist,entry.template+'.html'),'utf8');
  for(const [url,entry] of Object.entries(routes)){
   const variant=entry.template==='boss'&&Object.hasOwn(entry.params,'boss')?'boss-card':entry.template==='reference'&&Object.hasOwn(entry.params,'item')?'item-card':null;
   const template=variant?fs.readFileSync(path.join(dist,variant+'.html'),'utf8'):templates[entry.template];
-  let source=template.replace(/<script type="application\/json" id="wiki-page-params">.*?<\/script>\s*/s,'').replace(/<title>.*?<\/title>/,'<title>'+escape(entry.title)+' — Escape from Tarkov Wiki</title>');
+  const seo=seoPages[url];if(!seo)throw Error('Missing SEO export: '+url);
+  let source=template.replace(/<script type="application\/json" id="wiki-page-params">.*?<\/script>\s*/s,'').replace(/<title>.*?<\/title>/,'<title>'+escape(seo.title)+'</title>');
+  source=source.replace(/<!-- SEO:START -->[\s\S]*?<!-- SEO:END -->/,'<!-- SEO:START -->\n'+seo.head+'<!-- SEO:END -->');
   const params=JSON.stringify(entry.params).replaceAll('":','": ').replaceAll(',',', ').replaceAll('<','\\u003c');
   source=source.replace('</head>','<script type="application/json" id="wiki-page-params">'+params+'</script>\n</head>');
   const target=path.resolve(dist,url.slice(1)+'.html');if(!url.startsWith('/')||!target.startsWith(dist+path.sep))throw Error('Unsafe export route: '+url);write(target,source);

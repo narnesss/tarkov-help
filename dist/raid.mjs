@@ -1,4 +1,5 @@
 import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs?v=page-content-20261017';
+import {updatePageSeo} from './page-seo.mjs?v=35639628025177d5';
 import {publicLinkURL,publicAttribution} from './public-links.mjs?v=page-content-20261017';
 import {LooseLootFilter} from './loose-loot-ui.mjs?v=documents-access-20261020';
 import {LooseLootPreferences,loosePresentation,looseItemRecord,looseItemIds,LOOSE_FALLBACK_ICON} from './loose-loot-model.mjs?v=page-content-20261017';
@@ -7,7 +8,7 @@ import {readPersonal,writePersonal} from './profile-store.mjs?v=loading-20261018
 const storePersonal=(key,value)=>{if(!writePersonal(key,value))throw new Error('Локальное сохранение недоступно');};
 import {ruText,localizeDisplay} from './ru-data.mjs?v=page-content-20261017';
 import {questExtras,mediaFor} from './quest-extras.mjs?v=documents-access-20261020';
-import {pageDataset} from './page-data.mjs?v=documents-access-20261020';
+import {pageDataset} from './page-data.mjs?v=5caeaa51b59039d9';
 import {questGalleryPlan} from './quest-view-model.mjs?v=page-content-20261017';
 import {galleryBlock} from './gallery.mjs?v=30118b56f9594fd5';
 import {json} from './guide-common.mjs?v=documents-access-20261020';
@@ -61,6 +62,7 @@ function setUrl() {
   if(embedded&&params.has('view'))u.searchParams.set('view',params.get('view'));
   if(questFilter)u.searchParams.set('quest',questFilter);if(objectiveFilter)u.searchParams.set('objective',objectiveFilter);if(routeId)u.searchParams.set('route',routeId);
   history.replaceState(null,'',canonicalURL(u));
+  if(!embedded)updatePageSeo({title:definition.name+' — карта, выходы и квесты Таркова'+(gameMode==='regular'?' — PVP':'')+' | Tarkov Compass',description:'Карта «'+definition.name+'» в Escape from Tarkov: выходы, квестовые точки и уровни карты.',canonical:u,breadcrumbs:[{name:'Карты',url:'/raid'},{name:definition.name,url:u}]});
   const aliases = {'streets-of-tarkov':'streets','ground-zero':'groundzero','the-lab':'lab','the-labyrinth':'labyrinth'};
   $('documents-link').href = siteHref(`documents.html?map=${aliases[definition.id] || definition.id}`);
 }
@@ -263,6 +265,7 @@ async function setLocation(id, {initial = false} = {}) {
     if (token !== requestId) return;
     $('raid-loading').replaceChildren(el('span',e.message + '. Проверьте соединение.'));
     const retry = el('button','Повторить','button');retry.onclick = () => setLocation(id,{initial});$('raid-loading').append(retry);
+    if(initial)throw e;
   }
 }
 function buildFilters() {

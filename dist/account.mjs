@@ -1,5 +1,5 @@
 import {profileFields} from './profile-fields.mjs?v=profile-details-20261017';
-import {pageDataset} from './page-data.mjs?v=documents-access-20261020';
+import {pageDataset} from './page-data.mjs?v=5caeaa51b59039d9';
 import {profileStore} from './profile-store.mjs?v=loading-20261018';
 import {el,action} from './guide-common.mjs?v=documents-access-20261020';
 import {siteHref} from './site-routes.mjs?v=page-content-20261017';

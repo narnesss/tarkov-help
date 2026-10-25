@@ -10,6 +10,7 @@ use App\Http\Middleware\VerifyApiProxy;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/api/content/important-items', \App\Http\Controllers\ImportantItemsController::class)->middleware(VerifyApiProxy::class);
+Route::get('/api/content/seo', \App\Http\Controllers\SeoController::class)->middleware(VerifyApiProxy::class);
 Route::get('/api/content/time', \App\Http\Controllers\GameTimeController::class)->middleware(VerifyApiProxy::class);
 Route::get('/api/content/data/{path}', ContentController::class)->where('path', '.*')->middleware(VerifyApiProxy::class);
 Route::get('/api/content/bundle/{name}',[ContentController::class,'bundle'])->where('name','quest-extras|raid-base|quest-ui')->middleware(VerifyApiProxy::class);

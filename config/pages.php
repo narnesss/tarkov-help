@@ -6,14 +6,14 @@ $pages = json_decode(<<<'JSON'
 {
   "important-items": {
     "module": "important-items.mjs?v=loading-20261018",
-    "title": "Важные предметы — Tarkov Compass",
+    "title": "Предметы для квестов и убежища Таркова | Tarkov Compass",
     "description": "Что сохранить для квестов и убежища: количества, поиск в рейде, крафты и условия использования предметов.",
     "styles": ["style.css", "site-ui.css", "controls.css", "important-items.css"],
     "body_attributes": "class=\"important-items-page\" data-page=\"important-items\""
   },
   "account": {
-    "module": "account.mjs?v=documents-access-20261020",
-    "title": "Личный кабинет — Escape from Tarkov Wiki",
+    "module": "account.mjs?v=2348bcf26f9bf4b9",
+    "title": "Личный кабинет — Tarkov Compass",
     "description": "Твой прогресс квестов, убежища и достижений в PVE и PVP. Вход и регистрация.",
     "styles": ["style.css", "site-ui.css", "controls.css", "account.css", "account-responsive.css"],
     "body_attributes": "class=\"account-page\" data-page=\"account\""
@@ -43,9 +43,9 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": "class=\"legal-page\" data-page=\"privacy\""
   },
   "index": {
-    "module": "home.mjs?v=documents-access-20261020",
-    "title": "Escape from Tarkov Wiki — карты, квесты и справочник",
-    "description": "Подготовьтесь к следующему рейду: интерактивные карты, квесты торговцев, основной сюжет, предметы и личный прогресс в PVE и PVP.",
+    "module": "home.mjs?v=4db8f9bd69ba8aec",
+    "title": "Квесты, карты и справочник Escape from Tarkov | Tarkov Compass",
+    "description": "Tarkov Compass — справочник Escape from Tarkov на русском: квесты торговцев, сюжетные задания, интерактивные карты, предметы и прогресс в PVE и PVP.",
     "styles": [
       "style.css",
       "site-ui.css",
@@ -56,9 +56,9 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": "class=\"home-page\" data-page=\"index\""
   },
   "documents": {
-    "module": "app.mjs?v=documents-exits-20261020",
-    "title": "Документы — Escape from Tarkov Wiki",
-    "description": "Ваш атлас документов Kord Breach: 12 локаций, фотографии мест появления, поиск и личный прогресс.",
+    "module": "app.mjs?v=2ef97cfa35520c43",
+    "title": "Документы Kord Breach в Таркове — места на картах | Tarkov Compass",
+    "description": "Где найти документы Kord Breach в Escape from Tarkov: атлас локаций, фотографии мест появления, поиск и отметки найденных документов.",
     "styles": [
       "style.css",
       "readability.css",
@@ -69,9 +69,9 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": "class=\"\" data-page=\"documents\""
   },
   "raid": {
-    "module": "raid.mjs?v=c25fb5bf639baa55",
-    "title": "Интерактивные карты — Escape from Tarkov Wiki",
-    "description": "13 интерактивных карт Таркова: контейнеры, спавны ЧВК и Диких, выходы, боссы, ключи и квестовые места.",
+    "module": "raid.mjs?v=e7aa86940cf80981",
+    "title": "Карты Escape from Tarkov — выходы и квестовые точки | Tarkov Compass",
+    "description": "Интерактивные карты Escape from Tarkov: выходы, контейнеры, места появления ЧВК и Диких, боссы, ключи и квестовые точки с фильтрами объектов.",
     "styles": [
       "style.css",
       "vendor/leaflet.css",
@@ -86,9 +86,9 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": "class=\"raid-page\" data-page=\"raid\""
   },
   "quests": {
-    "module": "quests.mjs?v=792e09c2807e96aa",
-    "title": "Квесты и цепочки — Escape from Tarkov Wiki",
-    "description": "Квесты Таркова по торговцам: условия открытия, цепочки заданий, цели на карте, награды и личный прогресс.",
+    "module": "quests.mjs?v=ae12bc1053669617",
+    "title": "Квесты Escape from Tarkov — задания торговцев и сюжет | Tarkov Compass",
+    "description": "Квесты Escape from Tarkov по торговцам: цели, условия открытия, цепочки заданий и награды. Каталог заданий и отдельный прогресс в PVE и PVP.",
     "styles": [
       "style.css",
       "guide.css",
@@ -109,9 +109,9 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": "class=\"guide-page\" data-page=\"quests\""
   },
   "quest": {
-    "module": "quests.mjs?v=792e09c2807e96aa",
-    "title": "Прохождение квеста — Escape from Tarkov Wiki",
-    "description": "Квесты Таркова по торговцам: условия открытия, цепочки заданий, цели на карте, награды и личный прогресс.",
+    "module": "quests.mjs?v=ae12bc1053669617",
+    "title": "Квест Escape from Tarkov — цели и награды | Tarkov Compass",
+    "description": "Карточка задания Escape from Tarkov: цели, требования, награды и связи с другими квестами торговцев.",
     "styles": [
       "style.css",
       "guide.css",
@@ -132,9 +132,9 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": "class=\"guide-page\" data-page=\"quests\""
   },
   "reference": {
-    "module": "reference.mjs?v=documents-access-20261020",
-    "title": "Справочник — Escape from Tarkov Wiki",
-    "description": "Предметы, патроны, бартеры, крафты, убежище, боссы и предметы для квестов Таркова.",
+    "module": "reference.mjs?v=a893a6e80fdbb776",
+    "title": "Справочник Escape from Tarkov — предметы, патроны, убежище | Tarkov Compass",
+    "description": "Справочник Escape from Tarkov на русском: предметы, патроны, бартеры, крафты, модули убежища, боссы, торговцы и достижения.",
     "styles": [
       "style.css",
       "guide.css",
@@ -148,8 +148,8 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": "class=\"guide-page\" data-page=\"reference\""
   },
   "boss": {
-    "module": "boss.mjs?v=documents-access-20261020",
-    "title": "Боссы — Escape from Tarkov Wiki",
+    "module": "boss.mjs?v=f7c09de938448f61",
+    "title": "Боссы Escape from Tarkov — здоровье и места появления | Tarkov Compass",
     "description": "Боссы Таркова: описание, здоровье по частям тела и места появления в PVP и PVE.",
     "styles": [
       "style.css",
@@ -164,9 +164,9 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": "class=\"guide-page\" data-page=\"boss\""
   },
   "quest-map-source": {
-    "module": "quest-map-source.mjs?v=documents-access-20261020",
-    "title": "Карта мест выполнения квеста",
-    "description": "Карта мест выполнения квеста",
+    "module": "quest-map-source.mjs?v=832d82c073fe3561",
+    "title": "Карта мест выполнения квеста — Tarkov Compass",
+    "description": "Схема локации и мест выполнения задания Escape from Tarkov.",
     "styles": [
       "vendor/leaflet.css",
       "quest-map-source.css",
@@ -175,7 +175,7 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": ""
   },
   "not-found": {
-    "title": "Страница не найдена — Escape from Tarkov Wiki",
+    "title": "Страница не найдена — Tarkov Compass",
     "description": "Запрошенная страница не найдена.",
     "styles": [
       "style.css",

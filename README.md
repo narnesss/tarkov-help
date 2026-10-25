@@ -5,6 +5,8 @@
 
 ## Структура
 
+Индексация, метаданные, sitemap и Яндекс.Вебмастер: [docs/seo.md](docs/seo.md).
+
 - app, bootstrap, routes, config — Laravel HTTP, DI, Cache и Artisan.
 - resources/views — Blade/PHP, общий layout и страницы.
 - src — проверенные доменные сервисы аккаунтов, CSRF и сохранения прогресса.

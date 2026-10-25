@@ -38,11 +38,17 @@ SQLITE_BACKUP_* пока сохраняют старые имена. Копии 
 
 ## Адреса и границы
 
+SEO endpoint `/api/content/seo` отдаёт публичный HTML игровых разделов и XML sitemap через
+тот же защищённый Worker proxy. В API-архив входит `public/data/page-routes.json`:
+это только соответствие стабильных ID и URL, не источник публикации или личных данных.
+Публикация определяется SQL/CONTENT_DIRECTORY. [SEO и порядок релиза](../docs/seo.md).
+
 Личный кабинет `/account`, Google/Discord и настройки OAuth описаны в [player-account.md](player-account.md).
 
 - Публичный сайт: https://tarkov-compass.narnesss.workers.dev.
 - PHP origin: https://narnes.alwaysdata.net; карточка https://admin.alwaysdata.com/site/1086865/.
-- Worker `tarkov-compass` обслуживает dist через ASSETS и пересылает только /api и /api/*.
+- Worker `tarkov-compass` обслуживает dist через ASSETS, пересылает /api и /api/*,
+  а HTML игровых разделов, важных предметов и sitemap получает через соответствующие API endpoints.
   При cookie eft_session HTML-шапка заменяется фрагментом PHP из /api/player-navigation
   до отправки браузеру. Контроллер только читает действующую сессию, не создаёт гостя;
   персонализированные страницы имеют private, no-store и Vary: Cookie.

@@ -1,6 +1,7 @@
 @extends('layouts.site')
 @section('content')
 @include('headers.' . $page)
+@if (isset($serverContent['entity'])) @include('components.entity-seo') @endif
 
 <main class="boss-page">
   <a class="guide-link" id="boss-back" href="reference.html?tab=bosses">← Справочник</a>
@@ -11,5 +12,5 @@
   <div id="boss-content" aria-live="polite"></div>
 </main>
 <div class="toast" id="guide-toast" role="status" hidden></div>
-  <script type="module" src="bootstrap.mjs?v=432953184e3a4e0f"></script>
+  <script type="module" src="bootstrap.mjs?v=e971ad7b2223c7ad"></script>
 @endsection

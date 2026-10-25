@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#101412">
   <meta name="wiki-runtime" content="{{ $runtime }}">
-  <meta name="description" content="{{ $meta['description'] }}">
+<!-- SEO:START -->
+@include('components.seo-head')
+<!-- SEO:END -->
 @if ($page === 'account')
   <meta name="referrer" content="no-referrer">
-  <meta name="robots" content="noindex, nofollow">
 @endif
   <base href="/">
   <title>{{ $title }}</title>
@@ -45,13 +46,34 @@ body[data-content-state="error"] > :is(main,#app-layout,#raid-layout,.site-legal
 .reference-detail-layout > .reference-main { flex: 1; min-height: 0; width: 100%; }
 body[data-content-state="ready"] > .page-boot-status { display: none; }
 body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
+body[data-server-content][data-content-state] > :is(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: visible; }
+body[data-server-content] > .page-boot-status { display: none; }
+body[data-server-content][data-content-state="error"] > .page-boot-status { display: block; position: static; padding: 16px; }
+body[data-content-state="ready"] [data-seo-fallback] { display: none; }
+.seo-reading { padding: 20px; max-width: 100%; overflow-wrap: anywhere; }
+.seo-reading li { margin-block: 8px; }
+.seo-reading a { display: inline-flex; align-items: center; min-height: 44px; }
+.seo-quest-list { columns: 2 260px; padding-inline-start: 22px; }
+.seo-entity { width: min(100%, 1200px); margin-inline: auto; }
+.seo-entity h1 { margin-block: 12px; font-size: clamp(24px, 4vw, 38px); line-height: 1.2; }
+.seo-entity-links { columns: 2 260px; padding-inline-start: 22px; }
+.seo-pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
+.seo-modes { display: flex; flex-wrap: wrap; gap: 8px; }
+.seo-modes a { min-width: 44px; justify-content: center; }
+.seo-modes [aria-current="page"] { font-weight: 700; text-decoration: underline; }
+.seo-directory { width: min(100%, 1200px); margin-inline: auto; padding: 20px; }
+.seo-directory > .seo-entity { padding: 0; }
+body[data-server-entity]:not([data-content-state="ready"]) { height: auto; min-height: 100dvh; overflow: auto; }
+body[data-server-entity]:not([data-content-state="ready"]) > main:not(.seo-directory) { display: none; }
+body[data-server-entity]:not([data-content-state="ready"]) > :is(#app-layout,#raid-layout) { position: absolute; inset-inline: 0; top: var(--header-height, 76px); visibility: hidden; pointer-events: none; }
+body[data-server-entity]:not([data-content-state="ready"]) > .boot-error { position: static; inset: auto; min-height: 0; }
 </style>
 @endif
 </head>
-<body {!! $meta['body_attributes'] !!} @if (in_array($page, ['index','documents','raid','quests','quest','reference','boss','account'], true)) data-content-state="loading" @endif>
+<body {!! $meta['body_attributes'] !!} @if ($serverContent ?? []) data-server-content="true" @endif @if (isset($serverContent['entity'])) data-server-entity="true" @endif @if (in_array($page, ['index','documents','raid','quests','quest','reference','boss','account'], true)) data-content-state="loading" @endif>
 @if (in_array($page, ['index','documents','raid','quests','quest','reference','boss','account'], true))
 <div class="page-boot-status" id="page-boot-status" role="status" aria-live="polite">Загрузка страницы…</div>
-<noscript>Для отображения данных включите JavaScript.</noscript>
+@unless ($serverContent ?? [])<noscript>Для отображения интерактивных данных включите JavaScript.</noscript>@endunless
 @endif
 @yield('content')
 @unless (in_array($page, ['documents', 'raid'], true))

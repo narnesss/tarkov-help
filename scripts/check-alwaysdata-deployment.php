@@ -6,6 +6,10 @@ $root = dirname(__DIR__);
 $package = $root.'/build/alwaysdata-api';
 $database = $root.'/build/alwaysdata-test-data-'.bin2hex(random_bytes(6)).'/wiki.sqlite';
 if (!is_dir($package) || file_exists($package.'/.env')) { throw new RuntimeException('Нужен свежий npm run package:alwaysdata.'); }
+if (!is_file($package.'/public/data/page-routes.json')
+    || hash_file('sha256', $package.'/public/data/page-routes.json') !== hash_file('sha256', $root.'/public/data/page-routes.json')) {
+    throw new RuntimeException('Каталог канонических URL не попал в API-пакет.');
+}
 if (!is_file($package.'/public/admin-responsive.css')
     || hash_file('sha256',$package.'/public/admin-responsive.css') !== hash_file('sha256',$root.'/public/admin-responsive.css')) {
     throw new RuntimeException('Мобильные стили Orchid не попали в API-пакет.');
@@ -73,7 +77,7 @@ $backup = new PDO('sqlite:'.$backups[0]);
 if ((int) $backup->query("SELECT count(*) FROM users WHERE id='keep-this-user'")->fetchColumn() !== 1) { throw new RuntimeException('Резервная копия потеряла данные.'); }
 $routes = json_decode($run([PHP_BINARY, 'artisan', 'route:list', '--json']), true, flags: JSON_THROW_ON_ERROR);
 foreach ($routes as $route) {
-    if (!in_array($route['uri'], ['up', 'api/{path?}', 'api/content/data/{path}', 'api/content/bundle/{name}', 'api/content/quest/{quest}', 'api/content/important-items', 'api/content/time', 'api/player-navigation', 'api/auth/options', 'api/auth/profile', 'api/auth/email', 'api/auth/email/send', 'api/auth/email/verify', 'api/auth/password/request', 'api/auth/password/reset', 'api/auth/oauth/{provider}/start', 'api/auth/oauth/{provider}/finish'], true)
+    if (!in_array($route['uri'], ['up', 'api/{path?}', 'api/content/data/{path}', 'api/content/bundle/{name}', 'api/content/quest/{quest}', 'api/content/seo', 'api/content/important-items', 'api/content/time', 'api/player-navigation', 'api/auth/options', 'api/auth/profile', 'api/auth/email', 'api/auth/email/send', 'api/auth/email/verify', 'api/auth/password/request', 'api/auth/password/reset', 'api/auth/oauth/{provider}/start', 'api/auth/oauth/{provider}/finish'], true)
         && !str_starts_with($route['uri'], 'admin')) { throw new RuntimeException('API-пакет публикует лишний маршрут: '.$route['uri']); }
 }
 echo "PASS: production API-пакет, повторный deploy, APP_KEY, SQLite backup и API_ONLY маршруты.\n";

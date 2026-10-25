@@ -1,4 +1,5 @@
 import {navigationAssetRequest,playerNavigation} from './player-navigation.mjs';
+import {seoResponse} from './seo.mjs';
 
 /** Статика остаётся на Cloudflare; приватный API исполняется только на alwaysdata. */
 function settings(env) {
@@ -17,6 +18,8 @@ function unavailable() {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url), config = settings(env);
+    const seo = await seoResponse(request, env, config);
+    if (seo) return seo.ok && seo.headers.get('Content-Type')?.includes('text/html') ? playerNavigation(request, seo, config) : seo;
     if (url.pathname === '/important-items' || url.pathname === '/important-items.html') {
       if (!['GET', 'HEAD'].includes(request.method)) return new Response('Method not allowed', {status:405, headers:{Allow:'GET, HEAD', ...privateHeaders}});
       const errorPage = (status, text) => new Response(request.method === 'HEAD' ? null : `<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Важные предметы</title><body><h1>Важные предметы</h1><p role="alert">${text}</p><a href="/important-items">Вернуться к списку</a></body></html>`, {status, headers:{...privateHeaders, 'Content-Type':'text/html; charset=utf-8'}});
@@ -74,6 +77,7 @@ export default {
       if (response.status >= 300 && response.status < 400 || !response.headers.get('Content-Type')?.includes('application/json')) return unavailable();
       const outgoing = new Headers(response.headers);
       for (const [name, value] of Object.entries(privateHeaders)) outgoing.set(name, value);
+      outgoing.set('X-Robots-Tag', 'noindex, nofollow');
       outgoing.delete('Access-Control-Allow-Origin'); outgoing.delete('Access-Control-Allow-Credentials');
       return new Response(response.body, {status: response.status, headers: outgoing});
     } catch { return unavailable(); }

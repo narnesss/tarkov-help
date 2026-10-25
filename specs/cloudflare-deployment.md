@@ -2,6 +2,10 @@
 
 Читайте этот файл перед изменением сборки, Wrangler, CI или публикацией сайта.
 
+Квесты, справочник, боссы, карты, документы и sitemap обрабатываются `cloudflare/seo.mjs` через `/api/content/seo`;
+robots.txt генерируется экспортом. Опубликованный API нужен для актуального HTML,
+включая URL из dist. [SEO, смешанные версии и откат](../docs/seo.md).
+
 - Основной проект использует Workers Static Assets, а не Pages.
 - Ветка: `main`; корень: корень репозитория.
 - Build command: `npm run build`; Deploy command: `npx wrangler deploy`.
@@ -12,9 +16,10 @@
 - Workers не исполняет Laravel/PHP: он обслуживает готовый статический экспорт.
   Laravel API запускается на alwaysdata PHP 8.4 с корнем `public`; детали обязательны
   в specs/alwaysdata-deployment.md. /api/* и /profile-runtime.mjs идут через Worker;
-  `/quests/*` проверяет отсутствующие в экспорте квесты/торговцев и выдаёт общую оболочку;
-  HTML со шапкой проходит через Worker для вставки PHP-навигации; сами страницы берутся
-  из ASSETS. Не включать run_worker_first для всех ассетов.
+  игровые разделы получают актуальный HTML через SEO endpoint, включая
+  уже существующие в экспорте URL. HTML со шапкой проходит через Worker для вставки
+  PHP-навигации; остальные статические страницы берутся из ASSETS. Не включать
+  run_worker_first для всех ассетов.
 - API_ORIGIN=https://narnes.alwaysdata.net; API_PROXY_TOKEN — Secret, не Git.
   API_ENABLED=true задаётся в панели после готовности origin; по умолчанию локальные профили.
   keep_vars=true сохраняет ручную настройку, не добавлять API_ENABLED в vars репозитория.

@@ -12,10 +12,10 @@ const previousProfile=profileStore.profile;
 const entry = document.body.dataset.page;
 try {
   const initializing=profileStore.initialize(runtime);
-  if(['quests','raid','reference'].includes(entry)){
-    await import('./page-data-preload.mjs?v=documents-access-20261020').then(module=>module.preloadPageData(entry)).catch(()=>{});
-  }
-  await initializing;
+  const preloading=['quests','raid','reference'].includes(entry)
+    ? import('./page-data-preload.mjs?v=480f6db6450df584').then(module=>module.preloadPageData(entry)).catch(()=>{})
+    : Promise.resolve();
+  await Promise.all([initializing,preloading]);
 }
 catch (error) {
   if (profileStore.profile===previousProfile && profileStore.meta.serverProfile) { profileStore.profile = profileStore.meta.serverProfile; profileStore.memory.clear(); }
@@ -35,7 +35,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 if (entry === 'index' && ['map','point'].some(key=>new URLSearchParams(location.search).has(key))) {
   location.replace(siteHref('documents.html'+location.search+location.hash));
 } else {
-const modules = {'important-items':'./important-items.mjs?v=loading-20261018',index: './home.mjs?v=documents-access-20261020', documents: './app.mjs?v=documents-exits-20261020', raid: './raid.mjs?v=c25fb5bf639baa55', quests: './quests.mjs?v=792e09c2807e96aa', reference: './reference.mjs?v=documents-access-20261020', boss: './boss.mjs?v=documents-access-20261020', account: './account.mjs?v=documents-access-20261020'};
+const modules = {'important-items':'./important-items.mjs?v=loading-20261018',index: './home.mjs?v=4db8f9bd69ba8aec', documents: './app.mjs?v=2ef97cfa35520c43', raid: './raid.mjs?v=e7aa86940cf80981', quests: './quests.mjs?v=ae12bc1053669617', reference: './reference.mjs?v=a893a6e80fdbb776', boss: './boss.mjs?v=f7c09de938448f61', account: './account.mjs?v=2348bcf26f9bf4b9'};
 const pageModule=document.querySelector('link[data-page-module]')?.getAttribute('href')||modules[entry];
 if (pageModule) await import(pageModule.startsWith('.')?pageModule:'./'+pageModule);
 

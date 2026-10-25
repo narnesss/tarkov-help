@@ -1,4 +1,5 @@
 import {siteHref,pageParams,canonicalURL} from './site-routes.mjs?v=page-content-20261017';
+import {updatePageSeo} from './page-seo.mjs?v=35639628025177d5';
 import {questChoiceIndex,questChoicePlan} from './quest-choice-model.mjs?v=page-content-20261017';
 import {QuestMapView} from './quest-map-view.mjs?v=documents-access-20261020';
 import {questHref,catalogHref,catalogRoute,sectionTasks,catalogGroups,questPreview} from './quest-catalog-model.mjs?v=page-content-20261017';
@@ -9,7 +10,7 @@ import {rewardLabels,resolveAchievement,rewardAchievementNames,groupRewardLines,
 import {hasQuestRoadmap,questGalleryPlan} from './quest-view-model.mjs?v=page-content-20261017';
 import {resolveGameMode} from './game-mode.mjs?v=page-content-20261017';
 import {ruText} from './ru-data.mjs?v=page-content-20261017';
-import {pageDataset} from './page-data.mjs?v=documents-access-20261020';
+import {pageDataset} from './page-data.mjs?v=5caeaa51b59039d9';
 import {questBriefing} from './quest-briefing.mjs?v=documents-access-20261020';
 import {questMapForLocation,questMapURL} from './quest-map-model.mjs?v=page-content-20261017';
 import {galleryBlock} from './gallery.mjs?v=30118b56f9594fd5';
@@ -100,7 +101,9 @@ function renderCatalogHeader(){
  else if(section==='archive'){title='Другие и архивные';description='Дополнительные и архивные задания. Все ваши отметки и подробности сохранены.';}
  else if(section==='all'){title='Все квесты';description='Задания торговцев и основного сюжета. Найдите нужный квест по названию, цели или локации.';}
  else if(tr){title='Квесты: '+tr.name;description='Условия и награды — в списке. Подробное прохождение, изображения и отметки целей — на странице квеста.';}
- $('quest-catalog-title').textContent=title;$('quest-catalog-description').textContent=description;document.title=title+' — Escape from Tarkov Wiki';
+ $('quest-catalog-title').textContent=title;$('quest-catalog-description').textContent=description;
+ const seoUrl=catalogHref(section,mode,{page:params.get('page')});
+ updatePageSeo({title:title+' Escape from Tarkov'+(mode==='regular'?' — PVP':'')+(Number(params.get('page'))>1?' — страница '+params.get('page'):'')+' | Tarkov Compass',description,canonical:seoUrl,breadcrumbs:[{name:'Квесты',url:catalogHref('hub',mode)},{name:title,url:seoUrl}]});
  const crumbs=$('quest-catalog-breadcrumbs');crumbs.replaceChildren();if(section!=='hub')crumbs.append(routeLink('Квесты',catalogHref('hub',mode)),el('span','›'),el('span',title));
  $('quest-list-title').textContent=section==='story'?'Сюжетные главы':section==='hub'?'Результаты поиска':'Список заданий';
 }
@@ -111,7 +114,7 @@ function renderList(){if(!$('quest-list'))return;
  const own=sectionTasks(tasks,route.section),result=filterQuests(own,{query:filters.q,trader:'all',map:filters.map,status:filters.status,flag:filters.flag,sort:filters.sort,progress,maps:list(data.maps)});
  if(route.section==='story'&&filters.sort==='level')result.sort((a,b)=>tasks.indexOf(a)-tasks.indexOf(b));
  $('quest-count').textContent=`${num(result.length)} заданий`;
- history.replaceState(null,'',new URL(catalogHref(route.section,mode,filters),location.href));updateParams();
+ history.replaceState(null,'',new URL(catalogHref(route.section,mode,{...filters,page:params.get('page')}),location.href));updateParams();
  $('quest-list').replaceChildren(...result.slice(0,limit).map(t=>{
   const a=routeLink('',questHref(t.id,mode),'quest-row quest-catalog-row');a.dataset.quest=t.id;a.classList.toggle('is-complete',questState(t,progress)==='complete');
   const title=el('div','','quest-row-name');title.append(el('strong',(entry(t).favorite?'★ ':'')+t.name),el('small',`${t.story?'Сюжетная глава':t.catalogLevelUnknown?'Уровень не указан':(t.minPlayerLevel||1)+' ур.'} · ${traders.get(idOf(t.trader))?.name||''}`));if(t.catalogKind==='event')title.append(el('span','Событие','quest-tag'));if(t.catalogKind==='seasonal')title.append(el('span','Сезонное','quest-tag'));if(t.catalogGame==='arena')title.append(el('span','ARENA','quest-tag'));if(t.catalogGame==='prestige')title.append(el('span','ПРЕСТИЖ · PVP','quest-tag'));if(t.lightkeeperRequired)title.append(el('span','Для Смотрителя','quest-tag'));
@@ -125,14 +128,15 @@ function renderRoute(){
  const layout=$('quest-layout');layout.classList.toggle('detail-open',route.kind==='quest');
  if(route.kind==='quest'){
   layout.dataset.view='quest';selected=byId.get(route.id);if(selected){if(data.cms&&(selected._detailPending||!extras.uiReady||extras.questId!==selected.id)){loadDetail(selected.id);}else{renderDetail();}}
-  else{questMap?.destroy();questMap=null;$('quest-detail').replaceChildren(empty('Задание не найдено в этом режиме.'),routeLink('← К каталогу квестов',catalogHref('hub',mode),'button'));document.title='Квест не найден — Escape from Tarkov Wiki';}
+  else{questMap?.destroy();questMap=null;$('quest-detail').replaceChildren(empty('Задание не найдено в этом режиме.'),routeLink('← К каталогу квестов',catalogHref('hub',mode),'button'));updatePageSeo({title:'Квест не найден | Tarkov Compass',robots:'noindex, follow'});}
  }else{objectiveWorkspace=null;questMap?.destroy();questMap=null;roadmap?.destroy();roadmap=null;feedback.root=null;$('quest-detail').replaceChildren();selected=null;filterTrader=route.section;renderList();}
 }
 function selectTask(id,tab='objectives'){if(!byId.has(id))return;if(route.kind==='catalog')returnCatalog=catalogHref(route.section,mode,catalogFilters());navigate(questHref(id,mode,tab));}
 function continueSelectedGoal(){objectiveWorkspace?.continue();}
 function renderHeader(){if(!selected)return;const state=questState(selected,progress),button=$('selected-complete');if(button){button.textContent=state==='complete'?'✓ Выполнено':'Отметить выполненным';button.setAttribute('aria-pressed',String(state==='complete'));button.setAttribute('aria-label',state==='complete'?'Снять отметку о выполнении':'Отметить выполненным');}const goals=orderedObjectives(selected,entry(selected).storyBranch,mode),done=goals.filter(o=>entry(selected).objectives.includes(o.id)).length,label=$('selected-objective-progress'),meter=$('selected-objective-meter');if(label)label.textContent=`${done} из ${goals.length} целей`;if(meter){meter.max=goals.length||1;meter.value=done;}}
 function renderDetail(){
-  const t=selected;if(!t)return;document.title=t.name+' — Escape from Tarkov Wiki';objectiveWorkspace=null;questMap?.destroy();questMap=null;roadmap?.destroy();roadmap=null;saveView();const url=new URL(location.href);url.searchParams.delete('tab');url.pathname='/quest.html';url.searchParams.set('quest',t.id);history.replaceState(null,'',canonicalURL(url));updateParams();route=catalogRoute(location.href);const root=$('quest-detail');root.replaceChildren();
+  const t=selected;if(!t)return;objectiveWorkspace=null;questMap?.destroy();questMap=null;roadmap?.destroy();roadmap=null;saveView();const url=new URL(location.href);url.searchParams.delete('tab');url.pathname='/quest.html';url.searchParams.set('quest',t.id);history.replaceState(null,'',canonicalURL(url));updateParams();route=catalogRoute(location.href);const root=$('quest-detail');root.replaceChildren();
+  updatePageSeo({title:t.name+' — квест Escape from Tarkov'+(mode==='regular'?' — PVP':'')+' | Tarkov Compass',description:t.name+' — задание в Escape from Tarkov. '+(t.objectives||[]).slice(0,2).map(goal=>goal.description||'').join(' '),canonical:questHref(t.id,mode),breadcrumbs:[{name:'Квесты',url:catalogHref('hub',mode)},{name:t.name,url:questHref(t.id,mode)}]});
   const hero=el('header','','quest-hero');
   const tr=traders.get(idOf(t.trader));const breadcrumbs=el('nav','','quest-breadcrumbs');breadcrumbs.setAttribute('aria-label','Путь к заданию');breadcrumbs.append(routeLink('Квесты',catalogHref('hub',mode)),el('span','›'),routeLink(t.story?'Основной сюжет':tr?.name||'Торговец',catalogHref(t.story?'story':t.catalogSection==='supplementary'?'archive':idOf(t.trader),mode)),el('span','›'),el('span',t.name));hero.append(breadcrumbs,routeLink('← К списку заданий',backHref(),'text-button quest-back'));const meta=el('div','','quest-meta');if(tr?.imageLink)meta.append(image(tr.imageLink));meta.append(el('span',tr?.name||'Торговец'),el('span',t.story?'СЮЖЕТНАЯ ГЛАВА':t.catalogLevelUnknown?'УРОВЕНЬ НЕ УКАЗАН':`${t.minPlayerLevel||1} УРОВЕНЬ`,'quest-tag'));if(t.catalogSection==='supplementary')meta.append(el('span','Другие и архивные','quest-tag'));if(t.catalogKind==='event')meta.append(el('span','Событие · 1.1.5','quest-tag'));if(t.catalogKind==='seasonal')meta.append(el('span','Сезонное','quest-tag'));if(t.catalogGame==='arena')meta.append(el('span','ARENA','quest-tag'));if(t.catalogGame==='prestige')meta.append(el('span','ПРЕСТИЖ · PVP','quest-tag'));if(t.kappaRequired)meta.append(el('span','Каппа','quest-tag'));if(t.lightkeeperRequired)meta.append(el('span','Смотритель','quest-tag'));hero.append(meta,el('h1',t.name));renderChoiceNotice(hero,t);
   meta.append(el('span',mode==='pve'?'PVE':'PVP','quest-tag'));
@@ -349,20 +353,20 @@ function setData(bundle){
   restoreView();renderTraders();renderRoute();
 }
 async function loadDetail(id){
- const current=request,target=mode;const root=$('quest-detail');root.replaceChildren(empty('Загружаем подробности задания…'));
+ const current=request,target=mode;const root=$('quest-detail');root.querySelector('[data-detail-error]')?.remove();if(!hasServerQuest(id,target))root.replaceChildren(empty('Загружаем подробности задания…'));
  try{
   const detail=await pageDataset('quests-'+target,'data/guide/quests-'+target+'.json',{view:'detail',id});
   if(current!==request||target!==mode||route.kind!=='quest'||route.id!==id)return;
   const task=detail.tasks.find(task=>task.id===id);if(!task)throw new Error('Задание недоступно в этом режиме.');
   const catalogTasks=tasks.map(row=>row.id===id?task:row),items=[...new Map([...(data.items||[]),...(detail.items||[])].map(item=>[item.id,item])).values()];
   data={...data,...detail,partial:Boolean(data.partial),tasks:catalogTasks,items,maps:data.maps,traders:data.traders,questItems:[...new Map([...(data.questItems||[]),...(detail.questItems||[])].map(item=>[item.id,item])).values()]};tasks=catalogTasks;byId.set(id,task);extras=detail.ui;choices=questChoiceIndex(tasks,extras.choices,mode);renderRoute();
- }catch(error){if(current!==request||route.kind!=='quest'||route.id!==id)return;root.replaceChildren(empty(error.message||'Не удалось загрузить подробности.'),action('Повторить',()=>loadDetail(id)),routeLink('← К списку заданий',backHref(),'button'));}
+ }catch(error){if(current!==request||target!==mode||route.kind!=='quest'||route.id!==id)return;const message=el('div');message.dataset.detailError='';message.setAttribute('role','status');message.append(empty(error.message||'Не удалось загрузить подробности.'),action('Повторить',()=>loadDetail(id)),routeLink('← К списку заданий',backHref(),'button'));if(hasServerQuest(id,target))root.append(message);else root.replaceChildren(message);}
 }
 async function loadMode(){
  questMap?.destroy();questMap=null;const token=++request;
  const controls=[...$('quest-layout').querySelectorAll('input,select,button'),...($('quest-filters-dialog')?.querySelectorAll('input,select,button')||[])];
  for(const n of controls)n.disabled=true;
- $('quest-layout').dataset.view=route.kind==='quest'?'quest':'hub';$('quest-detail').replaceChildren(empty('Загружаем задание…'));selected=null;filterTrader='all';
+ $('quest-layout').dataset.view=route.kind==='quest'?'quest':'hub';if(!hasServerQuest(route.id,mode))$('quest-detail').replaceChildren(empty('Загружаем задание…'));selected=null;filterTrader='all';
  try{
   const options=route.kind==='quest'?{view:'detail',id:route.id}:{view:'catalog'};
   const bundle=await pageDataset('quests-'+mode,'data/guide/quests-'+mode+'.json',options);
@@ -391,7 +395,8 @@ function wire(){
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('quest-layout').classList.contains('show-filters'))closeFilters();if(e.key==='/'&&!e.target.closest('input,textarea,select,dialog')&&route.kind==='catalog'){e.preventDefault();if(innerWidth<=700)$('quest-mobile-filters').onclick();$('quest-search').focus();}});
   window.addEventListener('wiki:state',e=>{if(e.detail.key===progressKey()&&data){progress=sanitizeQuestProgress({...readStorage(progressKey()),mode},tasks,{partial:Boolean(data?.partial)});renderTraders();renderList();renderDetail();}});
 }
-function fail(){questMap?.destroy();questMap=null;$('quest-layout').dataset.view='quest';const root=$('quest-detail');root.replaceChildren(empty('Не удалось загрузить справочник. Проверьте соединение.'),action('Повторить',()=>loadMode().catch(fail)));}
+function hasServerQuest(id,target){const content=$('quest-detail')?.querySelector('[data-server-quest]');return content?.dataset.serverQuest===id&&content.dataset.serverMode===target;}
+function fail(){questMap?.destroy();questMap=null;$('quest-layout').dataset.view='quest';const root=$('quest-detail');if(hasServerQuest(route.id,mode))return;root.replaceChildren(empty('Не удалось загрузить справочник. Проверьте соединение.'),action('Повторить',()=>loadMode().catch(fail)));}
 window.addEventListener('popstate',()=>{updateParams();route=catalogRoute(location.href);const requested=resolveGameMode(params.get('mode'),readStorage('kord-atlas-game-mode'));if(requested!==mode||data?.partial){mode=requested;return loadMode().catch(fail);}restoreView();renderRoute();});
 $('quest-layout').dataset.view=route.kind==='quest'?'quest':'hub';wire();await loadMode();
 

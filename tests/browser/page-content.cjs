@@ -21,7 +21,7 @@ const itemDetail={...items,items:[item],catalog:false,related:{reference:{meta:r
    const context=await browser.newContext({viewport:{width:1366,height:900}}),page=await context.newPage(),errors=[],requests=[];
    page.on('pageerror',error=>errors.push(error.message));
    let release;const gate=new Promise(resolve=>release=resolve);
-   await page.route('**/api/content/**',async handler=>{requests.push(new URL(handler.request().url()).pathname+new URL(handler.request().url()).search);await gate;await handler.fulfill({json:payload});});
+   await page.route('**/api/content/**',async handler=>{const url=new URL(handler.request().url());if(url.pathname==='/api/content/time')return handler.fulfill({status:503,json:{error:'Часы недоступны в изолированном тесте'}});requests.push(url.pathname+url.search);await gate;await handler.fulfill({json:payload});});
    await page.route('https://**/*',handler=>handler.fulfill({status:404,body:''}));
    await page.goto(base+route,{waitUntil:'commit'});
    await page.locator('#page-boot-status').waitFor({state:'visible'});

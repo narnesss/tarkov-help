@@ -1,4 +1,5 @@
 import {siteHref,pageParams,canonicalURL,usesPageRoutes} from './site-routes.mjs?v=page-content-20261017';
+import {updatePageSeo} from './page-seo.mjs?v=35639628025177d5';
 import {readPersonal,writePersonal} from './profile-store.mjs?v=loading-20261018';
 const storePersonal=(key,value)=>{if(!writePersonal(key,value))throw new Error('Локальное сохранение недоступно');};
 import { STORAGE_KEY, FLOOR_NAMES, filterSpawns, sanitizeProgress, zoomTransform, hasCoordinates } from './model.mjs?v=page-content-20261017';
@@ -141,7 +142,7 @@ async function start() {
     }
   }
   function persistPrefs() {
-    try { storePersonal(prefsKey, { map: state.mapId, showAlts: state.showAlts, query:state.query, status:state.status, floor:state.floor, allMaps:state.allMaps, types:[...state.types], tab:state.tab, iconSize:state.iconSize, artworkVersion:2,showExits:showExits.checked,exitMode:overlayMode }); } catch { /* Progress export remains available. */ }
+    try { storePersonal(prefsKey, { map: state.mapId, showAlts: state.showAlts, query:state.query, status:state.status, floor:state.floor, allMaps:state.allMaps, types:[...state.types], tab:state.tab, iconSize:state.iconSize, artworkVersion:3,showExits:showExits.checked,exitMode:overlayMode }); } catch { /* Progress export remains available. */ }
   }
   function applyIconSize() {
     $('document-icon-size').value = state.iconSize;
@@ -155,6 +156,8 @@ async function start() {
     url.searchParams.set('mode',overlayMode);
     if (state.selected) url.searchParams.set('point', state.selected.id);
     history.replaceState(null, '', canonicalURL(url));
+    const name=maps.find(map=>map.id===state.mapId)?.name||state.mapId;
+    updatePageSeo({title:name+' — документы Kord Breach в Таркове'+(overlayMode==='regular'?' — PVP':'')+' | Tarkov Compass',description:'Документы Kord Breach на локации «'+name+'»: места, ориентиры и отметки найденных документов.',canonical:url,breadcrumbs:[{name:'Документы',url:'/documents'},{name,url}]});
   }
   function chooseTab(tab) {
     state.tab=tab;persistPrefs();
@@ -216,7 +219,7 @@ async function start() {
     $('floor-select').replaceChildren(...entries.map(([value, name]) => {
       const option = node('option', '', name); option.value = value; return option;
     }));
-    if(!entries.some(([id])=>id===state.floor))state.floor=values[0]||'all';
+    if(!entries.some(([id])=>id===state.floor))state.floor='all';
     $('floor-select').value = state.floor;
     $('floor-group').querySelector('small').textContent=state.floor==='all'?'Все точки на основном плане. Для просмотра отдельного уровня выбери его в списке.':'Этаж здания уточняется в описании точки.';
   }
@@ -225,8 +228,8 @@ async function start() {
     const map = mapById.get(id);
     if (!map) return;
     closeDetails(false, false);
-    state.mapId = id;pendingFloor=restoreFloor&&map.documentPanels?.[prefs.floor]?prefs.floor:null;
-    state.floor = restoreFloor&&prefs.artworkVersion===2&&typeof prefs.floor==='string'?prefs.floor:map.documentPanels?'floor-1':'all';
+    state.floor = restoreFloor&&prefs.artworkVersion===3&&typeof prefs.floor==='string'?prefs.floor:'all';
+    state.mapId = id;pendingFloor=map.documentPanels?.[state.floor]?state.floor:null;
     $('map-select').value = id;
     const raidAliases = { streets: 'streets-of-tarkov', groundzero: 'ground-zero', lab: 'the-lab', labyrinth: 'the-labyrinth' };
     $('raid-link').href = siteHref(`raid.html?map=${raidAliases[id] || id}`);

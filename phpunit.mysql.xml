@@ -20,6 +20,10 @@
     <file>tests/Feature/ContentUpdatesTest.php</file>
     <file>tests/Feature/RaidMapEditorTest.php</file>
     <file>tests/Feature/ContentViewsTest.php</file>
+    <file>tests/Feature/SeoPagesTest.php</file>
+    <file>tests/Feature/SiteMapTest.php</file>
+    <file>tests/Feature/EntitySeoTest.php</file>
+    <file>tests/Feature/SeoEntitiesHttpTest.php</file>
     <file>tests/Feature/PublicMediaTest.php</file>
     <file>tests/Feature/DocumentMapOverlayTest.php</file>
     <file>tests/Feature/DocumentMapEditorTest.php</file>

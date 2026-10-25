@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /api/content/
+Disallow: /admin
+Disallow: /api/
+Disallow: /quest-map/
+Disallow: /quest-map-source
+
+Sitemap: https://tarkov-compass.narnesss.workers.dev/sitemap.xml
