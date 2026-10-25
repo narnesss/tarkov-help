@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace App\Services;
 
-/** Читает нужные поля проверенного JSON-файла, декодируя большие списки по одной записи. */
+/** Читает нужные поля JSON, декодируя списки и словари коллекций по одной записи. */
 final class PublicJson
 {
     public static function select(string $json,array $fields,array $collections=[]): array
@@ -13,14 +13,20 @@ final class PublicJson
             self::expect($json,$position,'"');$end=self::end($json,$position);$key=json_decode(substr($json,$position,$end-$position),true,128,JSON_THROW_ON_ERROR);
             $position=self::space($json,$end);self::expect($json,$position,':');$position=self::space($json,$position+1);
             if(isset($collections[$key])){
-                self::expect($json,$position,'[');$cursor=self::space($json,$position+1);$rows=[];
-                while(($json[$cursor]??'')!==']'){
+                $object=($json[$position]??'')==='{';$close=$object?'}':']';
+                self::expect($json,$position,$object?'{':'[');$cursor=self::space($json,$position+1);$rows=[];
+                while(($json[$cursor]??'')!==$close){
+                    if($object){
+                        self::expect($json,$cursor,'"');$keyEnd=self::end($json,$cursor);
+                        json_decode(substr($json,$cursor,$keyEnd-$cursor),true,128,JSON_THROW_ON_ERROR);
+                        $cursor=self::space($json,$keyEnd);self::expect($json,$cursor,':');$cursor=self::space($json,$cursor+1);
+                    }
                     $rowEnd=self::end($json,$cursor);$row=json_decode(substr($json,$cursor,$rowEnd-$cursor),true,128,JSON_THROW_ON_ERROR);
                     $selected=$collections[$key]($row);if($selected!==null)$rows[]=$selected;
-                    $cursor=self::space($json,$rowEnd);if(($json[$cursor]??'')===']')break;
+                    $cursor=self::space($json,$rowEnd);if(($json[$cursor]??'')===$close)break;
                     self::expect($json,$cursor,',');$cursor=self::space($json,$cursor+1);
                 }
-                self::expect($json,$cursor,']');$end=$cursor+1;$out[$key]=$rows;
+                self::expect($json,$cursor,$close);$end=$cursor+1;$out[$key]=$rows;
             }else{
                 $end=self::end($json,$position);
                 if(in_array($key,$fields,true))$out[$key]=json_decode(substr($json,$position,$end-$position),true,128,JSON_THROW_ON_ERROR);

@@ -7,7 +7,10 @@ const env = {API_ENABLED: 'true', API_ORIGIN: 'https://narnes.alwaysdata.net', A
   ASSETS: {fetch: async request => new Response('static:' + new URL(request.url).pathname)}};
 
 test('статические маршруты остаются assets; серверные профили включаются только с полными настройками', async () => {
-  assert.equal(await (await worker.fetch(new Request(origin + '/raid/interchange'), env)).text(), 'static:/raid/interchange');
+  const original = globalThis.fetch;
+  globalThis.fetch = async () => { throw Error('Внешняя сеть запрещена в тесте статических ресурсов'); };
+  try {
+  assert.equal(await (await worker.fetch(new Request(origin + '/guide.css'), env)).text(), 'static:/guide.css');
   for (const variant of [{}, {...env, API_ENABLED: undefined}, {...env, API_PROXY_TOKEN: ''}, {...env, API_ORIGIN: 'http://insecure.test'}]) {
     const runtime = await worker.fetch(new Request(origin + '/profile-runtime.mjs'), variant);
     assert.match(await runtime.text(), /serverProfiles = false/);
@@ -15,6 +18,7 @@ test('статические маршруты остаются assets; серв�
     assert.equal((await worker.fetch(new Request(origin + '/api/session'), variant)).status, 503);
   }
   assert.match(await (await worker.fetch(new Request(origin + '/profile-runtime.mjs'), env)).text(), /serverProfiles = true/);
+  } finally { globalThis.fetch = original; }
 });
 
 test('proxy сохраняет метод, JSON, cookie, origin, CSRF и Set-Cookie; заменяет поддельные заголовки и не кэширует', async () => {

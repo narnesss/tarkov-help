@@ -31,4 +31,21 @@ final class PublicJsonTest extends TestCase
 
     public function test_unfinished_file_is_rejected(): void
     { $this->expectException(\JsonException::class);PublicJson::select('{"items":[{"id":"broken"}',[],['items'=>fn($row)=>$row]); }
+
+    public function test_keyed_collections_are_selected_row_by_row_like_lists(): void
+    {
+        $items=['ignored'=>['id'=>'ignored','name'=>'Не нужен'],'selected'=>['id'=>'selected','name'=>'Кавычки " [ ] { } \\ Юникод','values'=>[0,false,null]]];
+        foreach([0,JSON_PRETTY_PRINT] as $flags){
+            $visited=[];
+            $raw=json_encode(['items'=>$items,'tail'=>false],$flags|JSON_THROW_ON_ERROR);
+            $actual=PublicJson::select($raw,['tail'],['items'=>function($row) use(&$visited){$visited[]=$row['id'];return $row['id']==='selected'?$row:null;}]);
+            $this->assertSame(['ignored','selected'],$visited);
+            $this->assertSame(['items'=>[$items['selected']],'tail'=>false],$actual);
+        }
+        $this->assertSame(['items'=>[]],PublicJson::select('{"items":{}}',[],['items'=>fn($row)=>$row]));
+        foreach(['{"items":{"id":}}','{"items":{"id" {"id":"bad"}}}','{"items":{"id":{"id":"unfinished"}'] as $raw){
+            try{PublicJson::select($raw,[],['items'=>fn($row)=>$row]);$this->fail('Повреждённый словарь принят');}
+            catch(\JsonException){$this->addToAssertionCount(1);}
+        }
+    }
 }

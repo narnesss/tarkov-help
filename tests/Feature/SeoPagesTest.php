@@ -191,6 +191,20 @@ final class SeoPagesTest extends TestCase
         $this->assertStringNotContainsString('Снабженец «0»', $title);
     }
 
+    public function test_quest_html_resolves_reward_items_from_keyed_globals(): void
+    {
+        foreach(['pve','regular'] as $mode){
+            $this->quest(mode:$mode,extra:['finishRewards'=>['items'=>[['item'=>'reward','count'=>2]]]]);
+            $dataset=new ContentDataset(['path'=>'guide/quests-'.$mode.'.json']);
+            $dataset->setContent(['items'=>['reward'=>['id'=>'reward','name'=>'Награда из словаря'],'unused'=>['id'=>'unused','name'=>'Лишний предмет']],'questItems'=>[]]);
+            ContentDataset::withoutEvents(fn()=>$dataset->save());
+            $html=$this->getJson($this->url('/quests/debut',['mode'=>$mode]))->assertOk()->json('html');
+            $this->assertStringContainsString('Награда из словаря',$html);
+            $this->assertStringNotContainsString('Лишний предмет',$html);
+            $this->getJson($this->url('/quests/trader/prapor',['mode'=>$mode]))->assertOk();
+        }
+    }
+
     public function test_new_trader_without_globals_gets_name_from_active_published_quest_in_selected_mode(): void
     {
         $traderId = 'seo-new-trader';
