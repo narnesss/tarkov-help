@@ -69,7 +69,7 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": "class=\"\" data-page=\"documents\""
   },
   "raid": {
-    "module": "raid.mjs?v=documents-access-20261020",
+    "module": "raid.mjs?v=c25fb5bf639baa55",
     "title": "Интерактивные карты — Escape from Tarkov Wiki",
     "description": "13 интерактивных карт Таркова: контейнеры, спавны ЧВК и Диких, выходы, боссы, ключи и квестовые места.",
     "styles": [
@@ -86,7 +86,7 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": "class=\"raid-page\" data-page=\"raid\""
   },
   "quests": {
-    "module": "quests.mjs?v=documents-access-20261020",
+    "module": "quests.mjs?v=792e09c2807e96aa",
     "title": "Квесты и цепочки — Escape from Tarkov Wiki",
     "description": "Квесты Таркова по торговцам: условия открытия, цепочки заданий, цели на карте, награды и личный прогресс.",
     "styles": [
@@ -109,7 +109,7 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": "class=\"guide-page\" data-page=\"quests\""
   },
   "quest": {
-    "module": "quests.mjs?v=documents-access-20261020",
+    "module": "quests.mjs?v=792e09c2807e96aa",
     "title": "Прохождение квеста — Escape from Tarkov Wiki",
     "description": "Квесты Таркова по торговцам: условия открытия, цепочки заданий, цели на карте, награды и личный прогресс.",
     "styles": [

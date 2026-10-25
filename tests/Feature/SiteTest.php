@@ -50,6 +50,21 @@ final class SiteTest extends TestCase
         $this->head('/quests/story')->assertOk()->assertContent('');
     }
 
+    public function test_gallery_css_version_does_not_require_css_in_api_package(): void
+    {
+        $file = public_path('guide.css');
+        $temporary = $file.'.gallery-test';
+        $version = substr(hash('sha256', str_replace("\r\n", "\n", file_get_contents($file))), 0, 16);
+        $this->assertFileDoesNotExist($temporary);
+        rename($file, $temporary);
+        try {
+            Cache::flush();
+            $this->get('/quests/wiring-the-vessel')->assertOk()->assertSee('guide.css?v='.$version, false);
+        } finally {
+            rename($temporary, $file);
+        }
+    }
+
     public function test_initial_header_does_not_guess_guest_status_before_session_check(): void
     {
         foreach(['/', '/account', '/documents', '/raid/lighthouse', '/quests', '/reference'] as $url){

@@ -11,5 +11,5 @@
   <div id="boss-content" aria-live="polite"></div>
 </main>
 <div class="toast" id="guide-toast" role="status" hidden></div>
-  <script type="module" src="bootstrap.mjs?v=documents-exits-20261020"></script>
+  <script type="module" src="bootstrap.mjs?v=432953184e3a4e0f"></script>
 @endsection

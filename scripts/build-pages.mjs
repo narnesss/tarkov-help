@@ -3,6 +3,7 @@ import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
+import {versionGalleryResources} from './version-gallery-resources.mjs';
 export const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const publicDir=path.join(root,'public'),dist=path.join(root,'dist');
 const readJSON=name=>JSON.parse(fs.readFileSync(path.join(publicDir,name),'utf8'));
@@ -20,6 +21,7 @@ export function sourceFingerprint(){
  return hash.digest('hex');
 }
 export function build(){
+ versionGalleryResources(root);
  const render=spawnSync(process.env.PHP_BINARY||'php',['artisan','site:export'],{cwd:root,encoding:'utf8'});
  if(render.error?.code!=='ENOENT'&&render.status!==0)throw Error(render.stderr||render.stdout||'Laravel export failed');
  if(readJSON('data/view-export.json').source_hash!==sourceFingerprint())throw Error('Blade export is stale. Run composer install and php artisan site:export before building.');

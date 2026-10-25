@@ -21,6 +21,8 @@
   <link rel="stylesheet" href="{{ $style }}?v=world-media-20261017">
 @elseif ($style === 'account-responsive.css')
   <link rel="stylesheet" href="{{ $style }}?v=tablet-account-20261017">
+@elseif ($style === 'guide.css')
+  <link rel="stylesheet" href="guide.css?v=02caea5331ad799e">
 @else
   <link rel="stylesheet" href="{{ $style }}?v={{ $style === 'account.css' ? 'profile-details-20261017' : ($style === 'documents.css' ? 'documents-exits-20261020' : ($style === 'raid-responsive.css' ? 'tablet-20261017b' : ($style === 'reference-responsive.css' ? 'mobile-btr-20261017' : ($style === 'quests-responsive.css' ? 'quest-filters-20261017' : 'release-20261016')))) }}">
 @endif
