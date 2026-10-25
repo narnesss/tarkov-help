@@ -13,6 +13,7 @@ final class ExportSite extends Command
 
     public function handle(PageCatalog $catalog, PageViews $views): int
     {
+        file_put_contents(public_path('yandex_78b9cda6dd2aaa25.html'), view('verification.yandex')->render());
         foreach (array_keys(config('pages')) as $page) {
             $filename = $page === 'not-found' ? '404' : $page;
             file_put_contents(public_path($filename.'.html'), $views->render($page, 'static'));

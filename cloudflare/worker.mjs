@@ -11,6 +11,7 @@ function settings(env) {
 }
 
 const privateHeaders = {'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff'};
+const yandexVerification = '/yandex_78b9cda6dd2aaa25.html';
 function unavailable() {
   return Response.json({error: 'Синхронизация временно недоступна. Данные в браузере сохранены.'}, {status: 503, headers: privateHeaders});
 }
@@ -18,6 +19,14 @@ function unavailable() {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url), config = settings(env);
+    if (url.pathname === yandexVerification || url.pathname === yandexVerification.slice(0, -5)) {
+      const headers = new Headers({'Content-Type':'text/html; charset=utf-8', 'Cache-Control':'no-store', 'X-Robots-Tag':'noindex', 'X-Content-Type-Options':'nosniff'});
+      if (!['GET', 'HEAD'].includes(request.method)) return new Response(null, {status:405, headers:{...Object.fromEntries(headers), Allow:'GET, HEAD'}});
+      // Чистый внутренний путь исключает автоматический редирект Cloudflare с .html.
+      const assetUrl = new URL(yandexVerification.slice(0, -5), url);
+      const asset = await env.ASSETS.fetch(new Request(assetUrl, {method:request.method}));
+      return new Response(request.method === 'HEAD' ? null : asset.body, {status:asset.status, headers});
+    }
     const seo = await seoResponse(request, env, config);
     if (seo) return seo.ok && seo.headers.get('Content-Type')?.includes('text/html') ? playerNavigation(request, seo, config) : seo;
     if (url.pathname === '/important-items' || url.pathname === '/important-items.html') {

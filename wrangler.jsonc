@@ -12,6 +12,7 @@
       "/documents", "/documents.html", "/documents/*", "/raid", "/raid.html", "/raid/*",
       "/quests", "/quests.html", "/quests/*", "/quest", "/quest.html",
       "/robots.txt", "/sitemap.xml", "/sitemaps/*",
+      "/yandex_78b9cda6dd2aaa25.html", "/yandex_78b9cda6dd2aaa25",
       "/reference", "/reference.html", "/reference/*", "/boss", "/boss.html", "/boss/*"
     ],
     "html_handling": "drop-trailing-slash",
