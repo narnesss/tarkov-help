@@ -39,7 +39,7 @@ final class EntitySeoViewsTest extends TestCase
             $this->assertSame(1, $xpath->query('//section[@data-seo-fallback]//a[@href="/reference/items"]')->length);
             $this->assertSame(0, $xpath->query('//a[starts-with(@href,"javascript:")]')->length);
             $this->assertStringContainsString('Ноль: 0', $xpath->query('//section[@data-seo-fallback]')->item(0)->textContent);
-            $this->assertStringContainsString('body[data-server-entity]:not([data-content-state="ready"])', $html);
+            $this->assertSame('interactive', $xpath->query('//body')->item(0)->getAttribute('data-page-boot'));
         }
     }
 
@@ -55,5 +55,6 @@ final class EntitySeoViewsTest extends TestCase
         $this->assertSame(1, $xpath->query('//nav[@aria-label="Страницы каталога"]//a[@href="/reference/items?page=3"]')->length);
         $this->assertSame(1, $xpath->query('//h1')->length);
         $this->assertSame(0, $xpath->query('//script[contains(@src,"bootstrap.mjs")]')->length);
+        $this->assertSame('document', $xpath->query('//body')->item(0)->getAttribute('data-page-boot'));
     }
 }

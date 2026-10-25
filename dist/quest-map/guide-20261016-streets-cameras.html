@@ -1,6 +1,12 @@
 <!doctype html>
 <html lang="ru">
 <head>
+  <script>
+    document.documentElement.classList.add('js-enabled');
+    document.addEventListener('DOMContentLoaded', function () {
+      if (document.body.dataset.pageBoot === 'document') document.body.dataset.contentState = 'ready';
+    });
+  </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#101412">
@@ -29,8 +35,8 @@
   <link rel="stylesheet" href="quest-map-source.css?v=release-20261016">
   <link rel="stylesheet" href="controls.css?v=release-20261016">
   <link rel="stylesheet" href="site-responsive.css?v=desktop-20261017">
-  <link rel="modulepreload" href="bootstrap.mjs?v=e971ad7b2223c7ad" >
-  <link rel="modulepreload" href="quest-map-source.mjs?v=832d82c073fe3561"  data-page-module >
+  <link rel="modulepreload" href="bootstrap.mjs?v=663b6b286f71918c" >
+  <link rel="modulepreload" href="quest-map-source.mjs?v=58caf35df3733ae0"  data-page-module >
   <link rel="modulepreload" href="profile-store.mjs?v=loading-20261018" >
   <link rel="modulepreload" href="profile-runtime.mjs?v=page-content-20261017" >
   <link rel="modulepreload" href="profile-ui.mjs?v=loading-20261018" >
@@ -47,13 +53,47 @@
   <link rel="modulepreload" href="json-preload.mjs?v=page-content-20261017" >
   <link rel="modulepreload" href="public-content-cache.mjs?v=loading-20261018" >
   <meta name="wiki-routing" content="pages">
+<style>
+.js-enabled body[data-content-state="loading"] > :where(main,#app-layout,#raid-layout,.site-legal-footer,[data-seo-fallback]),
+.js-enabled body[data-content-state="error"] > :where(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: hidden; }
+.page-boot-status { display: none; }
+.js-enabled .page-boot-status { position: fixed; inset: var(--header-height, 100px) 16px 16px; display: grid; justify-items: center; place-content: center; gap: 16px; text-align: center; color: #c6d1c1; z-index: 4; }
+.page-boot-spinner { width: 44px; height: 44px; box-sizing: border-box; border: 3px solid #374336; border-top-color: #d4c58e; border-radius: 50%; animation: page-boot-spin .85s linear infinite; }
+@keyframes page-boot-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .page-boot-spinner { animation: none; } }
+.reference-detail-layout { display: flex; flex-direction: column; }
+.reference-detail-layout > .reference-mode { align-self: flex-end; max-width: 180px; }
+.reference-detail-layout > .reference-main { flex: 1; min-height: 0; width: 100%; }
+.js-enabled body[data-content-state="ready"] > .page-boot-status { display: none; }
+body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
+.js-enabled body[data-server-content][data-content-state="error"] > :is(main,[data-seo-fallback]) { visibility: visible; }
+.js-enabled body[data-server-content][data-content-state="error"] > .page-boot-status { position: relative; inset: auto; padding: 16px; }
+.js-enabled body[data-page-boot="interactive"]:not([data-content-state="error"]) .seo-reading { display: none; }
+.seo-reading { padding: 20px; max-width: 100%; overflow-wrap: anywhere; }
+.seo-reading li { margin-block: 8px; }
+.seo-reading a { display: inline-flex; align-items: center; min-height: 44px; }
+.seo-quest-list { columns: 2 260px; padding-inline-start: 22px; }
+.seo-entity { width: min(100%, 1200px); margin-inline: auto; }
+.seo-entity h1 { margin-block: 12px; font-size: clamp(24px, 4vw, 38px); line-height: 1.2; }
+.seo-entity-links { columns: 2 260px; padding-inline-start: 22px; }
+.seo-pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
+.seo-modes { display: flex; flex-wrap: wrap; gap: 8px; }
+.seo-modes a { min-width: 44px; justify-content: center; }
+.seo-modes [aria-current="page"] { font-weight: 700; text-decoration: underline; }
+.seo-directory { width: min(100%, 1200px); margin-inline: auto; padding: 20px; }
+.seo-directory > .seo-entity { padding: 0; }
+body[data-server-entity][data-content-state="error"], html:not(.js-enabled) body[data-server-entity] { height: auto; min-height: 100dvh; overflow: auto; }
+body[data-server-entity][data-content-state="error"] > main:not(.seo-directory), html:not(.js-enabled) body[data-server-entity] > main:not(.seo-directory) { display: none; }
+body[data-server-entity][data-content-state="error"] > :is(#app-layout,#raid-layout), html:not(.js-enabled) body[data-server-entity] > :is(#app-layout,#raid-layout) { display: none; }
+</style>
 <script type="application/json" id="wiki-page-params">{"map": "guide-20261016-streets-cameras"}</script>
 </head>
-<body    >
-<header class="qmap-tools"><strong id="qmap-title">Карта задания</strong><div><button id="qmap-points" type="button">К меткам</button><button id="qmap-fit" type="button">Вся карта</button><button id="qmap-full" type="button" aria-label="Карта на весь экран">⛶</button></div></header>
+<body    data-page-boot="interactive" data-content-state="loading">
+<div class="page-boot-status" id="page-boot-status" role="status" aria-live="polite"><span class="page-boot-spinner" aria-hidden="true"></span><span>Загрузка страницы…</span></div>
+<noscript>Для отображения интерактивных данных включите JavaScript.</noscript><header class="qmap-tools"><strong id="qmap-title">Карта задания</strong><div><button id="qmap-points" type="button">К меткам</button><button id="qmap-fit" type="button">Вся карта</button><button id="qmap-full" type="button" aria-label="Карта на весь экран">⛶</button></div></header>
 <main id="qmap" role="region" aria-label="Карта мест выполнения. Перемещение стрелками, масштаб кнопками плюс и минус." tabindex="0"></main>
 <div id="qmap-loading" role="status">Загрузка схемы…</div><footer><span id="qmap-count"></span><a id="qmap-source" href="https://escapefromtarkov.fandom.com/ru/wiki/Escape_from_Tarkov_Wiki" target="_blank" rel="noopener noreferrer">Источник карты ↗</a><a href="licenses/QUEST-GUIDES.txt" target="_blank" rel="noopener">Авторы и лицензии</a></footer>
-<script src="vendor/leaflet.js"></script><script type="module" src="quest-map-source.mjs?v=832d82c073fe3561"></script>
+<script src="vendor/leaflet.js"></script><script type="module" src="quest-map-source.mjs?v=58caf35df3733ae0"></script>
 <footer class="site-legal-footer"><nav class="legal-navigation" aria-label="Правовые документы"><a href="/terms">Условия использования</a><a href="/privacy">Политика конфиденциальности</a><a href="/personal-data">Согласие на обработку данных</a><a href="/cookies">Использование cookie</a></nav>
 </footer>
 </body>

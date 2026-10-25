@@ -32,4 +32,4 @@ async function start(){
  if(globalThis.ResizeObserver)new ResizeObserver(()=>map.invalidateSize({animate:false})).observe($('qmap'));
  fit();$('qmap-loading').hidden=true;receiver.ready();window.addEventListener('pagehide',()=>receiver.destroy(),{once:true});
 }
-initializeSiteRoutes().then(start).catch(error=>showError(error.message));
+initializeSiteRoutes().then(start).catch(error=>showError(error.message)).finally(()=>{document.body.dataset.contentState='ready';});

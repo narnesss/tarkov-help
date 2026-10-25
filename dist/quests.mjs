@@ -395,7 +395,7 @@ function wire(){
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('quest-layout').classList.contains('show-filters'))closeFilters();if(e.key==='/'&&!e.target.closest('input,textarea,select,dialog')&&route.kind==='catalog'){e.preventDefault();if(innerWidth<=700)$('quest-mobile-filters').onclick();$('quest-search').focus();}});
   window.addEventListener('wiki:state',e=>{if(e.detail.key===progressKey()&&data){progress=sanitizeQuestProgress({...readStorage(progressKey()),mode},tasks,{partial:Boolean(data?.partial)});renderTraders();renderList();renderDetail();}});
 }
-function hasServerQuest(id,target){const content=$('quest-detail')?.querySelector('[data-server-quest]');return content?.dataset.serverQuest===id&&content.dataset.serverMode===target;}
+function hasServerQuest(id,target){const content=$('quest-detail')?.querySelector('[data-server-quest]');return Boolean(content&&id&&content.dataset.serverQuest===id&&content.dataset.serverMode===target);}
 function fail(){questMap?.destroy();questMap=null;$('quest-layout').dataset.view='quest';const root=$('quest-detail');if(hasServerQuest(route.id,mode))return;root.replaceChildren(empty('Не удалось загрузить справочник. Проверьте соединение.'),action('Повторить',()=>loadMode().catch(fail)));}
 window.addEventListener('popstate',()=>{updateParams();route=catalogRoute(location.href);const requested=resolveGameMode(params.get('mode'),readStorage('kord-atlas-game-mode'));if(requested!==mode||data?.partial){mode=requested;return loadMode().catch(fail);}restoreView();renderRoute();});
 $('quest-layout').dataset.view=route.kind==='quest'?'quest':'hub';wire();await loadMode();

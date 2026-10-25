@@ -1,6 +1,12 @@
 <!doctype html>
 <html lang="ru">
 <head>
+  <script>
+    document.documentElement.classList.add('js-enabled');
+    document.addEventListener('DOMContentLoaded', function () {
+      if (document.body.dataset.pageBoot === 'document') document.body.dataset.contentState = 'ready';
+    });
+  </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#101412">
@@ -32,7 +38,7 @@
   <link rel="stylesheet" href="controls.css?v=release-20261016">
   <link rel="stylesheet" href="documents.css?v=documents-exits-20261020">
   <link rel="stylesheet" href="site-responsive.css?v=desktop-20261017">
-  <link rel="modulepreload" href="bootstrap.mjs?v=e971ad7b2223c7ad" >
+  <link rel="modulepreload" href="bootstrap.mjs?v=663b6b286f71918c" >
   <link rel="modulepreload" href="app.mjs?v=2ef97cfa35520c43"  data-page-module >
   <link rel="modulepreload" href="profile-store.mjs?v=loading-20261018" >
   <link rel="modulepreload" href="profile-runtime.mjs?v=page-content-20261017" >
@@ -52,18 +58,21 @@
   <link rel="modulepreload" href="public-content-cache.mjs?v=loading-20261018" >
   <meta name="wiki-routing" content="pages">
 <style>
-body[data-content-state="loading"] > :is(main,#app-layout,#raid-layout,.site-legal-footer),
-body[data-content-state="error"] > :is(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: hidden; }
-.page-boot-status { position: fixed; inset: var(--header-height, 100px) 16px 16px; display: grid; place-content: center; gap: 16px; text-align: center; color: #c6d1c1; z-index: 4; }
+.js-enabled body[data-content-state="loading"] > :where(main,#app-layout,#raid-layout,.site-legal-footer,[data-seo-fallback]),
+.js-enabled body[data-content-state="error"] > :where(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: hidden; }
+.page-boot-status { display: none; }
+.js-enabled .page-boot-status { position: fixed; inset: var(--header-height, 100px) 16px 16px; display: grid; justify-items: center; place-content: center; gap: 16px; text-align: center; color: #c6d1c1; z-index: 4; }
+.page-boot-spinner { width: 44px; height: 44px; box-sizing: border-box; border: 3px solid #374336; border-top-color: #d4c58e; border-radius: 50%; animation: page-boot-spin .85s linear infinite; }
+@keyframes page-boot-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .page-boot-spinner { animation: none; } }
 .reference-detail-layout { display: flex; flex-direction: column; }
 .reference-detail-layout > .reference-mode { align-self: flex-end; max-width: 180px; }
 .reference-detail-layout > .reference-main { flex: 1; min-height: 0; width: 100%; }
-body[data-content-state="ready"] > .page-boot-status { display: none; }
+.js-enabled body[data-content-state="ready"] > .page-boot-status { display: none; }
 body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
-body[data-server-content][data-content-state] > :is(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: visible; }
-body[data-server-content] > .page-boot-status { display: none; }
-body[data-server-content][data-content-state="error"] > .page-boot-status { display: block; position: static; padding: 16px; }
-body[data-content-state="ready"] [data-seo-fallback] { display: none; }
+.js-enabled body[data-server-content][data-content-state="error"] > :is(main,[data-seo-fallback]) { visibility: visible; }
+.js-enabled body[data-server-content][data-content-state="error"] > .page-boot-status { position: relative; inset: auto; padding: 16px; }
+.js-enabled body[data-page-boot="interactive"]:not([data-content-state="error"]) .seo-reading { display: none; }
 .seo-reading { padding: 20px; max-width: 100%; overflow-wrap: anywhere; }
 .seo-reading li { margin-block: 8px; }
 .seo-reading a { display: inline-flex; align-items: center; min-height: 44px; }
@@ -77,15 +86,14 @@ body[data-content-state="ready"] [data-seo-fallback] { display: none; }
 .seo-modes [aria-current="page"] { font-weight: 700; text-decoration: underline; }
 .seo-directory { width: min(100%, 1200px); margin-inline: auto; padding: 20px; }
 .seo-directory > .seo-entity { padding: 0; }
-body[data-server-entity]:not([data-content-state="ready"]) { height: auto; min-height: 100dvh; overflow: auto; }
-body[data-server-entity]:not([data-content-state="ready"]) > main:not(.seo-directory) { display: none; }
-body[data-server-entity]:not([data-content-state="ready"]) > :is(#app-layout,#raid-layout) { position: absolute; inset-inline: 0; top: var(--header-height, 76px); visibility: hidden; pointer-events: none; }
-body[data-server-entity]:not([data-content-state="ready"]) > .boot-error { position: static; inset: auto; min-height: 0; }
+body[data-server-entity][data-content-state="error"], html:not(.js-enabled) body[data-server-entity] { height: auto; min-height: 100dvh; overflow: auto; }
+body[data-server-entity][data-content-state="error"] > main:not(.seo-directory), html:not(.js-enabled) body[data-server-entity] > main:not(.seo-directory) { display: none; }
+body[data-server-entity][data-content-state="error"] > :is(#app-layout,#raid-layout), html:not(.js-enabled) body[data-server-entity] > :is(#app-layout,#raid-layout) { display: none; }
 </style>
 <script type="application/json" id="wiki-page-params">{"map": "factory"}</script>
 </head>
-<body class="" data-page="documents"    data-content-state="loading" >
-<div class="page-boot-status" id="page-boot-status" role="status" aria-live="polite">Загрузка страницы…</div>
+<body class="" data-page="documents"   data-page-boot="interactive" data-content-state="loading">
+<div class="page-boot-status" id="page-boot-status" role="status" aria-live="polite"><span class="page-boot-spinner" aria-hidden="true"></span><span>Загрузка страницы…</span></div>
 <noscript>Для отображения интерактивных данных включите JavaScript.</noscript><svg class="svg-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
     <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
@@ -213,7 +221,7 @@ body[data-server-entity]:not([data-content-state="ready"]) > .boot-error { posit
   <dialog class="dialog about-dialog" id="about-dialog"><div class="dialog-heading"><div><div class="eyebrow">О ПРОЕКТЕ</div><h2>Всё нужное — на карте.</h2></div><button class="icon-button dialog-close" aria-label="Закрыть"><svg><use href="#i-close"/></svg></button></div><p>Escape from Tarkov Wiki — личный справочник мест появления секретных документов для Kord Breach в Escape from Tarkov.</p><div class="about-stats"><div><strong id="about-maps">—</strong><span>локаций</span></div><div><strong id="about-spawns">—</strong><span>точек</span></div><div><strong id="about-document-types">—</strong><span>типов документов</span></div></div><h3>Как пользоваться</h3><p>Выберите локацию и нужный тип документа. Нажмите на цветную метку, чтобы увидеть точное место на фотографии. Отмечайте найденные точки, добавляйте заметки и переключайтесь на «Осталось».</p><p>Колесо мыши или щипок меняют масштаб. Карту можно перетаскивать. Кнопка ⌖ возвращает общий вид. Уровни схемы переключаются в фильтрах и отображаются на одном плане. Точный этаж здания указан в описании точки.</p><h3>Справочные материалы</h3><ul class="source-list"><li><a href="https://kord-map-mtdv.ru/" target="_blank" rel="noopener noreferrer">Kord Breach — источник точек и схем ↗</a></li><li><a href="https://tarkov.help/ru" target="_blank" rel="noopener noreferrer">Tarkov.help — прохождения ↗</a></li><li><a href="https://escapefromtarkov.fandom.com/ru/wiki/Escape_from_Tarkov_Wiki" target="_blank" rel="noopener noreferrer">Русская Wiki ↗</a></li></ul><p class="muted">Авторы материалов: Metadvij community, Kalle Leskinen, Shebuka и RE3MR. Игровые материалы — Battlestate Games. Карты сохранены с исходными правами; CC BY-NC-SA 4.0.</p><div class="source-version" id="source-version"></div><p class="muted">Данные соответствуют указанной дате. Подложки могут содержать обозначения, не относящиеся к документам. Это неофициальный некоммерческий справочник.</p></dialog>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
   <div class="boot-error" id="boot-error" hidden><h1>Не удалось загрузить карту</h1><p>Проверьте соединение и обновите страницу.</p><button class="button primary" onclick="location.reload()">Попробовать снова</button></div>
-  <script type="module" src="bootstrap.mjs?v=e971ad7b2223c7ad"></script>
+  <script type="module" src="bootstrap.mjs?v=663b6b286f71918c"></script>
 <dialog id="document-exit-dialog" class="dialog document-exit-dialog" aria-labelledby="document-exit-title"><div class="dialog-heading"><h2 id="document-exit-title">Выход ЧВК</h2><button type="button" class="icon-button" id="document-exit-close" aria-label="Закрыть информацию о выходе">×</button></div><ul id="document-exit-conditions"></ul><p>Наличие метки не гарантирует доступность выхода в текущем рейде.</p></dialog>
 </body>
 </html>

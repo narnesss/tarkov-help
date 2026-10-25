@@ -48,6 +48,6 @@
   </nav>
   @endif
 </main>
-<script type="module" src="bootstrap.mjs?v=e971ad7b2223c7ad"></script>
+<script type="module" src="bootstrap.mjs?v=663b6b286f71918c"></script>
 <script type="module" src="important-items-form.mjs?v=20261017"></script>
 @endsection

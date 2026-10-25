@@ -13,6 +13,16 @@ const itemDetail={...items,items:[item],catalog:false,related:{reference:{meta:r
  const browser=await chromium.launch({...(process.env.BROWSER_EXECUTABLE?{executablePath:process.env.BROWSER_EXECUTABLE}:{}),headless:true,args:['--disable-background-networking']});
  try{
   const results=[];
+  const catalogContext=await browser.newContext(),catalogPage=await catalogContext.newPage(),catalogErrors=[];
+  catalogPage.on('pageerror',error=>catalogErrors.push(error.message));
+  await catalogPage.route('**/api/content/**',handler=>handler.fulfill({json:{...quests,cms:true,ui:{choices:{}}}}));
+  await catalogPage.goto(base+'/quests');
+  await catalogPage.waitForFunction(()=>document.body.dataset.contentState==='ready');
+  assert.equal(await catalogPage.locator('#quest-search').isEnabled(),true);
+  assert.ok(await catalogPage.locator('#quest-traders a').count()>0);
+  assert.deepEqual(catalogErrors,[],'Каталог без ID выбранного квеста не обращается к dataset пустой карточки');
+  results.push({catalog:'Каталог без выбранного квеста загружается и включает поиск'});
+  await catalogContext.close();
   for(const [route,payload,heading,absent] of [
    ['/quests/boreas?mode=pve',questDetail,'.quest-hero h1','#quest-search'],
    ['/boss/birdeye?mode=pve',bossDetail,'#boss-title','#boss-search'],

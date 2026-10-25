@@ -1,6 +1,16 @@
 <!doctype html>
 <html lang="ru">
 <head>
+@php
+  $serverDirectory = (int) ($serverContent['number'] ?? $params['page'] ?? 1) > 1 && isset($serverContent['pages']);
+  $interactiveBoot = !$serverDirectory && isset($meta['module']);
+@endphp
+  <script>
+    document.documentElement.classList.add('js-enabled');
+    document.addEventListener('DOMContentLoaded', function () {
+      if (document.body.dataset.pageBoot === 'document') document.body.dataset.contentState = 'ready';
+    });
+  </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#101412">
@@ -36,20 +46,22 @@
 @if ($params !== [])
   <script type="application/json" id="wiki-page-params">{!! json_encode($params, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) !!}</script>
 @endif
-@if (in_array($page, ['index','documents','raid','quests','quest','reference','boss','account'], true))
 <style>
-body[data-content-state="loading"] > :is(main,#app-layout,#raid-layout,.site-legal-footer),
-body[data-content-state="error"] > :is(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: hidden; }
-.page-boot-status { position: fixed; inset: var(--header-height, 100px) 16px 16px; display: grid; place-content: center; gap: 16px; text-align: center; color: #c6d1c1; z-index: 4; }
+.js-enabled body[data-content-state="loading"] > :where(main,#app-layout,#raid-layout,.site-legal-footer,[data-seo-fallback]),
+.js-enabled body[data-content-state="error"] > :where(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: hidden; }
+.page-boot-status { display: none; }
+.js-enabled .page-boot-status { position: fixed; inset: var(--header-height, 100px) 16px 16px; display: grid; justify-items: center; place-content: center; gap: 16px; text-align: center; color: #c6d1c1; z-index: 4; }
+.page-boot-spinner { width: 44px; height: 44px; box-sizing: border-box; border: 3px solid #374336; border-top-color: #d4c58e; border-radius: 50%; animation: page-boot-spin .85s linear infinite; }
+@keyframes page-boot-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .page-boot-spinner { animation: none; } }
 .reference-detail-layout { display: flex; flex-direction: column; }
 .reference-detail-layout > .reference-mode { align-self: flex-end; max-width: 180px; }
 .reference-detail-layout > .reference-main { flex: 1; min-height: 0; width: 100%; }
-body[data-content-state="ready"] > .page-boot-status { display: none; }
+.js-enabled body[data-content-state="ready"] > .page-boot-status { display: none; }
 body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
-body[data-server-content][data-content-state] > :is(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: visible; }
-body[data-server-content] > .page-boot-status { display: none; }
-body[data-server-content][data-content-state="error"] > .page-boot-status { display: block; position: static; padding: 16px; }
-body[data-content-state="ready"] [data-seo-fallback] { display: none; }
+.js-enabled body[data-server-content][data-content-state="error"] > :is(main,[data-seo-fallback]) { visibility: visible; }
+.js-enabled body[data-server-content][data-content-state="error"] > .page-boot-status { position: relative; inset: auto; padding: 16px; }
+.js-enabled body[data-page-boot="interactive"]:not([data-content-state="error"]) .seo-reading { display: none; }
 .seo-reading { padding: 20px; max-width: 100%; overflow-wrap: anywhere; }
 .seo-reading li { margin-block: 8px; }
 .seo-reading a { display: inline-flex; align-items: center; min-height: 44px; }
@@ -63,18 +75,14 @@ body[data-content-state="ready"] [data-seo-fallback] { display: none; }
 .seo-modes [aria-current="page"] { font-weight: 700; text-decoration: underline; }
 .seo-directory { width: min(100%, 1200px); margin-inline: auto; padding: 20px; }
 .seo-directory > .seo-entity { padding: 0; }
-body[data-server-entity]:not([data-content-state="ready"]) { height: auto; min-height: 100dvh; overflow: auto; }
-body[data-server-entity]:not([data-content-state="ready"]) > main:not(.seo-directory) { display: none; }
-body[data-server-entity]:not([data-content-state="ready"]) > :is(#app-layout,#raid-layout) { position: absolute; inset-inline: 0; top: var(--header-height, 76px); visibility: hidden; pointer-events: none; }
-body[data-server-entity]:not([data-content-state="ready"]) > .boot-error { position: static; inset: auto; min-height: 0; }
+body[data-server-entity][data-content-state="error"], html:not(.js-enabled) body[data-server-entity] { height: auto; min-height: 100dvh; overflow: auto; }
+body[data-server-entity][data-content-state="error"] > main:not(.seo-directory), html:not(.js-enabled) body[data-server-entity] > main:not(.seo-directory) { display: none; }
+body[data-server-entity][data-content-state="error"] > :is(#app-layout,#raid-layout), html:not(.js-enabled) body[data-server-entity] > :is(#app-layout,#raid-layout) { display: none; }
 </style>
-@endif
 </head>
-<body {!! $meta['body_attributes'] !!} @if ($serverContent ?? []) data-server-content="true" @endif @if (isset($serverContent['entity'])) data-server-entity="true" @endif @if (in_array($page, ['index','documents','raid','quests','quest','reference','boss','account'], true)) data-content-state="loading" @endif>
-@if (in_array($page, ['index','documents','raid','quests','quest','reference','boss','account'], true))
-<div class="page-boot-status" id="page-boot-status" role="status" aria-live="polite">Загрузка страницы…</div>
-@unless ($serverContent ?? [])<noscript>Для отображения интерактивных данных включите JavaScript.</noscript>@endunless
-@endif
+<body {!! $meta['body_attributes'] !!} @if ($serverContent ?? []) data-server-content="true" @endif @if (isset($serverContent['entity'])) data-server-entity="true" @endif data-page-boot="{{ $interactiveBoot ? 'interactive' : 'document' }}" data-content-state="loading">
+<div class="page-boot-status" id="page-boot-status" role="status" aria-live="polite"><span class="page-boot-spinner" aria-hidden="true"></span><span>Загрузка страницы…</span></div>
+@if ($interactiveBoot && !($serverContent ?? []))<noscript>Для отображения интерактивных данных включите JavaScript.</noscript>@endif
 @yield('content')
 @unless (in_array($page, ['documents', 'raid'], true))
 <footer class="site-legal-footer">@include('components.legal-navigation')</footer>

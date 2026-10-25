@@ -86,7 +86,7 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": "class=\"raid-page\" data-page=\"raid\""
   },
   "quests": {
-    "module": "quests.mjs?v=ae12bc1053669617",
+    "module": "quests.mjs?v=748793e60499e4db",
     "title": "Квесты Escape from Tarkov — задания торговцев и сюжет | Tarkov Compass",
     "description": "Квесты Escape from Tarkov по торговцам: цели, условия открытия, цепочки заданий и награды. Каталог заданий и отдельный прогресс в PVE и PVP.",
     "styles": [
@@ -109,7 +109,7 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": "class=\"guide-page\" data-page=\"quests\""
   },
   "quest": {
-    "module": "quests.mjs?v=ae12bc1053669617",
+    "module": "quests.mjs?v=748793e60499e4db",
     "title": "Квест Escape from Tarkov — цели и награды | Tarkov Compass",
     "description": "Карточка задания Escape from Tarkov: цели, требования, награды и связи с другими квестами торговцев.",
     "styles": [
@@ -164,7 +164,7 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": "class=\"guide-page\" data-page=\"boss\""
   },
   "quest-map-source": {
-    "module": "quest-map-source.mjs?v=832d82c073fe3561",
+    "module": "quest-map-source.mjs?v=58caf35df3733ae0",
     "title": "Карта мест выполнения квеста — Tarkov Compass",
     "description": "Схема локации и мест выполнения задания Escape from Tarkov.",
     "styles": [

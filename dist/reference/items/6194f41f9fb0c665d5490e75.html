@@ -1,6 +1,12 @@
 <!doctype html>
 <html lang="ru">
 <head>
+  <script>
+    document.documentElement.classList.add('js-enabled');
+    document.addEventListener('DOMContentLoaded', function () {
+      if (document.body.dataset.pageBoot === 'document') document.body.dataset.contentState = 'ready';
+    });
+  </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#101412">
@@ -35,7 +41,7 @@
   <link rel="stylesheet" href="controls.css?v=release-20261016">
   <link rel="stylesheet" href="reference-responsive.css?v=mobile-btr-20261017">
   <link rel="stylesheet" href="site-responsive.css?v=desktop-20261017">
-  <link rel="modulepreload" href="bootstrap.mjs?v=e971ad7b2223c7ad" >
+  <link rel="modulepreload" href="bootstrap.mjs?v=663b6b286f71918c" >
   <link rel="modulepreload" href="reference.mjs?v=a893a6e80fdbb776"  data-page-module >
   <link rel="modulepreload" href="profile-store.mjs?v=loading-20261018" >
   <link rel="modulepreload" href="profile-runtime.mjs?v=page-content-20261017" >
@@ -60,18 +66,21 @@
   <link rel="modulepreload" href="public-content-cache.mjs?v=loading-20261018" >
   <meta name="wiki-routing" content="pages">
   <style>
-body[data-content-state="loading"] > :is(main,#app-layout,#raid-layout,.site-legal-footer),
-body[data-content-state="error"] > :is(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: hidden; }
-.page-boot-status { position: fixed; inset: var(--header-height, 100px) 16px 16px; display: grid; place-content: center; gap: 16px; text-align: center; color: #c6d1c1; z-index: 4; }
+.js-enabled body[data-content-state="loading"] > :where(main,#app-layout,#raid-layout,.site-legal-footer,[data-seo-fallback]),
+.js-enabled body[data-content-state="error"] > :where(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: hidden; }
+.page-boot-status { display: none; }
+.js-enabled .page-boot-status { position: fixed; inset: var(--header-height, 100px) 16px 16px; display: grid; justify-items: center; place-content: center; gap: 16px; text-align: center; color: #c6d1c1; z-index: 4; }
+.page-boot-spinner { width: 44px; height: 44px; box-sizing: border-box; border: 3px solid #374336; border-top-color: #d4c58e; border-radius: 50%; animation: page-boot-spin .85s linear infinite; }
+@keyframes page-boot-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .page-boot-spinner { animation: none; } }
 .reference-detail-layout { display: flex; flex-direction: column; }
 .reference-detail-layout > .reference-mode { align-self: flex-end; max-width: 180px; }
 .reference-detail-layout > .reference-main { flex: 1; min-height: 0; width: 100%; }
-body[data-content-state="ready"] > .page-boot-status { display: none; }
+.js-enabled body[data-content-state="ready"] > .page-boot-status { display: none; }
 body[data-content-state="loading"] .topbar .data-status { visibility: hidden; }
-body[data-server-content][data-content-state] > :is(main,#app-layout,#raid-layout,.site-legal-footer) { visibility: visible; }
-body[data-server-content] > .page-boot-status { display: none; }
-body[data-server-content][data-content-state="error"] > .page-boot-status { display: block; position: static; padding: 16px; }
-body[data-content-state="ready"] [data-seo-fallback] { display: none; }
+.js-enabled body[data-server-content][data-content-state="error"] > :is(main,[data-seo-fallback]) { visibility: visible; }
+.js-enabled body[data-server-content][data-content-state="error"] > .page-boot-status { position: relative; inset: auto; padding: 16px; }
+.js-enabled body[data-page-boot="interactive"]:not([data-content-state="error"]) .seo-reading { display: none; }
 .seo-reading { padding: 20px; max-width: 100%; overflow-wrap: anywhere; }
 .seo-reading li { margin-block: 8px; }
 .seo-reading a { display: inline-flex; align-items: center; min-height: 44px; }
@@ -85,15 +94,14 @@ body[data-content-state="ready"] [data-seo-fallback] { display: none; }
 .seo-modes [aria-current="page"] { font-weight: 700; text-decoration: underline; }
 .seo-directory { width: min(100%, 1200px); margin-inline: auto; padding: 20px; }
 .seo-directory > .seo-entity { padding: 0; }
-body[data-server-entity]:not([data-content-state="ready"]) { height: auto; min-height: 100dvh; overflow: auto; }
-body[data-server-entity]:not([data-content-state="ready"]) > main:not(.seo-directory) { display: none; }
-body[data-server-entity]:not([data-content-state="ready"]) > :is(#app-layout,#raid-layout) { position: absolute; inset-inline: 0; top: var(--header-height, 76px); visibility: hidden; pointer-events: none; }
-body[data-server-entity]:not([data-content-state="ready"]) > .boot-error { position: static; inset: auto; min-height: 0; }
+body[data-server-entity][data-content-state="error"], html:not(.js-enabled) body[data-server-entity] { height: auto; min-height: 100dvh; overflow: auto; }
+body[data-server-entity][data-content-state="error"] > main:not(.seo-directory), html:not(.js-enabled) body[data-server-entity] > main:not(.seo-directory) { display: none; }
+body[data-server-entity][data-content-state="error"] > :is(#app-layout,#raid-layout), html:not(.js-enabled) body[data-server-entity] > :is(#app-layout,#raid-layout) { display: none; }
 </style>
 <script type="application/json" id="wiki-page-params">{"tab": "items", "item": "6194f41f9fb0c665d5490e75"}</script>
 </head>
-<body class="guide-page" data-page="reference"    data-content-state="loading" >
-<div class="page-boot-status" id="page-boot-status" role="status" aria-live="polite">Загрузка страницы…</div>
+<body class="guide-page" data-page="reference"   data-page-boot="interactive" data-content-state="loading">
+<div class="page-boot-status" id="page-boot-status" role="status" aria-live="polite"><span class="page-boot-spinner" aria-hidden="true"></span><span>Загрузка страницы…</span></div>
 <noscript>Для отображения интерактивных данных включите JavaScript.</noscript><header class="topbar">
   <a class="brand" href="index.html" aria-label="Tarkov Compass — главная">
     <img class="site-logo" src="assets/site-logo.svg?v=brand-20261017" width="40" height="40" alt="">
@@ -123,7 +131,7 @@ body[data-server-entity]:not([data-content-state="ready"]) > .boot-error { posit
   <header class="reference-heading"><div><nav class="reference-breadcrumbs" aria-label="Путь к разделу"><span>Справочник</span><span>›</span><span id="reference-crumb"></span></nav><h2 id="reference-title">Загрузка…</h2><p id="reference-description"></p></div><span id="reference-count" class="quest-tag" aria-label="Количество результатов"></span></header>
   <p id="reference-data-date" class="reference-help" role="status"></p><div id="reference-content"></div></section></main>
 <dialog class="dialog item-dialog" id="item-dialog"><div class="dialog-heading"><h2 id="item-title"></h2><button class="icon-button" id="item-close" aria-label="Закрыть предмет">×</button></div><div id="item-body" class="item-dialog-body"></div></dialog><div class="toast" id="guide-toast" role="status" hidden></div>
-  <script type="module" src="bootstrap.mjs?v=e971ad7b2223c7ad"></script>
+  <script type="module" src="bootstrap.mjs?v=663b6b286f71918c"></script>
 <footer class="site-legal-footer"><nav class="legal-navigation" aria-label="Правовые документы"><a href="/terms">Условия использования</a><a href="/privacy">Политика конфиденциальности</a><a href="/personal-data">Согласие на обработку данных</a><a href="/cookies">Использование cookie</a></nav>
 </footer>
 </body>

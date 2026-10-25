@@ -9,7 +9,7 @@ final class PageModules
     {
         $entry = config('pages.'.$page.'.module');
         if (!is_string($entry)) { return []; }
-        $pending = ['bootstrap.mjs?v=e971ad7b2223c7ad', $entry];
+        $pending = ['bootstrap.mjs?v=663b6b286f71918c', $entry];
         $urls = [];
         while ($pending !== []) {
             $url = array_shift($pending);
