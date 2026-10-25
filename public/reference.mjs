@@ -18,6 +18,7 @@ function saveView(){if(!$('reference-search'))return;const old=readStorage(viewK
 function restoreView(){if(!$('reference-search'))return;const view=readStorage(viewKey())?.views?.[tab]||{};$('reference-search').value=typeof view.query==='string'?view.query:'';for(const key of ['filter','sort']){const n=$('reference-'+key);if([...n.options].some(o=>o.value===view[key]))n.value=view[key];}page=Number.isInteger(view.page)&&view.page>=0?view.page:0;}
 const savedView=readStorage(viewKey());if(!params.has('tab')&&TABS[savedView?.tab])tab=savedView.tab;
 const pageSize=40;const money=v=>v===null||v===undefined?'Нет цены':num(v)+' ₽';const itemName=id=>items.get(idOf(id))?.name||'Предмет '+idOf(id);const nameTrader=id=>traders.get(idOf(id))?.name||'Торговец';
+const traderPortraits=new Map(Object.entries(JSON.parse($('reference-content').dataset.traderPortraits||'{}')));
 const duration=formatDuration;
 function itemLink(ref,count,linked=true){const item=items.get(idOf(ref));const b=!linked?el('span','','guide-item'):usesPageRoutes()?el('a','','guide-item'):action('',()=>showItem(idOf(ref)),'guide-item');if(linked&&usesPageRoutes())b.href=siteHref('reference.html?'+new URLSearchParams({tab:'items',item:idOf(ref),mode}));if(item?.iconLink)b.append(image(item.iconLink));b.append(el('span',item?.name||'Предмет '+idOf(ref)));if(count!==undefined)b.append(el('b','× '+num(count)));return b;}
 function setOptions(id,choices){$(id).replaceChildren(...choices.map(([value,name])=>{const o=el('option',name);o.value=value;return o;}));}
@@ -115,7 +116,8 @@ function renderCard(r){const card=el('article','','reference-card');card.append(
     const a=el('a','Описание и здоровье по частям тела →','button boss-detail-link');a.href=siteHref(`boss.html?boss=${encodeURIComponent(r.slug)}&mode=${mode}`);card.append(a);
   }else if(tab==='traders'){
     card.classList.add('reference-trader-card');
-    const header=el('header','','trader-card-header');if(r.imageLink)header.append(image(r.imageLink,'','trader-portrait'));header.append(card.querySelector('h3'));card.prepend(header);
+    const portrait=traderPortraits.get(r.id)||r.imageLink;
+    const header=el('header','','trader-card-header');if(portrait)header.append(image(portrait,'','trader-portrait'));header.append(card.querySelector('h3'));card.prepend(header);
     if(r.description)card.append(el('p',r.description));
     if(r.levels?.length){
       card.append(el('h4','Уровни лояльности','trader-levels-title'));

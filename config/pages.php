@@ -132,7 +132,7 @@ $pages = json_decode(<<<'JSON'
     "body_attributes": "class=\"guide-page\" data-page=\"quests\""
   },
   "reference": {
-    "module": "reference.mjs?v=a893a6e80fdbb776",
+    "module": "reference.mjs?v=df296d0d0db5d9a7",
     "title": "Справочник Escape from Tarkov — предметы, патроны, убежище | Tarkov Compass",
     "description": "Справочник Escape from Tarkov на русском: предметы, патроны, бартеры, крафты, модули убежища, боссы, торговцы и достижения.",
     "styles": [
@@ -187,6 +187,13 @@ $pages = json_decode(<<<'JSON'
   }
 }
 JSON, true, 32, JSON_THROW_ON_ERROR);
+
+// Общие портреты главной страницы и раздела торговцев в справочнике.
+$pages['index']['trader_portraits'] = $pages['reference']['trader_portraits'] = [
+    '5935c25fb3acc3127c3d8cd9' => '/assets/home-traders/peacekeeper-2d937bf5798c.webp',
+    '5a7c2eca46aef81a7ca2145d' => '/assets/home-traders/mechanic-fbe5747cf062.webp',
+    '5c0647fdd443bc2504c2d371' => '/assets/home-traders/jaeger-aa8c24369abe.webp',
+];
 
 // Версия главной меняется вместе с модулем; переводы строк не зависят от ОС сборки.
 $homeModule = public_path('home.mjs');
