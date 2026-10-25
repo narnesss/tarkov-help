@@ -123,4 +123,25 @@ final class SiteTest extends TestCase
         $manifest = json_decode(file_get_contents(public_path('data/view-export.json')), true);
         $this->assertSame($views->fingerprint(), $manifest['source_hash']);
     }
+
+    public function test_seo_export_is_identical_for_lf_and_crlf_blade_sources(): void
+    {
+        $file = resource_path('views/components/seo-head.blade.php');
+        $original = file_get_contents($file);
+        $lf = str_replace("\r\n", "\n", $original);
+        try {
+            file_put_contents($file, $lf);
+            $this->artisan('view:clear')->assertSuccessful();
+            $this->artisan('site:export')->assertSuccessful();
+            $expected = file_get_contents(public_path('data/seo-export.json'));
+            file_put_contents($file, str_replace("\n", "\r\n", $lf));
+            $this->artisan('view:clear')->assertSuccessful();
+            $this->artisan('site:export')->assertSuccessful();
+            $this->assertSame($expected, file_get_contents(public_path('data/seo-export.json')));
+        } finally {
+            file_put_contents($file, $original);
+            $this->artisan('view:clear')->assertSuccessful();
+            $this->artisan('site:export')->assertSuccessful();
+        }
+    }
 }

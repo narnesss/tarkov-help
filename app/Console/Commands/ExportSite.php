@@ -23,7 +23,8 @@ final class ExportSite extends Command
         $seoService = app(PageSeo::class)->catalogSnapshot(); $seoPages = [];
         foreach ($catalog->routes() as $path => $entry) {
             $seo = $seoService->metadata($entry['template'], $entry['params'], $entry['title']);
-            $seoPages[$path] = ['title' => $seo['title'], 'head' => view('components.seo-head', compact('seo'))->render()];
+            $head = str_replace("\r\n", "\n", view('components.seo-head', compact('seo'))->render());
+            $seoPages[$path] = ['title' => $seo['title'], 'head' => $head];
         }
         file_put_contents(public_path('data/seo-export.json'), json_encode($seoPages, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)."\n");
         if (!is_dir(public_path('sitemaps'))) { mkdir(public_path('sitemaps'), 0755, true); }
